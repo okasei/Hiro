@@ -1,0 +1,13 @@
+﻿<Window x:Name="noti" x:Class="hiro.notification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:hiro"
+        mc:Ignorable="d"
+        Title="notification" Height="32" Width="800" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" Visibility="Visible" Topmost="True" IsTabStop="False" ShowInTaskbar="False" Loaded="noti_Loaded" AllowsTransparency="True" Opacity="0.01" Icon="/hiro_circle.ico" MouseDoubleClick="noti_MouseDoubleClick">
+    <Grid>
+        <Label x:Name="notinfo" Content="Label" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontFamily="Segoe UI" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseDoubleClick="notinfo_MouseDoubleClick"/>
+
+    </Grid>
+</Window>

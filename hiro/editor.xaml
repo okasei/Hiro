@@ -1,0 +1,22 @@
+﻿<Window x:Name="edi" x:Class="hiro.Editor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:hiro"
+        mc:Ignorable="d"
+        Title="editor" Height="450" Width="800" WindowStyle="None" ShowInTaskbar="False" ResizeMode="NoResize" Loaded="Edi_Loaded" Deactivated="Edi_Deactivated" Topmost="True" AllowsTransparency="True" KeyDown="Edi_KeyDown" SizeChanged="Edi_SizeChanged" Icon="/hiro_circle.ico">
+    <Grid>
+        <Label x:Name="bgimage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="550" Height="450" Margin="1,0,0,0">
+            <Label.Background>
+                <ImageBrush Stretch="UniformToFill"/>
+            </Label.Background>
+        </Label>
+        <TextBox x:Name="con" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="800" Height="297" HorizontalContentAlignment="Left" FontFamily="Segoe UI" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Cursor="IBeam" KeyDown="Con_KeyDown" TextChanged="Con_TextChanged" AllowDrop="True" AcceptsReturn="True" AcceptsTab="True"/>
+        <Label x:Name="status" Content="Page 1 - 0 Word(s)" HorizontalAlignment="Left" Margin="5,0,0,5" VerticalAlignment="Bottom" FontFamily="Segoe UI"/>
+        <Slider x:Name="slider" HorizontalAlignment="Right" Margin="0,0,5,5" VerticalAlignment="Bottom" Width="163" Maximum="1" SmallChange="0.1" LargeChange="0.3" FontSize="11" FontFamily="Segoe UI" ValueChanged="Slider_ValueChanged" Value="1" IsEnabled="False" Minimum="0.3"/>
+        <Label x:Name="previous" Content="◀" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Bottom" FontFamily="Segoe UI" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseLeftButtonDown="Previous_MouseLeftButtonDown"/>
+        <Label x:Name="next" Content="▶" HorizontalAlignment="Left" Margin="50,0,5,0" VerticalAlignment="Bottom" FontFamily="Segoe UI" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="{Binding Height, ElementName=next}" MouseLeftButtonDown="Next_MouseLeftButtonDown"/>
+
+    </Grid>
+</Window>
