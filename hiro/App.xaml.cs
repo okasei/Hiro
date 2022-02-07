@@ -173,7 +173,7 @@ namespace hiro
             dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".has";
             sconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hsl";
             var str = utils.Read_Ini(dconfig, "Configuration", "lang", "");
-            if (!str.Equals("") || !str.Equals("default"))
+            if (str.Equals("") || str.Equals("default"))
             {
                 lang = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
                 if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
