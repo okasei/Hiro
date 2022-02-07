@@ -91,11 +91,7 @@ namespace hiro
                             Stretch = Stretch.UniformToFill,
                             ImageSource = new BitmapImage(new Uri(filep))
                         };
-                        bool animation;
-                        if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                            animation = false;
-                        else
-                            animation = true;
+                        bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
                         bgimage.Background = ib;
                         utils.Blur_Animation(false, animation, bgimage, this);
                     }

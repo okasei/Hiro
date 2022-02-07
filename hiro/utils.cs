@@ -391,6 +391,25 @@ namespace hiro
         {
             return Read_Ini(App.CurrentDirectory + "\\system\\lang\\" + App.lang + ".hlp", "translate", val, "<???>").Replace("\\n",Environment.NewLine);
         }
+        #endregion
+        #region UI 相关
+        public static void Set_Bgimage(System.Windows.Controls.Control sender)
+        {
+            var strFileName = Read_Ini(App.dconfig, "Configuration", "backimage", "");
+            if (Read_Ini(App.dconfig, "Configuration", "background", "1").Equals("1") || !System.IO.File.Exists(strFileName))
+            {
+                sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
+            }
+            else
+            {
+                System.Windows.Media.ImageBrush ib = new()
+                    {
+                        Stretch = System.Windows.Media.Stretch.UniformToFill,
+                        ImageSource = new System.Windows.Media.Imaging.BitmapImage(new Uri(strFileName))
+                    };
+                    sender.Background = ib;
+            }
+        }
         public static void Set_Control_Location(System.Windows.Controls.Control sender,string val,bool extra = false,string? path = "", bool right = false, bool bottom = false)
         {
             if (extra == false || path == null || !System.IO.File.Exists(path))

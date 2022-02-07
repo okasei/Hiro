@@ -173,7 +173,7 @@ namespace hiro
             dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".has";
             sconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hsl";
             var str = utils.Read_Ini(dconfig, "Configuration", "lang", "");
-            if (String.Compare(str, "") == 0 || String.Compare(str.ToLower(), "default") == 0)
+            if (!str.Equals("") || !str.Equals("default"))
             {
                 lang = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
                 if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
@@ -246,48 +246,30 @@ namespace hiro
             var afternoon = utils.Read_Ini(LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
             var evening = utils.Read_Ini(LangFilePath, "local", "evening", "[19,20,21,22]");
             var night = utils.Read_Ini(LangFilePath, "local", "night", "[23,0,1,2,3,4,5]");
-            morning = "," + morning.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-            noon = "," + noon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-            afternoon = "," + afternoon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-            evening = "," + evening.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-            night = "," + night.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
+            morning = morning.Replace("[", "[,").Replace("]", ",]").Trim();
+            noon = noon.Replace("[", "[,").Replace("]", ",]").Trim();
+            afternoon = afternoon.Replace("[", "[,").Replace("]", ",]").Trim();
+            evening = evening.Replace("[", "[,").Replace("]", ",]").Trim();
+            night = night.Replace("[", "[,").Replace("]", ",]").Trim();
             if (morning.IndexOf("," + hr + ",") != -1)
             {
-                if (CustomUsernameFlag == 0)
-                    UpdateHomeLabel1(utils.Get_Transalte("morning").Replace("%u", EnvironmentUsername));
-                else
-                    UpdateHomeLabel1(utils.Get_Transalte("morningcus").Replace("%u", Username));
-
+                    UpdateHomeLabel1("morning");
             }
             else if (noon.IndexOf("," + hr + ",") != -1)
             {
-                if (CustomUsernameFlag == 0)
-                    UpdateHomeLabel1(utils.Get_Transalte("noon").Replace("%u", EnvironmentUsername));
-                else
-                    UpdateHomeLabel1(utils.Get_Transalte("nooncus").Replace("%u", Username));
-
+                    UpdateHomeLabel1("noon");
             }
             else if (afternoon.IndexOf("," + hr + ",") != -1)
             {
-                if (CustomUsernameFlag == 0)
-                    UpdateHomeLabel1(utils.Get_Transalte("afternoon").Replace("%u", EnvironmentUsername));
-                else
-                    UpdateHomeLabel1(utils.Get_Transalte("afternooncus").Replace("%u", Username));
-
+                    UpdateHomeLabel1("afternoon");
             }
             else if (evening.IndexOf("," + hr + ",") != -1)
             {
-                if (CustomUsernameFlag == 0)
-                    UpdateHomeLabel1(utils.Get_Transalte("evening").Replace("%u", EnvironmentUsername));
-                else
-                    UpdateHomeLabel1(utils.Get_Transalte("eveningcus").Replace("%u", Username));
+                    UpdateHomeLabel1("evening");
             }
             else
             {
-                if (CustomUsernameFlag == 0)
-                    UpdateHomeLabel1(utils.Get_Transalte("night").Replace("%u", EnvironmentUsername));
-                else
-                    UpdateHomeLabel1(utils.Get_Transalte("nightcus").Replace("%u", Username));
+                    UpdateHomeLabel1("night");
             }
             var tim = utils.Read_Ini(LangFilePath, "local", "locktime", "HH:mm");
             var dat = utils.Read_Ini(LangFilePath, "local", "lockdate", "MM/dd (ddd)");
@@ -359,6 +341,10 @@ namespace hiro
         {
             if (mn != null)
             {
+                if (CustomUsernameFlag == 0)
+                    val = utils.Get_Transalte(val).Replace("%u", EnvironmentUsername);
+                else
+                    val = utils.Get_Transalte(val + "cus").Replace("%u", Username);
                 if (mn.homelabel1.Content.Equals(val))
                 {
 

@@ -93,33 +93,9 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            if (App.mn != null)
-            {
-                var animation = true;
-                if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                    animation = false;
-                else
-                    animation = true;
-                bgimage.Background = App.mn.bgimage.Background;
-                if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                {
-                    utils.Blur_Animation(true, animation, bgimage, this);
-                }
-                else
-                {
-                    utils.Blur_Animation(false, animation, bgimage, this);
-                }
-            }
-            else
-            {
-                Thickness tn = bgimage.Margin;
-                tn.Left = 0.0;
-                tn.Top = 0.0;
-                bgimage.Margin = tn;
-                bgimage.Width = Width;
-                bgimage.Height = Height;
-                bgimage.Background = new SolidColorBrush(App.AppAccentColor);
-            }
+            utils.Set_Bgimage(bgimage);
+            bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+            utils.Blur_Animation(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"), animation, bgimage, this);
             bflag = 0;
         }
         public void Load_Colors()

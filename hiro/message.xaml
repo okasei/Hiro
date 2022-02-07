@@ -7,8 +7,7 @@
         mc:Ignorable="d"
         Title="message" Height="450" Width="800" WindowStyle="None" ResizeMode="NoResize" Topmost="True" IsTabStop="False" Closing="Msg_Closing" Icon="/hiro_circle.ico" MouseLeftButtonDown="msg_MouseLeftButtonDown">
     <Grid>
-        <Label x:Name="bgimage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="550" Height="450" Margin="1,0,0,0">
-        </Label>
+        <Label x:Name="bgimage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="200" BorderThickness="5,5,5,5"/>
         <Label x:Name="backtitle" Content="Title" HorizontalAlignment="Left" Margin="27,25,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"/>
         <Label x:Name="backcontent" FontFamily="Segoe UI" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">

@@ -57,10 +57,10 @@ namespace hiro
                         Blurbgi(true);
                     else
                         Blurbgi(false);
-                };            
+                };
+                if (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "1").Equals("2"))
+                    utils.RunExe(utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "nop"));
             utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
-            if (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "1").Equals("2"))
-                utils.RunExe(utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "nop"));
             utils.LogtoFile("[HIROWEGO]MainUI: Loaded");
         }
         public static void Load_Data()
@@ -73,7 +73,7 @@ namespace hiro
             var co = utils.Read_Ini(inipath, i.ToString(), "command", "");
             if (co.Length >= 2)
                 co = co[1..^1];
-            while (String.Compare(ti,"") != 0 && String.Compare(co, "") != 0)
+            while (!ti.Equals("") && !co.Equals(""))
             {
                 App.cmditems.Add(new cmditem(p, i, ti, co));
                 i++;
@@ -93,7 +93,7 @@ namespace hiro
             var re = utils.Read_Ini(inipath, i.ToString(), "repeat", "-2.0");
             if (co.Length >= 2)
                 co = co[1..^1];
-            while (String.Compare(ti, "") != 0 && String.Compare(co, "") != 0 && String.Compare(na, "") != 0 && String.Compare(re, "") != 0)
+            while (!ti.Equals("") && !co.Equals("") && !na.Equals("") && !re.Equals(""))
             {
                 System.Globalization.DateTimeFormatInfo dtFormat = new()
                 {
@@ -534,30 +534,17 @@ namespace hiro
         public void Load_Colors()
         {
             MainWindow.IntializeColorParameters();
+            utils.Set_Bgimage(bgimage);
             if (utils.Read_Ini(App.dconfig, "Configuration", "background", "1").Equals("1"))
             {
                 Blurbgi(false);
-                bgimage.Background = new SolidColorBrush(App.AppAccentColor);
             }
             else
             {
-                var strFileName = utils.Read_Ini(App.dconfig, "Configuration", "backimage", "");
-                if (System.IO.File.Exists(strFileName))
-                {
-                    ImageBrush ib = new()
-                    {
-                        Stretch = Stretch.UniformToFill,
-                        ImageSource = new BitmapImage(new Uri(strFileName))
-                    };
-                    bgimage.Background = ib;
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                        Blurbgi(true);
-                }
+                if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
+                    Blurbgi(true);
                 else
-                {
                     Blurbgi(false);
-                    bgimage.Background = new SolidColorBrush(App.AppAccentColor);
-                }
             }
             Foreground = new SolidColorBrush(App.AppForeColor);
 
@@ -1364,7 +1351,7 @@ namespace hiro
 
         private void Chk_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (String.Compare(chk_btn.Content.ToString(), utils.Get_Transalte("checkup")) == 0)
+            if (chk_btn.Content.Equals(utils.Get_Transalte("checkup")))
             {
                 chk_btn.Content = utils.Get_Transalte("checkcancel");
                 pb.Visibility = Visibility.Visible;
@@ -1518,7 +1505,7 @@ namespace hiro
                 {
                     IWshRuntimeLibrary.WshShell shell = new();
                     IWshRuntimeLibrary.IWshShortcut lnkPath = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(strFileName);
-                    strFileName = (string.Compare(lnkPath.TargetPath, "") == 0) ? strFileName : lnkPath.TargetPath;
+                    strFileName = lnkPath.TargetPath.Equals("") ? strFileName : lnkPath.TargetPath;
                 }
                 if (strFileName.IndexOf(" ") != -1)
                     strFileName = "\"" + strFileName + "\"";
@@ -1593,24 +1580,8 @@ namespace hiro
             rbtn14.IsEnabled = false;
             btn10.IsEnabled = true;
             utils.Write_Ini(App.dconfig, "Configuration", "background", "2");
-            var strFileName = utils.Read_Ini(App.dconfig, "Configuration", "backimage", "");
-            if (System.IO.File.Exists(strFileName))
-            {
-                ImageBrush ib = new()
-                {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = new BitmapImage(new Uri(strFileName))
-                };
-                bgimage.Background = ib;
-                if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                {
-                    Blurbgi(true);
-                }
-                else
-                {
-                    Blurbgi(false);
-                }
-            }
+            utils.Set_Bgimage(bgimage);
+            Blurbgi(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"));
             rbtn15.IsEnabled = true;
             rbtn14.IsEnabled = true;
         }
@@ -1650,31 +1621,8 @@ namespace hiro
             if (System.IO.File.Exists(strFileName))
             {
                 utils.Write_Ini(App.dconfig, "Configuration", "backimage", strFileName);
-                ImageBrush ib = new()
-                {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = new BitmapImage(new Uri(strFileName))
-                };
-                bgimage.Background = ib;
-                if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                {
-                    Blurbgi(true);
-                }
-                else
-                {
-                    Blurbgi(false);
-                }
-            }
-        }
-
-        private void bg_cbox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            utils.Write_Ini(App.dconfig, "Configuration", "bgb", "0");
-            var strFileName = utils.Read_Ini(App.dconfig, "Configuration", "backimage", "");
-            if (System.IO.File.Exists(strFileName))
-            {
-                bgimage.Background = new SolidColorBrush(App.AppAccentColor);
-                bgimage.Effect = null;
+                utils.Set_Bgimage(bgimage);
+                Blurbgi(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"));
             }
         }
 
@@ -2348,19 +2296,8 @@ namespace hiro
                 }
                 System.Windows.Forms.Application.DoEvents();
             }
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (b)
-            {
-                utils.Blur_Animation(true, animation, bgimage, this);
-            }
-            else
-            {
-                utils.Blur_Animation(false, animation, bgimage, this);
-            }
+            bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+            utils.Blur_Animation(b, animation, bgimage, this);
             bflag = 0;
         }
         private void Blureff_Unchecked(object sender, RoutedEventArgs e)

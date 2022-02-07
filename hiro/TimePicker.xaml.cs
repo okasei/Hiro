@@ -36,30 +36,13 @@ namespace hiro
                     this.Width = App.mn.Width;
                     this.Height = App.mn.Height;
                     bgimage.Background = App.mn.bgimage.Background;
-                    var animation = true;
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                        animation = false;
-                    else
-                        animation = true;
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                    {
-                        utils.Blur_Animation(true, animation, bgimage, this);
-                    }
-                    else
-                    {
-                        utils.Blur_Animation(false, animation, bgimage, this);
-                    }
+                    bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+                    utils.Blur_Animation(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"), animation, bgimage, this);
                 }
                 else
                 {
                     Width = 550;
                     Height = 450;
-                    Thickness tn = bgimage.Margin;
-                    tn.Left = 0.0;
-                    tn.Top = 0.0;
-                    bgimage.Margin = tn;
-                    bgimage.Width = Width;
-                    bgimage.Height = Height;
                     bgimage.Background = new SolidColorBrush(App.AppAccentColor);
                 }
             };

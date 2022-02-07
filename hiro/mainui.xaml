@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="Ui_MouseDown" Background="White" WindowStartupLocation="Manual" Closing="ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="ui_Loaded">
     <Grid>
-        <Label x:Name="bgimage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="550" Height="450" Margin="1,0,0,0">
+        <Label x:Name="bgimage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
             <Label.Background>
                 <ImageBrush Stretch="UniformToFill" TileMode="None"/>
             </Label.Background>
