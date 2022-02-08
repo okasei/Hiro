@@ -14,7 +14,7 @@
             </Label.Background>
         </Label>
         <Label x:Name="bglabel" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MouseDown="Bglabel_MouseDown" Width="548" Height="30" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="200" BorderThickness="2,2,2,2"/>
+        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <Grid x:Name="stack" Width="130" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Height="420">
 
             <Label x:Name="homex" Content="Home" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" MouseLeftButtonUp="Homex_MouseLeftButtonUp" Height="32" VerticalAlignment="Top"/>

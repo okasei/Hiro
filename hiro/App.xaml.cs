@@ -76,6 +76,8 @@ namespace hiro
                 else
                     mn.Show();
             }
+            if (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "1").Equals("2"))
+                utils.RunExe(utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "nop"));
         }
 
         public static void Notify(noticeitem i)

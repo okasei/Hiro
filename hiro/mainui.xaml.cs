@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -58,8 +52,6 @@ namespace hiro
                     else
                         Blurbgi(false);
                 };
-                if (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "1").Equals("2"))
-                    utils.RunExe(utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "nop"));
             utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
             utils.LogtoFile("[HIROWEGO]MainUI: Loaded");
         }
@@ -484,13 +476,6 @@ namespace hiro
             extended.Margin = th2;
             extended.Width = Height;
             extended.Height = Height;
-            borderlabel.BorderThickness = new Thickness(2, 2, 2, 2);
-            Thickness th = borderlabel.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            borderlabel.Margin = th;
-            borderlabel.Width = Width;
-            borderlabel.Height = Height;
         }
 
         public void Load_Border()

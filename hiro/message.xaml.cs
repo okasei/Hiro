@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace hiro
 {
@@ -103,13 +95,6 @@ namespace hiro
             sv.FontSize = backcontent.FontSize;
             sv.Height = backcontent.Height - SystemParameters.HorizontalScrollBarHeight;
             sv.Width = backcontent.Width - SystemParameters.VerticalScrollBarWidth;
-            borderlabel.BorderThickness = new Thickness(5, 5, 5, 5);
-            Thickness th = borderlabel.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            borderlabel.Margin = th;
-            borderlabel.Width = Width;
-            borderlabel.Height = Height;
             Load_Colors();
         }
 

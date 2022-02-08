@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,8 +19,8 @@ namespace hiro
         {
             InitializeComponent();
             SourceInitialized += OnSourceInitialized;
-            this.Width = SystemParameters.PrimaryScreenWidth * 3 / 4;
-            this.Height = SystemParameters.PrimaryScreenHeight * 3 / 4;
+            Width = SystemParameters.PrimaryScreenWidth * 3 / 4;
+            Height = SystemParameters.PrimaryScreenHeight * 3 / 4;
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 8);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 8);
             /*try
@@ -42,10 +41,7 @@ namespace hiro
             {
                 Loadbgi();
             };
-            if (CustomTitle)
-                ala_title.Content = CustomedTitle;
-            else
-                ala_title.Content = utils.Get_Transalte("alarmtitle");
+            ala_title.Content = CustomTitle ? CustomedTitle : utils.Get_Transalte("alarmtitle");
             Title = ala_title.Content + " - " + App.AppTitle;
             if (CustomContent)
                 sv.Content = CustomedContnet;
@@ -83,13 +79,6 @@ namespace hiro
             }
             utils.Set_Control_Location(ala_title, "alarmtitle");
             utils.Set_Control_Location(content, "alarmcontent");
-            borderlabel.BorderThickness = new Thickness(2, 2, 2, 2);
-            Thickness th = borderlabel.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            borderlabel.Margin = th;
-            borderlabel.Width = Width;
-            borderlabel.Height = Height;
             content.Height = Height - albtn_1.Margin.Bottom * 3 - albtn_1.Height - content.Margin.Top;
             content.Width = Width - content.Margin.Left * 2;
             sv.FontFamily = content.FontFamily;

@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace hiro
 {
@@ -101,13 +93,6 @@ namespace hiro
             utils.Set_Control_Location(con, "seqcontent");
             textblock.FontFamily = con.FontFamily;
             textblock.FontSize = con.FontSize;
-            borderlabel.BorderThickness = new Thickness(2, 2, 2, 2);
-            Thickness th = borderlabel.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            borderlabel.Margin = th;
-            borderlabel.Width = Width;
-            borderlabel.Height = Height;
         }
 
         public void SeqExe(String path)
@@ -375,10 +360,6 @@ namespace hiro
             }
         }
 
-        private void Seq_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            Loadbgi();
-        }
         public void Loadbgi()
         {
             if (bflag == 1)
@@ -388,6 +369,11 @@ namespace hiro
             bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
             utils.Blur_Animation(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"), animation, bgimage, this);
             bflag = 0;
+        }
+
+        private void seq_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Loadbgi();
         }
     }
 }

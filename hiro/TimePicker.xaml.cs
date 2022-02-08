@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace hiro
 {
@@ -487,17 +479,6 @@ namespace hiro
         private void tp_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             App.tp = null;
-        }
-
-        private void tp_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            borderlabel.BorderThickness = new Thickness(2, 2, 2, 2);
-            Thickness th = borderlabel.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            borderlabel.Margin = th;
-            borderlabel.Width = Width;
-            borderlabel.Height = Height;
         }
     }
 }

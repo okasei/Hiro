@@ -79,13 +79,6 @@ namespace hiro
             utils.Set_Control_Location(albtn_1, "dlstart", bottom: true, right: true);
             utils.Set_Control_Location(pb, "dlprogress");
             utils.Set_Control_Location(ala_title, "dltitle");
-            borderlabel.BorderThickness = new Thickness(2, 2, 2, 2);
-            Thickness th = borderlabel.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            borderlabel.Margin = th;
-            borderlabel.Width = Width;
-            borderlabel.Height = Height;
             if (mode == 1) 
             {
                 utils.Set_Control_Location(urllabel, "dlupdate");
@@ -135,7 +128,7 @@ namespace hiro
             {
                 App.Notify(new noticeitem(utils.Get_Transalte("syntax"), 2));
                 textBoxHttpUrl.Focus();//url地址栏获取焦点
-                Stop_Download();
+                Stop_Download(false);
                 return;
             }
             string strFileName = textBoxHttpUrl.Text;
@@ -161,7 +154,7 @@ namespace hiro
             {
                 utils.LogtoFile("[ERROR]" + ex.Message);
                 App.Notify(new noticeitem(utils.Get_Transalte("dlerror"), 2));
-                Stop_Download();
+                Stop_Download(false);
                 return;
             }
             if (totalLength > 0)
@@ -197,6 +190,11 @@ namespace hiro
             {
                 System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, httpUrl);
                 request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                if (startpos >= totalLength)
+                {
+                    successflag = 1;
+                    goto DownloadFinish;
+                }
                 request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(startpos, totalLength);
                 response = await App.hc.SendAsync(request, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             }
@@ -246,7 +244,8 @@ namespace hiro
             }
             if (fileStream != null)
                 fileStream.Close();
-            if(successflag == 1)
+            DownloadFinish:
+            if (successflag == 1)
             {
                 App.Notify(new noticeitem(utils.Get_Transalte("dlsuccess"), 2));
                 if (autorun.IsChecked == true)
@@ -262,12 +261,14 @@ namespace hiro
                         App.Notify(new noticeitem(utils.Get_Transalte("dlrunerror"), 2));
                     }
                 }
+                Stop_Download(true);
             }
-            Stop_Download();
+            else
+                Stop_Download(false);
             if (autorun.IsEnabled == false)
                 Close();
         }
-        private void Stop_Download()
+        private void Stop_Download(bool success)
         {
             Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             pb.IsIndeterminate = false;
@@ -275,8 +276,16 @@ namespace hiro
             albtn_1.Content = utils.Get_Transalte("dlstart");
             textBoxHttpUrl.IsEnabled = true;
             SavePath.IsEnabled = true;
-            ala_title.Content = utils.Get_Transalte("dltitle");
-            Title = utils.Get_Transalte("dltitle") + " - " + App.AppTitle;
+            if (success)
+            {
+                ala_title.Content = utils.Get_Transalte("dlsuccess");
+                Title = utils.Get_Transalte("dlsuccess") + " - " + App.AppTitle;
+            }
+            else
+            {
+                ala_title.Content = utils.Get_Transalte("dltitle");
+                Title = utils.Get_Transalte("dltitle") + " - " + App.AppTitle;
+            }
             stopflag = 1;
         }
         public static string formateSize(double size)
@@ -299,7 +308,7 @@ namespace hiro
             }
             else//停止
             {
-                Stop_Download();
+                Stop_Download(false);
                 if (autorun.IsEnabled == false)
                     Close();
             }
@@ -435,7 +444,7 @@ namespace hiro
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Stop_Download();
+            Stop_Download(false);
         }
 
         private void textBoxHttpUrl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

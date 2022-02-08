@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace hiro
 {
@@ -41,13 +32,6 @@ namespace hiro
             sv.FontSize = content.FontSize;
             sv.Height = content.Height - SystemParameters.HorizontalScrollBarHeight;
             sv.Width = content.Width - SystemParameters.VerticalScrollBarWidth;
-            borderlabel.BorderThickness = new Thickness(2, 2, 2, 2);
-            Thickness th = borderlabel.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            borderlabel.Margin = th;
-            borderlabel.Width = Width;
-            borderlabel.Height = Height;
             /*try
             {
                 System.Media.SoundPlayer sndPlayer = new(Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\Media\\Windows Notify Messaging.wav");
