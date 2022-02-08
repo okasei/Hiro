@@ -1081,17 +1081,12 @@ namespace hiro
                 if (App.mn != null)
                 {
                     App.mn.Visibility = System.Windows.Visibility.Visible;
-                    bool animation;
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                        animation = false;
-                    else
-                        animation = true;
-                    if (animation)
+                    if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
                     {
-                        if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                            utils.Blur_Animation(true, true, App.mn.bgimage, App.mn);
+                        if (Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
+                            Blur_Animation(true, true, App.mn.bgimage, App.mn);
                         else
-                            utils.Blur_Animation(false, true, App.mn.bgimage, App.mn);
+                            Blur_Animation(false, true, App.mn.bgimage, App.mn);
                     }
 
                 }

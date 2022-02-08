@@ -15,12 +15,7 @@ namespace hiro
 
         private void Back_Loaded(object sender, RoutedEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 var opacity = 0.01;
                 while (opacity < 0.78)

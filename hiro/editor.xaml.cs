@@ -118,12 +118,7 @@ namespace hiro
         }
         private void Run_In()
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 double i = -ActualHeight;
                 while (i < 0)
@@ -144,15 +139,10 @@ namespace hiro
             runoutflag = 1;
             Save();
             con.IsEnabled = false;
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if(animation)
+            if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 double i = 0.0;
-                while (i > -this.ActualHeight)
+                while (i > -ActualHeight)
                 {
                     i -= 16;
                     Canvas.SetTop(this, i);

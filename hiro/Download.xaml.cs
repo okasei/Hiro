@@ -276,16 +276,8 @@ namespace hiro
             albtn_1.Content = utils.Get_Transalte("dlstart");
             textBoxHttpUrl.IsEnabled = true;
             SavePath.IsEnabled = true;
-            if (success)
-            {
-                ala_title.Content = utils.Get_Transalte("dlsuccess");
-                Title = utils.Get_Transalte("dlsuccess") + " - " + App.AppTitle;
-            }
-            else
-            {
-                ala_title.Content = utils.Get_Transalte("dltitle");
-                Title = utils.Get_Transalte("dltitle") + " - " + App.AppTitle;
-            }
+            ala_title.Content = success ? utils.Get_Transalte("dlsuccess") : utils.Get_Transalte("dltitle");
+            Title = ala_title.Content.ToString() + " - " + App.AppTitle;
             stopflag = 1;
         }
         public static string formateSize(double size)
@@ -321,12 +313,7 @@ namespace hiro
 
         private void minbtn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 minflag = 1;
                 while (min < 100)
@@ -353,12 +340,7 @@ namespace hiro
 
         private void minbtn_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 minflag = 0;
                 while (min > 0)
@@ -380,12 +362,7 @@ namespace hiro
 
         private void closebtn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 closeflag = 1;
                 while (close < 255)
@@ -407,12 +384,7 @@ namespace hiro
 
         private void closebtn_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 closeflag = 0;
                 while (close > 0)

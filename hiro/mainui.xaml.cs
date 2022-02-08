@@ -1508,12 +1508,7 @@ namespace hiro
 
         private void Minbtn_MouseEnter(object sender, MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if(animation)
+            if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 minflag = 1;
                 while (min < 100)
@@ -1536,12 +1531,7 @@ namespace hiro
 
         private void minbtn_MouseLeave(object sender, MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 minflag = 0;
                 while (min > 0)
@@ -1563,12 +1553,7 @@ namespace hiro
 
         private void closebtn_MouseEnter(object sender, MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if(animation)
+            if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 closeflag = 1;
                 while (close < 255)
@@ -1592,12 +1577,7 @@ namespace hiro
 
         private void closebtn_MouseLeave(object sender, MouseEventArgs e)
         {
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 closeflag = 0;
                 while (close > 0)
@@ -2240,12 +2220,7 @@ namespace hiro
         private void Extend_Animation()
         {
             extended.IsEnabled = false;
-            bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 var rd = App.blurradius;
                 var step = App.blurradius / App.blursec;

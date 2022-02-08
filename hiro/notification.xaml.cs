@@ -27,19 +27,18 @@ namespace hiro
             this.Title = utils.Get_Transalte("notitle") + " - " + App.AppTitle;
             Load_Color();
             utils.Set_Control_Location(notinfo, "notify");
-            this.Title = App.AppTitle;
-            this.Width = SystemParameters.PrimaryScreenWidth;
-            this.Height = 32;
-            this.SetValue(Canvas.LeftProperty, 0.0);
-            this.SetValue(Canvas.TopProperty, 0.0);
-            this.Opacity = 0.01;
-            this.msg = "";
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
-            timer = new();
-            timer.Interval = new TimeSpan(100000);
+            Title = App.AppTitle;
+            Width = SystemParameters.PrimaryScreenWidth;
+            Height = 32;
+            SetValue(Canvas.LeftProperty, 0.0);
+            SetValue(Canvas.TopProperty, 0.0);
+            Opacity = 0.01;
+            msg = "";
+            animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+            timer = new()
+            {
+                Interval = new TimeSpan(100000)
+            };
             timer.Tick += delegate
             {
                 TimerTick();
