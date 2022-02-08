@@ -7,18 +7,9 @@
         mc:Ignorable="d"
         Title="Initalizing - " Height="270" Width="480"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:tb="http://www.hardcodet.net/taskbar"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal" 
-        TextOptions.TextRenderingMode="Auto"
-        FontFamily="{DynamicResource MaterialDesignFont}" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Background="Black" Closing="main_Closing" Icon="/hiro_circle.ico">
+        ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 
+        Closing="main_Closing" Icon="/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="159*"/>
-        </Grid.ColumnDefinitions>
-        <Label x:Name="TitleLabel" Content="Hiro" HorizontalAlignment="Left" Margin="122,44,0,0" VerticalAlignment="Top" Foreground="White" FontSize="36" FontWeight="Bold" Grid.Column="1"/>
         <tb:TaskbarIcon x:Name="ti" IconSource="/hiro_circle.ico" >
         </tb:TaskbarIcon>
     </Grid>

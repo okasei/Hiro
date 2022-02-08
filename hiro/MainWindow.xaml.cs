@@ -59,12 +59,15 @@ namespace hiro
         #endregion
         public MainWindow()
         {
-            InitializeComponent();            
+            InitializeComponent();
+            System.Windows.Controls.Canvas.SetTop(this, -233);
+            System.Windows.Controls.Canvas.SetLeft(this, -233);
         }
         
         public void InitializeInnerParameters()
         {
             ti.ToolTipText = App.AppTitle;
+            Title = App.AppTitle;
             InitializeMethod();
             SourceInitialized += OnSourceInitialized;
         }
@@ -381,5 +384,10 @@ namespace hiro
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.Uninstall();
         }
 
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            System.Windows.Controls.Canvas.SetTop(this, -233);
+            System.Windows.Controls.Canvas.SetLeft(this, -233);
+        }
     }
 }

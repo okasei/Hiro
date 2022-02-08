@@ -81,8 +81,7 @@ namespace hiro
             skipbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
             pausebtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
             cancelbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            progress.Background = skipbtn.Background;
-            progress.Foreground = textblock.Foreground;
+            progress.Foreground = skipbtn.Foreground;
             borderlabel.BorderBrush = new SolidColorBrush(App.AppForeColor);
         }
         public void Load_Position()

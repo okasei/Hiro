@@ -274,45 +274,6 @@ namespace hiro
             tb4.Text = utils.Read_Ini(App.dconfig, "Configuration", "customname", "");
             tb5.Text = utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "");
             tb10.Text = utils.Read_Ini(App.dconfig, "Configuration", "customhiro", "");
-            dgi.ColumnHeaderStyle = new Style();
-            dgi.ColumnHeaderStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Colors.Transparent)));
-            dgi.ColumnHeaderStyle.Setters.Add(new Setter(ForegroundProperty, new Binding("Foreground") { Source = this.coloruse1 }));
-            dgi.RowStyle = new Style();
-            dgi.RowStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Colors.Transparent)));
-            dgi.RowStyle.Setters.Add(new Setter(ForegroundProperty, new Binding("Foreground") { Source = this.coloruse1 }));
-            dgs.ColumnHeaderStyle = new Style();
-            dgs.ColumnHeaderStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Colors.Transparent)));
-            dgs.ColumnHeaderStyle.Setters.Add(new Setter(ForegroundProperty, new Binding("Foreground") { Source = this.coloruse1 }));
-            dgs.RowStyle = new Style();
-            dgs.RowStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Colors.Transparent)));
-            dgs.RowStyle.Setters.Add(new Setter(ForegroundProperty, new Binding("Foreground") { Source = this.coloruse1 }));
-            Trigger trigger = new()
-            {
-                Property = IsMouseOverProperty,
-                Value = true
-            };
-            trigger.Setters.Add(new Setter(BackgroundProperty, new Binding("Background") { Source = this.coloruse1 }));
-            trigger.Setters.Add(new Setter(ForegroundProperty, new Binding("Foreground") { Source = this.coloruse1 }));
-            Trigger trigger1 = new()
-            {
-                Property = DataGridRow.IsSelectedProperty,
-                Value = true
-            };
-            trigger1.Setters.Add(new Setter(BackgroundProperty, new Binding("Background") { Source = this.coloruse1 }));//new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B)));/);
-            trigger1.Setters.Add(new Setter(ForegroundProperty, new Binding("Foreground") { Source = this.coloruse1 }));
-            dgi.RowStyle.Triggers.Add(trigger);
-            dgi.RowStyle.Triggers.Add(trigger1);
-            dgs.RowStyle.Triggers.Add(trigger);
-            dgs.RowStyle.Triggers.Add(trigger1);
-            Trigger trigger2 = new()
-            {
-                Property = DataGridCell.IsSelectedProperty,
-                Value = true
-            };
-            trigger2.Setters.Add(new Setter(BorderBrushProperty, new SolidColorBrush(Colors.Transparent)));
-            trigger2.Setters.Add(new Setter(ForegroundProperty, new Binding("Foreground") { Source = this.coloruse1 }));
-            dgi.CellStyle.Triggers.Add(trigger2);
-            dgs.CellStyle.Triggers.Add(trigger2);
         }
         private void Configbar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -526,10 +487,7 @@ namespace hiro
             }
             else
             {
-                if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                    Blurbgi(true);
-                else
-                    Blurbgi(false);
+                Blurbgi(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"));
             }
             Foreground = new SolidColorBrush(App.AppForeColor);
 
@@ -548,174 +506,6 @@ namespace hiro
                 langbox.Background = new SolidColorBrush(Colors.Transparent);
                 langbox.Foreground = btn1.Foreground;
             }
-
-            titlelabel.Foreground = btn1.Foreground;
-            versionlabel.Foreground = btn1.Foreground;
-            closebtn.Foreground = btn1.Foreground;
-            minbtn.Foreground = btn1.Foreground;
-
-            btn2.Background = btn1.Background;
-            btn3.Background = btn1.Background;
-            btn4.Background = btn1.Background;
-            btn5.Background = btn1.Background;
-            btn6.Background = btn1.Background;
-            btn7.Background = btn1.Background;
-            btn8.Background = btn1.Background;
-            btn9.Background = btn1.Background;
-            btn10.Background = btn1.Background;
-            chk_btn.Background = btn1.Background;
-            ntn1.Background = btn1.Background;
-            ntn2.Background = btn1.Background;
-            ntn3.Background = btn1.Background;
-            ntn4.Background = btn1.Background;
-            ntn5.Background = btn1.Background;
-            ntn6.Background = btn1.Background;
-            ntn7.Background = btn1.Background;
-            ntn8.Background = btn1.Background;
-            ntn9.Background = btn1.Background;
-            ntnx.Background = btn1.Background;
-            ntnx1.Background = btn1.Background;
-            ntnx2.Background = btn1.Background;
-            scbtn_1.Background = btn1.Background;
-            scbtn_2.Background = btn1.Background;
-            scbtn_3.Background = btn1.Background;
-            scbtn_4.Background = btn1.Background;
-            scbtn_5.Background = btn1.Background;
-            scbtn_6.Background = btn1.Background;
-            scbtn_7.Background = btn1.Background;
-            scbtn_8.Background = btn1.Background;
-            scbtn_9.Background = btn1.Background;
-            scbtn_10.Background = btn1.Background;
-            pb.Background = btn1.Background;
-
-            btn2.Foreground = btn1.Foreground;
-            btn3.Foreground = btn1.Foreground;
-            btn4.Foreground = btn1.Foreground;
-            btn5.Foreground = btn1.Foreground;
-            btn6.Foreground = btn1.Foreground;
-            btn7.Foreground = btn1.Foreground;
-            btn8.Foreground = btn1.Foreground;
-            btn9.Foreground = btn1.Foreground;
-            btn10.Foreground = btn1.Foreground;
-            chk_btn.Foreground = btn1.Foreground;
-            ntn1.Foreground = btn1.Foreground;
-            ntn2.Foreground = btn1.Foreground;
-            ntn3.Foreground = btn1.Foreground;
-            ntn4.Foreground = btn1.Foreground;
-            ntn5.Foreground = btn1.Foreground;
-            ntn6.Foreground = btn1.Foreground;
-            ntn7.Foreground = btn1.Foreground;
-            ntn8.Foreground = btn1.Foreground;
-            ntn9.Foreground = btn1.Foreground;
-            ntnx.Foreground = btn1.Foreground;
-            ntnx1.Foreground = btn1.Foreground;
-            ntnx2.Foreground = btn1.Foreground;
-            scbtn_1.Foreground = btn1.Foreground;
-            scbtn_2.Foreground = btn1.Foreground;
-            scbtn_3.Foreground = btn1.Foreground;
-            scbtn_4.Foreground = btn1.Foreground;
-            scbtn_5.Foreground = btn1.Foreground;
-            scbtn_6.Foreground = btn1.Foreground;
-            scbtn_7.Foreground = btn1.Foreground;
-            scbtn_8.Foreground = btn1.Foreground;
-            scbtn_9.Foreground = btn1.Foreground;
-            scbtn_10.Foreground = btn1.Foreground;
-
-            btn2.BorderBrush = btn1.BorderBrush;
-            btn3.BorderBrush = btn1.BorderBrush;
-            btn4.BorderBrush = btn1.BorderBrush;
-            btn5.BorderBrush = btn1.BorderBrush;
-            btn6.BorderBrush = btn1.BorderBrush;
-            btn7.BorderBrush = btn1.BorderBrush;
-            btn8.BorderBrush = btn1.BorderBrush;
-            btn9.BorderBrush = btn1.BorderBrush;
-            btn10.BorderBrush = btn1.BorderBrush;
-            chk_btn.BorderBrush = btn1.BorderBrush;
-            ntn1.BorderBrush = btn1.BorderBrush;
-            ntn2.BorderBrush = btn1.BorderBrush;
-            ntn3.BorderBrush = btn1.BorderBrush;
-            ntn4.BorderBrush = btn1.BorderBrush;
-            ntn5.BorderBrush = btn1.BorderBrush;
-            ntn6.BorderBrush = btn1.BorderBrush;
-            ntn7.BorderBrush = btn1.BorderBrush;
-            ntn8.BorderBrush = btn1.BorderBrush;
-            ntn9.BorderBrush = btn1.BorderBrush;
-            ntnx.BorderBrush = btn1.BorderBrush;
-            ntnx1.BorderBrush = btn1.BorderBrush;
-            ntnx2.BorderBrush = btn1.BorderBrush;
-            scbtn_1.BorderBrush = btn1.BorderBrush;
-            scbtn_2.BorderBrush = btn1.BorderBrush;
-            scbtn_3.BorderBrush = btn1.BorderBrush;
-            scbtn_4.BorderBrush = btn1.BorderBrush;
-            scbtn_5.BorderBrush = btn1.BorderBrush;
-            scbtn_6.BorderBrush = btn1.BorderBrush;
-            scbtn_7.BorderBrush = btn1.BorderBrush;
-            scbtn_8.BorderBrush = btn1.BorderBrush;
-            scbtn_9.BorderBrush = btn1.BorderBrush;
-            scbtn_10.BorderBrush = btn1.BorderBrush;
-            borderlabel.BorderBrush = btn1.BorderBrush;
-
-
-            rbtn1.Foreground = btn1.Foreground;
-            rbtn2.Foreground = btn1.Foreground;
-            rbtn3.Foreground = btn1.Foreground;
-            rbtn4.Foreground = btn1.Foreground;
-            rbtn5.Foreground = btn1.Foreground;
-            rbtn6.Foreground = btn1.Foreground;
-            rbtn7.Foreground = btn1.Foreground;
-            rbtn8.Foreground = btn1.Foreground;
-            rbtn9.Foreground = btn1.Foreground;
-            rbtn10.Foreground = btn1.Foreground;
-            rbtn11.Foreground = btn1.Foreground;
-            rbtn12.Foreground = btn1.Foreground;
-            rbtn13.Foreground = btn1.Foreground;
-            rbtn14.Foreground = btn1.Foreground;
-            rbtn15.Foreground = btn1.Foreground;
-            rbtn16.Foreground = btn1.Foreground;
-            rbtn17.Foreground = btn1.Foreground;
-            rbtn18.Foreground = btn1.Foreground;
-            rbtn19.Foreground = btn1.Foreground;
-            rbtn20.Foreground = btn1.Foreground;
-            rbtn21.Foreground = btn1.Foreground;
-            glabel.Foreground = btn1.Foreground;
-            glabel2.Foreground = btn1.Foreground;
-            homelabel1.Foreground = btn1.Foreground;
-            homelabel2.Foreground = btn1.Foreground;
-            lc_label.Foreground = btn1.Foreground;
-            mc_label.Foreground = btn1.Foreground;
-            call_label.Foreground = btn1.Foreground;
-            rc_label.Foreground = btn1.Foreground;
-            ar_label.Foreground = btn1.Foreground;
-            bg_label.Foreground = btn1.Foreground;
-            langlabel.Foreground = btn1.Foreground;
-            name_label.Foreground = btn1.Foreground;
-            moreandsoon.Foreground = btn1.Foreground;
-            sclabel1.Foreground = btn1.Foreground;
-            sclabel2.Foreground = btn1.Foreground;
-            sclabel3.Foreground = btn1.Foreground;
-            tb1.Foreground = btn1.Foreground;
-            tb2.Foreground = btn1.Foreground;
-            tb3.Foreground = btn1.Foreground;
-            tb4.Foreground = btn1.Foreground;
-            tb5.Foreground = btn1.Foreground;
-            tb6.Foreground = btn1.Foreground;
-            tb7.Foreground = btn1.Foreground;
-            tb8.Foreground = btn1.Foreground;
-            tb9.Foreground = btn1.Foreground;
-            tb10.Foreground = btn1.Foreground;
-            tb11.Foreground = btn1.Foreground;
-            tb12.Foreground = btn1.Foreground;
-            tb13.Foreground = btn1.Foreground;
-            tb14.Foreground = btn1.Foreground;
-            cb_box.Foreground = btn1.Foreground;
-            autorun.Foreground = btn1.Foreground;
-            blureff.Foreground = btn1.Foreground;
-            win_style.Foreground = btn1.Foreground;
-            reverse_style.Foreground = btn1.Foreground;
-            lock_style.Foreground = btn1.Foreground;
-            verbose.Foreground = btn1.Foreground;
-            animation.Foreground = btn1.Foreground;
-            coloruse1.Foreground = btn1.Foreground;
             #endregion
             coloruse1.Background = new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
             minbtn.Background = new SolidColorBrush(Color.FromArgb(0, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
@@ -1051,14 +841,11 @@ namespace hiro
             }
             label.IsEnabled = false;
             bool animation;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-                animation = false;
-            else
-                animation = true;
+            animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
             if (animation)
             {
-                var rd = App.blurradius;
-                var step = App.blurradius / App.blursec;
+                double rd = App.blurradius;
+                double step = App.blurradius / App.blursec;
                 while (rd > 0.0)
                 {
                     rd -= step;
@@ -1066,7 +853,7 @@ namespace hiro
                     {
                         rd = 0.0;
                         tc.Effect = null;
-                        return;
+                        break;
                     }
                     tc.Effect = new System.Windows.Media.Effects.BlurEffect()
                     {

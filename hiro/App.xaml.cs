@@ -39,8 +39,8 @@ namespace hiro
         internal static TimePicker? tp = null;
         internal static List<noticeitem> noticeitems = new();
         internal static int editpage = 0;
-        internal const double blurradius = 23.0;
-        internal const double blursec = 23.0;
+        internal const double blurradius = 50.0;
+        internal const double blursec = 25.0;
         internal const int blurdelay = 1;
         internal static System.Windows.Threading.DispatcherTimer? timer;
         internal static ContextMenu? cm = null;
@@ -48,6 +48,7 @@ namespace hiro
         internal static int page = 0;
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient hc = new();
+        internal static SolidColorBrush ForeBrush = new();
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
@@ -67,6 +68,8 @@ namespace hiro
             else
             {
                 wnd.InitializeInnerParameters();
+                wnd.Show();
+                wnd.Hide();
                 mn = new Mainui();
                 if (e.Args.Length == 1 && e.Args[0].ToLower().Equals("silent"))
                 {
