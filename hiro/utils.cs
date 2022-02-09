@@ -1083,10 +1083,7 @@ namespace hiro
                     App.mn.Visibility = System.Windows.Visibility.Visible;
                     if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
                     {
-                        if (Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                            Blur_Animation(true, true, App.mn.bgimage, App.mn);
-                        else
-                            Blur_Animation(false, true, App.mn.bgimage, App.mn);
+                        Blur_Animation(ConvertInt(Read_Ini(App.dconfig, "Configuration", "blur", "0")), true, App.mn.bgimage, App.mn);
                     }
 
                 }
@@ -1631,48 +1628,53 @@ namespace hiro
         #endregion
 
         #region 模糊动画
-        public static void Blur_Animation(bool direction,bool animation, System.Windows.Controls.Label label, System.Windows.Window win)
+        public static void Blur_Animation(int direction, bool animation, System.Windows.Controls.Label label, System.Windows.Window win)
         {
-            double rd = App.blurradius;
+            //direction : 0 = Blurin, 1= Blurout, 2=BlurFade
+            double start = direction switch
+            {
+                1 => 0.0,
+                2 => 0.0,
+                3 => 50.0,
+                _ => 24.0
+            };
+            double end = direction switch
+            {
+                1 => 50.0,
+                2 => 24.0,
+                3 => 24.0,
+                _=> 0.0
+            };
+            double time = direction switch
+            {
+                1 => 25.0,
+                _ => 12.0
+            };
+            double step = (end - start) / time;
             if (!animation)
             {
-                if (direction)
-                {
-                    Set_Animation_Label(rd, label, win);
-                }
-                else
-                {
-                    rd = 0.0;
-                    Set_Animation_Label(rd, label, win);
-                    label.Effect = null;
-                }
+                Set_Animation_Label(end, label, win);
+                return;
             }
             else
             {
-                double step = rd / App.blursec;
-                if (direction)
+                if (step > 0)
                 {
-                    var rds = 0.0;
-                    while (rds < rd)
+                    while(start < end)
                     {
-                        rds += step;
-                        if (rds > rd)
-                            rds = rd;
-                        Set_Animation_Label(rds, label, win);
+                        start = (start + step > end) ? end : start + step;
+                        Set_Animation_Label(start, label, win);
                         Delay(App.blurdelay);
                     }
                 }
                 else
                 {
-                    while(rd > 0.0)
+                    while (start > end)
                     {
-                        rd -= step;
-                        if (rd < 0.0)
-                            rd = 0.0;
-                        Set_Animation_Label(rd, label, win);
+                        start = (start + step < end) ? end : start + step;
+                        Set_Animation_Label(start, label, win);
                         Delay(App.blurdelay);
                     }
-                    label.Effect = null;
                 }
             }
         }
@@ -1890,6 +1892,20 @@ namespace hiro
                 else
                     App.Notify(new noticeitem(utils.Get_Transalte("alarmmissing"), 2));
             }
+        #endregion
+
+        #region 数字转换
+        public static int ConvertInt(string str, int Default = 0)
+        {
+            try
+            {
+                return int.Parse(str);
+            }
+            catch
+            {
+                return Default;
+            }
+        }
         #endregion
     }
 

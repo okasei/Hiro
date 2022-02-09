@@ -29,7 +29,7 @@ namespace hiro
                     this.Height = App.mn.Height;
                     bgimage.Background = App.mn.bgimage.Background;
                     bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
-                    utils.Blur_Animation(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"), animation, bgimage, this);
+                    utils.Blur_Animation(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")), animation, bgimage, this);
                 }
                 else
                 {

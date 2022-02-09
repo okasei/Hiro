@@ -87,7 +87,7 @@ namespace hiro
                         };
                         bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
                         bgimage.Background = ib;
-                        utils.Blur_Animation(false, animation, bgimage, this);
+                        utils.Blur_Animation(0, animation, bgimage, this);
                     }
                 };
                 bw.RunWorkerAsync();

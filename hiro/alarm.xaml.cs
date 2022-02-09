@@ -39,7 +39,7 @@ namespace hiro
             Load_Position(OneButtonOnly);
             Loaded += delegate
             {
-                Loadbgi();
+                Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
             };
             ala_title.Content = CustomTitle ? CustomedTitle : utils.Get_Transalte("alarmtitle");
             Title = ala_title.Content + " - " + App.AppTitle;
@@ -87,14 +87,14 @@ namespace hiro
             sv.Width = content.Width - SystemParameters.VerticalScrollBarWidth;
         }
 
-        public void Loadbgi()
+        public void Loadbgi(int direction)
         {
             if (bflag == 1)
                 return;
             bflag = 1;
             utils.Set_Bgimage(bgimage);
             bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
-            utils.Blur_Animation(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"), animation, bgimage, this);
+            utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
         public void Load_Colors()

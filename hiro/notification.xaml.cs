@@ -180,22 +180,16 @@ namespace hiro
                 firstflag = 0;
                 return;
             }
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                var rd = App.blurradius;
-                var step = App.blurradius / App.blursec;
-                while (rd > 0.0)
+                double start = App.blurradius;
+                double step = -start / App.blursec;
+                while (start > 0.0)
                 {
-                    rd -= step;
-                    if (rd < 0.0)
-                    {
-                        rd = 0.0;
-                        notinfo.Effect = null;
-                        return;
-                    }
+                    start = (start + step < 0.0) ? 0.0 : start + step;
                     notinfo.Effect = new System.Windows.Media.Effects.BlurEffect()
                     {
-                        Radius = rd,
+                        Radius = start,
                         RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
                     };
                     utils.Delay(App.blurdelay);

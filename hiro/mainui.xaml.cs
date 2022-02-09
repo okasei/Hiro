@@ -47,10 +47,7 @@ namespace hiro
             if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("1"))
                 Loaded += delegate
                 {
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                        Blurbgi(true);
-                    else
-                        Blurbgi(false);
+                    Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
                 };
             utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
             utils.LogtoFile("[HIROWEGO]MainUI: Loaded");
@@ -240,14 +237,16 @@ namespace hiro
             {
                 rbtn16.IsChecked = true;
             }
-            if(utils.Read_Ini(App.dconfig, "Configuration", "autorun", "0").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "0").Equals("1"))
                 autorun.IsChecked = true;
             else
                 autorun.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"))
-                blureff.IsChecked = true;
-            else
-                blureff.IsChecked = false;
+            blureff.IsChecked = utils.Read_Ini(App.dconfig, "Configuration", "blur", "0") switch
+            {
+                "2" => null,
+                "1" => true,
+                _ => false,
+            };
             if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
                 verbose.IsChecked = true;
             else
@@ -483,11 +482,11 @@ namespace hiro
             utils.Set_Bgimage(bgimage);
             if (utils.Read_Ini(App.dconfig, "Configuration", "background", "1").Equals("1"))
             {
-                Blurbgi(false);
+                Blurbgi(0);
             }
             else
             {
-                Blurbgi(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"));
+                Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
             }
             Foreground = new SolidColorBrush(App.AppForeColor);
 
@@ -840,29 +839,22 @@ namespace hiro
                 }
             }
             label.IsEnabled = false;
-            bool animation;
-            animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
-            if (animation)
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                double rd = App.blurradius;
-                double step = App.blurradius / App.blursec;
-                while (rd > 0.0)
+                double start = App.blurradius;
+                double step = - start / App.blursec;
+                while (start > 0.0)
                 {
-                    rd -= step;
-                    if (rd < 0.0)
-                    {
-                        rd = 0.0;
-                        tc.Effect = null;
-                        break;
-                    }
+                    start = (start + step < 0.0) ? 0.0 : start + step;
                     tc.Effect = new System.Windows.Media.Effects.BlurEffect()
                     {
-                        Radius = rd,
+                        Radius = start,
                         RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
                     };
                     utils.Delay(App.blurdelay);
                 }
             }
+            
             label.IsEnabled = true;
         }
 
@@ -1353,7 +1345,7 @@ namespace hiro
             btn10.IsEnabled = true;
             utils.Write_Ini(App.dconfig, "Configuration", "background", "2");
             utils.Set_Bgimage(bgimage);
-            Blurbgi(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"));
+            Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
             rbtn15.IsEnabled = true;
             rbtn14.IsEnabled = true;
         }
@@ -1369,7 +1361,7 @@ namespace hiro
             rbtn14.IsEnabled = false;
             utils.Write_Ini(App.dconfig, "Configuration", "background", "1");
             bgimage.Background = new SolidColorBrush(App.AppAccentColor);
-            Blurbgi(false);
+            Blurbgi(0);
             rbtn15.IsEnabled = true;
             rbtn14.IsEnabled = true;
         }
@@ -1394,7 +1386,7 @@ namespace hiro
             {
                 utils.Write_Ini(App.dconfig, "Configuration", "backimage", strFileName);
                 utils.Set_Bgimage(bgimage);
-                Blurbgi(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0").Equals("1"));
+                Blurbgi(Convert.ToInt16(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
             }
         }
 
@@ -2004,59 +1996,35 @@ namespace hiro
         {
             blureff.IsEnabled = false;
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "1");
-            Blurbgi(true);
+            Blurbgi(1);
             blureff.IsEnabled = true;
         }
-        private void Blurbgi(bool b)
+        private void Blurbgi(int direction)
         {
             if (bflag == 1)
                 return;
             bflag = 1;
             foreach (Window win in Application.Current.Windows)
             {
-                if(win.GetType() == typeof(Alarm))
-                {
-                    Alarm? a = win as Alarm;
-                    if(a != null)
-                    {
-                        a.Loadbgi();
-                    }
-                }
-                if (win.GetType() == typeof(message))
-                {
-                    message? a = win as message;
-                    if (a != null)
-                    {
-                        a.loadbgi();
-                    }
-                }
-                if (win.GetType() == typeof(Sequence))
-                {
-                    Sequence? a = win as Sequence;
-                    if (a != null)
-                    {
-                        a.Loadbgi();
-                    }
-                }
-                if (win.GetType() == typeof(Download))
-                {
-                    Download? a = win as Download;
-                    if (a != null)
-                    {
-                        a.Loadbgi();
-                    }
-                }
+                if (win is Alarm a)
+                    a.Loadbgi(direction);
+                if (win is message e)
+                    e.loadbgi(direction);
+                if (win is Sequence c)
+                    c.Loadbgi(direction);
+                if (win is Download d)
+                    d.Loadbgi(direction);
                 System.Windows.Forms.Application.DoEvents();
             }
             bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
-            utils.Blur_Animation(b, animation, bgimage, this);
+            utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
         private void Blureff_Unchecked(object sender, RoutedEventArgs e)
         {
             blureff.IsEnabled = false;
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "0");
-            Blurbgi(false);
+            Blurbgi(0);
             blureff.IsEnabled = true;
         }
 
@@ -2222,20 +2190,14 @@ namespace hiro
             extended.IsEnabled = false;
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                var rd = App.blurradius;
-                var step = App.blurradius / App.blursec;
-                while (rd > 0.0)
+                double start = App.blurradius;
+                double step = -start / App.blursec;
+                while (start > 0.0)
                 {
-                    rd -= step;
-                    if (rd < 0.0)
-                    {
-                        rd = 0.0;
-                        extended.Effect = null;
-                        return;
-                    }
+                    start = (start + step < 0.0) ? 0.0 : start + step;
                     extended.Effect = new System.Windows.Media.Effects.BlurEffect()
                     {
-                        Radius = rd,
+                        Radius = start,
                         RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
                     };
                     utils.Delay(App.blurdelay);
@@ -2383,6 +2345,14 @@ namespace hiro
             utils.Write_Ini(App.dconfig, "Configuration", "lock", "0");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
+        }
+
+        private void Blureff_Indeterminate(object sender, RoutedEventArgs e)
+        {
+            blureff.IsEnabled = false;
+            utils.Write_Ini(App.dconfig, "Configuration", "blur", "2");
+            Blurbgi(3);
+            blureff.IsEnabled = true;
         }
     }
 }
