@@ -29,7 +29,7 @@ namespace hiro
         internal static string LangFilePath = "C:\\1.hlp";
         internal static string dconfig = "C:\\";
         internal static string sconfig = "C:\\";
-        internal static bool Locked = false;
+        internal static bool Locked = true;
         internal static MainWindow? wnd;
         internal static Mainui? mn = null;
         internal static notification? noti = null;
