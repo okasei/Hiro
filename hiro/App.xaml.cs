@@ -11,7 +11,6 @@ namespace hiro
     public partial class App : Application
     {
         #region 全局参数
-        internal static bool SilentStart = false;
         internal static string lang = "en-US";
         internal static string CurrentDirectory = "C:\\";
         internal static string EnvironmentUsername = Environment.UserName;
@@ -56,35 +55,62 @@ namespace hiro
             InitializeInnerParameters();
             Initialize_Notiy_Recall();
             InitializeMethod();
-            wnd = new MainWindow();
-            if (e.Args.Length == 1 && e.Args[0].ToLower().Equals("autostart_on"))
+            InitializeStartParameters(e);
+            
+        }
+
+        private void InitializeStartParameters(StartupEventArgs e)
+        {
+            if (e.Args.Length >=1 && e.Args[0].ToLower().Equals("autostart_on"))
             {
-                wnd.Set_Autorun(true);
+                utils.Set_Autorun(true);
+                goto Executed;
             }
-            else if (e.Args.Length == 1 && e.Args[0].ToLower().Equals("autostart_off"))
+            else if (e.Args.Length >= 1 && e.Args[0].ToLower().Equals("autostart_off"))
             {
-                wnd.Set_Autorun(false);
+                utils.Set_Autorun(false);
+                goto Executed;
             }
             else
             {
+                bool silent = false;
+                if (e.Args.Length >= 1)
+                {
+                    foreach (string para in e.Args)
+                    {
+                        if (para.ToLower().Equals("debug"))
+                        {
+                            dflag = true;
+                            continue;
+                        }
+                        if (para.ToLower().Equals("silent"))
+                        {
+                            silent = true;
+                            continue;
+                        }
+                    }
+                }
+                wnd = new MainWindow();
                 wnd.InitializeInnerParameters();
                 wnd.Show();
                 wnd.Hide();
                 mn = new Mainui();
-                if (e.Args.Length == 1 && e.Args[0].ToLower().Equals("silent"))
-                {
-                    SilentStart = true;
+                if (silent)
                     utils.LogtoFile("[HIROWEGO]Silent Start");
-                }
                 else
                     mn.Show();
+                if (utils.Read_Ini(App.dconfig, "Configuration", "autoexe", "1").Equals("2"))
+                    utils.RunExe(utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "nop"));
+                return;
             }
-            if (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "1").Equals("2"))
-                utils.RunExe(utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "nop"));
+        Executed:
+            utils.RunExe("exit()");
+            return;
         }
 
         public static void Notify(noticeitem i)
         {
+            i.msg = utils.Path_Prepare_EX(i.msg);
             if (utils.Read_Ini(App.dconfig, "Configuration", "toast", "0").Equals("1"))
             {
                 new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
@@ -308,7 +334,7 @@ namespace hiro
                         }
                         else
                         {
-                            Alarm ala = new(aw.Count, CustomContent: true, CustomedContnet: scheduleitems[i - 1].name.Replace("\\n", Environment.NewLine));
+                            Alarm ala = new(aw.Count, CustomContent: true, CustomedContnet: utils.Path_Prepare_EX(scheduleitems[i - 1].name.Replace("\\n", Environment.NewLine)));
                             aw.Add(new alarmwin(ala, i - 1));
                             ala.Show();
                         }
@@ -346,18 +372,9 @@ namespace hiro
         {
             if (mn != null)
             {
-                if (CustomUsernameFlag == 0)
-                    val = utils.Get_Transalte(val).Replace("%u", EnvironmentUsername);
-                else
-                    val = utils.Get_Transalte(val + "cus").Replace("%u", Username);
-                if (mn.homelabel1.Content.Equals(val))
-                {
-
-                }
-                else
-                {
+                val = (CustomUsernameFlag == 0) ? utils.Get_Transalte(val).Replace("%u", EnvironmentUsername) : utils.Get_Transalte(val + "cus").Replace("%u", Username);
+                if (!mn.homelabel1.Content.Equals(val))
                     mn.homelabel1.Content = val;
-                }
             }
         }
 
@@ -410,8 +427,6 @@ namespace hiro
                         utils.LogtoFile("[ERROR]" + ex.Message);
                     }
                 };
-
-
                 cm.Items.Add(mu);
             }
             if(cmditems.Count > 0)

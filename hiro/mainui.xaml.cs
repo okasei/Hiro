@@ -14,10 +14,6 @@ namespace hiro
     {
         private Label? selected = null;
         private int newflag = 0;//0=new,1=modify
-        private int min = 0;
-        private int close = 0;
-        private int minflag = 0;
-        private int closeflag = 0;
         private int bflag = 0;
         public static string ups = "latest";
         internal System.ComponentModel.BackgroundWorker? upbw = null;
@@ -201,7 +197,7 @@ namespace hiro
                     App.Username = App.EnvironmentUsername;
                     break;
             }
-            switch (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "1"))
+            switch (utils.Read_Ini(App.dconfig, "Configuration", "autoexe", "1"))
             {
                 case "2":
                     rbtn13.IsChecked = true;
@@ -363,7 +359,7 @@ namespace hiro
             utils.Set_Control_Location(scbtn_9, "sc1h");
             utils.Set_Control_Location(scbtn_10, "sc1d");
             utils.Set_Control_Location(cb_box,"minclose");
-            utils.Set_Control_Location(autorun,"autorunbox");
+            utils.Set_Control_Location(autorun,"autorun");
             utils.Set_Control_Location(blureff,"blurbox");
             utils.Set_Control_Location(win_style,"winbox");
             utils.Set_Control_Location(reverse_style,"reversebox");
@@ -375,7 +371,7 @@ namespace hiro
             utils.Set_Control_Location(rc_label,"rightclick");
             utils.Set_Control_Location(call_label,"callmethod");
             utils.Set_Control_Location(name_label,"namelabel");
-            utils.Set_Control_Location(ar_label,"autorun");
+            utils.Set_Control_Location(ar_label,"autoexe");
             utils.Set_Control_Location(glabel,"itemname");
             utils.Set_Control_Location(glabel2,"command");
             utils.Set_Control_Location(sclabel1,"scname");
@@ -397,7 +393,7 @@ namespace hiro
             utils.Set_Control_Location(tb2, "middletb");
             utils.Set_Control_Location(tb3, "righttb");
             utils.Set_Control_Location(tb4, "calltb");
-            utils.Set_Control_Location(tb5, "autoruntb");
+            utils.Set_Control_Location(tb5, "autoexetb");
             utils.Set_Control_Location(tb6, "helptb");
             utils.Set_Control_Location(tb7, "nametb");
             utils.Set_Control_Location(tb8, "cmdtb");
@@ -584,7 +580,7 @@ namespace hiro
             scbtn_10.Content = utils.Get_Transalte("sc1d");
             chk_btn.Content = utils.Get_Transalte("checkup");
             cb_box.Content = utils.Get_Transalte("minclose");
-            autorun.Content = utils.Get_Transalte("autorunbox");
+            autorun.Content = utils.Get_Transalte("autorun");
             blureff.Content = utils.Get_Transalte("blurbox");
             win_style.Content = utils.Get_Transalte("winbox");
             reverse_style.Content = utils.Get_Transalte("reversebox");
@@ -595,7 +591,7 @@ namespace hiro
             mc_label.Content = utils.Get_Transalte("middleclick");
             rc_label.Content = utils.Get_Transalte("rightclick");
             call_label.Content = utils.Get_Transalte("callmethod");
-            ar_label.Content = utils.Get_Transalte("autorun");
+            ar_label.Content = utils.Get_Transalte("autoexe");
             bg_label.Content = utils.Get_Transalte("background");
             langlabel.Content = utils.Get_Transalte("language");
             name_label.Content = utils.Get_Transalte("namelabel");
@@ -1069,12 +1065,12 @@ namespace hiro
 
         private void Rbtn12_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "autorun", "1");
+            utils.Write_Ini(App.dconfig, "Configuration", "autoexe", "1");
         }
 
         private void Rbtn13_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "autorun", "2");
+            utils.Write_Ini(App.dconfig, "Configuration", "autoexe", "2");
             tb5.IsEnabled = true;
         }
 
@@ -1496,97 +1492,6 @@ namespace hiro
         private void Minbtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             WindowState = WindowState.Minimized;
-        }
-
-        private void Minbtn_MouseEnter(object sender, MouseEventArgs e)
-        {
-            if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                minflag = 1;
-                while (min < 100)
-                {
-                    min += 5;
-                    if (min > 100)
-                        min = 100;
-                    minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)min, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-                    if (minflag == 0)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)100, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-            }
-            
-        }
-
-        private void minbtn_MouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                minflag = 0;
-                while (min > 0)
-                {
-                    min -= 5;
-                    if (min < 0)
-                        min = 0;
-                    minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)min, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-                    if (minflag == 1)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)0, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-            }
-        }
-
-        private void closebtn_MouseEnter(object sender, MouseEventArgs e)
-        {
-            if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                closeflag = 1;
-                while (close < 255)
-                {
-                    close += 15;
-                    if (close > 255)
-                        close = 255;
-                    closebtn.Background = new SolidColorBrush(Color.FromArgb((byte)close, 255, 0, 0));
-                    if (closeflag == 0)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                closebtn.Background = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
-            }
-            
-            
-        }
-
-        private void closebtn_MouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                closeflag = 0;
-                while (close > 0)
-                {
-                    close -= 15;
-                    if (close < 0)
-                        close = 0;
-                    closebtn.Background = new SolidColorBrush(Color.FromArgb((byte)close, 255, 0, 0));
-                    if (closeflag == 1)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                closebtn.Background = new SolidColorBrush(Color.FromArgb(0, 255, 0, 0));
-            }
         }
 
         private void tb2_TextChanged(object sender, TextChangedEventArgs e)
@@ -2111,23 +2016,18 @@ namespace hiro
 
         public void check_update()
         {
+            chk_btn.Content = utils.Get_Transalte("checkup");
+            pb.Visibility = Visibility.Hidden;
             if (ups == "latest")
             {
                 App.Notify(new noticeitem(utils.Get_Transalte("updatelatest"), 2));
-                chk_btn.Content = utils.Get_Transalte("checkup");
-                pb.Visibility = Visibility.Hidden;
-
             }
             else if (ups == "Error")
             {
                 App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2));
-                chk_btn.Content = utils.Get_Transalte("checkup");
-                pb.Visibility = Visibility.Hidden;
             }
             else
             {
-                chk_btn.Content = utils.Get_Transalte("checkup");
-                pb.Visibility = Visibility.Hidden;
                 try
                 {
                     string version = ups.Substring(ups.IndexOf("version:[") + "version:[".Length);
@@ -2153,7 +2053,7 @@ namespace hiro
                     else
                     {
                         update up = new();
-                        up.sv.Content = utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine);
+                        up.sv.Content = utils.Path_Prepare_EX(utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine));
                         up.url = url;
                         up.Owner = this;
                         up.Show();

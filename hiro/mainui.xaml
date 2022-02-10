@@ -14,7 +14,7 @@
             </Label.Background>
         </Label>
         <Label x:Name="bglabel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" MouseDown="Bglabel_MouseDown" Height="30" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="{Binding Path = BorderBrush, ElementName = btn1 }" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
+        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="{Binding Path = Foreground, ElementName = btn1 }" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <Grid x:Name="stack" Width="130" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Height="420">
 
             <Label x:Name="homex" Content="Home" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" MouseLeftButtonUp="Homex_MouseLeftButtonUp" Height="32" VerticalAlignment="Top"/>
@@ -29,7 +29,28 @@
         </Grid>
         <Label x:Name="titlelabel" Content="Hiro" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Segoe UI" FontWeight="Bold" MouseDown="Titlelabel_MouseDown" FontSize="14" Height="27" SizeChanged="titlelabel_SizeChanged"/>
         <Label x:Name="versionlabel" Content="2.1.4 🔒" HorizontalAlignment="Left" Margin="37,5,0,0" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontWeight="Bold" FontFamily="Segoe UI" FontSize="10" RenderTransformOrigin="0.543,0.235" VerticalContentAlignment="Bottom" Height="21" MouseDoubleClick="versionlabel_MouseDoubleClick"/>
-        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown" MouseEnter="Minbtn_MouseEnter" MouseLeave="minbtn_MouseLeave"/>
+        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Path = Background.Color, ElementName = coloruse1 }" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                </Label.Triggers>
+        </Label>
         <ProgressBar x:Name="pb" Height="5" Width="548" Background="Transparent" BorderBrush="{x:Null}"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" IsIndeterminate="True" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.RowSpan="2" Visibility="Hidden"/>
         <TabControl x:Name="tc" Margin="130,30,0,-15" Background="Transparent" BorderBrush="{x:Null}" Foreground="{x:Null}" TabStripPlacement="Bottom" Grid.Column="2" Width="420" Height="440" SelectedIndex="3" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top" SelectionChanged="tc_SelectionChanged">
             <TabControl.ItemContainerStyle>
@@ -259,6 +280,27 @@
                 <ImageBrush Stretch="UniformToFill" ImageSource="/hiro.png"/>
             </Label.Background>
         </Label>
-        <Label x:Name="closebtn" Grid.Column="2" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown" Grid.RowSpan="2" MouseEnter="closebtn_MouseEnter" MouseLeave="closebtn_MouseLeave"/>
+        <Label x:Name="closebtn" Grid.Column="2" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown" Grid.RowSpan="2">
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="Red" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Label.Triggers>
+        </Label>
     </Grid>
 </Window>

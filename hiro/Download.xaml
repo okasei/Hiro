@@ -14,10 +14,53 @@
         <TextBox x:Name="textBoxHttpUrl" HorizontalAlignment="Left" Margin="50,105,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32" Cursor="IBeam" MouseDoubleClick="textBoxHttpUrl_MouseDoubleClick"/>
         <TextBox x:Name="SavePath" HorizontalAlignment="Left" Margin="50,173,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32"/>
         <ProgressBar x:Name="pb" HorizontalAlignment="Left" Height="3" Margin="50,255,0,0" VerticalAlignment="Top" Width="665" BorderBrush="#0067DAFF" Foreground="White" Background="Transparent"/>
-        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="minbtn_MouseLeftButtonDown" MouseEnter="minbtn_MouseEnter" MouseLeave="minbtn_MouseLeave"/>
-        <Label x:Name="closebtn" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseEnter="closebtn_MouseEnter" MouseLeave="closebtn_MouseLeave" MouseLeftButtonDown="closebtn_MouseLeftButtonDown" />
+        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="minbtn_MouseLeftButtonDown">
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Path = Background.Color, ElementName = coloruse1 }" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Label.Triggers>
+        </Label>
+        <Label x:Name="closebtn" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="closebtn_MouseLeftButtonDown" >
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="Red" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Label.Triggers>
+        </Label>
         <Label x:Name="urllabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" MouseDoubleClick="urllabel_MouseDoubleClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Label x:Name="pathlabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <CheckBox x:Name="autorun" Content="Run When Completed" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground="Black" VerticalContentAlignment="Bottom" Width="200" Height="35"/>
+        <Button x:Name="coloruse1" Content="Button" Visibility="Hidden"/>
     </Grid>
 </Window>

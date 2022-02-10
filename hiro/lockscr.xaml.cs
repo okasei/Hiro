@@ -8,9 +8,6 @@ using System.Windows.Media.Imaging;
 
 namespace hiro
 {
-    /// <summary>
-    /// lockscr.xaml の相互作用ロジック
-    /// </summary>
     public partial class Lockscr : Window
     {
         internal bool ca = true;
@@ -26,13 +23,7 @@ namespace hiro
             Height = SystemParameters.PrimaryScreenHeight;
             utils.Set_Control_Location(timelabel, "locktime", bottom: true);
             utils.Set_Control_Location(datelabel, "lockdate", bottom: true);
-            Thickness tn = bgimage.Margin;
-            tn.Left = 0.0;
-            tn.Top = 0.0;
-            bgimage.Margin = tn;
-            bgimage.Width = Width;
-            bgimage.Height = Height;
-            ShowCursor(0);
+            utils.ShowCursor(0);
             var filep = App.CurrentDirectory + "\\system\\wallpaper\\" + DateTime.Now.ToString("yyyyMMdd") + ".jpg";
             string wp = "";
             if (!System.IO.File.Exists(filep))
@@ -60,7 +51,7 @@ namespace hiro
                         utils.LogtoFile("[ERROR]" + ex.Message);
                     }
                     StringBuilder wallPaperPath = new(200);
-                    if (SystemParametersInfo(0x0073, 200, wallPaperPath, 0))
+                    if (utils.SystemParametersInfo(0x0073, 200, wallPaperPath, 0))
                     {
                         utils.LogtoFile(wallPaperPath.ToString());
                         wp = wallPaperPath.ToString();
@@ -111,14 +102,6 @@ namespace hiro
             Background = new SolidColorBrush(App.AppAccentColor);
         }
 
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
-        static extern bool SystemParametersInfo(uint uAction, uint uParam, StringBuilder lpvParam, uint init);
-
-        #region 隐藏鼠标的方法 0/1 隐藏/显示
-        [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "ShowCursor", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
-        private static extern void ShowCursor(int status);
-        #endregion
-
         private void Run_In()
         {
             if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
@@ -132,12 +115,10 @@ namespace hiro
                 }
             }
             Canvas.SetTop(this, 0);
-            //if(exist)
-                //utils.Blur_Animation(false, animation, bgimage, this);
         }
         private void Run_Out()
         {
-            ShowCursor(1);
+            utils.ShowCursor(1);
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 double i = 0.0;

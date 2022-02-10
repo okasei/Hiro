@@ -15,13 +15,10 @@ namespace hiro
         internal long startpos = 0;
         internal int mode = 0;//1=更新模式
         internal string product = "";
-        private int min = 0;
-        private int close = 0;
-        private int minflag = 0;
-        private int closeflag = 0;
         internal int bflag = 0;
         private int stopflag = 0;
         private int successflag = 0;
+        private int index = 0;
         public Download(int i, string st)
         {
             InitializeComponent();
@@ -113,6 +110,7 @@ namespace hiro
             albtn_1.BorderBrush = new SolidColorBrush(App.AppForeColor);
             pb.Foreground = albtn_1.Foreground;
             borderlabel.BorderBrush = new SolidColorBrush(App.AppForeColor);
+            coloruse1.Background = new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
         }
 
         public async void StartDownload()
@@ -142,7 +140,13 @@ namespace hiro
                 SavePath.Text = "<idocument>\\<filename>";
             }
             mSaveFileName = utils.Path_Prepare(SavePath.Text);
+            mSaveFileName = utils.Path_Prepare_EX(mSaveFileName);
             mSaveFileName = utils.Path_Replace(mSaveFileName, "<filename>", strFileName);
+            if (mSaveFileName.IndexOf("<index>") != -1)
+            {
+                mSaveFileName = utils.Path_Replace(mSaveFileName, "<index>", index.ToString());
+                index++;
+            }
             var response = await App.hc.GetAsync(httpUrl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             var totalLength = response.Content.Headers.ContentLength;
             System.IO.FileStream? fileStream = null;
@@ -311,97 +315,9 @@ namespace hiro
             utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
         }
 
-        private void minbtn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                minflag = 1;
-                while (min < 100)
-                {
-                    min += 5;
-                    if (min > 100)
-                        min = 100;
-                    minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)min, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-                    if (minflag == 0)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)100, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-            }
-        }
-
         private void minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             WindowState = WindowState.Minimized;
-        }
-
-        private void minbtn_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                minflag = 0;
-                while (min > 0)
-                {
-                    min -= 5;
-                    if (min < 0)
-                        min = 0;
-                    minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)min, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-                    if (minflag == 1)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                minbtn.Background = new SolidColorBrush(Color.FromArgb((byte)0, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-            }
-        }
-
-        private void closebtn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                closeflag = 1;
-                while (close < 255)
-                {
-                    close += 15;
-                    if (close > 255)
-                        close = 255;
-                    closebtn.Background = new SolidColorBrush(Color.FromArgb((byte)close, 255, 0, 0));
-                    if (closeflag == 0)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                closebtn.Background = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
-            }
-        }
-
-        private void closebtn_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                closeflag = 0;
-                while (close > 0)
-                {
-                    close -= 15;
-                    if (close < 0)
-                        close = 0;
-                    closebtn.Background = new SolidColorBrush(Color.FromArgb((byte)close, 255, 0, 0));
-                    if (closeflag == 1)
-                        break;
-                    utils.Delay(1);
-                }
-            }
-            else
-            {
-                closebtn.Background = new SolidColorBrush(Color.FromArgb(0, 255, 0, 0));
-            }
         }
 
         private void closebtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
