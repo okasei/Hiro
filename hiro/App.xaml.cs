@@ -29,7 +29,7 @@ namespace hiro
         internal static string LangFilePath = "C:\\1.hlp";
         internal static string dconfig = "C:\\";
         internal static string sconfig = "C:\\";
-        internal static bool Locked = true;
+        internal static bool Locked = false;
         internal static MainWindow? wnd;
         internal static Mainui? mn = null;
         internal static notification? noti = null;
@@ -38,9 +38,8 @@ namespace hiro
         internal static TimePicker? tp = null;
         internal static List<noticeitem> noticeitems = new();
         internal static int editpage = 0;
-        internal const double blurradius = 50.0;
-        internal const double blursec = 25.0;
-        internal const int blurdelay = 1;
+        internal static double blurradius = 50.0;
+        internal static double blursec = 500.0;
         internal static System.Windows.Threading.DispatcherTimer? timer;
         internal static ContextMenu? cm = null;
         internal static System.Collections.ObjectModel.ObservableCollection<cmditem> cmditems = new();
@@ -51,12 +50,11 @@ namespace hiro
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
-        {
+        { 
             InitializeInnerParameters();
             Initialize_Notiy_Recall();
             InitializeMethod();
             InitializeStartParameters(e);
-            
         }
 
         private void InitializeStartParameters(StartupEventArgs e)
@@ -201,7 +199,7 @@ namespace hiro
             LogFilePath = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
             System.IO.File.Delete(LogFilePath);
             utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
-            dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".has";
+            dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hus";
             sconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hsl";
             var str = utils.Read_Ini(dconfig, "Configuration", "lang", "");
             if (str.Equals("") || str.Equals("default"))

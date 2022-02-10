@@ -180,21 +180,7 @@ namespace hiro
                 firstflag = 0;
                 return;
             }
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
-            {
-                double start = App.blurradius;
-                double step = -start / App.blursec;
-                while (start > 0.0)
-                {
-                    start = (start + step < 0.0) ? 0.0 : start + step;
-                    notinfo.Effect = new System.Windows.Media.Effects.BlurEffect()
-                    {
-                        Radius = start,
-                        RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
-                    };
-                    utils.Delay(App.blurdelay);
-                }
-            }
+            utils.Blur_Out(notinfo);
         }
         private void noti_Loaded(object sender, RoutedEventArgs e)
         {

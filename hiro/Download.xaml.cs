@@ -144,15 +144,20 @@ namespace hiro
             mSaveFileName = utils.Path_Replace(mSaveFileName, "<filename>", strFileName);
             if (mSaveFileName.IndexOf("<index>") != -1)
             {
+                while (System.IO.File.Exists(utils.Path_Replace(mSaveFileName, "<index>", index.ToString())) || System.IO.File.Exists(utils.Path_Replace(mSaveFileName + ".hdp", "<index>", index.ToString())))
+                    index++;
                 mSaveFileName = utils.Path_Replace(mSaveFileName, "<index>", index.ToString());
                 index++;
             }
+            utils.CreateFolder(mSaveFileName);
+            if (mSaveFileName.EndsWith("\\"))
+                mSaveFileName = mSaveFileName + strFileName;
             var response = await App.hc.GetAsync(httpUrl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             var totalLength = response.Content.Headers.ContentLength;
             System.IO.FileStream? fileStream = null;
             try
             {
-                fileStream = System.IO.File.OpenWrite(mSaveFileName);
+                fileStream = System.IO.File.OpenWrite(mSaveFileName + ".hdp");
             }
             catch (Exception ex)
             {
@@ -164,7 +169,7 @@ namespace hiro
             if (totalLength > 0)
             {
                 Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                if (System.IO.File.Exists(mSaveFileName))//文件已经存在就继续下载
+                if (System.IO.File.Exists(mSaveFileName + ".hdp"))//文件已经存在就继续下载
                 {
                     try
                     {
@@ -226,6 +231,7 @@ namespace hiro
                 if (totalLength > 0)
                 {
                     ala_title.Content = string.Format("{0:F2}", Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2)) + "%" + "(" + formateSize(readLength + startpos) + "/" + formateSize(totalLength.Value) + ")";
+                    Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.Value = Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2);
                     pb.IsIndeterminate = false;
                     Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)(((double)readLength + startpos) / totalLength.Value * 100), 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
@@ -237,7 +243,8 @@ namespace hiro
                 }
                 else
                 {
-                    ala_title.Content = formateSize(readLength + startpos) + "/" + utils.Get_Transalte("dlunknown"); 
+                    ala_title.Content = formateSize(readLength + startpos) + "/" + utils.Get_Transalte("dlunknown");
+                    Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.IsIndeterminate = true;
                 }
                 if (stopflag != 0)
@@ -251,6 +258,15 @@ namespace hiro
             DownloadFinish:
             if (successflag == 1)
             {
+                try
+                {
+                    System.IO.FileInfo file = new(mSaveFileName + ".hdp");
+                    file.MoveTo(mSaveFileName);
+                }
+                catch (Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                }
                 App.Notify(new noticeitem(utils.Get_Transalte("dlsuccess"), 2));
                 if (autorun.IsChecked == true)
                 {

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace hiro
 {
@@ -835,23 +836,13 @@ namespace hiro
                 }
             }
             label.IsEnabled = false;
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            System.ComponentModel.BackgroundWorker bw = new();
+            bw.RunWorkerCompleted += delegate
             {
-                double start = App.blurradius;
-                double step = - start / App.blursec;
-                while (start > 0.0)
-                {
-                    start = (start + step < 0.0) ? 0.0 : start + step;
-                    tc.Effect = new System.Windows.Media.Effects.BlurEffect()
-                    {
-                        Radius = start,
-                        RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
-                    };
-                    utils.Delay(App.blurdelay);
-                }
-            }
-            
-            label.IsEnabled = true;
+                if (App.mn != null)
+                    label.IsEnabled = true;
+            };
+            utils.Blur_Out(tc, bw);
         }
 
         private void Itemx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -1899,16 +1890,20 @@ namespace hiro
 
         private void Blureff_Checked(object sender, RoutedEventArgs e)
         {
-            blureff.IsEnabled = false;
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "1");
+            App.blurradius = 50.0;
+            App.blursec = 500.0;
             Blurbgi(1);
-            blureff.IsEnabled = true;
         }
         private void Blurbgi(int direction)
         {
             if (bflag == 1)
                 return;
             bflag = 1;
+            blureff.IsEnabled = false;
+            rbtn14.IsEnabled = false;
+            rbtn15.IsEnabled = false;
+            btn10.IsEnabled = false;
             foreach (Window win in Application.Current.Windows)
             {
                 if (win is Alarm a)
@@ -1922,15 +1917,27 @@ namespace hiro
                 System.Windows.Forms.Application.DoEvents();
             }
             bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
-            utils.Blur_Animation(direction, animation, bgimage, this);
+            System.ComponentModel.BackgroundWorker bw = new();
+            bw.RunWorkerCompleted += delegate
+            {
+                if (App.mn != null)
+                {
+                    blureff.IsEnabled = true;
+                    rbtn14.IsEnabled = true;
+                    rbtn15.IsEnabled = true;
+                    if (rbtn15.IsChecked == true)
+                        btn10.IsEnabled = true;
+                }
+            };
+            utils.Blur_Animation(direction, animation, bgimage, this, bw);
             bflag = 0;
         }
         private void Blureff_Unchecked(object sender, RoutedEventArgs e)
         {
-            blureff.IsEnabled = false;
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "0");
+            App.blurradius = 50.0;
+            App.blursec = 500.0;
             Blurbgi(0);
-            blureff.IsEnabled = true;
         }
 
         private void verbose_Unchecked(object sender, RoutedEventArgs e)
@@ -2088,22 +2095,13 @@ namespace hiro
         private void Extend_Animation()
         {
             extended.IsEnabled = false;
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            System.ComponentModel.BackgroundWorker bw = new();
+            bw.RunWorkerCompleted += delegate
             {
-                double start = App.blurradius;
-                double step = -start / App.blursec;
-                while (start > 0.0)
-                {
-                    start = (start + step < 0.0) ? 0.0 : start + step;
-                    extended.Effect = new System.Windows.Media.Effects.BlurEffect()
-                    {
-                        Radius = start,
-                        RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
-                    };
-                    utils.Delay(App.blurdelay);
-                }
-            }
-            extended.IsEnabled = true;
+                if (App.mn != null)
+                    extended.IsEnabled = true;
+            };
+            utils.Blur_Out(extended, bw);
         }
         private void extend_background_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -2249,10 +2247,10 @@ namespace hiro
 
         private void Blureff_Indeterminate(object sender, RoutedEventArgs e)
         {
-            blureff.IsEnabled = false;
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "2");
             Blurbgi(3);
-            blureff.IsEnabled = true;
+            App.blurradius = 24.0;
+            App.blursec = 250.0;
         }
     }
 }
