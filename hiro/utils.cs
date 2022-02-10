@@ -1594,6 +1594,8 @@ namespace hiro
         }
         #endregion
 
+        #region 动画相关
+
         #region 模糊动画
         public static void Blur_Animation(int direction, bool animation, System.Windows.Controls.Label label, System.Windows.Window win, System.ComponentModel.BackgroundWorker? bw = null)
         {
@@ -1620,6 +1622,8 @@ namespace hiro
             if (!animation)
             {
                 Set_Animation_Label(end, label, win);
+                if (bw != null)
+                    bw.RunWorkerAsync();
                 return;
             }
             else
@@ -1630,27 +1634,19 @@ namespace hiro
                 double desl = !comp ? -end : -end * win.Width / win.Height;
                 double stal = !comp ? -start : -start * win.Width / win.Height;
                 Set_Animation_Label(start, label, win);
-                System.Windows.Media.Animation.Storyboard sb = new();
-                System.Windows.Media.Animation.DoubleAnimation da = new(start, end, TimeSpan.FromMilliseconds(time));
-                System.Windows.Media.Animation.DoubleAnimation dada = new(win.Height - stat * 2, win.Height - dest * 2, TimeSpan.FromMilliseconds(time));
-                System.Windows.Media.Animation.DoubleAnimation dadada = new(win.Width - stal * 2, win.Width - desl * 2, TimeSpan.FromMilliseconds(time));
+                System.Windows.Media.Animation.Storyboard? sb = new();
+                sb = AddDoubleAnimaton(end, time, label, "Effect.Radius", sb, start);
+                sb = AddDoubleAnimaton(win.Height - dest * 2, time, label, "Height", sb, win.Height - stat * 2);
+                sb = AddDoubleAnimaton(win.Width - desl * 2, time, label, "Width", sb, win.Width - stal * 2);
                 System.Windows.Media.Animation.ThicknessAnimation dadadada = new(new(stal, stat, 0, 0), new(desl, dest, 0, 0), TimeSpan.FromMilliseconds(time));
-                System.Windows.Media.Animation.Storyboard.SetTarget(da, label);
-                System.Windows.Media.Animation.Storyboard.SetTarget(dada, label);
-                System.Windows.Media.Animation.Storyboard.SetTarget(dadada, label);
                 System.Windows.Media.Animation.Storyboard.SetTarget(dadadada, label);
-                System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath("Effect.Radius"));
-                System.Windows.Media.Animation.Storyboard.SetTargetProperty(dada, new System.Windows.PropertyPath("Height"));
-                System.Windows.Media.Animation.Storyboard.SetTargetProperty(dadada, new System.Windows.PropertyPath("Width"));
                 System.Windows.Media.Animation.Storyboard.SetTargetProperty(dadadada, new System.Windows.PropertyPath("Margin"));
-                sb.Children.Add(da);
-                sb.Children.Add(dada);
-                sb.Children.Add(dadada);
                 sb.Children.Add(dadadada);
                 sb.Completed += delegate
                 {
                     if (bw != null)
                         bw.RunWorkerAsync();
+                    sb = null;
                 };
                 sb.Begin();
             }
@@ -1664,7 +1660,7 @@ namespace hiro
                     Radius = App.blurradius,
                     RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
                 };
-                System.Windows.Media.Animation.Storyboard sb = new ();
+                System.Windows.Media.Animation.Storyboard? sb = new ();
                 System.Windows.Media.Animation.DoubleAnimation da = new ();
                 da.From = App.blurradius;
                 da.To = 0.0;
@@ -1676,9 +1672,15 @@ namespace hiro
                 {
                     if (bw != null)
                         bw.RunWorkerAsync();
+                    sb = null;
                 };
                 sb.Begin();
             }
+            else
+            {
+                if (bw != null)
+                    bw.RunWorkerAsync();
+            }    
         }
         private static void Set_Animation_Label(double rd, System.Windows.Controls.Label label, System.Windows.Window win)
         {
@@ -1702,6 +1704,29 @@ namespace hiro
             label.Width = win.Width - tn.Left * 2;
             label.Height = win.Height - tn.Top * 2;
         }
+        #endregion
+
+        #region 添加double动画
+        public static System.Windows.Media.Animation.Storyboard AddDoubleAnimaton(double to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, double? from = null)
+        {
+            if (sb == null)
+                sb = new();
+            System.Windows.Media.Animation.DoubleAnimation da;
+            if (from != null)
+                da = new((double)from, to, TimeSpan.FromMilliseconds(mstime));
+            else
+                da = new(to, TimeSpan.FromMilliseconds(mstime));
+            System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
+            System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
+            sb.Children.Add(da);
+            sb.Completed += delegate
+            {
+                sb = null;
+            };
+            return sb;
+        }
+        #endregion
+
         #endregion
 
         #region 获取命令翻译

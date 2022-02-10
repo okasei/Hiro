@@ -120,15 +120,10 @@ namespace hiro
         {
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                double i = -ActualHeight;
-                while (i < 0)
-                {
-                    System.Windows.Forms.Application.DoEvents();
-                    System.Threading.Thread.Sleep(1);
-                    i += 5;
-                    SetValue(TopProperty, i);
-                }
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(1000));
+                BeginAnimation(TopProperty, dou);
             }
+            else
                 SetValue(TopProperty, 0.0);
             
         }
@@ -141,13 +136,9 @@ namespace hiro
             con.IsEnabled = false;
             if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                double i = 0.0;
-                while (i > -ActualHeight)
-                {
-                    i -= 16;
-                    Canvas.SetTop(this, i);
-                    utils.Delay(1);
-                }
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(600));
+                BeginAnimation(TopProperty, dou);
+                utils.Delay(600);
             }
             App.ed = null;
             this.Close();

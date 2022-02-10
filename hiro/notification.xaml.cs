@@ -50,23 +50,24 @@ namespace hiro
             switch(flag)
             {
                 case 0:
+                    timer.Interval = new TimeSpan(10000000);
                     if (animation)
                     {
-                        i += ai;
-                        ai += 0.01;
-                        if(i > 1)
+                        timer.Stop();
+                        System.Windows.Media.Animation.Storyboard? sb = new();
+                        sb = utils.AddDoubleAnimaton(1, App.blursec, this, "Opacity", sb);
+                        sb.Completed += delegate
                         {
-                            i = 1;
                             flag = 1;
-                            timer.Interval = new TimeSpan(10000000);
-                        }
-                        this.Opacity = i;
+                            timer.Start();
+                            sb = null;
+                        };
+                        sb.Begin();
                     }
                     else
                     {
-                        this.Opacity = 1;
+                        Opacity = 1;
                         flag = 1;
-                        timer.Interval = new TimeSpan(10000000);
                     }
                     break;
                 case 1:
@@ -84,25 +85,23 @@ namespace hiro
                     }
                     break;
                 case 2:
+                    timer.Stop();
                     if (animation)
                     {
-                        i -= ai;
-                        ai += 0.01;
-                        if (i < 0)
+                        System.Windows.Media.Animation.Storyboard? sb = new();
+                        sb = utils.AddDoubleAnimaton(0, App.blursec, this, "Opacity", sb);
+                        sb.Completed += delegate
                         {
-                            i = 0;
                             App.noti = null;
-                            this.Close();
-                            timer.Stop();
-                        }
-                        this.Opacity = i;
-                        
+                            Close();
+                            sb = null;
+                        };
+                        sb.Begin();
                     }
                     else
                     {
                         App.noti = null;
-                        this.Close();
-                        timer.Stop();
+                        Close();
                     }
                     break;
                 default:
@@ -113,8 +112,8 @@ namespace hiro
         }
         public void Load_Color()
         {
-            this.notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            this.Background = new SolidColorBrush(App.AppAccentColor);
+            notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
+            Background = new SolidColorBrush(App.AppAccentColor);
         }
 
         private void Next_Msg()
@@ -192,7 +191,6 @@ namespace hiro
             {
                 notinfo.Content = App.noticeitems[0].msg;
             }
-            
         }
 
         private void noti_MouseDoubleClick(object sender, MouseButtonEventArgs e)

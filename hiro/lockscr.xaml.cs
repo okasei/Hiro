@@ -106,28 +106,20 @@ namespace hiro
         {
             if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                double i = -SystemParameters.PrimaryScreenHeight;
-                while (i < -10)
-                {
-                    i += 10;
-                    Canvas.SetTop(this, i);
-                    utils.Delay(1);
-                }
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, 0, TimeSpan.FromMilliseconds(2000));
+                BeginAnimation(TopProperty, dou);
             }
-            Canvas.SetTop(this, 0);
+            else
+                Canvas.SetTop(this, 0);
         }
         private void Run_Out()
         {
             utils.ShowCursor(1);
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                double i = 0.0;
-                while (i > -SystemParameters.PrimaryScreenHeight)
-                {
-                    i -= 20;
-                    Canvas.SetTop(this, i);
-                    utils.Delay(1);
-                }
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, TimeSpan.FromMilliseconds(1500));
+                BeginAnimation(TopProperty, dou);
+                utils.Delay(1500);
             }
             App.ls = null;
             ca = false;

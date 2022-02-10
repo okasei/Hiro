@@ -657,24 +657,16 @@ namespace hiro
             {
                 extended.IsEnabled = false;
                 extend_background.IsEnabled = false;
-                double rd = 1;
-                double step = 0.05;
-                while (rd > 0.0)
+                Storyboard? sb = new();
+                sb = utils.AddDoubleAnimaton(0, App.blursec, extended, "Opacity", sb);
+                sb = utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
+                sb.Completed += delegate
                 {
-                    rd -= step;
-                    if (rd < 0.0)
-                    {
-                        rd = 0.0;
-                        extended.Opacity = rd;
-                        extend_background.Opacity = rd;
-                        extended.Visibility = Visibility.Hidden;
-                        extend_background.Visibility = Visibility.Hidden;
-                        return;
-                    }
-                    extended.Opacity = rd;
-                    extend_background.Opacity = rd;
-                    utils.Delay(1);
-                }
+                    extended.Visibility = Visibility.Hidden;
+                    extend_background.Visibility = Visibility.Hidden;
+                    sb = null;
+                };
+                sb.Begin();
             }
             else
             {
@@ -2107,24 +2099,16 @@ namespace hiro
         {
             extended.IsEnabled = false;
             extend_background.IsEnabled = false;
-            double rd = 1;
-            double step = 0.05;
-            while (rd > 0.0)
+            Storyboard? sb = new();
+            sb = utils.AddDoubleAnimaton(0, App.blursec, extended, "Opacity", sb);
+            sb = utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
+            sb.Completed += delegate
             {
-                rd -= step;
-                if (rd < 0.0)
-                {
-                    rd = 0.0;
-                    extended.Opacity = rd;
-                    extend_background.Opacity = rd;
-                    extended.Visibility = Visibility.Hidden;
-                    extend_background.Visibility = Visibility.Hidden;
-                    return;
-                }
-                extended.Opacity = rd;
-                extend_background.Opacity = rd;
-                utils.Delay(1);
-            }
+                extended.Visibility = Visibility.Hidden;
+                extend_background.Visibility = Visibility.Hidden;
+                sb = null;
+            };
+            sb.Begin();
         }
 
         private void extended_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -2143,28 +2127,18 @@ namespace hiro
             extend_background.Width = Width;
             extend_background.Height = Height;
             extend_background.Background = new SolidColorBrush(Colors.Coral);
-            extended.Opacity = 0;
-            extend_background.Opacity = 0;
             extended.Visibility = Visibility.Visible;
-            extend_background.Visibility = Visibility.Visible;
-            double rd = 0;
-            double step = 0.05;
-            while (rd < 1)
+            extend_background.Visibility = Visibility.Visible; 
+            Storyboard? sb = new();
+            sb = utils.AddDoubleAnimaton(1, App.blursec, extended, "Opacity", sb, 0);
+            sb = utils.AddDoubleAnimaton(1, App.blursec, extend_background, "Opacity", sb, 0);
+            sb.Completed += delegate
             {
-                rd += step;
-                if (rd > 1)
-                {
-                    rd = 1.0;
-                    extended.Opacity = rd;
-                    extend_background.Opacity = rd;
-                    extended.IsEnabled = true;
-                    extend_background.IsEnabled = true;
-                    return;
-                }
-                extended.Opacity = rd;
-                extend_background.Opacity = rd;
-                utils.Delay(1);
-            }
+                extended.IsEnabled = true;
+                extend_background.IsEnabled = true;
+                sb = null;
+            };
+            sb.Begin();
         }
 
         private void win_style_Checked(object sender, RoutedEventArgs e)

@@ -17,13 +17,9 @@ namespace hiro
         {
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                var opacity = 0.01;
-                while (opacity < 0.78)
-                {
-                    opacity += 0.02;
-                    Opacity = opacity;
-                    utils.Delay(1);
-                }
+                System.Windows.Media.Animation.Storyboard? sb = new();
+                sb = utils.AddDoubleAnimaton(0.8, App.blursec, this, "Opacity", sb);
+                sb.Begin();
             }
                 Opacity = 0.8;
         }
