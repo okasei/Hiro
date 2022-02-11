@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="TimePicker" Height="450" Width="800" ResizeMode="NoResize" WindowStyle="None" ShowInTaskbar="False" WindowStartupLocation="Manual" HorizontalAlignment="Left" VerticalAlignment="Top" MouseLeftButtonDown="tp_MouseLeftButtonDown" Closing="tp_Closing" Icon="/hiro_circle.ico">
     <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
-        <Label x:Name="bgimage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
+        <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <TextBox x:Name="year" HorizontalAlignment="Left" Margin="91,85,0,0" TextWrapping="Wrap" Text="2000" VerticalAlignment="Top" Width="120" Height="25" Cursor="IBeam" FontFamily="Segoe UI" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="4" MouseWheel="year_MouseWheel" TextChanged="year_TextChanged"/>
         <TextBox x:Name="month" HorizontalAlignment="Left" Margin="252,85,0,0" TextWrapping="Wrap" Text="04" VerticalAlignment="Top" Width="120" Cursor="IBeam" Height="25" FontFamily="Segoe UI" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" InputScope="TimeHour" MaxLength="2" MouseWheel="month_MouseWheel" TextChanged="month_TextChanged"/>

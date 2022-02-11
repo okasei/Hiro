@@ -120,7 +120,12 @@ namespace hiro
         {
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(1000));
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(1200));
+                dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                dou.Completed += delegate
+                {
+                    SetValue(TopProperty, 0.0);
+                };
                 BeginAnimation(TopProperty, dou);
             }
             else
@@ -136,12 +141,21 @@ namespace hiro
             con.IsEnabled = false;
             if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(600));
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(900));
+                dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                dou.Completed += delegate
+                {
+                    SetValue(TopProperty, -ActualHeight);
+                    App.ed = null;
+                    Close();
+                };
                 BeginAnimation(TopProperty, dou);
-                utils.Delay(600);
             }
-            App.ed = null;
-            this.Close();
+            else
+            {
+                App.ed = null;
+                Close();
+            }
         }
         private void Edi_Loaded(object sender, RoutedEventArgs e)
         {

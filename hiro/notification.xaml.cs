@@ -58,6 +58,7 @@ namespace hiro
                         sb = utils.AddDoubleAnimaton(1, App.blursec, this, "Opacity", sb);
                         sb.Completed += delegate
                         {
+                            Opacity = 1;
                             flag = 1;
                             timer.Start();
                             sb = null;
@@ -92,6 +93,7 @@ namespace hiro
                         sb = utils.AddDoubleAnimaton(0, App.blursec, this, "Opacity", sb);
                         sb.Completed += delegate
                         {
+                            Opacity = 0;
                             App.noti = null;
                             Close();
                             sb = null;
@@ -113,7 +115,17 @@ namespace hiro
         public void Load_Color()
         {
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            Background = new SolidColorBrush(App.AppAccentColor);
+            System.Windows.Media.Animation.Storyboard? sb = new();
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+                sb = utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sb);
+            else
+                sb = utils.AddColorAnimaton(App.AppAccentColor, 0, this, "Background.Color", sb);
+            sb.Completed += delegate
+                {
+                    Background = new SolidColorBrush(App.AppAccentColor);
+                    sb = null;
+                };
+            sb.Begin();
         }
 
         private void Next_Msg()

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -57,17 +56,14 @@ namespace hiro
             var inipath = App.dconfig;
             var ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
             var co = utils.Read_Ini(inipath, i.ToString(), "command", "");
-            if (co.Length >= 2)
-                co = co[1..^1];
-            while (!ti.Equals("") && !co.Equals(""))
+            while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
             {
+                co = co[1..^1];
                 App.cmditems.Add(new cmditem(p, i, ti, co));
                 i++;
                 p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
                 co = utils.Read_Ini(inipath, i.ToString(), "command","");
-                if(co.Length >= 2)
-                    co = co[1..^1];
             }
 
             App.scheduleitems.Clear();
@@ -336,29 +332,29 @@ namespace hiro
             utils.Set_Control_Location(rbtn19, "alarmed");
             utils.Set_Control_Location(rbtn20, "alarmew");
             utils.Set_Control_Location(rbtn21, "alarmat");
-            utils.Set_Control_Location(ntn1, "filename");
-            utils.Set_Control_Location(ntn2, "hide");
-            utils.Set_Control_Location(ntn3, "unformat");
-            utils.Set_Control_Location(ntn4, "ban");
-            utils.Set_Control_Location(ntn5, "select");
-            utils.Set_Control_Location(ntn6, "quot");
-            utils.Set_Control_Location(ntn7, "explorer");
-            utils.Set_Control_Location(ntn8, "openfile");
-            utils.Set_Control_Location(ntn9, "reset");
-            utils.Set_Control_Location(ntnx, "clear");
-            utils.Set_Control_Location(ntnx1, "ok");
-            utils.Set_Control_Location(ntnx2, "cancel");
+            utils.Set_Control_Location(ntn1, "filename", right: true);
+            utils.Set_Control_Location(ntn2, "hide", right: true);
+            utils.Set_Control_Location(ntn3, "unformat", right: true);
+            utils.Set_Control_Location(ntn4, "ban", right: true);
+            utils.Set_Control_Location(ntn5, "select", right: true);
+            utils.Set_Control_Location(ntn6, "quot", right: true);
+            utils.Set_Control_Location(ntn7, "explorer", right: true);
+            utils.Set_Control_Location(ntn8, "openfile", right: true);
+            utils.Set_Control_Location(ntn9, "reset", bottom: true);
+            utils.Set_Control_Location(ntnx, "clear", bottom: true, right: true);
+            utils.Set_Control_Location(ntnx1, "ok", bottom: true, right: true);
+            utils.Set_Control_Location(ntnx2, "cancel", bottom: true, right: true);
             utils.Set_Control_Location(chk_btn, "checkup");
             utils.Set_Control_Location(scbtn_1, "scnew");
             utils.Set_Control_Location(scbtn_2, "scdelete");
             utils.Set_Control_Location(scbtn_3, "scmodify");
-            utils.Set_Control_Location(scbtn_4, "screset");
-            utils.Set_Control_Location(scbtn_5, "scok");
-            utils.Set_Control_Location(scbtn_6, "scclear");
-            utils.Set_Control_Location(scbtn_7, "sccancel");
-            utils.Set_Control_Location(scbtn_8, "sc15m");
-            utils.Set_Control_Location(scbtn_9, "sc1h");
-            utils.Set_Control_Location(scbtn_10, "sc1d");
+            utils.Set_Control_Location(scbtn_4, "screset", bottom: true);
+            utils.Set_Control_Location(scbtn_5, "scok", bottom: true, right: true);
+            utils.Set_Control_Location(scbtn_6, "scclear", bottom: true, right: true);
+            utils.Set_Control_Location(scbtn_7, "sccancel", bottom: true, right: true);
+            utils.Set_Control_Location(scbtn_8, "sc15m", right: true);
+            utils.Set_Control_Location(scbtn_9, "sc1h", right: true);
+            utils.Set_Control_Location(scbtn_10, "sc1d", right: true);
             utils.Set_Control_Location(cb_box,"minclose");
             utils.Set_Control_Location(autorun,"autorun");
             utils.Set_Control_Location(blureff,"blurbox");
@@ -623,6 +619,13 @@ namespace hiro
                 helpx.Background = new SolidColorBrush(Colors.Transparent);
                 aboutx.Background = new SolidColorBrush(Colors.Transparent);
                 newx.Background = new SolidColorBrush(Colors.Transparent);
+                homex.IsEnabled = true;
+                itemx.IsEnabled = true;
+                schedulex.IsEnabled = true;
+                configx.IsEnabled = true;
+                helpx.IsEnabled = true;
+                aboutx.IsEnabled = true;
+                newx.IsEnabled = true;
                 newx.Visibility = Visibility.Hidden;
             }
             homex.Foreground = this.Foreground;
@@ -662,6 +665,8 @@ namespace hiro
                 sb = utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
                 sb.Completed += delegate
                 {
+                    extended.Opacity = 0;
+                    extend_background.Opacity = 0;
                     extended.Visibility = Visibility.Hidden;
                     extend_background.Visibility = Visibility.Hidden;
                     sb = null;
@@ -689,7 +694,22 @@ namespace hiro
         public void Set_Label(Label label)
         {
             Load_Labels();
-            label.Background = new SolidColorBrush(Color.FromArgb(30, App.AppForeColor.R, App.AppForeColor.B, App.AppForeColor.G));
+            double duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            {
+                duration = duration > label.Height * 2 ? 2 * duration : 6 * duration;
+                Storyboard? sb = new();
+                sb = utils.AddThicknessAnimaton(label.Margin, duration, bgx, "Margin", sb);
+                sb.Completed += delegate
+                {
+                    bgx.Margin = new Thickness(label.Margin.Left, label.Margin.Top, 0, 0);
+                };
+                sb.Begin();
+            }
+            else
+            {
+                bgx.Margin = new Thickness(label.Margin.Left, label.Margin.Top, 0, 0);
+            }
             selected = label;
             if (label == homex)
             {
@@ -1919,6 +1939,7 @@ namespace hiro
                     rbtn15.IsEnabled = true;
                     if (rbtn15.IsChecked == true)
                         btn10.IsEnabled = true;
+                    blureff.IsEnabled = btn10.IsEnabled;
                 }
             };
             utils.Blur_Animation(direction, animation, bgimage, this, bw);
@@ -2104,6 +2125,8 @@ namespace hiro
             sb = utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
             sb.Completed += delegate
             {
+                extended.Opacity = 0;
+                extend_background.Opacity = 0;
                 extended.Visibility = Visibility.Hidden;
                 extend_background.Visibility = Visibility.Hidden;
                 sb = null;
@@ -2134,6 +2157,8 @@ namespace hiro
             sb = utils.AddDoubleAnimaton(1, App.blursec, extend_background, "Opacity", sb, 0);
             sb.Completed += delegate
             {
+                extended.Opacity = 1;
+                extend_background.Opacity = 1;
                 extended.IsEnabled = true;
                 extend_background.IsEnabled = true;
                 sb = null;
@@ -2223,8 +2248,7 @@ namespace hiro
         {
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "2");
             Blurbgi(3);
-            App.blurradius = 24.0;
-            App.blursec = 250.0;
+            App.blurradius = 25;
         }
     }
 }

@@ -107,6 +107,11 @@ namespace hiro
             if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, 0, TimeSpan.FromMilliseconds(2000));
+                dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                dou.Completed += delegate
+                {
+                    Canvas.SetTop(this, 0);
+                };
                 BeginAnimation(TopProperty, dou);
             }
             else
@@ -118,12 +123,22 @@ namespace hiro
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, TimeSpan.FromMilliseconds(1500));
+                dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                dou.Completed += delegate
+                {
+                    SetValue(TopProperty, -SystemParameters.PrimaryScreenHeight);
+                    App.ls = null;
+                    ca = false;
+                    Close();
+                };
                 BeginAnimation(TopProperty, dou);
-                utils.Delay(1500);
             }
-            App.ls = null;
-            ca = false;
-            this.Close();
+            else
+            {
+                App.ls = null;
+                ca = false;
+                Close();
+            }
         }
 
         private void Ls_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

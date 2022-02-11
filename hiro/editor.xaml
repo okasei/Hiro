@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="editor" Height="450" Width="800" WindowStyle="None" ShowInTaskbar="False" ResizeMode="NoResize" Loaded="Edi_Loaded" Deactivated="Edi_Deactivated" Topmost="True" AllowsTransparency="True" KeyDown="Edi_KeyDown" SizeChanged="Edi_SizeChanged" Icon="/hiro_circle.ico">
     <Grid>
-        <Label x:Name="bgimage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
+        <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <TextBox x:Name="con" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="800" Height="297" HorizontalContentAlignment="Left" FontFamily="Segoe UI" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Cursor="IBeam" KeyDown="Con_KeyDown" TextChanged="Con_TextChanged" AllowDrop="True" AcceptsReturn="True" AcceptsTab="True"/>
         <Label x:Name="status" Content="Page 1 - 0 Word(s)" HorizontalAlignment="Left" Margin="5,0,0,5" VerticalAlignment="Bottom" FontFamily="Segoe UI"/>
         <Slider x:Name="slider" HorizontalAlignment="Right" Margin="0,0,5,5" VerticalAlignment="Bottom" Width="163" Maximum="1" SmallChange="0.1" LargeChange="0.3" FontSize="11" FontFamily="Segoe UI" ValueChanged="Slider_ValueChanged" Value="1" IsEnabled="False" Minimum="0.3"/>

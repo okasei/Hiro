@@ -400,7 +400,19 @@ namespace hiro
             var strFileName = Read_Ini(App.dconfig, "Configuration", "backimage", "");
             if (Read_Ini(App.dconfig, "Configuration", "background", "1").Equals("1") || !System.IO.File.Exists(strFileName))
             {
-                sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
+                if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+                {
+                    System.Windows.Media.Animation.Storyboard? sb = new();
+                    sb = AddColorAnimaton(App.AppAccentColor, 150, sender, "Background.Color", sb);
+                    sb.Completed += delegate
+                    {
+                        sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
+                        sb = null;
+                    };
+                    sb.Begin();
+                }
+                else
+                    sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
             }
             else
             {
@@ -412,7 +424,7 @@ namespace hiro
                 sender.Background = ib;
             }
         }
-        public static void Set_Control_Location(System.Windows.Controls.Control sender, string val, bool extra = false, string? path = "", bool right = false, bool bottom = false)
+        public static void Set_Control_Location(System.Windows.Controls.Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false)
         {
             if (extra == false || path == null || !System.IO.File.Exists(path))
                 path = App.LangFilePath;
@@ -420,6 +432,10 @@ namespace hiro
             {
                 if (sender != null)
                 {
+                    if (right == true)
+                        sender.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                    if (bottom == true)
+                        sender.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
                     var loc = Read_Ini(path, "location", val, string.Empty);
                     loc = loc.Replace(" ", "").Replace("%b", " ");
                     loc = loc[(loc.IndexOf("{") + 1)..];
@@ -455,31 +471,15 @@ namespace hiro
                         "1" => System.Windows.FontStyles.Oblique,
                         _ => System.Windows.FontStyles.Normal,
                     };
-                    if (width != "-1")
-                        sender.Width = double.Parse(width);
-                    if (height != "-1")
-                        sender.Height = double.Parse(height);
-                    System.Windows.Thickness thickness = sender.Margin;
-                    if (left != "-1")
-                    {
-                        if (right == false)
-                            thickness.Left = double.Parse(left);
-                        else
-                            thickness.Right = double.Parse(left);
-                    }
-                    if (top != "-1")
-                    {
-                        if (bottom == false)
-                            thickness.Top = double.Parse(top);
-                        else
-                            thickness.Bottom = double.Parse(top);
-
-                    }
-                    if (right == true)
-                        sender.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-                    if (bottom == true)
-                        sender.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
+                    sender.Width = (width != "-1") ?  double.Parse(width) : sender.Width;
+                    sender.Height = (height != "-1") ?  double.Parse(height) : sender.Height;
+                    System.Windows.Thickness thickness = new();
+                    thickness.Left = (left != "-1") ? right ? 0.0 : double.Parse(left): sender.Margin.Left;
+                    thickness.Right = (left != "-1") ? !right ? sender.Margin.Right : double.Parse(left): sender.Margin.Right;
+                    thickness.Top = (top != "-1") ? bottom ? 0.0 : double.Parse(top): sender.Margin.Top;
+                    thickness.Bottom = (top != "-1") ? !bottom ? sender.Margin.Bottom : double.Parse(top) : sender.Margin.Bottom;
                     sender.Margin = thickness;
+                    utils.LogtoFile("sender " + val + "|" + sender.Margin.ToString() + "|" + sender.Width + "|" + sender.Height);
                 }
             }
             catch (Exception ex)
@@ -1599,19 +1599,19 @@ namespace hiro
         #region 模糊动画
         public static void Blur_Animation(int direction, bool animation, System.Windows.Controls.Label label, System.Windows.Window win, System.ComponentModel.BackgroundWorker? bw = null)
         {
-            //0: 24->0 12s  1:0->50 25s 2:0->24 12s 3:50->24 12s
+            //0: 25->0 12s  1:0->50 25s 2:0->25 12s 3:50->25 12s
             double start = direction switch
             {
                 1 => 0.0,
                 2 => 0.0,
                 3 => 50.0,
-                _ => 24.0
+                _ => 25.0
             };
             double end = direction switch
             {
                 1 => 50.0,
-                2 => 24.0,
-                3 => 24.0,
+                2 => 25.0,
+                3 => 25.0,
                 _ => 0.0
             };
             double time = direction switch
@@ -1638,12 +1638,10 @@ namespace hiro
                 sb = AddDoubleAnimaton(end, time, label, "Effect.Radius", sb, start);
                 sb = AddDoubleAnimaton(win.Height - dest * 2, time, label, "Height", sb, win.Height - stat * 2);
                 sb = AddDoubleAnimaton(win.Width - desl * 2, time, label, "Width", sb, win.Width - stal * 2);
-                System.Windows.Media.Animation.ThicknessAnimation dadadada = new(new(stal, stat, 0, 0), new(desl, dest, 0, 0), TimeSpan.FromMilliseconds(time));
-                System.Windows.Media.Animation.Storyboard.SetTarget(dadadada, label);
-                System.Windows.Media.Animation.Storyboard.SetTargetProperty(dadadada, new System.Windows.PropertyPath("Margin"));
-                sb.Children.Add(dadadada);
+                sb = AddThicknessAnimaton(new(desl, dest, 0, 0), time, label, "Margin", sb, new(stal, stat, 0, 0));
                 sb.Completed += delegate
                 {
+                    Set_Animation_Label(end, label, win);
                     if (bw != null)
                         bw.RunWorkerAsync();
                     sb = null;
@@ -1670,6 +1668,7 @@ namespace hiro
                 sb.Children.Add(da);
                 sb.Completed += delegate
                 {
+                    ct.Effect = null;
                     if (bw != null)
                         bw.RunWorkerAsync();
                     sb = null;
@@ -1719,6 +1718,51 @@ namespace hiro
             System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
             System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
             sb.Children.Add(da);
+            sb.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+            sb.Completed += delegate
+            {
+                sb = null;
+            };
+            return sb;
+        }
+        #endregion
+
+        #region 添加thickness动画
+        public static System.Windows.Media.Animation.Storyboard AddThicknessAnimaton(System.Windows.Thickness to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Thickness? from = null)
+        {
+            if (sb == null)
+                sb = new();
+            System.Windows.Media.Animation.ThicknessAnimation da;
+            if (from != null)
+                da = new((System.Windows.Thickness)from, to, TimeSpan.FromMilliseconds(mstime));
+            else
+                da = new(to, TimeSpan.FromMilliseconds(mstime));
+            System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
+            System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
+            sb.Children.Add(da);
+            sb.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+            sb.Completed += delegate
+            {
+                sb = null;
+            };
+            return sb;
+        }
+        #endregion 
+
+        #region 添加Color动画
+        public static System.Windows.Media.Animation.Storyboard AddColorAnimaton(System.Windows.Media.Color to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Media.Color? from = null)
+        {
+            if (sb == null)
+                sb = new();
+            System.Windows.Media.Animation.ColorAnimation da;
+            if (from != null)
+                da = new((System.Windows.Media.Color)from, to, TimeSpan.FromMilliseconds(mstime));
+            else
+                da = new(to, TimeSpan.FromMilliseconds(mstime));
+            System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
+            System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
+            sb.Children.Add(da);
+            sb.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
             sb.Completed += delegate
             {
                 sb = null;

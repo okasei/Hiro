@@ -101,8 +101,8 @@ namespace hiro
             utils.Set_Control_Location(hour, "timehour");
             utils.Set_Control_Location(minute, "timemin");
             utils.Set_Control_Location(second, "timesec");
-            utils.Set_Control_Location(tpbtn1, "timeok");
-            utils.Set_Control_Location(tpbtn2, "timecancel");
+            utils.Set_Control_Location(tpbtn1, "timeok", bottom: true, right: true);
+            utils.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
         }
         private void scbtn_5_Click(object sender, RoutedEventArgs e)
         {

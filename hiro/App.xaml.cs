@@ -183,19 +183,11 @@ namespace hiro
         private void InitializeInnerParameters()
         {
             CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var path = CurrentDirectory + "\\users\\";
-            System.IO.Directory.CreateDirectory(path);
-            path = path + EnvironmentUsername + "\\";
-            System.IO.Directory.CreateDirectory(path);
-            System.IO.Directory.CreateDirectory(path + "\\editor\\");
-            System.IO.Directory.CreateDirectory(path + "\\log\\");
-            System.IO.Directory.CreateDirectory(path + "\\config\\");
-
-            path = CurrentDirectory + "\\system\\";
-            System.IO.Directory.CreateDirectory(path);
-            System.IO.Directory.CreateDirectory(path + "\\lang\\");
-            System.IO.Directory.CreateDirectory(path + "\\wallpaper\\");
-
+            utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\editor\\");
+            utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\");
+            utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\");
+            utils.CreateFolder(CurrentDirectory + "\\system\\lang\\");
+            utils.CreateFolder(CurrentDirectory + "\\system\\wallpaper\\");
             LogFilePath = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
             System.IO.File.Delete(LogFilePath);
             utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
