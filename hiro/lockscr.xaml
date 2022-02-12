@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="lockscr" Height="450" Width="800" WindowStyle="None" Topmost="True" MouseLeftButtonDown="Ls_MouseLeftButtonDown" WindowStartupLocation="Manual" WindowState="Normal" IsTabStop="False" ResizeMode="NoResize" Loaded="Ls_Loaded" Closing="Ls_Closing" Icon="/hiro_circle.ico">
     <Window.Background>
         <ImageBrush Stretch="UniformToFill"/>

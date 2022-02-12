@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="TimePicker" Height="450" Width="800" ResizeMode="NoResize" WindowStyle="None" ShowInTaskbar="False" WindowStartupLocation="Manual" HorizontalAlignment="Left" VerticalAlignment="Top" MouseLeftButtonDown="tp_MouseLeftButtonDown" Closing="tp_Closing" Icon="/hiro_circle.ico">
     <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>

@@ -41,7 +41,6 @@ namespace hiro
         internal static double blurradius = 50.0;
         internal static double blursec = 500.0;
         internal static System.Windows.Threading.DispatcherTimer? timer;
-        internal static ContextMenu? cm = null;
         internal static System.Collections.ObjectModel.ObservableCollection<cmditem> cmditems = new();
         internal static int page = 0;
         internal static bool dflag = false;
@@ -50,11 +49,23 @@ namespace hiro
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
-        { 
+        {
+             _ = new System.Threading.Mutex(true, "0x415417hiro", out bool ret);
+            if (!ret)
+            {
+                utils.RunExe("exit()");
+                return;
+            }
             InitializeInnerParameters();
             Initialize_Notiy_Recall();
             InitializeMethod();
             InitializeStartParameters(e);
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
+            base.OnStartup(e);
         }
 
         private void InitializeStartParameters(StartupEventArgs e)
@@ -370,107 +381,130 @@ namespace hiro
 
         public static void Load_Menu()
         {
-            if (cm != null)
-                cm.Items.Clear();
-            cm = new ContextMenu();
-            cm.Foreground = new SolidColorBrush(AppForeColor);
-            cm.Background = new SolidColorBrush(AppAccentColor);
-            var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;
-            for (int c = 1; c <= 10; c++)
+            if (wnd != null)
             {
-                if (c + page * 10 > cmditems.Count)
-                    break;
-                var name = cmditems[c - 1 + page * 10].name;
-                if (name.Equals("-"))
+                if (wnd.cm != null)
+                    wnd.cm.Items.Clear();
+                wnd.cm = new()
                 {
-                    Separator sp = new();
-                    cm.Items.Add(sp);
-                    continue;
-                }
-                MenuItem mu = new();
-                if (name.ToLower().IndexOf("[s]") != -1)
-                    mu.IsChecked = true;
-                else
-                    mu.IsChecked = false;
-                name = name.Replace("[S]", "").Replace("[s]", "");
-                if (name.ToLower().IndexOf("[h]") != -1)
-                    mu.Visibility = Visibility.Hidden;
-                else
-                    mu.Visibility = Visibility.Visible;
-                name = name.Replace("[H]", "").Replace("[h]", "");
-                if (name.ToLower().IndexOf("[n]") != -1)
-                    mu.IsEnabled = false;
-                name = name.Replace("[N]", "").Replace("[n]", "");
-                mu.Header = name.Replace("[\\\\]", "");
-                mu.Tag = (c + page * 10).ToString();
-                mu.Click += delegate
+                    CacheMode = null,
+                    Foreground = new SolidColorBrush(AppForeColor),
+                    Background = new SolidColorBrush(AppAccentColor),
+                    BorderBrush = new SolidColorBrush(AppAccentColor)
+                };
+                var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;
+                for (int c = 1; c <= 10; c++)
                 {
-                    try
+                    if (c + page * 10 > cmditems.Count)
+                        break;
+                    var name = cmditems[c - 1 + page * 10].name;
+                    if (name.Equals("-"))
                     {
-                        String? str = mu.Tag.ToString();
-                        if (str != null)
-                            utils.RunExe(cmditems[int.Parse(str) - 1].command);
+                        wnd.cm.Items.Add(new Separator());
+                        continue;
+                    }
+                    MenuItem mu = new()
+                    {
+                        Background = new SolidColorBrush(Colors.Transparent)
+                    };
+                    if (name.ToLower().IndexOf("[s]") != -1)
+                    {
+                        mu.IsChecked = true;
+                        mu.IsCheckable = true;
+                    }
+                    name = name.Replace("[S]", "").Replace("[s]", "");
+                    if (name.ToLower().IndexOf("[h]") != -1)
+                        continue;
+                    name = name.Replace("[H]", "").Replace("[h]", "");
+                    if (name.ToLower().IndexOf("[n]") != -1)
+                        mu.IsEnabled = false;
+                    name = name.Replace("[N]", "").Replace("[n]", "");
+                    mu.Header = name.Replace("[\\\\]", "");
+                    mu.Tag = (c + page * 10).ToString();
+                    mu.Click += delegate
+                    {
+                        try
+                        {
+                            String? str = mu.Tag.ToString();
+                            if (str != null)
+                                utils.RunExe(cmditems[int.Parse(str) - 1].command);
 
-                    }
-                    catch (Exception ex)
+                        }
+                        catch (Exception ex)
+                        {
+                            utils.LogtoFile("[ERROR]" + ex.Message);
+                        }
+                    };
+                    wnd.cm.Items.Add(mu);
+                }
+                if (cmditems.Count > 0)
+                {
+                    wnd.cm.Items.Add(new Separator());
+                    MenuItem pre = new()
                     {
-                        utils.LogtoFile("[ERROR]" + ex.Message);
-                    }
-                };
-                cm.Items.Add(mu);
-            }
-            if(cmditems.Count > 0)
-            {
-                cm.Items.Add(new Separator());
-                MenuItem pre = new();
-                if (page <= 0)
-                    pre.IsEnabled = false;
-                pre.Header = utils.Get_Transalte("menupre");
-                pre.Click += delegate
+                        Background = new SolidColorBrush(Colors.Transparent)
+                    };
+                    if (page <= 0)
+                        pre.IsEnabled = false;
+                    pre.Header = utils.Get_Transalte("menupre");
+                    pre.Click += delegate
+                    {
+                        page--;
+                        Load_Menu();
+                        wnd.cm.IsOpen = true;
+                    };
+                    wnd.cm.Items.Add(pre);
+                    MenuItem pageid = new()
+                    {
+                        Background = new SolidColorBrush(Colors.Transparent)
+                    };
+                    pageid.Header = (page + 1).ToString() + "/" + total.ToString();
+                    pageid.IsEnabled = false;
+                    wnd.cm.Items.Add(pageid);
+                    MenuItem next = new()
+                    {
+                        Background = new SolidColorBrush(Colors.Transparent)
+                    };
+                    if (page >= total - 1)
+                        next.IsEnabled = false;
+                    next.Header = utils.Get_Transalte("menunext");
+                    next.Click += delegate
+                    {
+                        page++;
+                        Load_Menu();
+                        wnd.cm.IsOpen = true;
+                    };
+                    wnd.cm.Items.Add(next);
+                }
+                else
                 {
-                    page--;
-                    Load_Menu();
-                    cm.IsOpen = true;
-                };
-                cm.Items.Add(pre);
-                MenuItem pageid = new();
-                pageid.Header = (page + 1).ToString() + "/" + total.ToString();
-                pageid.IsEnabled = false;
-                cm.Items.Add(pageid);
-                MenuItem next = new();
-                if (page >= total - 1)
-                    next.IsEnabled = false;
-                next.Header = utils.Get_Transalte("menunext");
-                next.Click += delegate
+                    MenuItem pageid = new();
+                    pageid.IsEnabled = false;
+                    pageid.Header = utils.Get_Transalte("menunull");
+                    wnd.cm.Items.Add(pageid);
+                }
+                wnd.cm.Items.Add(new Separator());
+                MenuItem show = new()
                 {
-                    page++;
-                    Load_Menu();
-                    cm.IsOpen = true;
+                    Background = new SolidColorBrush(Colors.Transparent)
                 };
-                cm.Items.Add(next);
+                show.Header = utils.Get_Transalte("menushow");
+                show.Click += delegate
+                {
+                    utils.RunExe("show()");
+                };
+                wnd.cm.Items.Add(show);
+                MenuItem exit = new()
+                {
+                    Background = new SolidColorBrush(Colors.Transparent)
+                };
+                exit.Header = utils.Get_Transalte("menuexit");
+                exit.Click += delegate
+                {
+                    utils.RunExe("exit()");
+                };
+                wnd.cm.Items.Add(exit);
             }
-            else
-            {
-                MenuItem pageid = new();
-                pageid.IsEnabled = false;
-                pageid.Header = utils.Get_Transalte("menunull");
-                cm.Items.Add(pageid);
-            }
-            cm.Items.Add(new Separator());
-            MenuItem show = new();
-            show.Header = utils.Get_Transalte("menushow");
-            show.Click += delegate
-            {
-                utils.RunExe("show()");
-            };
-            cm.Items.Add(show);
-            MenuItem exit = new();
-            exit.Header = utils.Get_Transalte("menuexit");
-            exit.Click += delegate
-            {
-                utils.RunExe("exit()");
-            };
-            cm.Items.Add(exit);
             GC.Collect();
         }
 

@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Sequence" Height="450" Width="800" ResizeMode="NoResize" WindowStyle="None" ShowInTaskbar="False" Topmost="True" Icon="/hiro_circle.ico" SizeChanged="seq_SizeChanged">
     <Window.Background>
         <ImageBrush Stretch="UniformToFill"/>

@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="editor" Height="450" Width="800" WindowStyle="None" ShowInTaskbar="False" ResizeMode="NoResize" Loaded="Edi_Loaded" Deactivated="Edi_Deactivated" Topmost="True" AllowsTransparency="True" KeyDown="Edi_KeyDown" SizeChanged="Edi_SizeChanged" Icon="/hiro_circle.ico">
     <Grid>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>

@@ -9,6 +9,7 @@ namespace hiro
     /// </summary>
     public partial class MainWindow : Window
     {
+        internal System.Windows.Controls.ContextMenu? cm = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -173,8 +174,7 @@ namespace hiro
                 switch (mc)
                 {
                     case "2":
-                        if (App.cm != null)
-                            App.cm.IsOpen = true;
+                        utils.RunExe("menu()");;
                         break;
                     case "3":
                         var mce = utils.Read_Ini(App.dconfig, "Configuration", "middleaction", "");
@@ -201,8 +201,7 @@ namespace hiro
                 switch (rc)
                 {
                     case "2":
-                        if (App.cm != null)
-                            App.cm.IsOpen = true;
+                        utils.RunExe("menu()");
                         break;
                     case "3":
                         var rce = utils.Read_Ini(App.dconfig, "Configuration", "rightaction", "");
@@ -229,8 +228,7 @@ namespace hiro
                 switch (lc)
                 {
                     case "2":
-                        if (App.cm != null)
-                            App.cm.IsOpen = true;
+                        utils.RunExe("menu()");
                         break;
                     case "3":
                         var lce = utils.Read_Ini(App.dconfig, "Configuration", "leftaction", "");

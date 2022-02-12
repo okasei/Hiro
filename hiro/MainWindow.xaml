@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Initalizing - " Height="270" Width="480"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 
         Closing="main_Closing" Icon="/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
     <Grid>

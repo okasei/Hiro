@@ -501,10 +501,10 @@ namespace hiro
             #endregion
             coloruse1.Background = new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
             minbtn.Background = new SolidColorBrush(Color.FromArgb(0, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-            if (App.cm != null)
+            if (App.wnd != null && App.wnd.cm != null)
             {
-                App.cm.Foreground = new SolidColorBrush(App.AppForeColor);
-                App.cm.Background = new SolidColorBrush(App.AppAccentColor);
+                App.wnd.cm.Foreground = new SolidColorBrush(App.AppForeColor);
+                App.wnd.cm.Background = new SolidColorBrush(App.AppAccentColor);
             }
             Load_Labels(false);
         }
@@ -833,6 +833,8 @@ namespace hiro
                     tc.SelectedIndex = 6;
                     ntn9.Visibility = Visibility.Hidden;
                     newx.Content = utils.Get_Transalte("new");
+                    tb7.Text = "";
+                    tb8.Text = "";
                 }
                 else if(newflag == 2)
                 {

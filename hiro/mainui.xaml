@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Name="ui" x:Class="hiro.Mainui"
+         x:Name="ui" x:Class="hiro.Mainui"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
         Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="Ui_MouseDown" Background="White" WindowStartupLocation="Manual" Closing="ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="ui_Loaded">
     <Grid>

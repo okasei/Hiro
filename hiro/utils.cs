@@ -1069,7 +1069,7 @@ namespace hiro
             {
                 try
                 {
-                    System.Environment.Exit(System.Environment.ExitCode);
+                    Environment.Exit(Environment.ExitCode);
                     System.Windows.Application.Current.Shutdown();
                 }
                 catch (Exception ex)
@@ -1204,8 +1204,11 @@ namespace hiro
             }
             if (path.Length > 5 && path.Substring(0, 6).ToLower() == "menu()")
             {
-                if (App.cm != null)
-                    App.cm.IsOpen = true;
+                if (App.wnd != null && App.wnd.cm != null)
+                {
+                    App.Load_Menu();
+                    App.wnd.cm.IsOpen = true;
+                }
                 return;
             }
             if (path.Length > 7 && path.Substring(0, 8).ToLower() == "editor()")
