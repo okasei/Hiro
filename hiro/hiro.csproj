@@ -10,9 +10,9 @@
     <Copyright>Copyright© 2022 N+ Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>😝 Hiro 🥰</Product>
-    <FileVersion>2.1.6</FileVersion>
-    <AssemblyVersion>2.1.6</AssemblyVersion>
-    <Version>2.1.6</Version>
+    <FileVersion>2.1.7</FileVersion>
+    <AssemblyVersion>2.1.7</AssemblyVersion>
+    <Version>2.1.7</Version>
     <PackageId>😝 Hiro 🥰</PackageId>
     <AssemblyName>Hiro</AssemblyName>
   </PropertyGroup>

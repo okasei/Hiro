@@ -70,7 +70,7 @@ namespace hiro {
         }
         
         /// <summary>
-        ///   20106 に類似しているローカライズされた文字列を検索します。
+        ///   20107 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ApplicationUpdateVersion {
             get {
@@ -79,7 +79,7 @@ namespace hiro {
         }
         
         /// <summary>
-        ///   2.1.6 に類似しているローカライズされた文字列を検索します。
+        ///   2.1.7 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ApplicationVersion {
             get {

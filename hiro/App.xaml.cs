@@ -35,7 +35,6 @@ namespace hiro
         internal static notification? noti = null;
         internal static Editor? ed = null;
         internal static Lockscr? ls = null;
-        internal static TimePicker? tp = null;
         internal static List<noticeitem> noticeitems = new();
         internal static int editpage = 0;
         internal static double blurradius = 50.0;

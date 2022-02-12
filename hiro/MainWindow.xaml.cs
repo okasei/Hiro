@@ -146,14 +146,6 @@ namespace hiro
                         a.Load_Colors();
                     }
                 }
-                if (win.GetType() == typeof(TimePicker))
-                {
-                    TimePicker? a = win as TimePicker;
-                    if (a != null)
-                    {
-                        a.Load_Colors();
-                    }
-                }
                 if (win.GetType() == typeof(update))
                 {
                     update? a = win as update;

@@ -19,6 +19,7 @@ namespace hiro
         internal System.ComponentModel.BackgroundWorker? upbw = null;
         internal System.ComponentModel.BackgroundWorker? whatsbw = null;
         internal int touch = 0;
+        int MaxDay = 28;
         public Mainui()
         {
             InitializeComponent();
@@ -381,6 +382,7 @@ namespace hiro
             utils.Set_Control_Location(helpx,"help");
             utils.Set_Control_Location(aboutx,"about");
             utils.Set_Control_Location(newx,"new");
+            utils.Set_Control_Location(timex,"time");
             utils.Set_Control_Location(bg_label,"background");
             utils.Set_Control_Location(langlabel,"language");
             utils.Set_Control_Location(langbox,"langbox");
@@ -402,6 +404,17 @@ namespace hiro
             utils.Set_Control_Location(tb14, "alarmattb");
             utils.Set_Control_Location(dgi, "data");
             utils.Set_Control_Location(dgs, "sdata");
+
+            utils.Set_Control_Location(tp_title, "timet");
+            utils.Set_Control_Location(year, "timeyear");
+            utils.Set_Control_Location(month, "timemonth");
+            utils.Set_Control_Location(day, "timeday");
+            utils.Set_Control_Location(hour, "timehour");
+            utils.Set_Control_Location(minute, "timemin");
+            utils.Set_Control_Location(second, "timesec");
+            utils.Set_Control_Location(tpbtn1, "timeok", bottom: true, right: true);
+            utils.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
+
             utils.Set_Grid_Location(homeg, "homeg");
             utils.Set_Grid_Location(itemg, "itemg");
             utils.Set_Grid_Location(scheduleg, "scheduleg");
@@ -417,6 +430,8 @@ namespace hiro
             utils.Set_Grid_Location(cm_grid, "callg");
             utils.Set_Grid_Location(bg_grid, "backg");
             utils.Set_Grid_Location(name_grid, "nameg");
+            utils.Set_Grid_Location(timeg, "timeg");
+
             Thickness thickness = configg.Margin;
             thickness.Top = 0.0;
             configg.Margin = thickness;
@@ -522,6 +537,8 @@ namespace hiro
             helpx.Content = utils.Get_Transalte("help");
             aboutx.Content = utils.Get_Transalte("about");
             newx.Content = utils.Get_Transalte("new");
+            timex.Content = utils.Get_Transalte("time");
+            tp_title.Content = utils.Get_Transalte("time");
             btn1.Content = utils.Get_Transalte("inew");
             btn2.Content = utils.Get_Transalte("iup");
             btn3.Content = utils.Get_Transalte("idown");
@@ -606,6 +623,8 @@ namespace hiro
             dgs.Columns[1].Header = utils.Get_Transalte("sname");
             dgs.Columns[2].Header = utils.Get_Transalte("stime");
             dgs.Columns[3].Header = utils.Get_Transalte("scommand");
+            tpbtn1.Content = utils.Get_Transalte("timeok");
+            tpbtn2.Content = utils.Get_Transalte("timecancel");
             tb6.Text = utils.Get_Transalte("helptext") + utils.Get_Transalte("helptext_ext") + utils.Get_Transalte("helptext_ext2");
         }
         public void Load_Labels(bool reload = true)
@@ -619,6 +638,7 @@ namespace hiro
                 helpx.Background = new SolidColorBrush(Colors.Transparent);
                 aboutx.Background = new SolidColorBrush(Colors.Transparent);
                 newx.Background = new SolidColorBrush(Colors.Transparent);
+                timex.Background = new SolidColorBrush(Colors.Transparent);
                 homex.IsEnabled = true;
                 itemx.IsEnabled = true;
                 schedulex.IsEnabled = true;
@@ -626,15 +646,17 @@ namespace hiro
                 helpx.IsEnabled = true;
                 aboutx.IsEnabled = true;
                 newx.IsEnabled = true;
-                newx.Visibility = Visibility.Hidden;
+                timex.IsEnabled = true;
+                
             }
-            homex.Foreground = this.Foreground;
-            itemx.Foreground = this.Foreground;
-            schedulex.Foreground = this.Foreground;
-            configx.Foreground = this.Foreground;
-            helpx.Foreground = this.Foreground;
-            aboutx.Foreground = this.Foreground;
-            newx.Foreground = this.Foreground;   
+            homex.Foreground = Foreground;
+            itemx.Foreground = Foreground;
+            schedulex.Foreground = Foreground;
+            configx.Foreground = Foreground;
+            helpx.Foreground = Foreground;
+            aboutx.Foreground = Foreground;
+            newx.Foreground = Foreground;   
+            timex.Foreground = Foreground;   
         }
         #endregion
 
@@ -694,6 +716,14 @@ namespace hiro
         public void Set_Label(Label label)
         {
             Load_Labels();
+            if (label != newx && label != timex)
+            {
+                newx.Visibility = Visibility.Hidden;
+            }
+            if (label != timex)
+            {
+                timex.Visibility = Visibility.Hidden;
+            }
             double duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
@@ -848,6 +878,12 @@ namespace hiro
                     scbtn_4.Visibility = Visibility.Hidden;
                     newx.Content = utils.Get_Transalte("new");
                 }
+            }
+            if (label == timex)
+            {
+                newx.Visibility = Visibility.Visible;
+                timex.Visibility = Visibility.Visible;
+                tc.SelectedIndex = 8;
             }
             label.IsEnabled = false;
             System.ComponentModel.BackgroundWorker bw = new();
@@ -1838,68 +1874,36 @@ namespace hiro
 
         private void Tb12_GotFocus(object sender, RoutedEventArgs e)
         {
-            if(App.tp == null)
-                App.tp = new();
-            try
-            {
-                System.Globalization.DateTimeFormatInfo dtFormat = new()
-                {
-                    ShortDatePattern = "yyyy/MM/dd HH:mm:ss"
-                };
-                DateTime dt = Convert.ToDateTime(tb12.Text, dtFormat);
-                App.tp.year.Text = dt.Year.ToString();
-                App.tp.month.Text = dt.Month.ToString();
-                App.tp.day.Text = dt.Day.ToString();
-                App.tp.hour.Text = dt.Hour.ToString();
-                App.tp.minute.Text = dt.Minute.ToString();
-                App.tp.second.Text = dt.Second.ToString();
-            }
-            catch (Exception ex)
-            {
-                DateTime dt = DateTime.Now;
-                App.tp.year.Text = dt.Year.ToString();
-                App.tp.month.Text = dt.Month.ToString();
-                App.tp.day.Text = dt.Day.ToString();
-                App.tp.hour.Text = dt.Hour.ToString();
-                App.tp.minute.Text = dt.Minute.ToString();
-                App.tp.second.Text = dt.Second.ToString();
-                utils.LogtoFile("[ERROR]" + ex.Message);
-            }
-            App.tp.Owner = this;
-            App.tp.ShowDialog();
+            Go_TimePicker();
         }
 
-        private void tb12_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Tb12_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (App.tp == null)
-                App.tp = new TimePicker();
+            Go_TimePicker();
+        }
+
+        private void Go_TimePicker()
+        {
+            DateTime dt = DateTime.Now;
             try
             {
                 System.Globalization.DateTimeFormatInfo dtFormat = new()
                 {
                     ShortDatePattern = "yyyy/MM/dd HH:mm:ss"
                 };
-                DateTime dt = Convert.ToDateTime(tb12.Text, dtFormat);
-                App.tp.year.Text = dt.Year.ToString();
-                App.tp.month.Text = dt.Month.ToString();
-                App.tp.day.Text = dt.Day.ToString();
-                App.tp.hour.Text = dt.Hour.ToString();
-                App.tp.minute.Text = dt.Minute.ToString();
-                App.tp.second.Text = dt.Second.ToString();
+                dt = Convert.ToDateTime(tb12.Text, dtFormat);
             }
             catch (Exception ex)
             {
-                DateTime dt = DateTime.Now;
-                App.tp.year.Text = dt.Year.ToString();
-                App.tp.month.Text = dt.Month.ToString();
-                App.tp.day.Text = dt.Day.ToString();
-                App.tp.hour.Text = dt.Hour.ToString();
-                App.tp.minute.Text = dt.Minute.ToString();
-                App.tp.second.Text = dt.Second.ToString();
                 utils.LogtoFile("[ERROR]" + ex.Message);
             }
-            App.tp.Owner = this;
-            App.tp.ShowDialog();
+            year.Text = dt.Year.ToString();
+            month.Text = dt.Month.ToString();
+            day.Text = dt.Day.ToString();
+            hour.Text = dt.Hour.ToString();
+            minute.Text = dt.Minute.ToString();
+            second.Text = dt.Second.ToString();
+            Set_Label(timex);
         }
 
         private void Blureff_Checked(object sender, RoutedEventArgs e)
@@ -2251,6 +2255,368 @@ namespace hiro
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "2");
             Blurbgi(3);
             App.blurradius = 25;
+        }
+
+        private void timex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Set_Label(timex);
+        }
+        private void Tp_Cancel(object sender, RoutedEventArgs e)
+        {
+            Set_Label(newx);
+        }
+
+        private String string_deal(String a, int b)
+        {
+            try
+            {
+                a = int.Parse(a).ToString();
+            }
+            catch (Exception ex)
+            {
+                a = "0";
+                utils.LogtoFile("[ERROR]" + ex.Message);
+            }
+            if (a.Length > b)
+            {
+                a = a.Substring(0, b);
+            }
+            else if (a.Length < b)
+            {
+                while (a.Length < b)
+                    a = "0" + a;
+            }
+            return a;
+        }
+
+        private void Tp_Go(object sender, RoutedEventArgs e)
+        {
+            tb12.Text = string_deal(year.Text, 4) + "/" + string_deal(month.Text, 2) + "/" + string_deal(day.Text, 2) + " " + string_deal(hour.Text, 2) + ":" + string_deal(minute.Text, 2) + ":" + string_deal(second.Text, 2);
+            Set_Label(newx);
+        }
+
+        private void year_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                try
+                {
+                    year.Text = (int.Parse(year.Text) + 1).ToString();
+                }
+                catch
+                {
+                    year.Text = DateTime.Now.Year.ToString();
+                }
+            }
+            else
+            {
+                try
+                {
+                    year.Text = (int.Parse(year.Text) - 1).ToString();
+                }
+                catch
+                {
+                    year.Text = DateTime.Now.Year.ToString();
+                }
+            }
+        }
+
+        private void month_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                try
+                {
+                    if (int.Parse(month.Text) + 1 < 13)
+                        month.Text = (int.Parse(month.Text) + 1).ToString();
+                    else
+                        month.Text = "12";
+                }
+                catch
+                {
+                    month.Text = DateTime.Now.Month.ToString();
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (int.Parse(month.Text) - 1 > 0)
+                        month.Text = (int.Parse(month.Text) - 1).ToString();
+                    else
+                        month.Text = "01";
+                }
+                catch
+                {
+                    month.Text = DateTime.Now.Month.ToString();
+                }
+            }
+        }
+
+        private void hour_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                try
+                {
+                    if (int.Parse(hour.Text) + 1 < 24)
+                        hour.Text = (int.Parse(hour.Text) + 1).ToString();
+                    else
+                        hour.Text = "23";
+                }
+                catch
+                {
+                    hour.Text = DateTime.Now.Hour.ToString();
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (int.Parse(hour.Text) - 1 > -1)
+                        hour.Text = (int.Parse(hour.Text) - 1).ToString();
+                    else
+                        hour.Text = "00";
+                }
+                catch
+                {
+                    hour.Text = DateTime.Now.Hour.ToString();
+                }
+            }
+        }
+
+        private void minute_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                try
+                {
+                    if (int.Parse(minute.Text) + 1 < 60)
+                        minute.Text = (int.Parse(minute.Text) + 1).ToString();
+                    else
+                        minute.Text = "59";
+                }
+                catch
+                {
+                    minute.Text = DateTime.Now.Minute.ToString();
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (int.Parse(minute.Text) - 1 > -1)
+                        minute.Text = (int.Parse(minute.Text) - 1).ToString();
+                    else
+                        minute.Text = "00";
+                }
+                catch
+                {
+                    minute.Text = DateTime.Now.Minute.ToString();
+                }
+            }
+        }
+
+        private void second_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                try
+                {
+                    if (int.Parse(second.Text) + 1 < 60)
+                        second.Text = (int.Parse(second.Text) + 1).ToString();
+                    else
+                        second.Text = "59";
+                }
+                catch
+                {
+                    second.Text = DateTime.Now.Second.ToString();
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (int.Parse(second.Text) - 1 > -1)
+                        second.Text = (int.Parse(second.Text) - 1).ToString();
+                    else
+                        second.Text = "00";
+                }
+                catch
+                {
+                    second.Text = DateTime.Now.Second.ToString();
+                }
+            }
+        }
+
+        private void day_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                try
+                {
+                    if (int.Parse(day.Text) + 1 <= MaxDay)
+                        day.Text = (int.Parse(day.Text) + 1).ToString();
+                    else
+                        day.Text = MaxDay.ToString();
+                }
+                catch
+                {
+                    day.Text = DateTime.Now.Day.ToString();
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (int.Parse(day.Text) - 1 > -1)
+                        day.Text = (int.Parse(day.Text) - 1).ToString();
+                    else
+                        day.Text = "01";
+                }
+                catch
+                {
+                    day.Text = DateTime.Now.Day.ToString();
+                }
+            }
+        }
+
+        private void month_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (month != null)
+                {
+                    month.Text = int.Parse(month.Text).ToString();
+                    if (int.Parse(month.Text) < 1)
+                        month.Text = "1";
+                    if (int.Parse(month.Text) > 12)
+                        month.Text = "12";
+                }
+            }
+            catch
+            {
+                month.Text = DateTime.Now.Month.ToString();
+            }
+
+            try
+            {
+                if (month != null && year != null)
+                    MaxDay = System.Threading.Thread.CurrentThread.CurrentUICulture.Calendar.GetDaysInMonth(int.Parse(year.Text), int.Parse(month.Text));
+                else
+                    MaxDay = 28;
+            }
+            catch
+            {
+                MaxDay = 28;
+            }
+            if (day != null && int.Parse(day.Text) > MaxDay)
+                day.Text = MaxDay.ToString();
+        }
+
+        private void day_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (day != null)
+                {
+                    day.Text = int.Parse(day.Text).ToString();
+                    if (int.Parse(day.Text) < 1)
+                        day.Text = "1";
+                    if (int.Parse(day.Text) > MaxDay)
+                        day.Text = MaxDay.ToString();
+                }
+            }
+            catch
+            {
+                day.Text = DateTime.Now.Day.ToString();
+            }
+        }
+
+        private void year_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (year != null)
+                {
+                    year.Text = int.Parse(year.Text).ToString();
+                }
+            }
+            catch
+            {
+                year.Text = DateTime.Now.Year.ToString();
+            }
+            try
+            {
+                if (month != null && year != null)
+                    MaxDay = System.Threading.Thread.CurrentThread.CurrentUICulture.Calendar.GetDaysInMonth(int.Parse(year.Text), int.Parse(month.Text));
+                else
+                    MaxDay = 28;
+            }
+            catch
+            {
+                MaxDay = 28;
+            }
+            if (day != null && int.Parse(day.Text) > MaxDay)
+                day.Text = MaxDay.ToString();
+        }
+
+        private void hour_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+            try
+            {
+                if (hour != null)
+                {
+                    hour.Text = int.Parse(hour.Text).ToString();
+                    if (int.Parse(hour.Text) < 0)
+                        hour.Text = "0";
+                    if (int.Parse(hour.Text) > 23)
+                        hour.Text = "23";
+                }
+            }
+            catch
+            {
+                hour.Text = DateTime.Now.Hour.ToString();
+            }
+        }
+
+        private void minute_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (minute != null)
+                {
+                    minute.Text = int.Parse(minute.Text).ToString();
+                    if (int.Parse(minute.Text) < 0)
+                        minute.Text = "0";
+                    if (int.Parse(minute.Text) > 59)
+                        minute.Text = "59";
+                }
+            }
+            catch
+            {
+                minute.Text = DateTime.Now.Minute.ToString();
+            }
+        }
+
+        private void second_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (second != null)
+                {
+                    second.Text = int.Parse(second.Text).ToString();
+                    if (int.Parse(second.Text) < 0)
+                        second.Text = "0";
+                    if (int.Parse(second.Text) > 59)
+                        second.Text = "59";
+                }
+            }
+            catch
+            {
+                second.Text = DateTime.Now.Second.ToString();
+            }
         }
     }
 }
