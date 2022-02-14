@@ -45,6 +45,7 @@ namespace hiro
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient hc = new();
         internal static SolidColorBrush ForeBrush = new();
+        internal static int ColorCD = -1;
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
@@ -365,7 +366,12 @@ namespace hiro
                 }
                 i++;
             }
-
+            if (ColorCD > -1)
+            {
+                if (ColorCD == 0 && wnd != null)
+                    wnd.Load_All_Colors();
+                ColorCD--;
+            }
         }
 
         public static void UpdateHomeLabel1(string val)
@@ -390,7 +396,8 @@ namespace hiro
                     Foreground = new SolidColorBrush(AppForeColor),
                     Background = new SolidColorBrush(AppAccentColor),
                     BorderBrush = new SolidColorBrush(AppAccentColor),
-                    Style = (Style)Current.Resources["HiroContextMenu"]
+                    Style = (Style)Current.Resources["HiroContextMenu"],
+                    Padding = new(1, 10, 1, 10)
                 };
                 var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;
                 for (int c = 1; c <= 10; c++)

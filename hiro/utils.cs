@@ -1654,7 +1654,7 @@ namespace hiro
                 sb.Begin();
             }
         }
-        public static void Blur_Out(System.Windows.Controls.Control ct, System.ComponentModel.BackgroundWorker? bw = null)
+        public static void Blur_Out(System.Windows.Controls.Control ct, BackgroundWorker? bw = null)
         {
             if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {

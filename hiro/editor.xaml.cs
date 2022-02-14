@@ -120,7 +120,7 @@ namespace hiro
         {
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(1200));
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
                 dou.Completed += delegate
                 {
@@ -141,7 +141,7 @@ namespace hiro
             con.IsEnabled = false;
             if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
-                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(900));
+                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
                 dou.Completed += delegate
                 {

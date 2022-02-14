@@ -11,7 +11,11 @@ namespace hiro
     {
         internal string clips = "";
         private string mSaveFileName = "";//下载文件的保存文件名
-
+        private string progress = "";
+        private int current = -1;
+        private string listfile = "";
+        private string rurl = "";
+        private string rpath = "";
         internal long startpos = 0;
         internal int mode = 0;//1=更新模式
         internal string product = "";
@@ -129,7 +133,16 @@ namespace hiro
                 Stop_Download(false);
                 return;
             }
-            string strFileName = textBoxHttpUrl.Text;
+            
+            if (current > -1)
+            {
+                httpUrl = rurl.Trim();
+            }
+            else
+            {
+                rpath = SavePath.Text;
+            }
+            string strFileName = httpUrl;
             strFileName = strFileName[(strFileName.LastIndexOf("/") + 1)..];
             if (strFileName.LastIndexOf("?") != -1)
                 strFileName = strFileName[..strFileName.LastIndexOf("?")];
@@ -139,12 +152,12 @@ namespace hiro
             {
                 SavePath.Text = "<idocument>\\<filename>";
             }
-            mSaveFileName = utils.Path_Prepare(SavePath.Text);
+            mSaveFileName = utils.Path_Prepare(rpath);
             mSaveFileName = utils.Path_Prepare_EX(mSaveFileName);
             mSaveFileName = utils.Path_Replace(mSaveFileName, "<filename>", strFileName);
             if (mSaveFileName.IndexOf("<index>") != -1)
             {
-                while (System.IO.File.Exists(utils.Path_Replace(mSaveFileName, "<index>", index.ToString())) || System.IO.File.Exists(utils.Path_Replace(mSaveFileName + ".hdp", "<index>", index.ToString())))
+                while (System.IO.File.Exists(utils.Path_Replace(mSaveFileName, "<index>", index.ToString())))
                     index++;
                 mSaveFileName = utils.Path_Replace(mSaveFileName, "<index>", index.ToString());
                 index++;
@@ -152,6 +165,11 @@ namespace hiro
             utils.CreateFolder(mSaveFileName);
             if (mSaveFileName.EndsWith("\\"))
                 mSaveFileName = mSaveFileName + strFileName;
+            if (System.IO.File.Exists(mSaveFileName))
+            {
+                Stop_Download(true);
+                return;
+            }
             var response = await App.hc.GetAsync(httpUrl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             var totalLength = response.Content.Headers.ContentLength;
             System.IO.FileStream? fileStream = null;
@@ -230,7 +248,7 @@ namespace hiro
                 }
                 if (totalLength > 0)
                 {
-                    ala_title.Content = string.Format("{0:F2}", Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2)) + "%" + "(" + formateSize(readLength + startpos) + "/" + formateSize(totalLength.Value) + ")";
+                    ala_title.Content = progress + string.Format("{0:F2}", Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2)) + "%" + "(" + formateSize(readLength + startpos) + "/" + formateSize(totalLength.Value) + ")";
                     Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.Value = Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2);
                     pb.IsIndeterminate = false;
@@ -243,7 +261,7 @@ namespace hiro
                 }
                 else
                 {
-                    ala_title.Content = formateSize(readLength + startpos) + "/" + utils.Get_Transalte("dlunknown");
+                    ala_title.Content = progress + formateSize(readLength + startpos) + "/" + utils.Get_Transalte("dlunknown");
                     Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.IsIndeterminate = true;
                 }
@@ -267,38 +285,77 @@ namespace hiro
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
                 }
-                App.Notify(new noticeitem(utils.Get_Transalte("dlsuccess"), 2));
-                if (autorun.IsChecked == true)
-                {
-                    try
-                    {
-                        utils.RunExe("explorer \"" + mSaveFileName + "\"");
-
-                    }
-                    catch (Exception ex)
-                    {
-                        utils.LogtoFile("[ERROR]" + ex.Message);
-                        App.Notify(new noticeitem(utils.Get_Transalte("dlrunerror"), 2));
-                    }
-                }
                 Stop_Download(true);
             }
             else
                 Stop_Download(false);
-            if (autorun.IsEnabled == false)
-                Close();
         }
         private void Stop_Download(bool success)
         {
+            if (success && mSaveFileName.ToLower().EndsWith(".hidl"))
+            {
+                if(current < 0)
+                {
+                    listfile = mSaveFileName;
+                    current = 0;
+                }
+            }
+            if (success && current > -1)
+            {
+                if (System.IO.File.Exists(listfile))
+                {
+                    try
+                    {
+                        string[] filec = System.IO.File.ReadAllLines(listfile);
+                        if (current < filec.Length)
+                        {
+                            var str = filec[current];
+                            if (str.IndexOf("|") != -1)
+                            {
+                                rurl = str.Substring(0, str.IndexOf("|"));
+                                rpath = str.Substring(str.IndexOf("|") + 1);
+                            }
+                            else
+                            {
+                               rurl = str;
+                                rpath = SavePath.Text;
+                            }
+                            current++;
+                            progress = "[" + current.ToString() + "/" + filec.Length.ToString() + "]";
+                            StartDownload();
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
+            }
+            progress = "";
             Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             pb.IsIndeterminate = false;
             pb.Value = 0;
             albtn_1.Content = utils.Get_Transalte("dlstart");
             textBoxHttpUrl.IsEnabled = true;
             SavePath.IsEnabled = true;
-            ala_title.Content = success ? utils.Get_Transalte("dlsuccess") : utils.Get_Transalte("dltitle");
+            ala_title.Content = progress + (success ? utils.Get_Transalte("dlsuccess") : utils.Get_Transalte("dltitle"));
             Title = ala_title.Content.ToString() + " - " + App.AppTitle;
             stopflag = 1;
+            if (success)
+            {
+                App.Notify(new noticeitem(utils.Get_Transalte("dlsuccess"), 2));
+                current = -1;
+                listfile = "";
+            }
+            if (success && autorun.IsChecked == true)
+            {
+                    utils.RunExe("explorer \"" + mSaveFileName + "\"");
+            }
+            if (autorun.IsEnabled == false)
+            {
+                Close();
+            }
         }
         public static string formateSize(double size)
         {
@@ -316,10 +373,13 @@ namespace hiro
         {
             if (albtn_1.Content.Equals(utils.Get_Transalte("dlstart")))
             {
+                if (current > 1)
+                    progress = "[" + current.ToString() + "/?]";
                 StartDownload();
             }
             else//停止
             {
+
                 Stop_Download(false);
                 if (autorun.IsEnabled == false)
                     Close();
@@ -348,7 +408,7 @@ namespace hiro
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Stop_Download(false);
+            //Stop_Download(false);
         }
 
         private void textBoxHttpUrl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

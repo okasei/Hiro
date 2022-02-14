@@ -23,7 +23,7 @@ namespace hiro
             Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
             Load_Position();
             Load_Translate();
-            this.Title = utils.Get_Transalte("seqtitle") + " - " + App.AppTitle;
+            Title = utils.Get_Transalte("seqtitle") + " - " + App.AppTitle;
             var maxwidth = SystemParameters.PrimaryScreenWidth / 5;
             var btnwidth = skipbtn.Width + skipbtn.Margin.Right + 5;
             maxwidth = (maxwidth > btnwidth) ? maxwidth : btnwidth;

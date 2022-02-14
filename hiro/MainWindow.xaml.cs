@@ -39,7 +39,7 @@ namespace hiro
                 case 0x0320://系统颜色改变
                     if (utils.Read_Ini(App.dconfig, "Configuration", "lock", "0").Equals("1"))
                         break;
-                    Load_All_Colors();
+                    App.ColorCD = 3;
                     break;
                 case 0x0083://prevent system from drawing outline
                     handled = true;

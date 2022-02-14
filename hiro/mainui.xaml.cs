@@ -1922,7 +1922,6 @@ namespace hiro
         {
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "1");
             App.blurradius = 50.0;
-            App.blursec = 500.0;
             Blurbgi(1);
         }
         private void Blurbgi(int direction)
@@ -1967,7 +1966,6 @@ namespace hiro
         {
             utils.Write_Ini(App.dconfig, "Configuration", "blur", "0");
             App.blurradius = 50.0;
-            App.blursec = 500.0;
             Blurbgi(0);
         }
 
