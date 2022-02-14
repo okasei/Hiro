@@ -15,7 +15,8 @@ namespace hiro
         internal int flag = -1;
         internal int aflag = -1;
         internal int bflag = 0;
-        public Alarm(int iid, bool CustomTitle = false, string CustomedTitle = "Time is Up!", bool CustomContent = false, string CustomedContnet = "Time up!", bool OneButtonOnly = false)
+        internal string? url = null;
+        public Alarm(int iid, string? CustomedTitle = "Time is Up!", string? CustomedContnet = "Time up!", int OneButtonOnly = 0)
         {
             InitializeComponent();
             SourceInitialized += OnSourceInitialized;
@@ -41,9 +42,9 @@ namespace hiro
             {
                 Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
             };
-            ala_title.Content = CustomTitle ? CustomedTitle : utils.Get_Transalte("alarmtitle");
+            ala_title.Content = CustomedTitle == null ? CustomedTitle : utils.Get_Transalte("alarmtitle");
             Title = ala_title.Content + " - " + App.AppTitle;
-            if (CustomContent)
+            if (CustomedContnet != null)
                 sv.Content = CustomedContnet;
             id = iid;
             utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
@@ -59,14 +60,22 @@ namespace hiro
             }
         }
             
-        public void Load_Position(bool OneButtonOnly = false)
+        public void Load_Position(int OneButtonOnly = 0)
         {
-            if (OneButtonOnly)
+            if (OneButtonOnly == 1)
             {
                 albtn_1.Content = utils.Get_Transalte("alarmone");
                 albtn_2.Visibility = Visibility.Hidden;
                 albtn_3.Visibility = Visibility.Hidden;
                 utils.Set_Control_Location(albtn_1, "alarmone", bottom: true, right: true);
+            }
+            else if(OneButtonOnly == 2)
+            {
+                albtn_1.Content = utils.Get_Transalte("updateok");
+                albtn_3.Content = utils.Get_Transalte("updateskip");
+                albtn_2.Visibility = Visibility.Hidden;
+                utils.Set_Control_Location(albtn_1, "updateok", bottom: true, right: true);
+                utils.Set_Control_Location(albtn_3, "updateskip", bottom: true, right: true);
             }
             else
             {
@@ -143,7 +152,12 @@ namespace hiro
 
         private void Albtn_1_Click(object sender, RoutedEventArgs e)
         {
-            if (id > -1)
+            if (id == -415)
+            {
+                if (url != null)
+                    utils.RunExe(url);
+            }
+            else if (id > -1)
             {
                 utils.OK_Alarm(App.aw[id].id);
                 App.aw.RemoveAt(id);
@@ -155,7 +169,7 @@ namespace hiro
                 id = -1;
             }    
             flag = 0;
-            this.Close();
+            Close();
         }
 
         private void Albtn_2_Click(object sender, RoutedEventArgs e)
@@ -185,7 +199,7 @@ namespace hiro
                 id = -1;
             }
             flag = 0;
-            this.Close();
+            Close();
 
         }
 
@@ -212,7 +226,7 @@ namespace hiro
                 id = -1;
             }
             flag = 0;
-            this.Close();
+            Close();
         }
 
         private void Alarmgrid_MouseDown(object sender, MouseButtonEventArgs e)

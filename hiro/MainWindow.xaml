@@ -12,8 +12,6 @@
         ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 
         Closing="main_Closing" Icon="/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
     <Grid>
-        <Label x:Name="hirolor"></Label>
-        <tb:TaskbarIcon x:Name="ti" IconSource="/hiro_circle.ico" >
-        </tb:TaskbarIcon>
+        <tb:TaskbarIcon x:Name="ti" IconSource="/hiro_circle.ico" />
     </Grid>
 </Window>

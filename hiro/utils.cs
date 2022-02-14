@@ -424,7 +424,7 @@ namespace hiro
                 sender.Background = ib;
             }
         }
-        public static void Set_Control_Location(System.Windows.Controls.Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false)
+        public static void Set_Control_Location(System.Windows.Controls.Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false,bool location = true)
         {
             if (extra == false || path == null || !System.IO.File.Exists(path))
                 path = App.LangFilePath;
@@ -471,14 +471,17 @@ namespace hiro
                         "1" => System.Windows.FontStyles.Oblique,
                         _ => System.Windows.FontStyles.Normal,
                     };
-                    sender.Width = (width != "-1") ?  double.Parse(width) : sender.Width;
-                    sender.Height = (height != "-1") ?  double.Parse(height) : sender.Height;
-                    System.Windows.Thickness thickness = new();
-                    thickness.Left = (left != "-1") ? right ? 0.0 : double.Parse(left): sender.Margin.Left;
-                    thickness.Right = (left != "-1") ? !right ? sender.Margin.Right : double.Parse(left): sender.Margin.Right;
-                    thickness.Top = (top != "-1") ? bottom ? 0.0 : double.Parse(top): sender.Margin.Top;
-                    thickness.Bottom = (top != "-1") ? !bottom ? sender.Margin.Bottom : double.Parse(top) : sender.Margin.Bottom;
-                    sender.Margin = thickness;
+                    if (location)
+                    {
+                        sender.Width = (width != "-1") ? double.Parse(width) : sender.Width;
+                        sender.Height = (height != "-1") ? double.Parse(height) : sender.Height;
+                        System.Windows.Thickness thickness = new();
+                        thickness.Left = (left != "-1") ? right ? 0.0 : double.Parse(left) : sender.Margin.Left;
+                        thickness.Right = (left != "-1") ? !right ? sender.Margin.Right : double.Parse(left) : sender.Margin.Right;
+                        thickness.Top = (top != "-1") ? bottom ? 0.0 : double.Parse(top) : sender.Margin.Top;
+                        thickness.Bottom = (top != "-1") ? !bottom ? sender.Margin.Bottom : double.Parse(top) : sender.Margin.Bottom;
+                        sender.Margin = thickness;
+                    }
                 }
             }
             catch (Exception ex)
@@ -853,7 +856,7 @@ namespace hiro
                     }
                     else
                     {
-                        Alarm ala = new(-1, CustomedTitle: pa, CustomTitle: true, CustomedContnet: utils.Path_Prepare_EX(path.Replace("\\n", Environment.NewLine)), CustomContent: true, OneButtonOnly: true);
+                        Alarm ala = new(-1, CustomedTitle: pa, CustomedContnet: utils.Path_Prepare_EX(path.Replace("\\n", Environment.NewLine)), OneButtonOnly: 1);
                         ala.Show();
                     }
                 }
@@ -884,7 +887,7 @@ namespace hiro
                     }
                     else
                     {
-                        Alarm ala = new(-1, CustomedContnet: utils.Path_Prepare_EX(path.Replace("\\n", Environment.NewLine)), CustomContent: true, OneButtonOnly: true);
+                        Alarm ala = new(-1, CustomedContnet: utils.Path_Prepare_EX(path.Replace("\\n", Environment.NewLine)), OneButtonOnly: 1);
                         ala.Show();
                     }
 

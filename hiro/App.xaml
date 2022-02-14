@@ -6,9 +6,7 @@
              xmlns:local="clr-namespace:hiro"
              Startup="Hiro_We_Go"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             
-    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
-    xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf" xmlns:system="clr-namespace:System;assembly=System.Runtime">
+             xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -38,7 +36,7 @@
                                 <Trigger Property="ContextMenuService.HasDropShadow">
                                     <Setter Property="FrameworkElement.Margin" TargetName="Shdw">
                                         <Setter.Value>
-                                            <Thickness>0,0,5,5</Thickness>
+                                            <Thickness>0,0,2,2</Thickness>
                                         </Setter.Value>
                                     </Setter>
                                     <Setter Property="mwt:SystemDropShadowChrome.Color" TargetName="Shdw">

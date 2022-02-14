@@ -146,14 +146,6 @@ namespace hiro
                         a.Load_Colors();
                     }
                 }
-                if (win.GetType() == typeof(update))
-                {
-                    update? a = win as update;
-                    if (a != null)
-                    {
-                        a.Load_Colors();
-                    }
-                }
                 System.Windows.Forms.Application.DoEvents();
             }
         }

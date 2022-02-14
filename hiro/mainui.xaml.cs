@@ -375,14 +375,14 @@ namespace hiro
             utils.Set_Control_Location(sclabel1,"scname");
             utils.Set_Control_Location(sclabel2,"sctime");
             utils.Set_Control_Location(sclabel3,"sccommand");
-            utils.Set_Control_Location(homex,"home");
-            utils.Set_Control_Location(itemx,"item");
-            utils.Set_Control_Location(schedulex,"schedule");
-            utils.Set_Control_Location(configx,"config");
-            utils.Set_Control_Location(helpx,"help");
-            utils.Set_Control_Location(aboutx,"about");
-            utils.Set_Control_Location(newx,"new");
-            utils.Set_Control_Location(timex,"time");
+            utils.Set_Control_Location(homex,"home", location: false);
+            utils.Set_Control_Location(itemx,"item", location: false);
+            utils.Set_Control_Location(schedulex,"schedule", location: false);
+            utils.Set_Control_Location(configx,"config", location: false);
+            utils.Set_Control_Location(helpx,"help", location: false);
+            utils.Set_Control_Location(aboutx,"about", location: false);
+            utils.Set_Control_Location(newx,"new", location: false);
+            utils.Set_Control_Location(timex,"time", location: false);
             utils.Set_Control_Location(bg_label,"background");
             utils.Set_Control_Location(langlabel,"language");
             utils.Set_Control_Location(langbox,"langbox");
@@ -2090,10 +2090,8 @@ namespace hiro
                     }
                     else
                     {
-                        update up = new();
-                        up.sv.Content = utils.Path_Prepare_EX(utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine));
+                        Alarm up = new(-415, utils.Get_Transalte("updatetitle"), utils.Path_Prepare_EX(utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine)), 2);
                         up.url = url;
-                        up.Owner = this;
                         up.Show();
                     }
                 }

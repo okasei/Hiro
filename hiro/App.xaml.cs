@@ -334,7 +334,7 @@ namespace hiro
                         }
                         else
                         {
-                            Alarm ala = new(aw.Count, CustomContent: true, CustomedContnet: utils.Path_Prepare_EX(scheduleitems[i - 1].name.Replace("\\n", Environment.NewLine)));
+                            Alarm ala = new(aw.Count, CustomedContnet: utils.Path_Prepare_EX(scheduleitems[i - 1].name.Replace("\\n", Environment.NewLine)));
                             aw.Add(new alarmwin(ala, i - 1));
                             ala.Show();
                         }
@@ -504,6 +504,15 @@ namespace hiro
                     utils.RunExe("exit()");
                 };
                 wnd.cm.Items.Add(exit);
+                foreach (object obj in wnd.cm.Items)
+                {
+                    if (obj.GetType() == typeof(MenuItem))
+                    {
+                        MenuItem? mi = obj as MenuItem;
+                        if (mi != null)
+                            utils.Set_Control_Location(mi, "context", location: false);
+                    }
+                }
             }
             GC.Collect();
         }
