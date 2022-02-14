@@ -1603,15 +1603,20 @@ namespace hiro
 
         private void autorun_Checked(object sender, RoutedEventArgs e)
         {
-            if(autorun.Tag != null && autorun.Tag.Equals("1"))
+            if (autorun.Tag != null && autorun.Tag.Equals("1"))
             {
+                autorun.Tag = "2";
                 try
                 {
                     if (Environment.ProcessPath != null)
                     {
-                        utils.RunExe("run(\"" + Environment.ProcessPath + "\" autostart_on,a)");
+                        System.Diagnostics.ProcessStartInfo pinfo = new();
+                        pinfo.UseShellExecute = true;
+                        pinfo.FileName = Environment.ProcessPath;
+                        pinfo.Arguments = "autostart_on";
+                        pinfo.Verb = "runas";
+                        System.Diagnostics.Process.Start(pinfo);
                     }
-                    
                 }
                 catch (Exception ex)
                 {
@@ -1619,19 +1624,25 @@ namespace hiro
                     utils.LogtoFile("[ERROR]" + ex.Message);
                 }
             }
-                
+            autorun.Tag = "1";
         }
 
         private void autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             if (autorun.Tag != null && autorun.Tag.Equals("1"))
             {
+                autorun.Tag = "2";
                 try
                 {
                     if (Environment.ProcessPath != null)
                     {
-                        utils.RunExe("run(\"" + Environment.ProcessPath + "\" autostart_off,a)");
-                    }  
+                        System.Diagnostics.ProcessStartInfo pinfo = new();
+                        pinfo.UseShellExecute = true;
+                        pinfo.FileName = Environment.ProcessPath;
+                        pinfo.Arguments = "autostart_off";
+                        pinfo.Verb = "runas";
+                        System.Diagnostics.Process.Start(pinfo);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1639,6 +1650,7 @@ namespace hiro
                     utils.LogtoFile("[ERROR]" + ex.Message);
                 }
             }
+            autorun.Tag = "1";
         }
 
         private void rbtn16_Checked(object sender, RoutedEventArgs e)

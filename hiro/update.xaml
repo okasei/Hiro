@@ -14,10 +14,8 @@
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <Button x:Name="albtn_2" Content="Skip this Version" HorizontalAlignment="Right" Margin="0,0,10,10" Width="109" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{x:Null}" Foreground="White" Height="25" VerticalAlignment="Bottom" Cursor="Hand" Click="albtn_2_Click"/>
         <Button x:Name="albtn_1" Content="Update" HorizontalAlignment="Right" Margin="0,0,142,10" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{x:Null}" Foreground="White" Height="25" VerticalAlignment="Bottom" Cursor="Hand" Click="albtn_1_Click"/>
-        
         <Label x:Name="content" FontFamily="Segoe UI" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ScrollViewer x:Name="sv" Height="322" Content="A new version of Hiro has been released!" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
         </Label>
-
     </Grid>
 </Window>

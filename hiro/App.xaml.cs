@@ -389,7 +389,8 @@ namespace hiro
                     CacheMode = null,
                     Foreground = new SolidColorBrush(AppForeColor),
                     Background = new SolidColorBrush(AppAccentColor),
-                    BorderBrush = new SolidColorBrush(AppAccentColor)
+                    BorderBrush = new SolidColorBrush(AppAccentColor),
+                    Style = (Style)Current.Resources["HiroContextMenu"]
                 };
                 var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;
                 for (int c = 1; c <= 10; c++)

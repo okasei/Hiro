@@ -479,7 +479,6 @@ namespace hiro
                     thickness.Top = (top != "-1") ? bottom ? 0.0 : double.Parse(top): sender.Margin.Top;
                     thickness.Bottom = (top != "-1") ? !bottom ? sender.Margin.Bottom : double.Parse(top) : sender.Margin.Bottom;
                     sender.Margin = thickness;
-                    utils.LogtoFile("sender " + val + "|" + sender.Margin.ToString() + "|" + sender.Width + "|" + sender.Height);
                 }
             }
             catch (Exception ex)
@@ -1443,11 +1442,11 @@ namespace hiro
                     if (mes.IndexOf("a") != -1)
                         pinfo.Verb = "runas";
                     if (mes.IndexOf("h") != -1)
-                        pinfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        pinfo.WindowStyle = ProcessWindowStyle.Hidden;
                     if (mes.IndexOf("i") != -1)
-                        pinfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized;
+                        pinfo.WindowStyle = ProcessWindowStyle.Minimized;
                     if (mes.IndexOf("x") != -1)
-                        pinfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Maximized;
+                        pinfo.WindowStyle = ProcessWindowStyle.Maximized;
                     if (mes.IndexOf("n") != -1)
                         pinfo.CreateNoWindow = true;
                     //启动进程
