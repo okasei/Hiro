@@ -1162,7 +1162,7 @@ namespace hiro
                 upbw.WorkerSupportsCancellation = true;
                 upbw.DoWork += delegate
                 {
-                    ups = utils.GetWebContent("https://api.rexio.cn/v1/hiro.php?r=update&v=" + res.ApplicationUpdateVersion + "&lang=" + App.lang);
+                    ups = utils.GetWebContent("https://ftp.rexio.cn/hiro/hiro.php?r=update&v=" + res.ApplicationUpdateVersion + "&lang=" + App.lang);
                 };
                 upbw.RunWorkerCompleted += delegate
                 {
@@ -2026,7 +2026,7 @@ namespace hiro
             string wps = "";
             whatsbw.DoWork += delegate
             {
-                wps = utils.GetWebContent("https://api.rexio.cn/v2/hiro.php?ver=" + App.AppVersion + "&lang=" + App.lang);
+                wps = utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + App.AppVersion + "&lang=" + App.lang);
             };
             whatsbw.RunWorkerCompleted += delegate
             {
@@ -2152,7 +2152,7 @@ namespace hiro
         {
             Extend_Animation();
             touch++;
-            utils.RunExe("notify(https://api.rexio.cn/v1/hiro.php?r=touch&t=" + touch.ToString() + "&lang=" + App.lang + ",2)");
+            utils.RunExe("notify(https://ftp.rexio.cn/hiro/hiro.php?r=touch&t=" + touch.ToString() + "&lang=" + App.lang + ",2)");
         }
 
         private void avatar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

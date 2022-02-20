@@ -630,13 +630,27 @@ namespace hiro
 
         public static String Path_Prepare_EX(String path)
         {
-            path = Path_Replace(path, "<year>", DateTime.Now.ToString("yyyy"));
-            path = Path_Replace(path, "<month>", DateTime.Now.ToString("MM"));
-            path = Path_Replace(path, "<day>", DateTime.Now.ToString("dd"));
-            path = Path_Replace(path, "<hour>", DateTime.Now.ToString("HH"));
-            path = Path_Replace(path, "<minute>", DateTime.Now.ToString("mm"));
-            path = Path_Replace(path, "<second>", DateTime.Now.ToString("ss"));
-            path = Path_Replace(path, "<date>", DateTime.Now.ToString("yyMMdd"));
+            path = Path_Replace(path, "<yyyyy>", DateTime.Now.ToString("yyyyy"));
+            path = Path_Replace(path, "<yyyy>", DateTime.Now.ToString("yyyy"));
+            path = Path_Replace(path, "<yyy>", DateTime.Now.ToString("yyy"));
+            path = Path_Replace(path, "<yy>", DateTime.Now.ToString("yy"));
+            path = Path_Replace(path, "<MMMM>", DateTime.Now.ToString("MMMM"));
+            path = Path_Replace(path, "<MMM>", DateTime.Now.ToString("MMM"));
+            path = Path_Replace(path, "<MM>", DateTime.Now.ToString("MM"));
+            path = Path_Replace(path, "<M>", DateTime.Now.ToString("M"));
+            path = Path_Replace(path, "<dddd>", DateTime.Now.ToString("dddd"));
+            path = Path_Replace(path, "<ddd>", DateTime.Now.ToString("ddd"));
+            path = Path_Replace(path, "<dd>", DateTime.Now.ToString("dd"));
+            path = Path_Replace(path, "<d>", DateTime.Now.ToString("d"));
+            path = Path_Replace(path, "<HH>", DateTime.Now.ToString("HH"));
+            path = Path_Replace(path, "<hh>", DateTime.Now.ToString("hh"));
+            path = Path_Replace(path, "<mm>", DateTime.Now.ToString("mm"));
+            path = Path_Replace(path, "<m>", DateTime.Now.ToString("m"));
+            path = Path_Replace(path, "<ss>", DateTime.Now.ToString("ss"));
+            path = Path_Replace(path, "<s>", DateTime.Now.ToString("s"));
+            path = Path_Replace(path, "<version>", res.ApplicationVersion);
+            path = Path_Replace(path, "<lang>", App.lang);
+            path = Path_Replace(path, "<date>", DateTime.Now.ToString("yyyyMMdd"));
             path = Path_Replace(path, "<time>", DateTime.Now.ToString("HHmmss"));
             path = Path_Replace(path, "<now>", DateTime.Now.ToString("yyMMddHHmmss"));
             path = Path_Replace(path, "<me>", App.Username);
@@ -677,6 +691,8 @@ namespace hiro
                     dl.SavePath.Text = mes;
                     dl.autorun.IsChecked = true;
                     dl.autorun.IsEnabled = false;
+                    dl.rurl = titile;
+                    dl.rpath = mes;
                     dl.Show();
                     dl.StartDownload();
                     return;

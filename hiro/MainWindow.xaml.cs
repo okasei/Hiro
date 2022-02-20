@@ -15,8 +15,29 @@ namespace hiro
             InitializeComponent();
             System.Windows.Controls.Canvas.SetTop(this, -233);
             System.Windows.Controls.Canvas.SetLeft(this, -233);
+            System.Net.NetworkInformation.NetworkChange.NetworkAvailabilityChanged  += new System.Net.NetworkInformation.NetworkAvailabilityChangedEventHandler(NetworkChange_NetworkAvailabilityChanged);
         }
-        
+        void NetworkChange_NetworkAvailabilityChanged(object? sender, System.Net.NetworkInformation.NetworkAvailabilityEventArgs e)
+        {
+            if (App.dflag)
+            {
+                System.Net.NetworkInformation.NetworkInterface[] nfaces = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
+                foreach (System.Net.NetworkInformation.NetworkInterface ni in nfaces)
+                {
+                    utils.LogtoFile(ni.Description + " - " + ni.NetworkInterfaceType.ToString());
+                }
+            }
+            if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+            {
+                App.Current.Dispatcher.Invoke((Action)(() =>
+                {
+                    if (e.IsAvailable)
+                        App.Notify(new noticeitem(utils.Get_Transalte("neton"), 2));
+                    else
+                        App.Notify(new noticeitem(utils.Get_Transalte("netoff"), 2));
+                }));
+            }
+        }
         public void InitializeInnerParameters()
         {
             ti.ToolTipText = App.AppTitle;
@@ -82,7 +103,8 @@ namespace hiro
                     }
                     break;
                 default:
-                    //Console.WriteLine("Msg: " + m.Msg + ";LParam: " + m.LParam + ";WParam: " + m.WParam + ";Result: " + m.Result);
+                    /*if (App.dflag)
+                        utils.LogtoFile("[DEBUG]Msg: " + msg.ToString() + ";LParam: " + lParam.ToString() + ";WParam: " + wParam.ToString());*/
                     break;
             }
             return IntPtr.Zero;

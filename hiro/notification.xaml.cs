@@ -55,7 +55,7 @@ namespace hiro
                     {
                         timer.Stop();
                         System.Windows.Media.Animation.Storyboard? sb = new();
-                        sb = utils.AddDoubleAnimaton(1, App.blursec, this, "Opacity", sb);
+                        sb = utils.AddDoubleAnimaton(1, 300, this, "Opacity", sb);
                         sb.Completed += delegate
                         {
                             Opacity = 1;
@@ -90,7 +90,7 @@ namespace hiro
                     if (animation)
                     {
                         System.Windows.Media.Animation.Storyboard? sb = new();
-                        sb = utils.AddDoubleAnimaton(0, App.blursec, this, "Opacity", sb);
+                        sb = utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
                         sb.Completed += delegate
                         {
                             Opacity = 0;
@@ -207,12 +207,12 @@ namespace hiro
 
         private void noti_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Next_Msg();
+            loop = 0;
         }
 
         private void notinfo_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Next_Msg();
+            loop = 0;
         }
     }
 }

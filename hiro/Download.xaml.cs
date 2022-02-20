@@ -14,14 +14,14 @@ namespace hiro
         private string progress = "";
         private int current = -1;
         private string listfile = "";
-        private string rurl = "";
-        private string rpath = "";
+        internal string rurl = "";
+        internal string rpath = "";
         internal long startpos = 0;
         internal int mode = 0;//1=更新模式
         internal string product = "";
         internal int bflag = 0;
         private int stopflag = 0;
-        private int successflag = 0;
+        private bool successflag = true;
         private int index = 0;
         public Download(int i, string st)
         {
@@ -125,24 +125,24 @@ namespace hiro
             albtn_1.Content = utils.Get_Transalte("dlend");
             textBoxHttpUrl.IsEnabled = false;
             SavePath.IsEnabled = false;
-            string httpUrl = textBoxHttpUrl.Text.Trim();
-            if (!httpUrl.StartsWith("http://") && !httpUrl.StartsWith("https://"))
+            if (!rurl.StartsWith("http://") && !rurl.StartsWith("https://"))
             {
-                App.Notify(new noticeitem(utils.Get_Transalte("syntax"), 2));
-                textBoxHttpUrl.Focus();//url地址栏获取焦点
-                Stop_Download(false);
-                return;
+                if (System.IO.File.Exists(rurl))
+                {
+                    mSaveFileName = rurl;
+                    Stop_Download(true);
+                    return;
+                }
+                else
+                {
+                    App.Notify(new noticeitem(utils.Get_Transalte("syntax"), 2));
+                    textBoxHttpUrl.Focus();//url地址栏获取焦点
+                    Stop_Download(false);
+                    return;
+                }
             }
-            
-            if (current > -1)
-            {
-                httpUrl = rurl.Trim();
-            }
-            else
-            {
-                rpath = SavePath.Text;
-            }
-            string strFileName = httpUrl;
+
+            string strFileName = rurl;
             strFileName = strFileName[(strFileName.LastIndexOf("/") + 1)..];
             if (strFileName.LastIndexOf("?") != -1)
                 strFileName = strFileName[..strFileName.LastIndexOf("?")];
@@ -150,8 +150,10 @@ namespace hiro
                 strFileName = "index.html";
             if (SavePath.Text.Equals(String.Empty))
             {
-                SavePath.Text = "<idocument>\\<filename>";
+                SavePath.Text = "<idownload>\\HiDownload\\<filename>";
             }
+            if (current < 0)
+                rpath = SavePath.Text;
             mSaveFileName = utils.Path_Prepare(rpath);
             mSaveFileName = utils.Path_Prepare_EX(mSaveFileName);
             mSaveFileName = utils.Path_Replace(mSaveFileName, "<filename>", strFileName);
@@ -170,7 +172,7 @@ namespace hiro
                 Stop_Download(true);
                 return;
             }
-            var response = await App.hc.GetAsync(httpUrl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
+            var response = await App.hc.GetAsync(rurl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             var totalLength = response.Content.Headers.ContentLength;
             System.IO.FileStream? fileStream = null;
             try
@@ -196,7 +198,6 @@ namespace hiro
                         else
                         {
                             startpos = fileStream.Length;
-                            //App.Notify(new noticeitem("继续下载于" + startpos.ToString()));
                             fileStream.Seek(startpos, System.IO.SeekOrigin.Begin);
                         }
 
@@ -215,11 +216,11 @@ namespace hiro
             }
             if (startpos > 0)
             {
-                System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, httpUrl);
+                System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, rurl);
                 request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
                 if (startpos >= totalLength)
                 {
-                    successflag = 1;
+                    successflag = true;
                     goto DownloadFinish;
                 }
                 request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(startpos, totalLength);
@@ -230,7 +231,7 @@ namespace hiro
             byte[] buffer = new byte[4 * 1024];//4KB缓存
             long readLength = 0L;
             int length;
-            successflag = 1;
+            successflag = true;
             while ((length = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
                 readLength += length;
@@ -243,7 +244,7 @@ namespace hiro
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
                     App.Notify(new noticeitem(utils.Get_Transalte("dlerror"), 2));
-                    successflag = 0;
+                    successflag = false;
                     break;
                 }
                 if (totalLength > 0)
@@ -255,7 +256,6 @@ namespace hiro
                     Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)(((double)readLength + startpos) / totalLength.Value * 100), 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     if (readLength + startpos >= totalLength)
                     {
-                        successflag = 1;
                         break;
                     }
                 }
@@ -267,14 +267,14 @@ namespace hiro
                 }
                 if (stopflag != 0)
                 {
-                    successflag = 0;
+                    successflag = false;
                     break;
                 }
             }
             if (fileStream != null)
                 fileStream.Close();
             DownloadFinish:
-            if (successflag == 1)
+            if (successflag)
             {
                 try
                 {
@@ -285,10 +285,8 @@ namespace hiro
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
                 }
-                Stop_Download(true);
             }
-            else
-                Stop_Download(false);
+            Stop_Download(successflag);
         }
         private void Stop_Download(bool success)
         {
@@ -310,20 +308,28 @@ namespace hiro
                         if (current < filec.Length)
                         {
                             var str = filec[current];
-                            if (str.IndexOf("|") != -1)
+                            if (!str.ToLower().StartsWith("http://") && !str.ToLower().StartsWith("https://"))
                             {
-                                rurl = str.Substring(0, str.IndexOf("|"));
-                                rpath = str.Substring(str.IndexOf("|") + 1);
+                                utils.RunExe(str);
+                                autorun.IsChecked = false;
                             }
                             else
                             {
-                               rurl = str;
-                                rpath = SavePath.Text;
+                                if (str.IndexOf("|") != -1)
+                                {
+                                    rurl = str.Substring(0, str.IndexOf("|"));
+                                    rpath = str.Substring(str.IndexOf("|") + 1);
+                                }
+                                else
+                                {
+                                    rurl = str;
+                                    rpath = SavePath.Text;
+                                }
+                                current++;
+                                progress = "[" + current.ToString() + "/" + filec.Length.ToString() + "]";
+                                StartDownload();
+                                return;
                             }
-                            current++;
-                            progress = "[" + current.ToString() + "/" + filec.Length.ToString() + "]";
-                            StartDownload();
-                            return;
                         }
                     }
                     catch (Exception ex)
@@ -375,6 +381,7 @@ namespace hiro
             {
                 if (current > 1)
                     progress = "[" + current.ToString() + "/?]";
+                rurl = textBoxHttpUrl.Text.Trim();
                 StartDownload();
             }
             else//停止
@@ -408,7 +415,8 @@ namespace hiro
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //Stop_Download(false);
+            if (stopflag == 0)
+                Stop_Download(false);
         }
 
         private void textBoxHttpUrl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
