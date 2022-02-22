@@ -16,7 +16,7 @@ namespace hiro
         internal int aflag = -1;
         internal int bflag = 0;
         internal string? url = null;
-        public Alarm(int iid, string? CustomedTitle = "Time is Up!", string? CustomedContnet = "Time up!", int OneButtonOnly = 0)
+        public Alarm(int iid, string? CustomedTitle = null, string? CustomedContnet = null, int OneButtonOnly = 0)
         {
             InitializeComponent();
             SourceInitialized += OnSourceInitialized;
@@ -42,7 +42,10 @@ namespace hiro
             {
                 Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
             };
-            ala_title.Content = CustomedTitle == null ? CustomedTitle : utils.Get_Transalte("alarmtitle");
+            if (CustomedTitle != null)
+                ala_title.Content = CustomedTitle;
+            else
+                ala_title.Content = utils.Get_Transalte("alarmtitle");
             Title = ala_title.Content + " - " + App.AppTitle;
             if (CustomedContnet != null)
                 sv.Content = CustomedContnet;

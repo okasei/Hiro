@@ -403,13 +403,21 @@ namespace hiro
                 if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
                 {
                     System.Windows.Media.Animation.Storyboard? sb = new();
-                    sb = AddColorAnimaton(App.AppAccentColor, 150, sender, "Background.Color", sb);
-                    sb.Completed += delegate
+                    try
                     {
+                        sb = AddColorAnimaton(App.AppAccentColor, 150, sender, "Background.Color", sb);
+                        sb.Completed += delegate
+                        {
+                            sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
+                            sb = null;
+                        };
+                        sb.Begin();
+                    }catch (Exception ex)
+                    {
+                        LogtoFile("[ERROR]" + ex.Message);
                         sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
-                        sb = null;
-                    };
-                    sb.Begin();
+                    }
+                    
                 }
                 else
                     sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
@@ -574,8 +582,6 @@ namespace hiro
             path = Anti_Path_Replace(path, "<cstartup>", Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup));
             path = Anti_Path_Replace(path, "<ivideo>", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
             path = Anti_Path_Replace(path, "<cvideo>", Environment.GetFolderPath(Environment.SpecialFolder.CommonVideos));
-            path = Anti_Path_Replace(path, "<istartup>", Environment.GetFolderPath(Environment.SpecialFolder.Startup));
-            path = Anti_Path_Replace(path, "<cstartup>", Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup));
             path = Anti_Path_Replace(path, "<iprogx86>", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
             path = Anti_Path_Replace(path, "<cprogx86>", Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86));
             path = Anti_Path_Replace(path, "<iprog>", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
@@ -586,7 +592,6 @@ namespace hiro
             path = Anti_Path_Replace(path, "<recent>", Environment.GetFolderPath(Environment.SpecialFolder.Recent));
             path = Anti_Path_Replace(path, "<profile>", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             path = Anti_Path_Replace(path, "<sendto>", Environment.GetFolderPath(Environment.SpecialFolder.SendTo));
-            path = Anti_Path_Replace(path, "<huser>", App.EnvironmentUsername);
             return path;
         }
 
@@ -612,8 +617,6 @@ namespace hiro
             path = Path_Replace(path, "<cstartup>", Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup));
             path = Path_Replace(path, "<ivideo>", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
             path = Path_Replace(path, "<cvideo>", Environment.GetFolderPath(Environment.SpecialFolder.CommonVideos));
-            path = Path_Replace(path, "<istartup>", Environment.GetFolderPath(Environment.SpecialFolder.Startup));
-            path = Path_Replace(path, "<cstartup>", Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup));
             path = Path_Replace(path, "<iprogx86>", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
             path = Path_Replace(path, "<cprogx86>", Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86));
             path = Path_Replace(path, "<iprog>", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
@@ -624,7 +627,8 @@ namespace hiro
             path = Path_Replace(path, "<recent>", Environment.GetFolderPath(Environment.SpecialFolder.Recent));
             path = Path_Replace(path, "<profile>", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             path = Path_Replace(path, "<sendto>", Environment.GetFolderPath(Environment.SpecialFolder.SendTo));
-            path = Path_Replace(path, "<huser>", App.EnvironmentUsername);
+            path = Path_Replace(path, "<hiuser>", App.EnvironmentUsername);
+            path = Path_Replace(path, "<nop>", "");
             return path;
         }
 
@@ -1246,7 +1250,6 @@ namespace hiro
             if (path.Length > 8 && path.Substring(0, 8).ToLower() == "message(")
             {
                 String toolstr;
-                BackgroundWorker accept, reject, cancel;
                 if (path.LastIndexOf(")") != -1)
                 {
                     toolstr = path.Substring(8, path.LastIndexOf(")") - 8);
@@ -1256,36 +1259,36 @@ namespace hiro
                 {
                     toolstr = "syntax error";
                 }
-                accept = new();
-                reject = new();
-                cancel = new();
-                accept.RunWorkerCompleted += delegate
-                {
-                    RunExe(Read_Ini(toolstr, "Action", "accept", "nop"));
-                };
-                reject.RunWorkerCompleted += delegate
-                {
-                    RunExe(Read_Ini(toolstr, "Action", "reject", "nop"));
-                };
-                cancel.RunWorkerCompleted += delegate
-                {
-                    RunExe(Read_Ini(toolstr, "Action", "cancel", "nop"));
-                };
                 Background? bg = null;
                 if (Read_Ini(toolstr, "Action", "Background", "true").ToLower().Equals("true"))
                     bg = new();
                 message msg = new();
-                msg.accept = accept;
-                msg.reject = reject;
-                msg.cancel = cancel;
                 msg.bg = bg;
-                msg.Title = Path_Prepare_EX(Read_Ini(toolstr, "Message", "title", Get_Transalte("syntax"))) + " - " + App.AppTitle;
-                msg.backtitle.Content = Path_Prepare_EX(Path_Prepare_EX(Read_Ini(toolstr, "Message", "title", Get_Transalte("syntax"))));
-                msg.sv.Content = Path_Prepare_EX(Read_Ini(toolstr, "Message", "content", Get_Transalte("syntax")).Replace("\\n", Environment.NewLine));
+                msg.Title = Path_Prepare(Path_Prepare_EX(Read_Ini(toolstr, "Message", "title", Get_Transalte("syntax")))) + " - " + App.AppTitle;
+                msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(toolstr, "Message", "title", Get_Transalte("syntax")))));
                 msg.acceptbtn.Content = Read_Ini(toolstr, "Message", "accept", Get_Transalte("msgaccept"));
                 msg.rejectbtn.Content = Read_Ini(toolstr, "Message", "reject", Get_Transalte("msgreject"));
                 msg.cancelbtn.Content = Read_Ini(toolstr, "Message", "cancel", Get_Transalte("msgcancel"));
                 msg.toolstr = toolstr;
+                toolstr = Path_Prepare_EX(Path_Prepare(Read_Ini(toolstr, "Message", "content", Get_Transalte("syntax"))));
+                if (toolstr.ToLower().StartsWith("http://") || toolstr.ToLower().StartsWith("https://"))
+                {
+                    msg.sv.Content = Get_Transalte("loading");
+                    BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        toolstr = GetWebContent(toolstr).Replace("<br>", "\\n");
+                    };
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        msg.sv.Content = toolstr.Replace("\\n", Environment.NewLine);
+                    };
+                    bw.RunWorkerAsync();
+                }
+                else if (System.IO.File.Exists(toolstr))
+                    msg.sv.Content = Path_Prepare(Path_Prepare_EX(System.IO.File.ReadAllText(toolstr))).Replace("\\n", Environment.NewLine);
+                else
+                    msg.sv.Content = toolstr.Replace("\\n", Environment.NewLine);
                 msg.Load_Position();
                 msg.Show();
                 return;

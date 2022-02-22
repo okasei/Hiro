@@ -13,9 +13,6 @@ namespace hiro
     public partial class message : Window
     {
         internal Background? bg = null;
-        internal BackgroundWorker? accept = null;
-        internal BackgroundWorker? reject = null;
-        internal BackgroundWorker? cancel = null;
         internal String? toolstr = null;
         internal int aflag = -1;
         internal int bflag = 0;
@@ -25,7 +22,7 @@ namespace hiro
             SourceInitialized += OnSourceInitialized;
             Loaded += delegate
             {
-                loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
+                Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
                 if (App.dflag)
                 {
                     utils.LogtoFile("[MESSAGE]Title: " + backtitle.Content);
@@ -113,7 +110,7 @@ namespace hiro
             rejectbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
             cancelbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
         }
-        public void loadbgi(int direction)
+        public void Loadbgi(int direction)
         {
             if (bflag == 1)
                 return;
@@ -128,9 +125,9 @@ namespace hiro
         {
             if (App.dflag)
                 utils.LogtoFile("[MESSAGE]Accept Button Clicked");
-            if (accept != null)
-                accept.RunWorkerAsync();
-            this.Close();
+            if (toolstr != null)
+                utils.RunExe(utils.Read_Ini(toolstr, "Action", "accept", "nop"));
+            Close();
             if (bg != null)
                 bg.Close();
         }
@@ -139,9 +136,9 @@ namespace hiro
         {
             if (App.dflag)
                 utils.LogtoFile("[MESSAGE]Reject Button Clicked");
-            if (reject != null)
-                reject.RunWorkerAsync();
-            this.Close();
+            if (toolstr != null)
+                utils.RunExe(utils.Read_Ini(toolstr, "Action", "reject", "nop"));
+            Close();
             if (bg != null)
                 bg.Close();
         }
@@ -150,9 +147,9 @@ namespace hiro
         {
             if (App.dflag)
                 utils.LogtoFile("[MESSAGE]Cancel Button Clicked");
-            if (cancel != null)
-                cancel.RunWorkerAsync();
-            this.Close();
+            if (toolstr != null)
+                utils.RunExe(utils.Read_Ini(toolstr, "Action", "cancel", "nop"));
+            Close();
             if (bg != null)
                 bg.Close();
         }

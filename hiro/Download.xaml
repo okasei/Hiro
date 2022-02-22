@@ -62,7 +62,7 @@
         </Label>
         <Label x:Name="urllabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" MouseDoubleClick="urllabel_MouseDoubleClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Label x:Name="pathlabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <CheckBox x:Name="autorun" Content="Run When Completed" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground="Black" VerticalContentAlignment="Bottom" Width="200" Height="35"/>
+        <CheckBox x:Name="autorun" Content="Run When Completed" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground="Black" VerticalContentAlignment="Bottom" Width="200" Height="35" IsThreeState="True" Indeterminate="autorun_Indeterminate" Unchecked="autorun_Unchecked"/>
         <Button x:Name="coloruse1" Content="Button" Visibility="Hidden"/>
     </Grid>
 </Window>

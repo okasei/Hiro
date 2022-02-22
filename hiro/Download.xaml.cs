@@ -358,6 +358,10 @@ namespace hiro
             {
                     utils.RunExe("explorer \"" + mSaveFileName + "\"");
             }
+            if (success && autorun.IsChecked == null)
+            {
+                utils.RunExe(mSaveFileName.Substring(0, mSaveFileName.LastIndexOf("\\")));
+            }
             if (autorun.IsEnabled == false)
             {
                 Close();
@@ -440,6 +444,18 @@ namespace hiro
             bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
             utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
+        }
+
+        private void autorun_Indeterminate(object sender, RoutedEventArgs e)
+        {
+            autorun.Content = utils.Get_Transalte("dlopen");
+            utils.Set_Control_Location(autorun, "dlopen", bottom: true);
+        }
+
+        private void autorun_Unchecked(object sender, RoutedEventArgs e)
+        {
+            autorun.Content = utils.Get_Transalte("dlrun");
+            utils.Set_Control_Location(autorun, "dlrun", bottom: true);
         }
     }
 

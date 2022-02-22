@@ -132,7 +132,6 @@ namespace hiro
                 if (co.Length >= 2)
                     co = co[1..^1];
             }
-
             App.Load_Menu();
         }
         public void InitializeUIWindow()
@@ -1938,7 +1937,7 @@ namespace hiro
                 if (win is Alarm a)
                     a.Loadbgi(direction);
                 if (win is message e)
-                    e.loadbgi(direction);
+                    e.Loadbgi(direction);
                 if (win is Sequence c)
                     c.Loadbgi(direction);
                 if (win is Download d)
@@ -2206,9 +2205,9 @@ namespace hiro
             langbox.ItemsSource = App.la;
             langbox.DisplayMemberPath = "langname";
             langbox.SelectedValuePath = "langname";
-            for(int i = 0; i < App.la.Count; i++)
+            for (int i = 0; i < App.la.Count; i++)
             {
-                if(App.lang.Equals(App.la[i].name))
+                if (App.lang.Equals(App.la[i].name))
                 {
                     langbox.SelectedIndex = i;
                 }
