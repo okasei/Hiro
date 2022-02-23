@@ -113,7 +113,7 @@ namespace hiro
 
         public void Load_All_Colors()
         {
-            IntializeColorParameters();
+            utils.IntializeColorParameters();
             if (App.ed != null)
             {
                 App.ed.Load_Color();
@@ -256,71 +256,6 @@ namespace hiro
                 }
             };
         }
-        
-        
-
-        public static void IntializeColorParameters()
-        {
-            if (utils.Read_Ini(App.dconfig, "Configuration", "lock", "0").Equals("1"))
-            {
-                try
-                {
-                    App.AppAccentColor = (Color)ColorConverter.ConvertFromString(utils.Read_Ini(App.dconfig, "Configuration", "lockcolor", "#00C4FF"));
-
-                }
-                catch (Exception ex)
-                {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
-                    App.AppAccentColor = (Color)ColorConverter.ConvertFromString("#00C4FF");
-                }
-            }
-            else
-            {
-                App.AppAccentColor = GetThemeColor();
-            }
-            double luminance = (0.299 * App.AppAccentColor.R + 0.587 * App.AppAccentColor.G + 0.114 * App.AppAccentColor.B) / 255;
-            if (luminance > 0.5)
-            {
-                if (utils.Read_Ini(App.dconfig, "Configuration", "reverse", "0").Equals("1"))
-                    App.AppForeColor = Colors.White;
-                else
-                    App.AppForeColor = Colors.Black;
-            }
-            else
-            {
-                if (utils.Read_Ini(App.dconfig, "Configuration", "reverse", "0").Equals("1"))
-                    App.AppForeColor = Colors.Black;
-                else
-                    App.AppForeColor = Colors.White;
-            }
-                
-
-            utils.LogtoFile("[HIROWEGO]Accent Color: " + App.AppAccentColor.ToString());
-            utils.LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
-        }
-
-        #region 获取系统主题色
-        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#95")]
-        public static extern uint GetImmersiveColorFromColorSetEx(uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode);
-        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#96")]
-        public static extern uint GetImmersiveColorTypeFromName(IntPtr pName);
-        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#98")]
-        public static extern int GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
-        // Get theme color
-        public static Color GetThemeColor()
-        {
-            var colorSetEx = GetImmersiveColorFromColorSetEx(
-                (uint)GetImmersiveUserColorSetPreference(false, false),
-                GetImmersiveColorTypeFromName(System.Runtime.InteropServices.Marshal.StringToHGlobalUni("ImmersiveStartSelectionBackground")),
-                false, 0);
-
-            var colour = Color.FromArgb((byte)((0xFF000000 & colorSetEx) >> 24), (byte)(0x000000FF & colorSetEx),
-                (byte)((0x0000FF00 & colorSetEx) >> 8), (byte)((0x00FF0000 & colorSetEx) >> 16));
-
-            return colour;
-        }
-        #endregion
-
 
         #region 颜色处理
         public static Color Color_Multiple(Color origin, int Multiple)

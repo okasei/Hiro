@@ -485,7 +485,7 @@ namespace hiro
 
         public void Load_Colors()
         {
-            MainWindow.IntializeColorParameters();
+            utils.IntializeColorParameters();
             utils.Set_Bgimage(bgimage);
             if (utils.Read_Ini(App.dconfig, "Configuration", "background", "1").Equals("1"))
             {

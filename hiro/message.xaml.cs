@@ -62,36 +62,38 @@ namespace hiro
             {
                 bg.Show();
             }
-            if (toolstr != null)
+            if (toolstr != null && System.IO.File.Exists(toolstr))
             {
                 if (utils.Read_Ini(toolstr, "location", "width", "-1").Equals("-1"))
                 {
                     Width = SystemParameters.PrimaryScreenWidth;
+                    Height = 200.0;
+
                 }
                 else
                 {
                     Width = double.Parse(utils.Read_Ini(toolstr, "location", "width", "-1"));
+                    Height = double.Parse(utils.Read_Ini(toolstr, "location", "height", "200"));
                 }
+                utils.Set_Control_Location(backtitle, "title", extra: true, path: toolstr);
+                utils.Set_Control_Location(cancelbtn, "cancel", extra: true, bottom: true, right: true, path: toolstr);
+                utils.Set_Control_Location(rejectbtn, "reject", extra: true, bottom: true, right: true, path: toolstr);
+                utils.Set_Control_Location(acceptbtn, "accept", extra: true, bottom: true, right: true, path: toolstr);
+                backcontent.Height = Height - backtitle.Height - backtitle.Margin.Top * 2 - acceptbtn.Margin.Bottom * 2 - acceptbtn.Height;
+                utils.Set_Control_Location(backcontent, "content", extra: true, path: toolstr);
+                backcontent.Width = Width - backcontent.Margin.Left * 2;
+                sv.FontFamily = backcontent.FontFamily;
+                sv.FontSize = backcontent.FontSize;
+                sv.Height = backcontent.Height - SystemParameters.HorizontalScrollBarHeight;
+                sv.Width = backcontent.Width - SystemParameters.VerticalScrollBarWidth;
             }
             else
+            {
                 Width = SystemParameters.PrimaryScreenWidth;
-            if (toolstr != null)
-                Height = double.Parse(utils.Read_Ini(toolstr, "location", "height", "200"));
-            else
                 Height = 200.0;
+            }
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
-            utils.Set_Control_Location(backtitle, "title", extra: true, path: toolstr);
-            utils.Set_Control_Location(cancelbtn, "cancel", extra: true, bottom: true, right: true, path: toolstr);
-            utils.Set_Control_Location(rejectbtn, "reject", extra: true, bottom: true, right: true, path: toolstr);
-            utils.Set_Control_Location(acceptbtn, "accept", extra: true, bottom: true, right: true, path: toolstr);
-            backcontent.Height = Height - backtitle.Height - backtitle.Margin.Top * 2 - acceptbtn.Margin.Bottom * 2 - acceptbtn.Height;
-            utils.Set_Control_Location(backcontent, "content", extra: true, path: toolstr);
-            backcontent.Width = Width - backcontent.Margin.Left * 2;
-            sv.FontFamily = backcontent.FontFamily;
-            sv.FontSize = backcontent.FontSize;
-            sv.Height = backcontent.Height - SystemParameters.HorizontalScrollBarHeight;
-            sv.Width = backcontent.Width - SystemParameters.VerticalScrollBarWidth;
             Load_Colors();
         }
 

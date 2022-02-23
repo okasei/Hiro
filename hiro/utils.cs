@@ -678,6 +678,10 @@ namespace hiro
         public static void RunExe(String path)
         {
             path = Path_Prepare_EX(Path_Prepare(path));
+            if (System.IO.File.Exists(path) && path.ToLower().EndsWith(".hiro"))
+            {
+                path = "seq(" + path + ")";
+            }
             if (path.ToLower().StartsWith("hiroad("))
             {
                 try
@@ -1350,7 +1354,6 @@ namespace hiro
                 }
                 return;
             }
-
             if (path.Length > 4 && path.Substring(0, 4).ToLower() == "seq(")
             {
                 String toolstr;
@@ -1379,8 +1382,7 @@ namespace hiro
                 }
                 return;
             }
-
-            if (path.Length > 4 && path[..4].ToLower() == "run(")
+            if (path.Length > 4 && path.ToLower().StartsWith("run("))
             {
                 String titile, mes, toolstr;
                 if (path.LastIndexOf(")") != -1)
@@ -1479,10 +1481,164 @@ namespace hiro
                     System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
                     LogtoFile("[ERROR]" + ex.Message);
                 }
+                if (App.mn == null)
+                    RunExe("exit()");
                 return;
             }
+            if (path.Length > 12 && path.ToLower().StartsWith("delete("))
+            {
+                String toolstr;
+                if (path.LastIndexOf(")") != -1)
+                {
+                    toolstr = path.Substring(7, path.LastIndexOf(")") - 7);
+                    if (toolstr.StartsWith("\""))
+                        toolstr = toolstr.Substring(1);
+                    if (toolstr.EndsWith("\""))
+                        toolstr = toolstr.Substring(0, toolstr.Length - 1);
+                    if (!System.IO.File.Exists(toolstr))
+                    {
+                        if (System.IO.Directory.Exists(toolstr))
+                            try
+                            {
+                                System.IO.Directory.Delete(toolstr, true);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                utils.LogtoFile("[ERROR]" + ex.Message);
+                            }
+                        else
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        return;
+                    }
+                    try
+                    {
+                        System.IO.File.Delete(toolstr);
+                    }
+                    catch  (Exception ex)
+                    {
+                        App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
+                return;
+            }
+            if (path.Length > 10 && path.ToLower().StartsWith("move("))
+            {
+                String titile, mes, toolstr;
+                if (path.LastIndexOf(")") != -1)
+                {
+                    toolstr = path.Substring(5, path.LastIndexOf(")") - 5);
+                    if (toolstr.LastIndexOf(",") != -1)
+                    {
+                        titile = toolstr.Substring(0, toolstr.LastIndexOf(","));
+                        if (titile.Length < toolstr.Length - 1)
+                        {
+                            mes = toolstr.Substring(titile.Length + 1);
+                            if (!System.IO.File.Exists(titile))
+                            {
+                                if (System.IO.Directory.Exists(titile))
+                                    try
+                                    {
+                                        System.IO.Directory.Move(titile, mes);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                        utils.LogtoFile("[ERROR]" + ex.Message);
+                                    }
+                                else
+                                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                                return;
+                            }
+                            try
+                            {
+                                System.IO.File.Move(titile, mes);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                utils.LogtoFile("[ERROR]" + ex.Message);
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            return;
+                        }
 
-            Console.WriteLine(path);
+                    }
+                    else
+                    {
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        return;
+                    }
+                }
+                else
+                {
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    return;
+                }
+            }
+            if (path.Length > 10 && path.ToLower().StartsWith("copy("))
+            {
+                String titile, mes, toolstr;
+                if (path.LastIndexOf(")") != -1)
+                {
+                    toolstr = path.Substring(5, path.LastIndexOf(")") - 5);
+                    if (toolstr.LastIndexOf(",") != -1)
+                    {
+                        titile = toolstr.Substring(0, toolstr.LastIndexOf(","));
+                        if (titile.Length < toolstr.Length - 1)
+                        {
+                            mes = toolstr.Substring(titile.Length + 1);
+                            if (!System.IO.File.Exists(titile))
+                            {
+                                if (System.IO.Directory.Exists(titile))
+                                    try
+                                    {
+                                        CopyDirectory(titile, mes);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                        utils.LogtoFile("[ERROR]" + ex.Message);
+                                    }
+                                else
+                                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                                return;
+                            }
+                            try
+                            {
+                                System.IO.File.Copy(titile, mes);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                utils.LogtoFile("[ERROR]" + ex.Message);
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            return;
+                        }
+
+                    }
+                    else
+                    {
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        return;
+                    }
+                }
+                else
+                {
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    return;
+                }
+            }
             try
             {
                 ProcessStartInfo pinfo = new();
@@ -1531,8 +1687,52 @@ namespace hiro
                 System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
                 LogtoFile("[ERROR]" + ex.Message);
             }
-
+            if (App.mn == null)
+                RunExe("exit()");
+            return;
         }
+
+        private static void CopyDirectory(string srcdir, string desdir)
+        {
+            if (srcdir.EndsWith("\\"))
+                srcdir = srcdir.Substring(0, srcdir.Length - 1);
+            if (desdir.ToLower().StartsWith(srcdir.ToLower()))
+            {
+                App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                return;
+            }
+            string desfolderdir = desdir;
+            if (!desfolderdir.EndsWith("\\"))
+            {
+                desfolderdir = desfolderdir + "\\";
+            }
+            CreateFolder(desfolderdir);
+            string[] filenames = System.IO.Directory.GetFileSystemEntries(srcdir);
+            foreach (string file in filenames)
+            {
+                if (System.IO.Directory.Exists(file))
+                {
+                    string currentdir = desfolderdir + "\\" + file.Substring(file.LastIndexOf("\\") + 1);
+                    if (!System.IO.Directory.Exists(currentdir))
+                    {
+                        System.IO.Directory.CreateDirectory(currentdir);
+                    }
+                    CopyDirectory(file, desfolderdir);
+                }
+                else
+                {
+                    string srcfileName = file.Substring(file.LastIndexOf("\\") + 1);
+                    srcfileName = desfolderdir + "\\" + srcfileName;
+                    if (!System.IO.Directory.Exists(desfolderdir))
+                    {
+                        System.IO.Directory.CreateDirectory(desfolderdir);
+                    }
+
+                    System.IO.File.Copy(file, srcfileName);
+                }
+            }
+        }
+
         #endregion
 
         #region Windows Hello
@@ -2147,6 +2347,70 @@ namespace hiro
             
         }
         #endregion
+
+        #region 获取系统主题色
+
+        public static void IntializeColorParameters()
+        {
+            if (utils.Read_Ini(App.dconfig, "Configuration", "lock", "0").Equals("1"))
+            {
+                try
+                {
+                    App.AppAccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(utils.Read_Ini(App.dconfig, "Configuration", "lockcolor", "#00C4FF"));
+
+                }
+                catch (Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    App.AppAccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#00C4FF");
+                }
+            }
+            else
+            {
+                App.AppAccentColor = GetThemeColor();
+            }
+            double luminance = (0.299 * App.AppAccentColor.R + 0.587 * App.AppAccentColor.G + 0.114 * App.AppAccentColor.B) / 255;
+            if (luminance > 0.5)
+            {
+                if (utils.Read_Ini(App.dconfig, "Configuration", "reverse", "0").Equals("1"))
+                    App.AppForeColor = System.Windows.Media.Colors.White;
+                else
+                    App.AppForeColor = System.Windows.Media.Colors.Black;
+            }
+            else
+            {
+                if (utils.Read_Ini(App.dconfig, "Configuration", "reverse", "0").Equals("1"))
+                    App.AppForeColor = System.Windows.Media.Colors.Black;
+                else
+                    App.AppForeColor = System.Windows.Media.Colors.White;
+            }
+
+
+            utils.LogtoFile("[HIROWEGO]Accent Color: " + App.AppAccentColor.ToString());
+            utils.LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
+        }
+
+        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#95")]
+        public static extern uint GetImmersiveColorFromColorSetEx(uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode);
+        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#96")]
+        public static extern uint GetImmersiveColorTypeFromName(IntPtr pName);
+        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#98")]
+        public static extern int GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
+        // Get theme color
+        public static System.Windows.Media.Color GetThemeColor()
+        {
+            var colorSetEx = GetImmersiveColorFromColorSetEx(
+                (uint)GetImmersiveUserColorSetPreference(false, false),
+                GetImmersiveColorTypeFromName(System.Runtime.InteropServices.Marshal.StringToHGlobalUni("ImmersiveStartSelectionBackground")),
+                false, 0);
+
+            var colour = System.Windows.Media.Color.FromArgb((byte)((0xFF000000 & colorSetEx) >> 24), (byte)(0x000000FF & colorSetEx),
+                (byte)((0x0000FF00 & colorSetEx) >> 8), (byte)((0x00FF0000 & colorSetEx) >> 16));
+
+            return colour;
+        }
+        #endregion
+
     }
 
 

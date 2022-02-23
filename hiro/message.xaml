@@ -9,15 +9,15 @@
         mc:Ignorable="d"
         Title="message" Height="450" Width="800" WindowStyle="None" ResizeMode="NoResize" Topmost="True" IsTabStop="False" Closing="Msg_Closing" Icon="/hiro_circle.ico" MouseLeftButtonDown="msg_MouseLeftButtonDown">
     <Grid>
-        <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
-        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
-        <Label x:Name="backtitle" Content="Title" HorizontalAlignment="Left" Margin="27,25,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"/>
-        <Label x:Name="backcontent" FontFamily="Segoe UI" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ScrollViewer x:Name="sv" Height="322" Content="A new version of Hiro has been released!" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
+        <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" FontSize="36" FontWeight="Bold"/>
+        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2" FontSize="20"/>
+        <Label x:Name="backtitle" Content="Title" HorizontalAlignment="Left" Margin="24,56,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Height="101" Width="331"/>
+        <Label x:Name="backcontent" FontFamily="Segoe UI" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Width="400" Height="37" HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="sv" Height="322" Content="A new version of Hiro has been released!" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Width="371"/>
         </Label>
-        <Button x:Name="acceptbtn" Content="OK" HorizontalAlignment="Right" Margin="0,0,200,10" VerticalAlignment="Bottom" Click="Acceptbtn_Click" Width="52" Height="32" Cursor="Hand" FontFamily="Segoe UI"/>
-        <Button x:Name="rejectbtn" Content="Reject" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Rejectbtn_Click" Width="71" Height="32" Margin="0,0,100,10" FontFamily="Segoe UI"/>
-        <Button x:Name="cancelbtn" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Cancelbtn_Click" Width="74" Height="32" Margin="0,0,10,10" FontFamily="Segoe UI"/>
+        <Button x:Name="acceptbtn" Content="OK" HorizontalAlignment="Right" Margin="0,0,230,10" VerticalAlignment="Bottom" Click="Acceptbtn_Click" Width="100" Height="32" Cursor="Hand" FontFamily="Segoe UI"/>
+        <Button x:Name="rejectbtn" Content="Reject" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Rejectbtn_Click" Width="100" Height="32" Margin="0,0,120,10" FontFamily="Segoe UI"/>
+        <Button x:Name="cancelbtn" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Cancelbtn_Click" Width="100" Height="32" Margin="0,0,10,10" FontFamily="Segoe UI"/>
 
     </Grid>
 </Window>

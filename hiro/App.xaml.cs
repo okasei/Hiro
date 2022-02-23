@@ -18,7 +18,7 @@ namespace hiro
         internal static int CustomUsernameFlag = 0;
         internal static string AppTitle = res.ApplicationName;
         internal static string AppVersion = res.ApplicationVersion;
-        internal static Color AppAccentColor = Colors.Azure;
+        internal static Color AppAccentColor = Colors.Coral;
         internal static Color AppForeColor = Colors.White;
         internal static bool DarkModeEnabled = false;
         internal static bool restartflag = false;
@@ -91,11 +91,15 @@ namespace hiro
                         {
                             dflag = true;
                             continue;
-                        }
-                        if (para.ToLower().Equals("silent"))
+                        }else if (para.ToLower().Equals("silent"))
                         {
                             silent = true;
                             continue;
+                        }else
+                        {
+                            utils.IntializeColorParameters();
+                            utils.RunExe(para);
+                            return;
                         }
                     }
                 }
