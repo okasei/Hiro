@@ -445,7 +445,7 @@ namespace hiro
                     if (bottom == true)
                         sender.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
                     var loc = Read_Ini(path, "location", val, string.Empty);
-                    loc = loc.Replace(" ", "").Replace("%b", " ");
+                    loc = loc.Trim().Replace("%b", " ");
                     loc = loc[(loc.IndexOf("{") + 1)..];
                     loc = loc[..loc.LastIndexOf("}")];
                     var fontname = loc[..loc.IndexOf(",")];
@@ -481,13 +481,13 @@ namespace hiro
                     };
                     if (location)
                     {
-                        sender.Width = (width != "-1") ? double.Parse(width) : sender.Width;
-                        sender.Height = (height != "-1") ? double.Parse(height) : sender.Height;
+                        sender.Width = (!width.Equals("-1")) ? double.Parse(width) : sender.Width;
+                        sender.Height = (!height.Equals("-1")) ? double.Parse(height) : sender.Height;
                         System.Windows.Thickness thickness = new();
-                        thickness.Left = (left != "-1") ? right ? 0.0 : double.Parse(left) : sender.Margin.Left;
-                        thickness.Right = (left != "-1") ? !right ? sender.Margin.Right : double.Parse(left) : sender.Margin.Right;
-                        thickness.Top = (top != "-1") ? bottom ? 0.0 : double.Parse(top) : sender.Margin.Top;
-                        thickness.Bottom = (top != "-1") ? !bottom ? sender.Margin.Bottom : double.Parse(top) : sender.Margin.Bottom;
+                        thickness.Left = (!left.Equals("-1")) ? right ? 0.0 : double.Parse(left) : sender.Margin.Left;
+                        thickness.Right = (!left.Equals("-1")) ? !right ? sender.Margin.Right : double.Parse(left) : sender.Margin.Right;
+                        thickness.Top = (!top.Equals("-1")) ? bottom ? 0.0 : double.Parse(top) : sender.Margin.Top;
+                        thickness.Bottom = (!top.Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(top) : sender.Margin.Bottom;
                         sender.Margin = thickness;
                     }
                 }
@@ -516,14 +516,14 @@ namespace hiro
                     var width = loc.Substring(0, loc.IndexOf(","));
                     loc = loc.Substring(width.Length + 1);
                     var height = loc;
-                    if (width != "-1")
+                    if (!width.Equals("-1"))
                         sender.Width = double.Parse(width);
-                    if (height != "-1")
+                    if (!height.Equals("-1"))
                         sender.Height = double.Parse(height);
                     System.Windows.Thickness thickness = sender.Margin;
-                    if (left != "-1")
+                    if (!left.Equals("-1"))
                         thickness.Left = double.Parse(left);
-                    if (top != "-1")
+                    if (!top.Equals("-1"))
                         thickness.Top = double.Parse(top);
                     sender.Margin = thickness;
 
