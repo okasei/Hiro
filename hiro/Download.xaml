@@ -11,7 +11,7 @@
     <Grid x:Name="alarmgrid" MouseLeftButtonDown="alarmgrid_MouseLeftButtonDown">
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="borderlabel" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
-        <Label x:Name="ala_title" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="20" FontWeight="Bold"/>
+        <Label x:Name="ala_title" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="20" FontWeight="Bold" Style="{DynamicResource HiroLabel}"/>
         <Button x:Name="albtn_1" Content="Pause" HorizontalAlignment="Right" Margin="0,0,10,10" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{x:Null}" Foreground="White" Height="25" VerticalAlignment="Bottom" Cursor="Hand" Click="albtn_1_Click"/>
         <TextBox x:Name="textBoxHttpUrl" HorizontalAlignment="Left" Margin="50,105,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32" Cursor="IBeam" MouseDoubleClick="textBoxHttpUrl_MouseDoubleClick"/>
         <TextBox x:Name="SavePath" HorizontalAlignment="Left" Margin="50,173,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32"/>
@@ -60,8 +60,8 @@
                 </EventTrigger>
             </Label.Triggers>
         </Label>
-        <Label x:Name="urllabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" MouseDoubleClick="urllabel_MouseDoubleClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Label x:Name="pathlabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label x:Name="urllabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" MouseDoubleClick="urllabel_MouseDoubleClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}"/>
+        <Label x:Name="pathlabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}"/>
         <CheckBox x:Name="autorun" Content="Run When Completed" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground="Black" VerticalContentAlignment="Bottom" Width="200" Height="35" IsThreeState="True" Indeterminate="autorun_Indeterminate" Unchecked="autorun_Unchecked"/>
         <Button x:Name="coloruse1" Content="Button" Visibility="Hidden"/>
     </Grid>

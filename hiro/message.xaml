@@ -11,8 +11,8 @@
     <Grid>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
-        <Label x:Name="backtitle" Content="Title" HorizontalAlignment="Left" Margin="24,56,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"/>
-        <Label x:Name="backcontent" FontFamily="Segoe UI" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <Label x:Name="backtitle" Style="{DynamicResource HiroLabel}" Content="Title" HorizontalAlignment="Left" Margin="24,56,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"/>
+        <Label x:Name="backcontent" Style="{DynamicResource HiroLabel}" FontFamily="Segoe UI" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ScrollViewer x:Name="sv" Height="322" Content="A new version of Hiro has been released!" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
         </Label>
         <Button x:Name="acceptbtn" Content="OK" HorizontalAlignment="Right" Margin="0,0,230,10" VerticalAlignment="Bottom" Click="Acceptbtn_Click" Width="100" Height="32" Cursor="Hand" FontFamily="Segoe UI"/>

@@ -818,13 +818,14 @@ namespace hiro
                 else
                     path = "notify(" + Get_Transalte("debugoff") + ",2)";
             }
-            if (path.ToLower().Equals("weather(0)"))
+            if (path.Length == 10 && path.ToLower().StartsWith("weather("))
             {
-                path = "alarm(" + Get_Transalte("weather") + ",https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ")";
-            }
-            if (path.ToLower().Equals("weather(1)"))
-            {
-                path = "notify(https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ",2)";
+                path = path.ToLower() switch
+                {
+                    "weather(0)" => "alarm(" + Get_Transalte("weather") + ",https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ")",
+                    "weather(1)" => "notify(https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ",2)",
+                    _ => "notify(" + Get_Transalte("syntax") + ",2)"
+                };
             }
             if (path.Length > 7 && path.ToLower().StartsWith("debug("))
             {
@@ -1668,7 +1669,21 @@ namespace hiro
                     "wifi(connect)" => 3,
                     _ => -1,
                 };
-                SetWiFiState(situation);
+                if (situation == -1)
+                {
+                    try
+                    {
+                        path = path[5..];
+                        path = path[0..^1];
+                        SetWiFiState(3, path);
+                    }
+                    catch (Exception ex)
+                    {
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
+                else
+                    SetWiFiState(situation);
                 return;
             }
             try
@@ -1766,7 +1781,7 @@ namespace hiro
             }
         }
         
-        private async static void SetWiFiState(int? WiFiState)
+        private async static void SetWiFiState(int? WiFiState, string? Ssid = null)
         {
             try
             {
@@ -1806,19 +1821,48 @@ namespace hiro
                                         await adapter.ScanAsync();
                                         if (adapter.NetworkReport.AvailableNetworks.Count > 0)
                                         {
-                                            var connect = false;
+                                            var connect = true;
+                                            Windows.Devices.WiFi.WiFiAvailableNetwork? savedan = null;
                                             foreach(var an in adapter.NetworkReport.AvailableNetworks)
                                             {
-                                                if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open"))
+                                                if (Ssid != null)
                                                 {
-                                                    connect = true;
-                                                    await adapter.ConnectAsync(an, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
-                                                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", an.Ssid), 2));
+                                                    if (an.Ssid.ToLower().Equals(Ssid.ToLower()))
+                                                    {
+                                                        if (savedan == null || !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
+                                                            savedan = an;
+                                                        else
+                                                        {
+                                                            connect = false;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open") && savedan == null)
+                                                        savedan = an;
+                                                }
+                                                else if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open"))
+                                                {
+                                                    savedan = an;
                                                     break;
                                                 }
                                             }
                                             if (!connect)
-                                                App.Notify(new noticeitem(Get_Transalte("wifina"), 2));
+                                            {
+                                                App.Notify(new noticeitem(Get_Transalte("wifimis").Replace("%s", Ssid), 2));
+                                            }
+                                            else
+                                            {
+                                                if (savedan == null)
+                                                    App.Notify(new noticeitem(Get_Transalte("wifina").Replace("%s", Ssid), 2));
+                                                else
+                                                {
+                                                    await adapter.ConnectAsync(savedan, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
+                                                    if (Ssid != null && !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
+                                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2));
+                                                    else
+                                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2));
+                                                }
+                                            }
                                         }
                                         else
                                             App.Notify(new noticeitem(Get_Transalte("wifina"), 2));

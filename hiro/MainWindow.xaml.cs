@@ -10,13 +10,70 @@ namespace hiro
     public partial class MainWindow : Window
     {
         internal System.Windows.Controls.ContextMenu? cm = null;
+        internal Windows.Networking.Connectivity.NetworkConnectivityLevel ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
         public MainWindow()
         {
             InitializeComponent();
             System.Windows.Controls.Canvas.SetTop(this, -233);
             System.Windows.Controls.Canvas.SetLeft(this, -233);
         }
-        void NetworkChange_NetworkAvailabilityChanged(object? sender, System.Net.NetworkInformation.NetworkAvailabilityEventArgs e)
+        public void InitializeInnerParameters()
+        {
+            ti.ToolTipText = App.AppTitle;
+            Title = App.AppTitle;
+            InitializeMethod();
+            SourceInitialized += OnSourceInitialized;
+            System.Net.NetworkInformation.NetworkChange.NetworkAddressChanged += new System.Net.NetworkInformation.NetworkAddressChangedEventHandler(NetworkChange_NetworkAddressChanged);
+            Windows.Networking.Connectivity.ConnectionProfile profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+            if (profile != null)
+                ncl = profile.GetNetworkConnectivityLevel();
+            try
+            {
+                Windows.System.Power.PowerManager.RemainingChargePercentChanged += PowerManager_RemainingChargePercentChanged;
+                Windows.System.Power.PowerManager.EnergySaverStatusChanged += PowerManager_EnergySaverStatusChanged;
+            }
+            catch (Exception ex)
+            {
+                utils.LogtoFile("[ERROR]" + ex.Message);
+            }
+        }
+
+        private void PowerManager_EnergySaverStatusChanged(object? sender, object e)
+        {
+            var p = Windows.System.Power.PowerManager.EnergySaverStatus;
+            if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+            {
+                switch (p)
+                {
+                    case Windows.System.Power.EnergySaverStatus.On:
+                        App.Notify(new noticeitem(utils.Get_Transalte("basaveron"), 2));
+                        break;
+                    case Windows.System.Power.EnergySaverStatus.Disabled:
+                        App.Notify(new noticeitem(utils.Get_Transalte("basaveroff"), 2));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void PowerManager_RemainingChargePercentChanged(object? sender, object e)
+        {
+            int p = Windows.System.Power.PowerManager.RemainingChargePercent;
+            if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+            {
+                if (Windows.System.Power.PowerManager.BatteryStatus != Windows.System.Power.BatteryStatus.Charging)
+                {
+                    var low = utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
+                    if (low.IndexOf(p.ToString()) != -1)
+                        App.Notify(new noticeitem(utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2));
+                    else if (p % 10 == 0)
+                        App.Notify(new noticeitem(utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2));
+                }
+            }
+        }
+
+        private void NetworkChange_NetworkAddressChanged(object? sender, EventArgs e)
         {
             if (App.dflag)
             {
@@ -26,25 +83,43 @@ namespace hiro
                     utils.LogtoFile(ni.Description + " - " + ni.NetworkInterfaceType.ToString());
                 }
             }
+
             if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
             {
+                Windows.Networking.Connectivity.ConnectionProfile profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+                if (profile != null)
+                {
+                    if (ncl == profile.GetNetworkConnectivityLevel())
+                        return;
+                    ncl = profile.GetNetworkConnectivityLevel();
+                }
+                else
+                {
+                    if (ncl == Windows.Networking.Connectivity.NetworkConnectivityLevel.None)
+                        return;
+                    ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
+                }
                 App.Current.Dispatcher.Invoke((Action)(() =>
                 {
-                    if (e.IsAvailable)
-                        App.Notify(new noticeitem(utils.Get_Transalte("neton"), 2));
-                    else
-                        App.Notify(new noticeitem(utils.Get_Transalte("netoff"), 2));
+                    switch (ncl)
+                    {
+                        case Windows.Networking.Connectivity.NetworkConnectivityLevel.InternetAccess:
+                            App.Notify(new noticeitem(utils.Get_Transalte("neton"), 2));
+                            break;
+                        case Windows.Networking.Connectivity.NetworkConnectivityLevel.LocalAccess:
+                            App.Notify(new noticeitem(utils.Get_Transalte("netlan"), 2));
+                            break;
+                        case Windows.Networking.Connectivity.NetworkConnectivityLevel.ConstrainedInternetAccess:
+                            App.Notify(new noticeitem(utils.Get_Transalte("netlimit"), 2));
+                            break;
+                        default:
+                            App.Notify(new noticeitem(utils.Get_Transalte("netoff"), 2));
+                            break;
+                    };
                 }));
             }
         }
-        public void InitializeInnerParameters()
-        {
-            ti.ToolTipText = App.AppTitle;
-            Title = App.AppTitle;
-            InitializeMethod();
-            SourceInitialized += OnSourceInitialized;
-            System.Net.NetworkInformation.NetworkChange.NetworkAvailabilityChanged += new System.Net.NetworkInformation.NetworkAvailabilityChangedEventHandler(NetworkChange_NetworkAvailabilityChanged);
-        }
+
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);

@@ -9,6 +9,6 @@
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="notification" Height="32" Width="800" ResizeMode="NoResize" Background="Coral" WindowStyle="None" WindowStartupLocation="Manual" Visibility="Visible" Topmost="True" IsTabStop="False" ShowInTaskbar="False" Loaded="noti_Loaded" AllowsTransparency="True" Opacity="0.01" Icon="/hiro_circle.ico" MouseDoubleClick="noti_MouseDoubleClick">
     <Grid>
-        <Label x:Name="notinfo"  Content="Label" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontFamily="Segoe UI" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseDoubleClick="notinfo_MouseDoubleClick"/>
+        <Label Style="{DynamicResource HiroLabel}" x:Name="notinfo"  Content="Label" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontFamily="Segoe UI" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseDoubleClick="notinfo_MouseDoubleClick"/>
     </Grid>
 </Window>
