@@ -71,8 +71,10 @@ namespace hiro
                 utils.Set_Control_Location(rejectbtn, "reject", extra: true, bottom: true, right: true, path: toolstr);
                 utils.Set_Control_Location(acceptbtn, "accept", extra: true, bottom: true, right: true, path: toolstr);
                 backcontent.Height = Height - backtitle.Height - backtitle.Margin.Top * 2 - acceptbtn.Margin.Bottom * 2 - acceptbtn.Height;
-                backcontent.Width = Width - backcontent.Margin.Left * 2;
+                var le = backcontent.Width;
                 utils.Set_Control_Location(backcontent, "content", extra: true, path: toolstr);
+                if (le == backcontent.Width)
+                    backcontent.Width = Width - backcontent.Margin.Left * 2;
                 sv.FontFamily = backcontent.FontFamily;
                 sv.FontSize = backcontent.FontSize;
                 sv.Height = backcontent.Height - SystemParameters.HorizontalScrollBarHeight;

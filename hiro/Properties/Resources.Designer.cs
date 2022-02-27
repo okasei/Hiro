@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace hiro {
+namespace hiro.Properties {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace hiro {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class res {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal res() {
+        internal Resources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace hiro {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("hiro.res", typeof(res).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("hiro.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,33 +57,6 @@ namespace hiro {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Hiro に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string ApplicationName {
-            get {
-                return ResourceManager.GetString("ApplicationName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   20108 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string ApplicationUpdateVersion {
-            get {
-                return ResourceManager.GetString("ApplicationUpdateVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   2.1.8 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string ApplicationVersion {
-            get {
-                return ResourceManager.GetString("ApplicationVersion", resourceCulture);
             }
         }
     }

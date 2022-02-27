@@ -15,7 +15,6 @@ namespace hiro
             InitializeComponent();
             System.Windows.Controls.Canvas.SetTop(this, -233);
             System.Windows.Controls.Canvas.SetLeft(this, -233);
-            System.Net.NetworkInformation.NetworkChange.NetworkAvailabilityChanged  += new System.Net.NetworkInformation.NetworkAvailabilityChangedEventHandler(NetworkChange_NetworkAvailabilityChanged);
         }
         void NetworkChange_NetworkAvailabilityChanged(object? sender, System.Net.NetworkInformation.NetworkAvailabilityEventArgs e)
         {
@@ -44,6 +43,7 @@ namespace hiro
             Title = App.AppTitle;
             InitializeMethod();
             SourceInitialized += OnSourceInitialized;
+            System.Net.NetworkInformation.NetworkChange.NetworkAvailabilityChanged += new System.Net.NetworkInformation.NetworkAvailabilityChangedEventHandler(NetworkChange_NetworkAvailabilityChanged);
         }
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
@@ -271,8 +271,8 @@ namespace hiro
         private void main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ti.Dispose();
-            utils.LogtoFile("[INFOMATION]Main UI: Closing " + e.GetType().ToString());
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.Uninstall();
+            utils.LogtoFile("[INFOMATION]Main UI: Closing " + e.GetType().ToString());
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)

@@ -39,7 +39,6 @@ namespace hiro
             var hwnd = windowInteropHelper.Handle;
             System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
             source.AddHook(WndProc);
-            utils.LogtoFile("AddHook WndProc");
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
 

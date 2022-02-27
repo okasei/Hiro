@@ -752,7 +752,7 @@ namespace hiro
                     return;
                 }
             }
-            if (path.Length > 22 && path.Substring(0, 5).ToLower() == "save(")
+            if (path.Length > 22 && path.ToLower().StartsWith("save("))
             {
                 String titile, mes, toolstr;
                 if (path.LastIndexOf(")") != -1)
@@ -818,21 +818,21 @@ namespace hiro
                 else
                     path = "notify(" + Get_Transalte("debugoff") + ",2)";
             }
-            if (path.ToLower() == "weather(0)")
+            if (path.ToLower().Equals("weather(0)"))
             {
                 path = "alarm(" + Get_Transalte("weather") + ",https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ")";
             }
-            if (path.ToLower() == "weather(1)")
+            if (path.ToLower().Equals("weather(1)"))
             {
                 path = "notify(https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ",2)";
             }
-            if (path.Length > 7 && path.Substring(0, 6).ToLower() == "debug(")
+            if (path.Length > 7 && path.ToLower().StartsWith("debug("))
             {
                 path = path.Substring(6);
                 path = path.Substring(0, path.Length - 1);
                 path = "notify(" + path + ")";
             }
-            if (path.Length > 7 && path.Substring(0, 6).ToLower() == "alarm(")
+            if (path.Length > 7 && path.ToLower().StartsWith("alarm("))
             {
                 path = path[6..];
                 path = path[0..^1];
@@ -975,7 +975,7 @@ namespace hiro
             {
                 return;
             }
-            if (path.Length > 14 && path.Substring(0, 10).ToLower() == "wallpaper(")
+            if (path.Length > 14 && path.ToLower().StartsWith("wallpaper("))
             {
                 String titile, mes, toolstr;
                 if (path.LastIndexOf(")") != -1)
@@ -1025,7 +1025,7 @@ namespace hiro
                 App.Notify(new noticeitem(Get_Transalte("wpchanged"), 2));
                 return;
             }
-            if (path.Length > 11 && path.Substring(0, 6).ToLower() == "bingw(")
+            if (path.Length > 11 && path.ToLower().StartsWith("bingw("))
             {
                 String toolstr;
                 if (path.LastIndexOf(")") != -1)
@@ -1091,7 +1091,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 5 && path.Substring(0, 6).ToLower() == "exit()")
+            if (path.Length > 5 && path.ToLower().StartsWith("exit()"))
             {
                 try
                 {
@@ -1105,7 +1105,7 @@ namespace hiro
                 }
 
             }
-            if (path.Length > 5 && path.Substring(0, 6).ToLower() == "show()")
+            if (path.Length > 5 && path.ToLower().StartsWith("show()"))
             {
                 if (App.mn != null)
                 {
@@ -1123,7 +1123,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 5 && path.Substring(0, 6).ToLower() == "lock()")
+            if (path.Length > 5 && path.ToLower().StartsWith("lock()"))
             {
                 if (App.mn != null)
                 {
@@ -1134,7 +1134,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 5 && path.Substring(0, 6).ToLower() == "auth()")
+            if (path.Length > 5 && path.ToLower().StartsWith("auth()"))
             {
                 BackgroundWorker sc = new();
                 BackgroundWorker fa = new();
@@ -1156,7 +1156,7 @@ namespace hiro
                 Register(sc, fa, fa);
                 return;
             }
-            if (path.Length > 5 && path[..6].ToLower() == "home()")
+            if (path.Length > 5 && path.ToLower().StartsWith("home()"))
             {
                 if (App.mn != null)
                 {
@@ -1165,7 +1165,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 5 && path[..6].ToLower() == "item()")
+            if (path.Length > 5 && path.ToLower().StartsWith("item()"))
             {
                 if (App.mn != null)
                 {
@@ -1174,7 +1174,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 9 && path[..10].ToLower() == "schedule()")
+            if (path.Length > 9 && path.ToLower().StartsWith("schedule()"))
             {
                 if (App.mn != null)
                 {
@@ -1183,7 +1183,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 7 && path[..8].ToLower() == "config()")
+            if (path.Length > 7 && path.ToLower().StartsWith("config()"))
             {
                 if (App.mn != null)
                 {
@@ -1192,7 +1192,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 5 && path[..6].ToLower() == "help()")
+            if (path.Length > 5 && path.ToLower().StartsWith("help()"))
             {
                 if (App.mn != null)
                 {
@@ -1201,7 +1201,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 6 && path[..7].ToLower() == "about()")
+            if (path.Length > 6 && path.ToLower().StartsWith("about()"))
             {
                 if (App.mn != null)
                 {
@@ -1210,7 +1210,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 5 && path[..6].ToLower() == "hide()")
+            if (path.Length > 5 && path.ToLower().StartsWith("hide()"))
             {
                 if (App.mn != null)
                 {
@@ -1218,7 +1218,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 8 && path[..9].ToLower() == "restart()")
+            if (path.Length > 8 && path.ToLower().StartsWith("restart()"))
             {
                 if (App.mn != null)
                     App.mn.Close();
@@ -1228,7 +1228,7 @@ namespace hiro
                 App.mn.Show();
                 return;
             }
-            if (path.Length > 5 && path.Substring(0, 6).ToLower() == "menu()")
+            if (path.Length > 5 && path.ToLower().StartsWith("menu()"))
             {
                 if (App.wnd != null && App.wnd.cm != null)
                 {
@@ -1237,21 +1237,21 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 7 && path.Substring(0, 8).ToLower() == "editor()")
+            if (path.Length > 7 && path.ToLower().StartsWith("editor()"))
             {
                 if (App.ed == null)
                     App.ed = new Editor();
                 App.ed.Show();
                 return;
             }
-            if (path.Length > 8 && path.Substring(0, 9).ToLower() == "lockscr()")
+            if (path.Length > 8 && path.ToLower().StartsWith("lockscr()"))
             {
                 if (App.ls == null)
                     App.ls = new Lockscr();
                 App.ls.Show();
                 return;
             }
-            if (path.Length > 8 && path.Substring(0, 8).ToLower() == "message(")
+            if (path.Length > 8 && path.ToLower().StartsWith("message("))
             {
                 String toolstr;
                 if (path.LastIndexOf(")") != -1)
@@ -1297,7 +1297,7 @@ namespace hiro
                 msg.Show();
                 return;
             }
-            if (path.Length > 7 && path[..7].ToLower() == "notify(")
+            if (path.Length > 7 && path.ToLower().StartsWith("notify("))
             {
                 String titile, mes, toolstr;
                 if (path.LastIndexOf(")") != -1)
@@ -1354,7 +1354,7 @@ namespace hiro
                 }
                 return;
             }
-            if (path.Length > 4 && path.Substring(0, 4).ToLower() == "seq(")
+            if (path.Length > 4 && path.ToLower().StartsWith("seq("))
             {
                 String toolstr;
                 if (path.LastIndexOf(")") != -1)
@@ -1639,6 +1639,38 @@ namespace hiro
                     return;
                 }
             }
+            if (path.ToLower().StartsWith("bluetooth("))
+            {
+                bool? situation = path.ToLower() switch
+                {
+                    "bluetooth(0)" => false,
+                    "bluetooth(off)" => false,
+                    "bluetooth(1)" => true,
+                    "bluetooth(on)" => true,
+                    _ => null,
+                };
+                SetBthState(situation);
+                return;
+            }
+            if (path.ToLower().StartsWith("wifi("))
+            {
+                int situation = path.ToLower() switch
+                {
+                    "wifi(0)" => 0,
+                    "wifi(off)" => 0,
+                    "wifi(1)" => 1,
+                    "wifi(on)" => 1,
+                    "wifi(2)" => 2,
+                    "wifi(dis)" => 2,
+                    "wifi(disconnect)" => 2,
+                    "wifi(3)" => 3,
+                    "wifi(con)" => 3,
+                    "wifi(connect)" => 3,
+                    _ => -1,
+                };
+                SetWiFiState(situation);
+                return;
+            }
             try
             {
                 ProcessStartInfo pinfo = new();
@@ -1690,6 +1722,129 @@ namespace hiro
             if (App.mn == null)
                 RunExe("exit()");
             return;
+        }
+
+        private async static void SetBthState(bool? bluetoothState)
+        {
+            try
+            {
+                var access = await Windows.Devices.Radios.Radio.RequestAccessAsync();
+                if (access != Windows.Devices.Radios.RadioAccessStatus.Allowed)
+                {
+                    App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcreject"), 2));
+                    return;
+                }
+                Windows.Devices.Bluetooth.BluetoothAdapter adapter = await Windows.Devices.Bluetooth.BluetoothAdapter.GetDefaultAsync();
+                if (null != adapter)
+                {
+                    var btRadio = await adapter.GetRadioAsync();
+                    switch (bluetoothState)
+                    {
+                        case true:
+                            await btRadio.SetStateAsync(Windows.Devices.Radios.RadioState.On);
+                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcon"), 2));
+                            break;
+                        case false:
+                            await btRadio.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
+                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcoff"), 2));
+                            break;
+                        default:
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            break;
+                    }
+                }
+                else
+                {
+                    App.Notify(new noticeitem(Get_Transalte(Get_Transalte("bth") + Get_Transalte("dcnull")), 2));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                App.Notify(new noticeitem(Get_Transalte("error"), 2));
+                LogtoFile("[ERROR]" + ex.Message);
+            }
+        }
+        
+        private async static void SetWiFiState(int? WiFiState)
+        {
+            try
+            {
+                var access = await Windows.Devices.WiFi.WiFiAdapter.RequestAccessAsync();
+                if (access != Windows.Devices.WiFi.WiFiAccessStatus.Allowed)
+                {
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcreject"), 2));
+                    return;
+                }
+                var adapters = await Windows.Devices.WiFi.WiFiAdapter.FindAllAdaptersAsync();
+                if (adapters.Count > 0)
+                {
+                    var adapter = adapters[0];
+                    if (null != adapter)
+                    {
+                        var radios = await Windows.Devices.Radios.Radio.GetRadiosAsync();
+                        foreach (var radio in radios)
+                        {
+                            if (radio.Kind == Windows.Devices.Radios.RadioKind.WiFi)
+                            {
+                                switch (WiFiState)
+                                {
+                                    case 0:
+                                        await radio.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
+                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2));
+                                        break;
+                                    case 1:
+                                        await radio.SetStateAsync(Windows.Devices.Radios.RadioState.On);
+                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcon"), 2));
+                                        await adapter.ScanAsync();
+                                        break;
+                                    case 2:
+                                        adapter.Disconnect();
+                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2));
+                                        break;
+                                    case 3:
+                                        await adapter.ScanAsync();
+                                        if (adapter.NetworkReport.AvailableNetworks.Count > 0)
+                                        {
+                                            var connect = false;
+                                            foreach(var an in adapter.NetworkReport.AvailableNetworks)
+                                            {
+                                                if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open"))
+                                                {
+                                                    connect = true;
+                                                    await adapter.ConnectAsync(an, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
+                                                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", an.Ssid), 2));
+                                                    break;
+                                                }
+                                            }
+                                            if (!connect)
+                                                App.Notify(new noticeitem(Get_Transalte("wifina"), 2));
+                                        }
+                                        else
+                                            App.Notify(new noticeitem(Get_Transalte("wifina"), 2));
+                                        break;
+                                    default:
+                                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        App.Notify(new noticeitem(Get_Transalte("bthnull"), 2));
+                    }
+                }
+                else
+                {
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Notify(new noticeitem(Get_Transalte("error"), 2));
+                LogtoFile("[ERROR]" + ex.Message);
+            }
         }
 
         private static void CopyDirectory(string srcdir, string desdir)

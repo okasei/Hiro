@@ -121,9 +121,9 @@
     <value>Hiro</value>
   </data>
   <data name="ApplicationUpdateVersion" xml:space="preserve">
-    <value>20107</value>
+    <value>20108</value>
   </data>
   <data name="ApplicationVersion" xml:space="preserve">
-    <value>2.1.7</value>
+    <value>2.1.8</value>
   </data>
 </root>

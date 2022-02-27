@@ -13,7 +13,7 @@ namespace hiro
     public partial class notification : Window
     {
         internal string msg;
-        private DispatcherTimer timer;
+        internal DispatcherTimer timer;
         internal int loop;
         internal int loops;
         internal int flag = 0;//0=进入,1=显示,2=退出
