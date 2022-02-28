@@ -14,13 +14,10 @@ namespace hiro
     {
         internal string msg;
         internal DispatcherTimer timer;
-        internal int loop;
-        internal int loops;
-        internal int flag = 0;//0=进入,1=显示,2=退出
+        internal int[] flag = { 0, 0, 0 };//0=进入,1=显示,2=退出//loop//loops
         internal double i = 0.01;
         internal double ai = 0.01;
-        internal bool animation = true;
-        internal int firstflag = 1;
+        internal bool[] animation = { true, false };
         public notification()
         {
             InitializeComponent();
@@ -34,7 +31,7 @@ namespace hiro
             SetValue(Canvas.TopProperty, 0.0);
             Opacity = 0.01;
             msg = "";
-            animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+            animation[0] = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
             timer = new()
             {
                 Interval = new TimeSpan(100000)
@@ -47,11 +44,11 @@ namespace hiro
         }
         private void TimerTick()
         {
-            switch(flag)
+            switch(flag[0])
             {
                 case 0:
                     timer.Interval = new TimeSpan(10000000);
-                    if (animation)
+                    if (animation[0])
                     {
                         timer.Stop();
                         System.Windows.Media.Animation.Storyboard? sb = new();
@@ -59,7 +56,7 @@ namespace hiro
                         sb.Completed += delegate
                         {
                             Opacity = 1;
-                            flag = 1;
+                            flag[0] = 1;
                             timer.Start();
                             sb = null;
                         };
@@ -68,18 +65,20 @@ namespace hiro
                     else
                     {
                         Opacity = 1;
-                        flag = 1;
+                        flag[0] = 1;
                     }
                     break;
                 case 1:
-                    loop--;
-                    if (loop <= 0)
+                    if (animation[1])
+                        break;
+                    flag[1]--;
+                    if (flag[1] <= 0)
                     {
                         Next_Msg();
                     }
-                    if (loop <= 0)
+                    if (flag[1] <= 0)
                     {
-                        flag = 2;
+                        flag[0] = 2;
                         i = 1;
                         ai = 0.01;
                         timer.Interval = new TimeSpan(10000);
@@ -87,7 +86,7 @@ namespace hiro
                     break;
                 case 2:
                     timer.Stop();
-                    if (animation)
+                    if (animation[0])
                     {
                         System.Windows.Media.Animation.Storyboard? sb = new();
                         sb = utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
@@ -130,67 +129,82 @@ namespace hiro
 
         private void Next_Msg()
         {
-            if (msg.IndexOf("\\n") != -1)
+            if (msg.Equals(String.Empty))
             {
-                string newmsg = "";
-                while (newmsg.Equals("") && msg.IndexOf("\\n") != -1)
+                if (App.noticeitems.Count != 0)
                 {
-                    newmsg = msg[..msg.IndexOf("\\n")];
-                    notinfo.Content = newmsg;
-                    msg = msg[(newmsg.Length + 2)..];
-                    Ani();
-                    loop = loops;
-                    
-                }
-                if (newmsg.Equals("") && msg.Equals(""))
-                    return;
-                
-            }
-            else if(!msg.Equals(""))
-            {
-                notinfo.Content = msg;
-                Ani();
-                msg = "";
-                loop = loops;
-            }
-            else if (App.noticeitems.Count != 0)
-            {
-                msg = App.noticeitems[0].msg;
-                loop = App.noticeitems[0].time;
-                loops = loop;
-                if (msg.IndexOf("\\n") != -1)
-                {
-                    string newmsg = msg[..msg.IndexOf("\\n")];
-                    notinfo.Content = newmsg;
-                    Ani();
-                    msg = msg[(newmsg.Length + 2)..];
+                    msg = App.noticeitems[0].msg;
+                    flag[1] = App.noticeitems[0].time;
+                    flag[2] = flag[1];
+                    App.noticeitems.RemoveAt(0);
                 }
                 else
                 {
+                    if (flag[0] == 2)
+                        return;
+                    flag[0] = 2;
+                    i = 1;
+                    ai = 0.01;
+                    timer.Interval = new TimeSpan(10000);
+                }
+            }
+            if (msg.IndexOf("\\n") != -1)
+            {
+                string newmsg = "";
+                while (newmsg.Trim().Equals("") && msg.IndexOf("\\n") != -1)
+                {
+                    newmsg = msg[..msg.IndexOf("\\n")];
+                    if (!notinfo.Content.Equals(newmsg))
+                    {
+                        notinfo.Content = newmsg;
+                        Ani();
+                    }
+                    msg = msg[(newmsg.Length + 2)..];
+                    flag[1] = flag[2];
+                }
+                if (newmsg.Equals("") && msg.Equals(""))
+                    return;
+
+            }
+            else if (!msg.Equals(""))
+            {
+                if (!notinfo.Content.Equals(msg))
+                {
                     notinfo.Content = msg;
                     Ani();
-                    msg = "";
                 }
-                App.noticeitems.RemoveAt(0);
-            }
-            else
-            {
-                if (flag == 2)
-                    return;
-                flag = 2;
-                i = 1;
-                ai = 0.01;
-                timer.Interval = new TimeSpan(10000);
+                msg = "";
+                flag[1] = flag[2];
             }
         }
-
+        private void Load_Noti_Position()
+        {
+            Size msize = new();
+            utils.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+            Thickness th = notinfo.Margin;
+            notinfo.Width = msize.Width;
+            th.Left = Width / 2 - msize.Width / 2;
+            if (th.Left < 0)
+            {
+                animation[1] = true;
+                th.Left = Width - msize.Width;
+                double time = (notinfo.Content != null) ? ((string)notinfo.Content).Length * 50 : 3000;
+                System.Windows.Media.Animation.Storyboard? sb = new();
+                sb = utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom));
+                sb.Completed += delegate
+                {
+                    sb = null;
+                    notinfo.Margin = th;
+                    animation[1] = false;
+                };
+                sb.Begin();
+            }
+            else
+                notinfo.Margin = th;
+        }
         private void Ani()
         {
-            if (firstflag == 1)
-            {
-                firstflag = 0;
-                return;
-            }
+            Load_Noti_Position();
             utils.Blur_Out(notinfo);
         }
         private void noti_Loaded(object sender, RoutedEventArgs e)
@@ -203,16 +217,17 @@ namespace hiro
             {
                 notinfo.Content = App.noticeitems[0].msg;
             }
+            Load_Noti_Position();
         }
 
         private void noti_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            loop = 0;
+            flag[1] = 0;
         }
 
         private void notinfo_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            loop = 0;
+            flag[1] = 0;
         }
     }
 }

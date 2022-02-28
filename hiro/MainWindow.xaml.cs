@@ -11,6 +11,7 @@ namespace hiro
     {
         internal System.Windows.Controls.ContextMenu? cm = null;
         internal Windows.Networking.Connectivity.NetworkConnectivityLevel ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
+        internal string rec_nc = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -83,15 +84,39 @@ namespace hiro
                     utils.LogtoFile(ni.Description + " - " + ni.NetworkInterfaceType.ToString());
                 }
             }
-
             if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
             {
                 Windows.Networking.Connectivity.ConnectionProfile profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+                string ext = "";
                 if (profile != null)
                 {
-                    if (ncl == profile.GetNetworkConnectivityLevel())
+                    try
+                    {
+                        if (profile.IsWlanConnectionProfile)
+                        {
+                            if (profile.WlanConnectionProfileDetails.GetConnectedSsid().Equals(string.Empty))
+                                return;
+                            ext = utils.Get_Transalte("netwlan").Replace("%s", profile.WlanConnectionProfileDetails.GetConnectedSsid());
+                        }
+                        else if (profile.IsWwanConnectionProfile)
+                        {
+                            if (profile.WwanConnectionProfileDetails.AccessPointName.Equals(string.Empty))
+                                return;
+                            ext = utils.Get_Transalte("netwwan").Replace("%s", profile.WwanConnectionProfileDetails.AccessPointName);
+                        }
+                        else
+                        {
+                            ext = utils.Get_Transalte("neteth");
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                    if (ncl == profile.GetNetworkConnectivityLevel() && rec_nc.Equals(ext))
                         return;
                     ncl = profile.GetNetworkConnectivityLevel();
+                    rec_nc = ext;
                 }
                 else
                 {
@@ -104,13 +129,13 @@ namespace hiro
                     switch (ncl)
                     {
                         case Windows.Networking.Connectivity.NetworkConnectivityLevel.InternetAccess:
-                            App.Notify(new noticeitem(utils.Get_Transalte("neton"), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("neton").Replace("%s", ext), 2));
                             break;
                         case Windows.Networking.Connectivity.NetworkConnectivityLevel.LocalAccess:
-                            App.Notify(new noticeitem(utils.Get_Transalte("netlan"), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("netlan").Replace("%s", ext), 2));
                             break;
                         case Windows.Networking.Connectivity.NetworkConnectivityLevel.ConstrainedInternetAccess:
-                            App.Notify(new noticeitem(utils.Get_Transalte("netlimit"), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("netlimit").Replace("%s", ext), 2));
                             break;
                         default:
                             App.Notify(new noticeitem(utils.Get_Transalte("netoff"), 2));

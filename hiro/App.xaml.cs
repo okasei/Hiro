@@ -141,9 +141,9 @@ namespace hiro
                 }
                 else
                 {
-                    if(noti.flag == 2)
+                    if(noti.flag[0] == 2)
                     {
-                        noti.flag = 0;
+                        noti.flag[0] = 0;
                         noti.timer.Interval = new TimeSpan(10000000);
                         noti.timer.Start();
                     }

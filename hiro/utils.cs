@@ -395,6 +395,14 @@ namespace hiro
         #endregion
 
         #region UI 相关
+        public static void Get_Text_Visual_Width(System.Windows.Controls.ContentControl sender, double pixelPerDip, out System.Windows.Size size)
+        {
+            var formattedText = new System.Windows.Media.FormattedText(
+                sender.Content.ToString(), System.Globalization.CultureInfo.CurrentUICulture, System.Windows.FlowDirection.LeftToRight, new System.Windows.Media.Typeface(sender.FontFamily, sender.FontStyle, sender.FontWeight, sender.FontStretch),
+                sender.FontSize, System.Windows.Media.Brushes.Black, pixelPerDip);
+            size.Width = formattedText.Width + sender.Padding.Left + sender.Padding.Right;
+            size.Height = formattedText.Height + sender.Padding.Top + sender.Padding.Bottom;
+        }
         public static void Set_Bgimage(System.Windows.Controls.Control sender)
         {
             var strFileName = Read_Ini(App.dconfig, "Configuration", "backimage", "");
@@ -1346,6 +1354,8 @@ namespace hiro
                         bw.RunWorkerAsync();
                         return;
                     }
+                    if (System.IO.File.Exists(titile))
+                        titile = System.IO.File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
                     App.Notify(new(titile, duration));
                 }
                 catch (Exception ex)
@@ -1673,9 +1683,14 @@ namespace hiro
                 {
                     try
                     {
-                        path = path[5..];
-                        path = path[0..^1];
-                        SetWiFiState(3, path);
+                        path = path[5..^1];
+                        if (path.ToLower().IndexOf(",o") != -1)
+                        {
+                            path = path.Replace(",o", "").Replace(",O", "");
+                            SetWiFiState(3, path, true);
+                        }
+                        else
+                            SetWiFiState(3, path);
                     }
                     catch (Exception ex)
                     {
@@ -1780,108 +1795,109 @@ namespace hiro
                 LogtoFile("[ERROR]" + ex.Message);
             }
         }
-        
-        private async static void SetWiFiState(int? WiFiState, string? Ssid = null)
+
+        private async static void SetWiFiState(int? WiFiState, string? Ssid = null, bool omit = false)
         {
             try
             {
-                var access = await Windows.Devices.WiFi.WiFiAdapter.RequestAccessAsync();
-                if (access != Windows.Devices.WiFi.WiFiAccessStatus.Allowed)
+                if (await Windows.Devices.WiFi.WiFiAdapter.RequestAccessAsync() != Windows.Devices.WiFi.WiFiAccessStatus.Allowed)
                 {
                     App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcreject"), 2));
                     return;
                 }
                 var adapters = await Windows.Devices.WiFi.WiFiAdapter.FindAllAdaptersAsync();
-                if (adapters.Count > 0)
+                if (adapters.Count <= 0)
                 {
-                    var adapter = adapters[0];
-                    if (null != adapter)
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                    return;
+                }
+                var adapter = adapters[0];
+                if (null == adapter)
+                {
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                    return;
+                }
+                Windows.Devices.Radios.Radio? ra = null;
+                foreach (var radio in await Windows.Devices.Radios.Radio.GetRadiosAsync())
+                {
+                    if (radio.Kind == Windows.Devices.Radios.RadioKind.WiFi)
                     {
-                        var radios = await Windows.Devices.Radios.Radio.GetRadiosAsync();
-                        foreach (var radio in radios)
+                        ra = radio;
+                        break;
+                    }
+                }
+                if(null == ra)
+                {
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                    return;
+                }
+                switch (WiFiState)
+                {
+                    case 0:
+                        await ra.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
+                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2));
+                        break;
+                    case 1:
+                        await ra.SetStateAsync(Windows.Devices.Radios.RadioState.On);
+                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcon"), 2));
+                        await adapter.ScanAsync();
+                        break;
+                    case 2:
+                        adapter.Disconnect();
+                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2));
+                        break;
+                    case 3:
+                        await adapter.ScanAsync();
+                        if (adapter.NetworkReport.AvailableNetworks.Count > 0)
                         {
-                            if (radio.Kind == Windows.Devices.Radios.RadioKind.WiFi)
+                            var connect = true;
+                            Windows.Devices.WiFi.WiFiAvailableNetwork? savedan = null;
+                            foreach (var an in adapter.NetworkReport.AvailableNetworks)
                             {
-                                switch (WiFiState)
+                                if (Ssid != null && an.Ssid.ToLower().Equals(Ssid.ToLower()))
                                 {
-                                    case 0:
-                                        await radio.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
-                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2));
+                                    if (savedan == null || !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
+                                    {
+                                        savedan = an;
+                                        if (omit)
+                                            break;
+                                    }
+                                    else
+                                    {
+                                        connect = false;
                                         break;
-                                    case 1:
-                                        await radio.SetStateAsync(Windows.Devices.Radios.RadioState.On);
-                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcon"), 2));
-                                        await adapter.ScanAsync();
-                                        break;
-                                    case 2:
-                                        adapter.Disconnect();
-                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2));
-                                        break;
-                                    case 3:
-                                        await adapter.ScanAsync();
-                                        if (adapter.NetworkReport.AvailableNetworks.Count > 0)
-                                        {
-                                            var connect = true;
-                                            Windows.Devices.WiFi.WiFiAvailableNetwork? savedan = null;
-                                            foreach(var an in adapter.NetworkReport.AvailableNetworks)
-                                            {
-                                                if (Ssid != null)
-                                                {
-                                                    if (an.Ssid.ToLower().Equals(Ssid.ToLower()))
-                                                    {
-                                                        if (savedan == null || !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
-                                                            savedan = an;
-                                                        else
-                                                        {
-                                                            connect = false;
-                                                            break;
-                                                        }
-                                                    }
-                                                    if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open") && savedan == null)
-                                                        savedan = an;
-                                                }
-                                                else if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open"))
-                                                {
-                                                    savedan = an;
-                                                    break;
-                                                }
-                                            }
-                                            if (!connect)
-                                            {
-                                                App.Notify(new noticeitem(Get_Transalte("wifimis").Replace("%s", Ssid), 2));
-                                            }
-                                            else
-                                            {
-                                                if (savedan == null)
-                                                    App.Notify(new noticeitem(Get_Transalte("wifina").Replace("%s", Ssid), 2));
-                                                else
-                                                {
-                                                    await adapter.ConnectAsync(savedan, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
-                                                    if (Ssid != null && !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
-                                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2));
-                                                    else
-                                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2));
-                                                }
-                                            }
-                                        }
-                                        else
-                                            App.Notify(new noticeitem(Get_Transalte("wifina"), 2));
-                                        break;
-                                    default:
-                                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
-                                        break;
+                                    }
+                                    if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open") && savedan == null)
+                                        savedan = an;
+                                }
+                                else if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open"))
+                                {
+                                    savedan = an;
+                                    break;
+                                }
+                            }
+                            if (!connect)
+                                App.Notify(new noticeitem(Get_Transalte("wifimis").Replace("%s", Ssid), 2));
+                            else
+                            {
+                                if (savedan == null)
+                                    App.Notify(new noticeitem(Get_Transalte("wifina").Replace("%s", Ssid), 2));
+                                else
+                                {
+                                    await adapter.ConnectAsync(savedan, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
+                                    if (Ssid != null && !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
+                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2));
+                                    else
+                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2));
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        App.Notify(new noticeitem(Get_Transalte("bthnull"), 2));
-                    }
-                }
-                else
-                {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                        else
+                            App.Notify(new noticeitem(Get_Transalte("wifina"), 2));
+                        break;
+                    default:
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        break;
                 }
             }
             catch (Exception ex)
