@@ -123,11 +123,14 @@ namespace hiro
 
         public static void Notify(noticeitem i)
         {
+            string title = AppTitle;
             i.msg = utils.Path_Prepare_EX(i.msg);
+            if (i.title != null)
+                title = utils.Path_Prepare_EX(i.title);
             if (utils.Read_Ini(App.dconfig, "Configuration", "toast", "0").Equals("1"))
             {
                 new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-            .AddText(AppTitle)
+            .AddText(title)
             .AddText(i.msg.Replace("\\n", Environment.NewLine))
             .Show();
             }
@@ -385,6 +388,12 @@ namespace hiro
                 if (ColorCD == 0 && wnd != null)
                     wnd.Load_All_Colors();
                 ColorCD--;
+            }
+
+            HiroMsg hm = new();
+            if (utils.PeekMessageA(out hm, 0, 0, 1))
+            {
+                utils.LogtoFile(hm.message);
             }
         }
 

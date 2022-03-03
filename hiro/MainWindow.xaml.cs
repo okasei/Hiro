@@ -47,10 +47,10 @@ namespace hiro
                 switch (p)
                 {
                     case Windows.System.Power.EnergySaverStatus.On:
-                        App.Notify(new noticeitem(utils.Get_Transalte("basaveron"), 2));
+                        App.Notify(new noticeitem(utils.Get_Transalte("basaveron"), 2, utils.Get_Transalte("battery")));
                         break;
                     case Windows.System.Power.EnergySaverStatus.Disabled:
-                        App.Notify(new noticeitem(utils.Get_Transalte("basaveroff"), 2));
+                        App.Notify(new noticeitem(utils.Get_Transalte("basaveroff"), 2, utils.Get_Transalte("battery")));
                         break;
                     default:
                         break;
@@ -67,9 +67,9 @@ namespace hiro
                 {
                     var low = utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
                     if (low.IndexOf(p.ToString()) != -1)
-                        App.Notify(new noticeitem(utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2));
+                        App.Notify(new noticeitem(utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2, utils.Get_Transalte("battery")));
                     else if (p % 10 == 0)
-                        App.Notify(new noticeitem(utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2));
+                        App.Notify(new noticeitem(utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2, utils.Get_Transalte("battery")));
                 }
             }
         }
@@ -129,21 +129,22 @@ namespace hiro
                     switch (ncl)
                     {
                         case Windows.Networking.Connectivity.NetworkConnectivityLevel.InternetAccess:
-                            App.Notify(new noticeitem(utils.Get_Transalte("neton").Replace("%s", ext), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("neton").Replace("%s", ext), 2, utils.Get_Transalte("net")));
                             break;
                         case Windows.Networking.Connectivity.NetworkConnectivityLevel.LocalAccess:
-                            App.Notify(new noticeitem(utils.Get_Transalte("netlan").Replace("%s", ext), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("netlan").Replace("%s", ext), 2, utils.Get_Transalte("net")));
                             break;
                         case Windows.Networking.Connectivity.NetworkConnectivityLevel.ConstrainedInternetAccess:
-                            App.Notify(new noticeitem(utils.Get_Transalte("netlimit").Replace("%s", ext), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("netlimit").Replace("%s", ext), 2, utils.Get_Transalte("net")));
                             break;
                         default:
-                            App.Notify(new noticeitem(utils.Get_Transalte("netoff"), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("netoff"), 2, utils.Get_Transalte("net")));
                             break;
                     };
                 }));
             }
         }
+
 
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
@@ -157,6 +158,27 @@ namespace hiro
         {
             switch (msg)
             {
+                case 0xA417:
+                    try
+                    {
+                        object? obj = System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(HiroMsg));
+                        if (obj != null)
+                        {
+                            HiroMsg cds = (HiroMsg)obj;
+                            utils.RunExe(cds.message);
+                            if (App.dflag)
+                                utils.LogtoFile("[SERVER]" + cds.appName + "(" + cds.appID + ") : " + cds.message);
+                        }
+                        else
+                        {
+                            utils.LogtoFile("[SERVER]Object is null");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                    break;
                 case 0x0320://系统颜色改变
                     if (utils.Read_Ini(App.dconfig, "Configuration", "lock", "0").Equals("1"))
                         break;
@@ -174,11 +196,11 @@ namespace hiro
                     {
                         utils.GetSystemPowerStatus(out utils.SYSTEM_POWER_STATUS p);
                         if (p.ACLineStatus == 1 && p.BatteryFlag == 8)
-                            App.Notify(new noticeitem(utils.Get_Transalte("bacharge"), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("bacharge"), 2, utils.Get_Transalte("battery")));
                         if (p.ACLineStatus == 1 && p.BatteryFlag != 8)
-                            App.Notify(new noticeitem(utils.Get_Transalte("baconnect"), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("baconnect"), 2, utils.Get_Transalte("battery")));
                         if (p.ACLineStatus == 0)
-                            App.Notify(new noticeitem(utils.Get_Transalte("baremove"), 2));
+                            App.Notify(new noticeitem(utils.Get_Transalte("baremove"), 2, utils.Get_Transalte("battery")));
                     }
                     break;
                 case 0x0219:
@@ -199,12 +221,12 @@ namespace hiro
                             default:
                                 return IntPtr.Zero;
                         }
-                        App.Notify(new noticeitem(mms, 2));
+                        App.Notify(new noticeitem(mms, 2, utils.Get_Transalte("device")));
                     }
                     break;
                 default:
-                    /*if (App.dflag)
-                        utils.LogtoFile("[DEBUG]Msg: " + msg.ToString() + ";LParam: " + lParam.ToString() + ";WParam: " + wParam.ToString());*/
+                    if (App.dflag)
+                        utils.LogtoFile("[DEBUG]Msg: " + msg.ToString() + ";LParam: " + lParam.ToString() + ";WParam: " + wParam.ToString());
                     break;
             }
             return IntPtr.Zero;
@@ -266,6 +288,14 @@ namespace hiro
                     if (a != null)
                     {
                         a.Load_Colors();
+                    }
+                }
+                if (win.GetType() == typeof(Web))
+                {
+                    Web? a = win as Web;
+                    if (a != null)
+                    {
+                        a.wvpb.Foreground = new SolidColorBrush(App.AppAccentColor);
                     }
                 }
                 System.Windows.Forms.Application.DoEvents();

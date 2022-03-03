@@ -73,9 +73,7 @@ namespace hiro
                         break;
                     flag[1]--;
                     if (flag[1] <= 0)
-                    {
                         Next_Msg();
-                    }
                     if (flag[1] <= 0)
                     {
                         flag[0] = 2;

@@ -18,14 +18,33 @@ namespace hiro
             if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
-                sb = utils.AddDoubleAnimaton(0.8, 1000, this, "Opacity", sb);
+                sb = utils.AddDoubleAnimaton(0.7, 300, this, "Opacity", sb, 0);
                 sb.Completed += delegate
                 {
-                    Opacity = 0.8;
+                    Opacity = 0.7;
                 };
                 sb.Begin();
             }
-                Opacity = 0.8;
+            else
+                Opacity = 0.7;
+        }
+
+        internal void Fade_Out()
+        {
+            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            {
+                System.Windows.Media.Animation.Storyboard? sb = new();
+                sb = utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
+                sb.Completed += delegate
+                {
+                    Close();
+                };
+                sb.Begin();
+            }
+            else
+            {
+                Close();
+            }
         }
     }
 }

@@ -248,13 +248,14 @@ namespace hiro
     #region 通知项目定义
     public class noticeitem
     {
+        public string? title;
         public string msg;
         public int time;
-
-        public noticeitem(string ms = "NULL", int ti = 1)
+        public noticeitem(string ms = "NULL", int ti = 1,string? tit = null)
         {
             msg = ms;
             time = ti;
+            title = tit;
         }
     }
     #endregion
@@ -302,6 +303,19 @@ namespace hiro
             la = LangName;
         }
     }
+    #endregion
+
+    #region 管道定义  
+  
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    public struct HiroMsg
+    {
+        public string appID;
+        public string appName;
+        [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPStr)]
+        public string message;
+    }
+
     #endregion
 
     public partial class utils : Component
@@ -390,7 +404,7 @@ namespace hiro
         #region 翻译文件
         public static string Get_Transalte(string val)
         {
-            return Read_Ini(App.CurrentDirectory + "\\system\\lang\\" + App.lang + ".hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine);
+            return Read_Ini(App.CurrentDirectory + "\\system\\lang\\" + App.lang + ".hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine).Replace("%b", " ");
         }
         #endregion
 
@@ -683,13 +697,11 @@ namespace hiro
         #endregion
 
         #region 运行文件
-        public static void RunExe(String path)
+        public static void RunExe(String path, string? notification = null)
         {
             path = Path_Prepare_EX(Path_Prepare(path));
             if (System.IO.File.Exists(path) && path.ToLower().EndsWith(".hiro"))
-            {
                 path = "seq(" + path + ")";
-            }
             if (path.ToLower().StartsWith("hiroad("))
             {
                 try
@@ -756,7 +768,7 @@ namespace hiro
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("dltitle")));
                     return;
                 }
             }
@@ -775,7 +787,7 @@ namespace hiro
                         }
                         else
                         {
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                             return;
                         }
 
@@ -783,13 +795,13 @@ namespace hiro
 
                     else
                     {
-                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                         return;
                     }
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                     return;
                 }
                 BackgroundWorker bw = new();
@@ -803,11 +815,11 @@ namespace hiro
                 {
                     if (toolstr.ToLower().Equals("error"))
                     {
-                        App.Notify(new noticeitem(Get_Transalte("error"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("error"), 2, Get_Transalte("execute")));
                     }
                     else
                     {
-                        App.Notify(new noticeitem(Get_Transalte("success"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("success"), 2, Get_Transalte("execute")));
                     }
                 };
                 bw.RunWorkerAsync();
@@ -821,6 +833,7 @@ namespace hiro
             if (path.ToLower().Equals("debug()"))
             {
                 App.dflag = !App.dflag;
+                notification = Get_Transalte("debug");
                 if (App.dflag)
                     path = "notify(" + Get_Transalte("debugon") + ",2)";
                 else
@@ -828,6 +841,7 @@ namespace hiro
             }
             if (path.Length == 10 && path.ToLower().StartsWith("weather("))
             {
+                notification = Get_Transalte("weather");
                 path = path.ToLower() switch
                 {
                     "weather(0)" => "alarm(" + Get_Transalte("weather") + ",https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ")",
@@ -837,6 +851,7 @@ namespace hiro
             }
             if (path.Length > 7 && path.ToLower().StartsWith("debug("))
             {
+                notification = Get_Transalte("debug");
                 path = path.Substring(6);
                 path = path.Substring(0, path.Length - 1);
                 path = "notify(" + path + ")";
@@ -993,26 +1008,17 @@ namespace hiro
                     if (toolstr.LastIndexOf(",") != -1)
                     {
                         titile = toolstr.Substring(0, toolstr.LastIndexOf(","));
-                        if (titile.Length < toolstr.Length - 1)
-                        {
-                            mes = toolstr.Substring(titile.Length + 1);
-                        }
-                        else
-                        {
-                            mes = "3";
-                        }
-
+                        mes = titile.Length < toolstr.Length - 1 ? toolstr.Substring(titile.Length + 1) : "3";
                     }
-
                     else
                     {
-                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("wallpaper")));
                         return;
                     }
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("wallpaper")));
                     return;
                 }
                 using (Microsoft.Win32.RegistryKey? key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
@@ -1020,10 +1026,7 @@ namespace hiro
                     int[] para = new int[] { 10, 6, 22, 2, 0, 0 };
                     int[] par = new int[] { 0, 0, 0, 0, 1, 0 };
                     var v = Convert.ToInt32(mes);
-                    if (v < 0)
-                        v = 0;
-                    if (v > 5)
-                        v = 5;
+                    v = v < 0 ? 0 : v > 5 ? 5 : v;
                     if (key != null)
                     {
                         key.SetValue(@"WallpaperStyle", para[v].ToString());
@@ -1031,7 +1034,7 @@ namespace hiro
                     }
                 }
                 SystemParametersInfo(20, 0, titile, 0x01 | 0x02);
-                App.Notify(new noticeitem(Get_Transalte("wpchanged"), 2));
+                App.Notify(new noticeitem(Get_Transalte("wpchanged"), 2, Get_Transalte("wallpaper")));
                 return;
             }
             if (path.Length > 11 && path.ToLower().StartsWith("bingw("))
@@ -1076,18 +1079,18 @@ namespace hiro
                             bw.RunWorkerCompleted += delegate
                             {
                                 if (!System.IO.File.Exists(toolstr))
-                                    App.Notify(new noticeitem(Get_Transalte("unknown"), 2));
+                                    App.Notify(new noticeitem(Get_Transalte("unknown"), 2, Get_Transalte("wallpaper")));
                                 else
-                                    App.Notify(new noticeitem(Get_Transalte("wpsaved"), 2));
+                                    App.Notify(new noticeitem(Get_Transalte("wpsaved"), 2, Get_Transalte("wallpaper")));
                             };
                             bw.RunWorkerAsync();
                         }
                         else
-                            App.Notify(new noticeitem(Get_Transalte("wpexist"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("wpexist"), 2, Get_Transalte("wallpaper")));
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new noticeitem(Get_Transalte("unknown"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("unknown"), 2, Get_Transalte("wallpaper")));
                         System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
                         LogtoFile("[ERROR]" + ex.Message);
 
@@ -1095,7 +1098,7 @@ namespace hiro
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("wallpaper")));
                     return;
                 }
                 return;
@@ -1349,7 +1352,7 @@ namespace hiro
                         };
                         bw.RunWorkerCompleted += delegate
                         {
-                            RunExe("notify(" + titile + "," + duration.ToString() + ")");
+                            RunExe("notify(" + titile + "," + duration.ToString() + ")", notification);
                         };
                         bw.RunWorkerAsync();
                         return;
@@ -1377,7 +1380,7 @@ namespace hiro
                         toolstr = toolstr[0..^1];
                     if (!System.IO.File.Exists(toolstr))
                     {
-                        App.Notify(new(Get_Transalte("syntax"), 2));
+                        App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("seqtitle")));
                         return;
                     }
                     Sequence sq = new();
@@ -1388,7 +1391,7 @@ namespace hiro
                 }
                 else
                 {
-                    App.Notify(new(Get_Transalte("syntax"), 2));
+                    App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("seqtitle")));
                     return;
                 }
                 return;
@@ -1408,7 +1411,7 @@ namespace hiro
                         }
                         else
                         {
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                             return;
                         }
 
@@ -1416,13 +1419,13 @@ namespace hiro
 
                     else
                     {
-                        App.Notify(new(Get_Transalte("syntax"), 2));
+                        App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                         return;
                     }
                 }
                 else
                 {
-                    App.Notify(new(Get_Transalte("syntax"), 2));
+                    App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                     return;
                 }
                 try
@@ -1515,11 +1518,11 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
                                 utils.LogtoFile("[ERROR]" + ex.Message);
                             }
                         else
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                         return;
                     }
                     try
@@ -1528,8 +1531,51 @@ namespace hiro
                     }
                     catch  (Exception ex)
                     {
-                        App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
                         utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
+                return;
+            }
+            if (path.ToLower().StartsWith("web("))
+            {
+                if (path.LastIndexOf(")") != -1)
+                {
+                    path = path[4..path.LastIndexOf(")")];
+                    if (path.StartsWith("\""))
+                        path = path[1..];
+                    if (path.EndsWith("\""))
+                        path = path[0..^1];
+                    try
+                    {
+                        Web web;
+                        string para = "";
+                        if (path.IndexOf(",") != -1)
+                        {
+                            para = path.Substring(path.IndexOf(",") + 1, path.Length - path.IndexOf(",") - 1).ToLower();
+                            path = path.Substring(0, path.Length - 1 - para.Length);
+                            if (System.IO.File.Exists(path) && para.ToLower().IndexOf("f") != -1)
+                            {
+                                web = new(Read_Ini(path, "Web", "URI", "about:blank"));
+                                web.Height = Double.Parse(Read_Ini(path, "Web", "Height", "450"));
+                                web.Width = Double.Parse(Read_Ini(path, "Web", "Width", "800"));
+                                para = Read_Ini(path, "Web", "Parameters", "");
+                            }
+                            else
+                                web = new(path);
+                        }
+                        else
+                            web = new(path);
+                        if (para.IndexOf("i") != -1)
+                            web.WindowState = System.Windows.WindowState.Minimized;
+                        else if (para.IndexOf("x") != -1)
+                            web.WindowState = System.Windows.WindowState.Maximized;
+                        if (para.IndexOf("s") != -1)
+                            web.self = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogtoFile("[ERROR]" + ex.Message);
                     }
                 }
                 return;
@@ -1555,11 +1601,11 @@ namespace hiro
                                     }
                                     catch (Exception ex)
                                     {
-                                        App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
                                         utils.LogtoFile("[ERROR]" + ex.Message);
                                     }
                                 else
-                                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                                 return;
                             }
                             try
@@ -1568,27 +1614,27 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
                                 utils.LogtoFile("[ERROR]" + ex.Message);
                             }
                             return;
                         }
                         else
                         {
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                             return;
                         }
 
                     }
                     else
                     {
-                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                         return;
                     }
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                     return;
                 }
             }
@@ -1613,11 +1659,11 @@ namespace hiro
                                     }
                                     catch (Exception ex)
                                     {
-                                        App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
                                         utils.LogtoFile("[ERROR]" + ex.Message);
                                     }
                                 else
-                                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                                 return;
                             }
                             try
@@ -1626,27 +1672,27 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                App.Notify(new noticeitem(Get_Transalte("failed"), 2));
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
                                 utils.LogtoFile("[ERROR]" + ex.Message);
                             }
                             return;
                         }
                         else
                         {
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                             return;
                         }
 
                     }
                     else
                     {
-                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                         return;
                     }
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                     return;
                 }
             }
@@ -1761,7 +1807,7 @@ namespace hiro
                 var access = await Windows.Devices.Radios.Radio.RequestAccessAsync();
                 if (access != Windows.Devices.Radios.RadioAccessStatus.Allowed)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcreject"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcreject"), 2, Get_Transalte("bth")));
                     return;
                 }
                 Windows.Devices.Bluetooth.BluetoothAdapter adapter = await Windows.Devices.Bluetooth.BluetoothAdapter.GetDefaultAsync();
@@ -1772,20 +1818,20 @@ namespace hiro
                     {
                         case true:
                             await btRadio.SetStateAsync(Windows.Devices.Radios.RadioState.On);
-                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcon"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcon"), 2, Get_Transalte("bth")));
                             break;
                         case false:
                             await btRadio.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
-                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcoff"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcoff"), 2, Get_Transalte("bth")));
                             break;
                         default:
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("bth")));
                             break;
                     }
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte(Get_Transalte("bth") + Get_Transalte("dcnull")), 2));
+                    App.Notify(new noticeitem(Get_Transalte(Get_Transalte("bth") + Get_Transalte("dcnull")), 2, Get_Transalte("bth")));
                 }
 
             }
@@ -1802,19 +1848,19 @@ namespace hiro
             {
                 if (await Windows.Devices.WiFi.WiFiAdapter.RequestAccessAsync() != Windows.Devices.WiFi.WiFiAccessStatus.Allowed)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcreject"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcreject"), 2, Get_Transalte("wifi")));
                     return;
                 }
                 var adapters = await Windows.Devices.WiFi.WiFiAdapter.FindAllAdaptersAsync();
                 if (adapters.Count <= 0)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
                     return;
                 }
                 var adapter = adapters[0];
                 if (null == adapter)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
                     return;
                 }
                 Windows.Devices.Radios.Radio? ra = null;
@@ -1828,23 +1874,23 @@ namespace hiro
                 }
                 if(null == ra)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2));
+                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
                     return;
                 }
                 switch (WiFiState)
                 {
                     case 0:
                         await ra.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
-                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2, Get_Transalte("wifi")));
                         break;
                     case 1:
                         await ra.SetStateAsync(Windows.Devices.Radios.RadioState.On);
-                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcon"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcon"), 2, Get_Transalte("wifi")));
                         await adapter.ScanAsync();
                         break;
                     case 2:
                         adapter.Disconnect();
-                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2, Get_Transalte("wifi")));
                         break;
                     case 3:
                         await adapter.ScanAsync();
@@ -1877,32 +1923,32 @@ namespace hiro
                                 }
                             }
                             if (!connect)
-                                App.Notify(new noticeitem(Get_Transalte("wifimis").Replace("%s", Ssid), 2));
+                                App.Notify(new noticeitem(Get_Transalte("wifimis").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
                             else
                             {
                                 if (savedan == null)
-                                    App.Notify(new noticeitem(Get_Transalte("wifina").Replace("%s", Ssid), 2));
+                                    App.Notify(new noticeitem(Get_Transalte("wifina").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
                                 else
                                 {
                                     await adapter.ConnectAsync(savedan, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
                                     if (Ssid != null && !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
-                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2));
+                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2, Get_Transalte("wifi")));
                                     else
-                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2));
+                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2, Get_Transalte("wifi")));
                                 }
                             }
                         }
                         else
-                            App.Notify(new noticeitem(Get_Transalte("wifina"), 2));
+                            App.Notify(new noticeitem(Get_Transalte("wifina"), 2, Get_Transalte("wifi")));
                         break;
                     default:
-                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("wifi")));
                         break;
                 }
             }
             catch (Exception ex)
             {
-                App.Notify(new noticeitem(Get_Transalte("error"), 2));
+                App.Notify(new noticeitem(Get_Transalte("error"), 2, Get_Transalte("wifi")));
                 LogtoFile("[ERROR]" + ex.Message);
             }
         }
@@ -1913,7 +1959,7 @@ namespace hiro
                 srcdir = srcdir.Substring(0, srcdir.Length - 1);
             if (desdir.ToLower().StartsWith(srcdir.ToLower()))
             {
-                App.Notify(new noticeitem(Get_Transalte("syntax"), 2));
+                App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                 return;
             }
             string desfolderdir = desdir;
@@ -2314,6 +2360,9 @@ namespace hiro
         public static extern bool ReleaseCapture();
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        public static extern bool PeekMessageA(out HiroMsg lpMsg, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
         #endregion
 
         #region 设置壁纸
@@ -2462,7 +2511,7 @@ namespace hiro
                 App.scheduleitems.RemoveAt(id);
             }
             else
-                App.Notify(new noticeitem(Get_Transalte("alarmmissing"), 2));
+                App.Notify(new noticeitem(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
 
         }
 
@@ -2471,7 +2520,7 @@ namespace hiro
             if (id > -1)
                 App.scheduleitems[id].time = DateTime.Now.AddMinutes(5.0).ToString("yyyy/MM/dd HH:mm:ss");
             else
-                App.Notify(new noticeitem(Get_Transalte("alarmmissing"), 2));
+                App.Notify(new noticeitem(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
         }
         #endregion
 

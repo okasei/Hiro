@@ -1799,7 +1799,7 @@ namespace hiro
                 tb13.Text = "";
                 newflag = 0;
                 Set_Label(schedulex);
-                App.Notify(new noticeitem(utils.Get_Transalte("sctimepassed"), 2));
+                App.Notify(new noticeitem(utils.Get_Transalte("sctimepassed"), 2, schedulex.Content.ToString()));
             }
             else
             {
@@ -1822,15 +1822,15 @@ namespace hiro
                 Set_Label(schedulex);
                 if (day > 0)
                 {
-                    App.Notify(new noticeitem(utils.Get_Transalte("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2));
+                    App.Notify(new noticeitem(utils.Get_Transalte("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, schedulex.Content.ToString()));
                 }
                 else if (hour > 0)
                 {
-                    App.Notify(new noticeitem(utils.Get_Transalte("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2));
+                    App.Notify(new noticeitem(utils.Get_Transalte("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, schedulex.Content.ToString()));
                 }
                 else
                 {
-                    App.Notify(new noticeitem(utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2));
+                    App.Notify(new noticeitem(utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, schedulex.Content.ToString()));
                 }
             }
             
@@ -2055,11 +2055,11 @@ namespace hiro
             pb.Visibility = Visibility.Hidden;
             if (ups == "latest")
             {
-                App.Notify(new noticeitem(utils.Get_Transalte("updatelatest"), 2));
+                App.Notify(new noticeitem(utils.Get_Transalte("updatelatest"), 2, utils.Get_Transalte("checkup")));
             }
             else if (ups == "Error")
             {
-                App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2));
+                App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2, utils.Get_Transalte("checkup")));
             }
             else
             {
@@ -2095,7 +2095,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
-                    App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2));
+                    App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2, utils.Get_Transalte("checkup")));
                 }
                 
                     

@@ -117,9 +117,9 @@ namespace hiro
                 utils.LogtoFile("[MESSAGE]Accept Button Clicked");
             if (toolstr != null)
                 utils.RunExe(utils.Read_Ini(toolstr, "Action", "accept", "nop"));
-            Close();
             if (bg != null)
-                bg.Close();
+                bg.Fade_Out();
+            Close();
         }
 
         private void Rejectbtn_Click(object sender, RoutedEventArgs e)
@@ -128,9 +128,9 @@ namespace hiro
                 utils.LogtoFile("[MESSAGE]Reject Button Clicked");
             if (toolstr != null)
                 utils.RunExe(utils.Read_Ini(toolstr, "Action", "reject", "nop"));
-            Close();
             if (bg != null)
-                bg.Close();
+                bg.Fade_Out();
+            Close();
         }
 
         private void Cancelbtn_Click(object sender, RoutedEventArgs e)
@@ -139,15 +139,15 @@ namespace hiro
                 utils.LogtoFile("[MESSAGE]Cancel Button Clicked");
             if (toolstr != null)
                 utils.RunExe(utils.Read_Ini(toolstr, "Action", "cancel", "nop"));
-            Close();
             if (bg != null)
-                bg.Close();
+                bg.Fade_Out();
+            Close();
         }
 
         private void Msg_Closing(object sender, CancelEventArgs e)
         {
             if (bg != null)
-                bg.Close();
+                bg.Fade_Out();
             if (toolstr != null && utils.Read_Ini(toolstr, "Action", "Delete", "false").ToLower().Equals("true"))
             {
                 System.IO.File.Delete(toolstr);
