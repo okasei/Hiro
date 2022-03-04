@@ -15,7 +15,7 @@ namespace hiro
 
         private void Back_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
                 sb = utils.AddDoubleAnimaton(0.7, 300, this, "Opacity", sb, 0);
@@ -31,7 +31,7 @@ namespace hiro
 
         internal void Fade_Out()
         {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
                 sb = utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);

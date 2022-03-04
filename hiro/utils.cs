@@ -305,15 +305,50 @@ namespace hiro
     }
     #endregion
 
-    #region 管道定义  
-  
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    public struct HiroMsg
+    #region 通信标准定义
+    public class HiroApp
     {
-        public string appID;
-        public string appName;
-        [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPStr)]
-        public string message;
+        public int state = -1;
+        public string? appID = null;
+        public string? appPackage = null;
+        public string? appName = null;
+        public string? msg = null;
+        public HiroApp(string? appID = null, string? appPackage = null, string? appName = null, string? msg = null, int state = 0)
+        {
+            this.appID = appID;
+            this.appPackage = appPackage;
+            this.appName = appName;
+            this.msg = msg;
+            this.state = state;
+        }
+        public bool CheckIntegrity()
+        {
+            if (appID == null || appPackage == null || appName == null || msg == null)
+                return true;
+            else
+                return false;
+        }
+        public void Reset()
+        {
+            appID = null;
+            appPackage = null;
+            appName = null;
+            msg = null;
+            state = 0;
+        }
+        public override string ToString()
+        {
+            var ret = "ID: ";
+            var re = appID == null ? "null" : appID;
+            ret = ret + re + ", Package: ";
+            re = appPackage == null ? "null" : appPackage;
+            ret = ret + re + ", Name: ";
+            re = appName == null ? "null" : appName;
+            ret = ret + re + ", Msg: ";
+            re = msg == null ? "null" : msg;
+            ret += re;
+            return ret;
+        }
     }
 
     #endregion
@@ -419,10 +454,10 @@ namespace hiro
         }
         public static void Set_Bgimage(System.Windows.Controls.Control sender)
         {
-            var strFileName = Read_Ini(App.dconfig, "Configuration", "backimage", "");
-            if (Read_Ini(App.dconfig, "Configuration", "background", "1").Equals("1") || !System.IO.File.Exists(strFileName))
+            var strFileName = Read_Ini(App.dconfig, "config", "backimage", "");
+            if (Read_Ini(App.dconfig, "config", "background", "1").Equals("1") || !System.IO.File.Exists(strFileName))
             {
-                if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+                if (!Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
                 {
                     System.Windows.Media.Animation.Storyboard? sb = new();
                     try
@@ -892,7 +927,7 @@ namespace hiro
                         bw.RunWorkerAsync();
                         return;
                     }
-                    if (Read_Ini(App.dconfig, "Configuration", "toast", "0").Equals("1"))
+                    if (Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
                     {
                         new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddArgument("Launch", App.AppTitle)
@@ -924,7 +959,7 @@ namespace hiro
                         bw.RunWorkerAsync();
                         return;
                     }
-                    if (Read_Ini(App.dconfig, "Configuration", "toast", "0").Equals("1"))
+                    if (Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
                     {
                         new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddText(Get_Transalte("alarmtitle"))
@@ -1122,9 +1157,9 @@ namespace hiro
                 if (App.mn != null)
                 {
                     App.mn.Visibility = System.Windows.Visibility.Visible;
-                    if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+                    if (!Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
                     {
-                        Blur_Animation(ConvertInt(Read_Ini(App.dconfig, "Configuration", "blur", "0")), true, App.mn.bgimage, App.mn);
+                        Blur_Animation(ConvertInt(Read_Ini(App.dconfig, "config", "blur", "0")), true, App.mn.bgimage, App.mn);
                     }
 
                 }
@@ -1162,7 +1197,8 @@ namespace hiro
                 {
                     if (App.mn != null)
                     {
-                        App.mn.versionlabel.Content = App.AppVersion + " 🔒";
+                        if (App.Locked)
+                            App.mn.versionlabel.Content = App.AppVersion + " 🔒";
                     }
                 };
                 Register(sc, fa, fa);
@@ -1556,7 +1592,10 @@ namespace hiro
                             path = path.Substring(0, path.Length - 1 - para.Length);
                             if (System.IO.File.Exists(path) && para.ToLower().IndexOf("f") != -1)
                             {
-                                web = new(Read_Ini(path, "Web", "URI", "about:blank"));
+                                string? title = null;
+                                if (!Read_Ini(path, "Web", "Title", String.Empty).Equals(String.Empty))
+                                    title = Read_Ini(path, "Web", "Title", String.Empty).Replace("%b", " ");
+                                web = new(Read_Ini(path, "Web", "URI", "about:blank"), title);
                                 web.Height = Double.Parse(Read_Ini(path, "Web", "Height", "450"));
                                 web.Width = Double.Parse(Read_Ini(path, "Web", "Width", "800"));
                                 para = Read_Ini(path, "Web", "Parameters", "");
@@ -1572,6 +1611,12 @@ namespace hiro
                             web.WindowState = System.Windows.WindowState.Maximized;
                         if (para.IndexOf("s") != -1)
                             web.self = true;
+                        if (para.IndexOf("-m") != -1)
+                            web.ResizeMode = System.Windows.ResizeMode.CanMinimize;
+                        else if (para.IndexOf("-r") != -1)
+                            web.ResizeMode = System.Windows.ResizeMode.NoResize;
+                        if (para.IndexOf("-c") != -1)
+                            web.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
                     }
                     catch (Exception ex)
                     {
@@ -2136,7 +2181,7 @@ namespace hiro
         }
         public static void Blur_Out(System.Windows.Controls.Control ct, BackgroundWorker? bw = null)
         {
-            if (!Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if (!Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 ct.Effect = new System.Windows.Media.Effects.BlurEffect()
                 {
@@ -2360,9 +2405,6 @@ namespace hiro
         public static extern bool ReleaseCapture();
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
-        public static extern bool PeekMessageA(out HiroMsg lpMsg, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
         #endregion
 
         #region 设置壁纸
@@ -2554,7 +2596,7 @@ namespace hiro
                         if (registry == null)//若指定的子项不存在
                             registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                         registry.SetValue("Hiro_Autostart", strName + " silent");//设置该子项的新的“键值对”
-                        Write_Ini(App.dconfig, "Configuration", "autorun", "1");
+                        Write_Ini(App.dconfig, "config", "autorun", "1");
                         LogtoFile("[HIROWEGO]Enable Autorun");
                     }
 
@@ -2578,7 +2620,7 @@ namespace hiro
                     }
                     registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                     registry.DeleteValue("Hiro_Autostart", false);//删除指定“键名称”的键/值对
-                    Write_Ini(App.dconfig, "Configuration", "autorun", "0");
+                    Write_Ini(App.dconfig, "config", "autorun", "0");
                     LogtoFile("[HIROWEGO]Disable Autorun");
                 }
             }
@@ -2616,11 +2658,11 @@ namespace hiro
 
         public static void IntializeColorParameters()
         {
-            if (utils.Read_Ini(App.dconfig, "Configuration", "lock", "0").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "lock", "0").Equals("1"))
             {
                 try
                 {
-                    App.AppAccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(utils.Read_Ini(App.dconfig, "Configuration", "lockcolor", "#00C4FF"));
+                    App.AppAccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(utils.Read_Ini(App.dconfig, "config", "lockcolor", "#00C4FF"));
 
                 }
                 catch (Exception ex)
@@ -2636,14 +2678,14 @@ namespace hiro
             double luminance = (0.299 * App.AppAccentColor.R + 0.587 * App.AppAccentColor.G + 0.114 * App.AppAccentColor.B) / 255;
             if (luminance > 0.5)
             {
-                if (utils.Read_Ini(App.dconfig, "Configuration", "reverse", "0").Equals("1"))
+                if (utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1"))
                     App.AppForeColor = System.Windows.Media.Colors.White;
                 else
                     App.AppForeColor = System.Windows.Media.Colors.Black;
             }
             else
             {
-                if (utils.Read_Ini(App.dconfig, "Configuration", "reverse", "0").Equals("1"))
+                if (utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1"))
                     App.AppForeColor = System.Windows.Media.Colors.Black;
                 else
                     App.AppForeColor = System.Windows.Media.Colors.White;
@@ -2674,6 +2716,29 @@ namespace hiro
             return colour;
         }
         #endregion
+
+        public static string DeleteUnVisibleChar(string sourceString)
+        {
+            System.Text.StringBuilder sBuilder = new System.Text.StringBuilder(131);
+            for (int i = 0; i < sourceString.Length; i++)
+            {
+                int Unicode = sourceString[i];
+                if (Unicode >= 16)
+                {
+                    sBuilder.Append(sourceString[i].ToString());
+                }
+            }
+            return sBuilder.ToString();
+        }
+
+        public static int GetRandomUnusedPort()
+        {
+            var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+            listener.Start();
+            var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
 
     }
 

@@ -42,7 +42,7 @@ namespace hiro
         private void PowerManager_EnergySaverStatusChanged(object? sender, object e)
         {
             var p = Windows.System.Power.PowerManager.EnergySaverStatus;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
             {
                 switch (p)
                 {
@@ -61,7 +61,7 @@ namespace hiro
         private void PowerManager_RemainingChargePercentChanged(object? sender, object e)
         {
             int p = Windows.System.Power.PowerManager.RemainingChargePercent;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
             {
                 if (Windows.System.Power.PowerManager.BatteryStatus != Windows.System.Power.BatteryStatus.Charging)
                 {
@@ -84,7 +84,7 @@ namespace hiro
                     utils.LogtoFile(ni.Description + " - " + ni.NetworkInterfaceType.ToString());
                 }
             }
-            if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
             {
                 Windows.Networking.Connectivity.ConnectionProfile profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
                 string ext = "";
@@ -158,29 +158,8 @@ namespace hiro
         {
             switch (msg)
             {
-                case 0xA417:
-                    try
-                    {
-                        object? obj = System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(HiroMsg));
-                        if (obj != null)
-                        {
-                            HiroMsg cds = (HiroMsg)obj;
-                            utils.RunExe(cds.message);
-                            if (App.dflag)
-                                utils.LogtoFile("[SERVER]" + cds.appName + "(" + cds.appID + ") : " + cds.message);
-                        }
-                        else
-                        {
-                            utils.LogtoFile("[SERVER]Object is null");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        utils.LogtoFile("[ERROR]" + ex.Message);
-                    }
-                    break;
                 case 0x0320://系统颜色改变
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "lock", "0").Equals("1"))
+                    if (utils.Read_Ini(App.dconfig, "config", "lock", "0").Equals("1"))
                         break;
                     App.ColorCD = 3;
                     break;
@@ -192,7 +171,7 @@ namespace hiro
                         Set_System_Color();
                     break;*/
                 case 0x0218:
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+                    if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
                     {
                         utils.GetSystemPowerStatus(out utils.SYSTEM_POWER_STATUS p);
                         if (p.ACLineStatus == 1 && p.BatteryFlag == 8)
@@ -204,7 +183,7 @@ namespace hiro
                     }
                     break;
                 case 0x0219:
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+                    if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
                     {
                         var mms = utils.Get_Transalte("deinfo") + " - ";
                         switch (wParam.ToInt32())
@@ -306,14 +285,14 @@ namespace hiro
         {
             ti.TrayMiddleMouseDown += delegate
             {
-                var mc = utils.Read_Ini(App.dconfig, "Configuration", "middleclick", "1");
+                var mc = utils.Read_Ini(App.dconfig, "config", "middleclick", "1");
                 switch (mc)
                 {
                     case "2":
                         utils.RunExe("menu()");;
                         break;
                     case "3":
-                        var mce = utils.Read_Ini(App.dconfig, "Configuration", "middleaction", "");
+                        var mce = utils.Read_Ini(App.dconfig, "config", "middleaction", "");
                         utils.RunExe(mce);
                         break;
                     default:
@@ -333,14 +312,14 @@ namespace hiro
             };
             ti.TrayRightMouseDown += delegate
             {
-                var rc = utils.Read_Ini(App.dconfig, "Configuration", "rightclick", "1");
+                var rc = utils.Read_Ini(App.dconfig, "config", "rightclick", "1");
                 switch (rc)
                 {
                     case "2":
                         utils.RunExe("menu()");
                         break;
                     case "3":
-                        var rce = utils.Read_Ini(App.dconfig, "Configuration", "rightaction", "");
+                        var rce = utils.Read_Ini(App.dconfig, "config", "rightaction", "");
                         utils.RunExe(rce);
                         break;
                     default:
@@ -360,14 +339,14 @@ namespace hiro
             };
             ti.TrayLeftMouseDown += delegate
             {
-                var lc = utils.Read_Ini(App.dconfig, "Configuration", "leftclick", "1");
+                var lc = utils.Read_Ini(App.dconfig, "config", "leftclick", "1");
                 switch (lc)
                 {
                     case "2":
                         utils.RunExe("menu()");
                         break;
                     case "3":
-                        var lce = utils.Read_Ini(App.dconfig, "Configuration", "leftaction", "");
+                        var lce = utils.Read_Ini(App.dconfig, "config", "leftaction", "");
                         utils.RunExe(lce);
                         break;
                     default:

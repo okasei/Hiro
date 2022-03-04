@@ -50,7 +50,7 @@ namespace hiro
             timer.Start();
             Load();
             con.Focus();
-            slider.Value = double.Parse(utils.Read_Ini(App.dconfig, "Configuration", "EditOpacity", "1"));
+            slider.Value = double.Parse(utils.Read_Ini(App.dconfig, "config", "EditOpacity", "1"));
             allow = 1;
             slider.IsEnabled = true;
             this.Opacity = (float)slider.Value;
@@ -88,7 +88,7 @@ namespace hiro
             sr.Close();
             sr.Dispose();
             fs.Close();
-            utils.Write_Ini(App.dconfig, "Configuration", "EditPage", App.editpage.ToString());
+            utils.Write_Ini(App.dconfig, "config", "EditPage", App.editpage.ToString());
             saveflag = 1;
             savetime = 2;
         }
@@ -118,7 +118,7 @@ namespace hiro
         }
         private void Run_In()
         {
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
@@ -139,7 +139,7 @@ namespace hiro
             runoutflag = 1;
             Save();
             con.IsEnabled = false;
-            if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if(!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
@@ -237,7 +237,7 @@ namespace hiro
         {
             this.Opacity = (float)slider.Value;
             if(allow == 1)
-                utils.Write_Ini(App.dconfig, "Configuration", "EditOpacity", slider.Value.ToString());
+                utils.Write_Ini(App.dconfig, "config", "EditOpacity", slider.Value.ToString());
         }
 
         private void Edi_KeyDown(object sender, KeyEventArgs e)
@@ -294,8 +294,8 @@ namespace hiro
                 return;
             bflag = 1;
             utils.Set_Bgimage(bgimage);
-            bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
-            utils.Blur_Animation(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")), animation, bgimage, this);
+            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
+            utils.Blur_Animation(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), animation, bgimage, this);
             bflag = 0;
         }
     }

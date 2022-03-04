@@ -46,6 +46,8 @@ namespace hiro
         internal static System.Net.Http.HttpClient hc = new();
         internal static SolidColorBrush ForeBrush = new();
         internal static int ColorCD = -1;
+        internal static int port = 4174;
+        internal static HiroApp ha = new();
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
@@ -60,9 +62,82 @@ namespace hiro
             Initialize_Notiy_Recall();
             InitializeMethod();
             InitializeStartParameters(e);
+            Build_Socket();
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        private void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
+        {
+                System.Net.Sockets.Socket clientSocket = socketLister.Accept();
+                HiroSocket clientSession = new(clientSocket);
+                lock (clientSessionLock)
+                {
+                    if (!clientSessionTable.ContainsKey(clientSession.IP))
+                    {
+                        clientSessionTable.Add(clientSession.IP, clientSession);
+                    }
+                }
+                SocketConnection socketConnection = new(clientSocket);
+                socketConnection.ReceiveData();
+                socketConnection.DataRecevieCompleted += delegate
+                {
+                    string recStr = utils.DeleteUnVisibleChar(System.Text.Encoding.ASCII.GetString(socketConnection.msgBuffer));
+                    recStr = utils.Path_Prepare_EX(utils.Path_Prepare(recStr)).Trim();
+                    if (System.IO.File.Exists(recStr))
+                    {
+                        ha.msg = utils.Read_Ini(recStr, "App", "Msg", "nop");
+                        ha.appID = utils.Read_Ini(recStr, "App", "ID", "null");
+                        ha.appName = utils.Read_Ini(recStr, "App", "Name", "null");
+                        ha.appPackage = utils.Read_Ini(recStr, "App", "Package", "null");
+                        Dispatcher.Invoke(delegate
+                        {
+                            utils.RunExe(ha.msg);
+                        });
+                        utils.LogtoFile("[SERVER]" + ha.ToString());
+                    }
+                    else
+                    {
+                        utils.LogtoFile("[SERVER]" + recStr);
+                    }
+                };
+                System.ComponentModel.BackgroundWorker bw = new();
+                bw.DoWork += delegate
+                {
+                    Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
+                };
+                bw.RunWorkerAsync();
+
+        }
+
+
+        private void Build_Socket()
+        {
+            port = utils.GetRandomUnusedPort();
+            int MaxConnection = 10;
+            System.Collections.Hashtable clientSessionTable = new ();
+            object clientSessionLock = new object();
+            System.Net.IPEndPoint localEndPoint = new (System.Net.IPAddress.Any, port);
+            System.Net.Sockets.Socket socketLister = new (System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+            socketLister.Bind(localEndPoint);
+            utils.Write_Ini(dconfig, "config", "port", port.ToString());
+            try
+            {
+                socketLister.Listen(MaxConnection);
+                //Console.WriteLine("服务器Socket监听已经打开...");
+                System.ComponentModel.BackgroundWorker bw = new();
+                bw.DoWork += delegate
+                {
+                    Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
+                };
+                bw.RunWorkerAsync();
+            }
+            catch (Exception ex)
+            {
+                utils.LogtoFile("[ERROR]" + ex.Message);
+            }
+        }
+
+
+    protected override void OnStartup(StartupEventArgs e)
         {
             RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
             base.OnStartup(e);
@@ -112,8 +187,8 @@ namespace hiro
                     utils.LogtoFile("[HIROWEGO]Silent Start");
                 else
                     mn.Show();
-                if (utils.Read_Ini(App.dconfig, "Configuration", "autoexe", "1").Equals("2"))
-                    utils.RunExe(utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "nop"));
+                if (utils.Read_Ini(App.dconfig, "config", "autoexe", "1").Equals("2"))
+                    utils.RunExe(utils.Read_Ini(App.dconfig, "config", "autoaction", "nop"));
                 return;
             }
         Executed:
@@ -127,7 +202,7 @@ namespace hiro
             i.msg = utils.Path_Prepare_EX(i.msg);
             if (i.title != null)
                 title = utils.Path_Prepare_EX(i.title);
-            if (utils.Read_Ini(App.dconfig, "Configuration", "toast", "0").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
             {
                 new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
             .AddText(title)
@@ -221,7 +296,7 @@ namespace hiro
             utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
             dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hus";
             sconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hsl";
-            var str = utils.Read_Ini(dconfig, "Configuration", "lang", "");
+            var str = utils.Read_Ini(dconfig, "config", "lang", "");
             if (str.Equals("") || str.Equals("default"))
             {
                 lang = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
@@ -251,15 +326,15 @@ namespace hiro
             }   
             utils.LogtoFile("[HIROWEGO]Current language: " + lang);
             LangFilePath = CurrentDirectory + "\\system\\lang\\" + lang + ".hlp";
-            if (utils.Read_Ini(dconfig, "Configuration", "customnick", "1").Equals("2"))
+            if (utils.Read_Ini(dconfig, "config", "customnick", "1").Equals("2"))
             {
-                AppTitle = utils.Read_Ini(dconfig, "Configuration", "customhiro", "Hiro");
+                AppTitle = utils.Read_Ini(dconfig, "config", "customhiro", "Hiro");
             }
             else
             {
                 AppTitle = res.ApplicationName;
             }
-            var page = int.Parse(utils.Read_Ini(dconfig, "Configuration", "EditPage", "0"));
+            var page = int.Parse(utils.Read_Ini(dconfig, "config", "EditPage", "0"));
             editpage = page;
             System.IO.DirectoryInfo di = new(CurrentDirectory + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
@@ -335,7 +410,7 @@ namespace hiro
                 {
                     if (scheduleitems[i - 1].command.ToLower().Equals("alarm") || scheduleitems[i - 1].command.ToLower().Equals("alarm()"))
                     {
-                        if (utils.Read_Ini(dconfig, "Configuration", "toast", "0").Equals("1"))
+                        if (utils.Read_Ini(dconfig, "config", "toast", "0").Equals("1"))
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)
@@ -388,12 +463,6 @@ namespace hiro
                 if (ColorCD == 0 && wnd != null)
                     wnd.Load_All_Colors();
                 ColorCD--;
-            }
-
-            HiroMsg hm = new();
-            if (utils.PeekMessageA(out hm, 0, 0, 1))
-            {
-                utils.LogtoFile(hm.message);
             }
         }
 

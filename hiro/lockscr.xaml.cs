@@ -76,7 +76,7 @@ namespace hiro
                             Stretch = Stretch.UniformToFill,
                             ImageSource = new BitmapImage(new Uri(filep))
                         };
-                        bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+                        bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
                         bgimage.Background = ib;
                         utils.Blur_Animation(0, animation, bgimage, this);
                     }
@@ -104,7 +104,7 @@ namespace hiro
 
         private void Run_In()
         {
-            if(!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if(!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, 0, TimeSpan.FromMilliseconds(800));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
@@ -120,7 +120,7 @@ namespace hiro
         private void Run_Out()
         {
             utils.ShowCursor(1);
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, TimeSpan.FromMilliseconds(600));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;

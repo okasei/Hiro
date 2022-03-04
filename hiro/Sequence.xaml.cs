@@ -20,7 +20,7 @@ namespace hiro
         {
             InitializeComponent();
             Load_Colors();
-            Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
+            Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
             Load_Position();
             Load_Translate();
             Title = utils.Get_Transalte("seqtitle") + " - " + App.AppTitle;
@@ -364,14 +364,14 @@ namespace hiro
                 return;
             bflag = 1;
             utils.Set_Bgimage(bgimage);
-            bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
             utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
         private void seq_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
+            Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
         }
     }
 }

@@ -31,7 +31,7 @@ namespace hiro
             SetValue(Canvas.TopProperty, 0.0);
             Opacity = 0.01;
             msg = "";
-            animation[0] = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+            animation[0] = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
             timer = new()
             {
                 Interval = new TimeSpan(100000)
@@ -113,7 +113,7 @@ namespace hiro
         {
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
             System.Windows.Media.Animation.Storyboard? sb = new();
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
                 sb = utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sb);
             else
                 sb = utils.AddColorAnimaton(App.AppAccentColor, 0, this, "Background.Color", sb);

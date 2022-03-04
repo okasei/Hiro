@@ -9,14 +9,18 @@ namespace hiro
     /// </summary>
     public partial class Web : Window
     {
-        internal string prefix = "";
         internal bool self = false;
-        public Web(string? de = null)
+        internal string? fixed_title = null;
+        private ResizeMode rm = ResizeMode.NoResize;
+        private WindowState ws = WindowState.Normal;
+        private WindowStyle wt = WindowStyle.None;
+        private string prefix = "";
+        public Web(string? uri = null,string? title = null)
         {
             InitializeComponent();
-            if (de != null)
-            { 
-                if (de.ToLower().Equals("hiro://clear"))
+            if (uri != null)
+            {
+                if (uri.ToLower().Equals("hiro://clear"))
                 {
                     wv2.Source = new Uri("about:blank");
                     wv2.CoreWebView2InitializationCompleted += ClearCache;
@@ -30,16 +34,18 @@ namespace hiro
                 }
                 else
                 {
-                    wv2.Source = new Uri(de);
+                    wv2.Source = new Uri(uri);
                     Show();
                 }
             }
+            fixed_title = title;
             wv2.CoreWebView2InitializationCompleted += Wv2_CoreWebView2InitializationCompleted;
         }
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
         {
-            Title = utils.Get_Transalte("webtitle").Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%p", prefix).Replace("%h", App.AppTitle);
+            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
         }
 
         private void ClearCache(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
@@ -77,35 +83,43 @@ namespace hiro
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
             prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? utils.Get_Transalte("webmusic") : "";
-            Title = utils.Get_Transalte("webtitle").Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%p", prefix).Replace("%h", App.AppTitle); ;
+            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
         }
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
         {
             if (wv2.CoreWebView2.ContainsFullScreenElement)
             {
+                wt = WindowStyle;
+                ws = WindowState;
+                rm = ResizeMode;
                 WindowStyle = WindowStyle.None;
+                WindowState = WindowState.Normal;
                 WindowState = WindowState.Maximized;
-                Margin = new(0, 0, 0, 0);
-                VerticalAlignment = VerticalAlignment.Stretch;
-                HorizontalAlignment = HorizontalAlignment.Stretch;
+                ResizeMode = ResizeMode.NoResize;
             }
             else
             {
-                WindowStyle = WindowStyle.SingleBorderWindow;
-                WindowState = WindowState.Normal;
+                WindowStyle = wt;
+                WindowState = ws;
+                ResizeMode = rm;
+                System.Windows.Controls.Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
+                System.Windows.Controls.Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
             }
         }
 
         private void CoreWebView2_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            Title = utils.Get_Transalte("webtitle").Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%p", prefix).Replace("%h", App.AppTitle);
+            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             Loading(false);
         }
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
-            Title = utils.Get_Transalte("webtitle").Replace("%t", utils.Get_Transalte("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
+            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", utils.Get_Transalte("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
             Loading(true);
         }
 

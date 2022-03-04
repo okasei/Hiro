@@ -41,10 +41,10 @@ namespace hiro
             autorun.Tag = "1";
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - this.Width / 2);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2);
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("1"))
                 Loaded += delegate
                 {
-                    Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
+                    Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
                 };
             utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
             utils.LogtoFile("[HIROWEGO]MainUI: Loaded");
@@ -145,7 +145,7 @@ namespace hiro
             else
                 versionlabel.Content = App.AppVersion;
             utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-            switch (utils.Read_Ini(App.dconfig, "Configuration", "leftclick", "1"))
+            switch (utils.Read_Ini(App.dconfig, "config", "leftclick", "1"))
             {
                 case "2":
                     rbtn2.IsChecked = true;
@@ -157,7 +157,7 @@ namespace hiro
                     rbtn1.IsChecked = true;
                     break;
             }
-            switch (utils.Read_Ini(App.dconfig, "Configuration", "middleclick", "1"))
+            switch (utils.Read_Ini(App.dconfig, "config", "middleclick", "1"))
             {
                 case "2":
                     rbtn5.IsChecked = true;
@@ -169,7 +169,7 @@ namespace hiro
                     rbtn4.IsChecked = true;
                     break;
             }
-            switch (utils.Read_Ini(App.dconfig, "Configuration", "rightclick", "2"))
+            switch (utils.Read_Ini(App.dconfig, "config", "rightclick", "2"))
             {
                 case "2":
                     rbtn8.IsChecked = true;
@@ -181,12 +181,12 @@ namespace hiro
                     rbtn7.IsChecked = true;
                     break;
             }
-            switch (utils.Read_Ini(App.dconfig, "Configuration", "customuser", "1"))
+            switch (utils.Read_Ini(App.dconfig, "config", "customuser", "1"))
             {
                 case "2":
                     rbtn11.IsChecked = true;
                     App.CustomUsernameFlag = 1;
-                    App.Username = utils.Read_Ini(App.dconfig, "Configuration", "customname", "");
+                    App.Username = utils.Read_Ini(App.dconfig, "config", "customname", "");
                     break;
                 default:
                     rbtn10.IsChecked = true;
@@ -194,7 +194,7 @@ namespace hiro
                     App.Username = App.EnvironmentUsername;
                     break;
             }
-            switch (utils.Read_Ini(App.dconfig, "Configuration", "autoexe", "1"))
+            switch (utils.Read_Ini(App.dconfig, "config", "autoexe", "1"))
             {
                 case "2":
                     rbtn13.IsChecked = true;
@@ -203,7 +203,7 @@ namespace hiro
                     rbtn12.IsChecked = true;
                     break;
             }
-            if (utils.Read_Ini(App.dconfig, "Configuration", "min", "1") == "1")
+            if (utils.Read_Ini(App.dconfig, "config", "min", "1") == "1")
             {
                 cb_box.IsChecked = true;
             }
@@ -211,7 +211,7 @@ namespace hiro
             {
                 cb_box.IsChecked = false;
             }
-            if (utils.Read_Ini(App.dconfig, "Configuration", "background", "1") == "2")
+            if (utils.Read_Ini(App.dconfig, "config", "background", "1") == "2")
             {
                 rbtn15.IsChecked = true;
             }
@@ -219,53 +219,53 @@ namespace hiro
             {
                 rbtn14.IsChecked = true;
             }
-            if (utils.Read_Ini(App.dconfig, "Configuration", "customnick", "1") == "2")
+            if (utils.Read_Ini(App.dconfig, "config", "customnick", "1") == "2")
             {
                 rbtn17.IsChecked = true;
-                App.AppTitle = utils.Read_Ini(App.dconfig, "Configuration", "customhiro", "Hiro");
+                App.AppTitle = utils.Read_Ini(App.dconfig, "config", "customhiro", "Hiro");
                 if (App.wnd != null)
-                    App.wnd.ti.ToolTipText = utils.Read_Ini(App.dconfig, "Configuration", "customhiro", "Hiro");
+                    App.wnd.ti.ToolTipText = utils.Read_Ini(App.dconfig, "config", "customhiro", "Hiro");
             }
             else
             {
                 rbtn16.IsChecked = true;
             }
-            if (utils.Read_Ini(App.dconfig, "Configuration", "autorun", "0").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "autorun", "0").Equals("1"))
                 autorun.IsChecked = true;
             else
                 autorun.IsChecked = false;
-            blureff.IsChecked = utils.Read_Ini(App.dconfig, "Configuration", "blur", "0") switch
+            blureff.IsChecked = utils.Read_Ini(App.dconfig, "config", "blur", "0") switch
             {
                 "2" => null,
                 "1" => true,
                 _ => false,
             };
-            if (utils.Read_Ini(App.dconfig, "Configuration", "verbose", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
                 verbose.IsChecked = true;
             else
                 verbose.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("1"))
                 animation.IsChecked = true;
             else
                 animation.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "toast", "0").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
                 win_style.IsChecked = true;
             else
                 win_style.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "reverse", "0").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1"))
                 reverse_style.IsChecked = true;
             else
                 reverse_style.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "Configuration", "lock", "0").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "lock", "0").Equals("1"))
                 lock_style.IsChecked = true;
             else
                 lock_style.IsChecked = false;
-            tb1.Text = utils.Read_Ini(App.dconfig, "Configuration", "leftaction", "");
-            tb2.Text = utils.Read_Ini(App.dconfig, "Configuration", "middleaction", "");
-            tb3.Text = utils.Read_Ini(App.dconfig, "Configuration", "rightaction", "");
-            tb4.Text = utils.Read_Ini(App.dconfig, "Configuration", "customname", "");
-            tb5.Text = utils.Read_Ini(App.dconfig, "Configuration", "autoaction", "");
-            tb10.Text = utils.Read_Ini(App.dconfig, "Configuration", "customhiro", "");
+            tb1.Text = utils.Read_Ini(App.dconfig, "config", "leftaction", "");
+            tb2.Text = utils.Read_Ini(App.dconfig, "config", "middleaction", "");
+            tb3.Text = utils.Read_Ini(App.dconfig, "config", "rightaction", "");
+            tb4.Text = utils.Read_Ini(App.dconfig, "config", "customname", "");
+            tb5.Text = utils.Read_Ini(App.dconfig, "config", "autoaction", "");
+            tb10.Text = utils.Read_Ini(App.dconfig, "config", "customhiro", "");
         }
         private void Configbar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -487,13 +487,13 @@ namespace hiro
         {
             utils.IntializeColorParameters();
             utils.Set_Bgimage(bgimage);
-            if (utils.Read_Ini(App.dconfig, "Configuration", "background", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "background", "1").Equals("1"))
             {
                 Blurbgi(0);
             }
             else
             {
-                Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
+                Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
             }
             Foreground = new SolidColorBrush(App.AppForeColor);
 
@@ -696,7 +696,7 @@ namespace hiro
             }
             else
             {
-                if (utils.Read_Ini(App.dconfig, "Configuration", "min", "1").Equals("1"))
+                if (utils.Read_Ini(App.dconfig, "config", "min", "1").Equals("1"))
                 {
                     Visibility = Visibility.Hidden;
                 }
@@ -724,7 +724,7 @@ namespace hiro
                 timex.Visibility = Visibility.Hidden;
             }
             double duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
-            if (!utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0"))
+            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
             {
                 duration = duration > label.Height * 2 ? 2 * duration : 6 * duration;
                 Storyboard? sb = new();
@@ -1017,22 +1017,22 @@ namespace hiro
         private void Rbtn3_Checked(object sender, RoutedEventArgs e)
         {
             tb1.IsEnabled = true;
-            utils.Write_Ini(App.dconfig, "Configuration", "leftclick", "3");
+            utils.Write_Ini(App.dconfig, "config", "leftclick", "3");
         }
 
         private void Rbtn1_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "leftclick", "1");
+            utils.Write_Ini(App.dconfig, "config", "leftclick", "1");
         }
 
         private void Rbtn2_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "leftclick", "2");
+            utils.Write_Ini(App.dconfig, "config", "leftclick", "2");
         }
 
         private void Tb1_TextChanged(object sender, TextChangedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "leftaction", tb1.Text);
+            utils.Write_Ini(App.dconfig, "config", "leftaction", tb1.Text);
         }
 
         private void Rbtn6_Unchecked(object sender, RoutedEventArgs e)
@@ -1043,23 +1043,23 @@ namespace hiro
         private void Rbtn6_Checked(object sender, RoutedEventArgs e)
         {
             tb2.IsEnabled = true;
-            utils.Write_Ini(App.dconfig, "Configuration", "middleclick", "3");
+            utils.Write_Ini(App.dconfig, "config", "middleclick", "3");
         }
 
         private void Rbtn4_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "middleclick", "1");
+            utils.Write_Ini(App.dconfig, "config", "middleclick", "1");
         }
 
         private void Rbtn5_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "middleclick", "2");
+            utils.Write_Ini(App.dconfig, "config", "middleclick", "2");
         }
 
         private void Rbtn9_Checked(object sender, RoutedEventArgs e)
         {
             tb3.IsEnabled = true;
-            utils.Write_Ini(App.dconfig, "Configuration", "rightclick", "3");
+            utils.Write_Ini(App.dconfig, "config", "rightclick", "3");
         }
 
         private void Rbtn9_Unchecked(object sender, RoutedEventArgs e)
@@ -1069,17 +1069,17 @@ namespace hiro
 
         private void Rbtn7_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "rightclick", "1");
+            utils.Write_Ini(App.dconfig, "config", "rightclick", "1");
         }
 
         private void Rbtn8_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "rightclick", "2");
+            utils.Write_Ini(App.dconfig, "config", "rightclick", "2");
         }
 
         private void Rbtn10_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "customuser", "1");
+            utils.Write_Ini(App.dconfig, "config", "customuser", "1");
             App.CustomUsernameFlag = 0;
             App.Username = App.EnvironmentUsername;
         }
@@ -1087,9 +1087,9 @@ namespace hiro
         private void Rbtn11_Checked(object sender, RoutedEventArgs e)
         {
             tb4.IsEnabled = true;
-            utils.Write_Ini(App.dconfig, "Configuration", "customuser", "2");
+            utils.Write_Ini(App.dconfig, "config", "customuser", "2");
             App.CustomUsernameFlag = 1;
-            App.Username = utils.Read_Ini(App.dconfig, "Configuration", "customname", "");
+            App.Username = utils.Read_Ini(App.dconfig, "config", "customname", "");
         }
 
         private void Rbtn11_Unchecked(object sender, RoutedEventArgs e)
@@ -1099,18 +1099,18 @@ namespace hiro
 
         private void Tb4_TextChanged(object sender, TextChangedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "customname", tb4.Text);
+            utils.Write_Ini(App.dconfig, "config", "customname", tb4.Text);
             App.Username = tb4.Text;
         }
 
         private void Rbtn12_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "autoexe", "1");
+            utils.Write_Ini(App.dconfig, "config", "autoexe", "1");
         }
 
         private void Rbtn13_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "autoexe", "2");
+            utils.Write_Ini(App.dconfig, "config", "autoexe", "2");
             tb5.IsEnabled = true;
         }
 
@@ -1121,17 +1121,17 @@ namespace hiro
 
         private void Tb5_TextChanged(object sender, TextChangedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "autoaction", tb5.Text);
+            utils.Write_Ini(App.dconfig, "config", "autoaction", tb5.Text);
         }
 
         private void Cb_box_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "min", "1");
+            utils.Write_Ini(App.dconfig, "config", "min", "1");
         }
 
         private void Cb_box_Unchecked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "min", "0");
+            utils.Write_Ini(App.dconfig, "config", "min", "0");
         }
 
         private void Btn7_Click(object sender, RoutedEventArgs e)
@@ -1379,9 +1379,9 @@ namespace hiro
             rbtn15.IsEnabled = false;
             rbtn14.IsEnabled = false;
             btn10.IsEnabled = true;
-            utils.Write_Ini(App.dconfig, "Configuration", "background", "2");
+            utils.Write_Ini(App.dconfig, "config", "background", "2");
             utils.Set_Bgimage(bgimage);
-            Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
+            Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
             rbtn15.IsEnabled = true;
             rbtn14.IsEnabled = true;
         }
@@ -1395,7 +1395,7 @@ namespace hiro
         {
             rbtn15.IsEnabled = false;
             rbtn14.IsEnabled = false;
-            utils.Write_Ini(App.dconfig, "Configuration", "background", "1");
+            utils.Write_Ini(App.dconfig, "config", "background", "1");
             bgimage.Background = new SolidColorBrush(App.AppAccentColor);
             Blurbgi(0);
             rbtn15.IsEnabled = true;
@@ -1420,9 +1420,9 @@ namespace hiro
             }
             if (System.IO.File.Exists(strFileName))
             {
-                utils.Write_Ini(App.dconfig, "Configuration", "backimage", strFileName);
+                utils.Write_Ini(App.dconfig, "config", "backimage", strFileName);
                 utils.Set_Bgimage(bgimage);
-                Blurbgi(Convert.ToInt16(utils.Read_Ini(App.dconfig, "Configuration", "blur", "0")));
+                Blurbgi(Convert.ToInt16(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
             }
         }
 
@@ -1536,17 +1536,17 @@ namespace hiro
 
         private void tb2_TextChanged(object sender, TextChangedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "middleaction", tb2.Text);
+            utils.Write_Ini(App.dconfig, "config", "middleaction", tb2.Text);
         }
 
         private void tb3_TextChanged(object sender, TextChangedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "rightaction", tb3.Text);
+            utils.Write_Ini(App.dconfig, "config", "rightaction", tb3.Text);
         }
 
         private void ui_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (utils.Read_Ini(App.dconfig, "Configuration", "min", "1").Equals("1"))
+            if (utils.Read_Ini(App.dconfig, "config", "min", "1").Equals("1"))
             {
                 Visibility = Visibility.Hidden;
             }
@@ -1572,7 +1572,7 @@ namespace hiro
 
         private void rbtn17_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "customnick", "2");
+            utils.Write_Ini(App.dconfig, "config", "customnick", "2");
             tb10.IsEnabled = true;
             App.AppTitle = tb10.Text;
             Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", App.AppVersion);
@@ -1588,9 +1588,9 @@ namespace hiro
 
         private void tb10_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(utils.Read_Ini(App.dconfig, "Configuration", "customnick", "1").Equals("2"))
+            if(utils.Read_Ini(App.dconfig, "config", "customnick", "1").Equals("2"))
             {
-                utils.Write_Ini(App.dconfig, "Configuration", "customhiro", tb10.Text);
+                utils.Write_Ini(App.dconfig, "config", "customhiro", tb10.Text);
                 App.AppTitle = tb10.Text;
                 Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", App.AppVersion);
                 titlelabel.Content = App.AppTitle;
@@ -1654,7 +1654,7 @@ namespace hiro
 
         private void rbtn16_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "customnick", "1");
+            utils.Write_Ini(App.dconfig, "config", "customnick", "1");
             tb10.IsEnabled = false;
             App.AppTitle = res.ApplicationName;
             Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", App.AppVersion);
@@ -1919,7 +1919,7 @@ namespace hiro
 
         private void Blureff_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "blur", "1");
+            utils.Write_Ini(App.dconfig, "config", "blur", "1");
             App.blurradius = 50.0;
             Blurbgi(1);
         }
@@ -1944,7 +1944,7 @@ namespace hiro
                     d.Loadbgi(direction);
                 System.Windows.Forms.Application.DoEvents();
             }
-            bool animation = !utils.Read_Ini(App.dconfig, "Configuration", "ani", "1").Equals("0");
+            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
             System.ComponentModel.BackgroundWorker bw = new();
             bw.RunWorkerCompleted += delegate
             {
@@ -1963,29 +1963,29 @@ namespace hiro
         }
         private void Blureff_Unchecked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "blur", "0");
+            utils.Write_Ini(App.dconfig, "config", "blur", "0");
             App.blurradius = 50.0;
             Blurbgi(0);
         }
 
         private void verbose_Unchecked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "verbose", "0");
+            utils.Write_Ini(App.dconfig, "config", "verbose", "0");
         }
 
         private void verbose_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "verbose", "1");
+            utils.Write_Ini(App.dconfig, "config", "verbose", "1");
         }
 
         private void animation_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "ani", "1");
+            utils.Write_Ini(App.dconfig, "config", "ani", "1");
         }
 
         private void animation_Unchecked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "ani", "0");
+            utils.Write_Ini(App.dconfig, "config", "ani", "0");
         }
 
         private void tc_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2071,7 +2071,7 @@ namespace hiro
                     info = info.Substring(0, info.IndexOf("]")).Replace("\\n", Environment.NewLine);
                     string url = ups.Substring(ups.IndexOf("url:[") + "url:[".Length);
                     url = url.Substring(0, url.IndexOf("]"));
-                    if (utils.Read_Ini(App.dconfig, "Configuration", "toast", "0").Equals("1"))
+                    if (utils.Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
                     {
                         new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                                 .AddText(utils.Get_Transalte("updatetitle"))
@@ -2181,19 +2181,19 @@ namespace hiro
 
         private void win_style_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "toast", "1");
+            utils.Write_Ini(App.dconfig, "config", "toast", "1");
         }
 
         private void win_style_Unchecked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "toast", "0");
+            utils.Write_Ini(App.dconfig, "config", "toast", "0");
         }
 
         private void langbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             App.lang = App.la[langbox.SelectedIndex].name;
             App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].name + ".hlp";
-            utils.Write_Ini(App.dconfig, "Configuration", "lang", App.lang);
+            utils.Write_Ini(App.dconfig, "config", "lang", App.lang);
             Load_Translate();
             Load_Position();
             App.Load_Menu();
@@ -2232,34 +2232,34 @@ namespace hiro
 
         private void reverse_style_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "reverse", "1");
+            utils.Write_Ini(App.dconfig, "config", "reverse", "1");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
         }
 
         private void reverse_style_Unchecked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "reverse", "0");
+            utils.Write_Ini(App.dconfig, "config", "reverse", "0");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
         }
 
         private void lock_style_Checked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "lock", "1");
-            utils.Write_Ini(App.dconfig, "Configuration", "lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            utils.Write_Ini(App.dconfig, "config", "lock", "1");
+            utils.Write_Ini(App.dconfig, "config", "lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
         }
 
         private void lock_style_Unchecked(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "lock", "0");
+            utils.Write_Ini(App.dconfig, "config", "lock", "0");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
         }
 
         private void Blureff_Indeterminate(object sender, RoutedEventArgs e)
         {
-            utils.Write_Ini(App.dconfig, "Configuration", "blur", "2");
+            utils.Write_Ini(App.dconfig, "config", "blur", "2");
             Blurbgi(3);
             App.blurradius = 25;
         }
