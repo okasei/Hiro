@@ -231,48 +231,42 @@ namespace hiro
             {
                 if (win.GetType() == typeof(Alarm))
                 {
-                    Alarm? a = win as Alarm;
-                    if (a != null)
+                    if (win is Alarm a)
                     {
                         a.Load_Colors();
                     }
                 }
                 if (win.GetType() == typeof(Download))
                 {
-                    Download? a = win as Download;
-                    if (a != null)
+                    if (win is Download a)
                     {
                         a.Load_Colors();
                     }
                 }
                 if (win.GetType() == typeof(Lockscr))
                 {
-                    Lockscr? a = win as Lockscr;
-                    if (a != null)
+                    if (win is Lockscr a)
                     {
                         a.Load_Colors();
                     }
                 }
-                if (win.GetType() == typeof(message))
+                if (win.GetType() == typeof(Message))
                 {
-                    message? a = win as message;
-                    if (a != null)
+                    if (win is Message a)
                     {
                         a.Load_Colors();
                     }
                 }
                 if (win.GetType() == typeof(Sequence))
                 {
-                    Sequence? a = win as Sequence;
-                    if (a != null)
+                    if (win is Sequence a)
                     {
                         a.Load_Colors();
                     }
                 }
                 if (win.GetType() == typeof(Web))
                 {
-                    Web? a = win as Web;
-                    if (a != null)
+                    if (win is Web a)
                     {
                         a.wvpb.Foreground = new SolidColorBrush(App.AppAccentColor);
                     }
@@ -377,7 +371,7 @@ namespace hiro
         }
         #endregion
 
-        private void main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ti.Dispose();
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.Uninstall();

@@ -10,13 +10,13 @@ namespace hiro
     /// <summary>
     /// message.xaml の相互作用ロジック
     /// </summary>
-    public partial class message : Window
+    public partial class Message : Window
     {
         internal Background? bg = null;
         internal String? toolstr = null;
         internal int aflag = -1;
         internal int bflag = 0;
-        public message()
+        public Message()
         {
             InitializeComponent();
             SourceInitialized += OnSourceInitialized;
@@ -154,7 +154,7 @@ namespace hiro
             }
         }
 
-        private void msg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Msg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (bg == null)
             {

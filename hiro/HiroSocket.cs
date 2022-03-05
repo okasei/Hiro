@@ -23,7 +23,7 @@ namespace hiro
     public class SocketConnection : IDisposable
     {
         public Byte[] msgBuffer = new byte[1024];
-        private Socket? _clientSocket = null;
+        private readonly Socket? _clientSocket = null;
         public Socket? ClientSocket
         {
             get { return this._clientSocket; }
@@ -92,11 +92,7 @@ namespace hiro
 
         protected virtual void OnDataSendCompleted(EventArgs e)
         {
-            EventHandler<EventArgs>? handler = DataSendCompleted;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            DataSendCompleted?.Invoke(this, e);
         }
         #endregion
         #region 接收数据
@@ -132,11 +128,7 @@ namespace hiro
         }
         protected virtual void OnDataRecevieCompleted(EventArgs e)
         {
-            EventHandler<EventArgs>? handler = DataRecevieCompleted;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            DataRecevieCompleted?.Invoke(this, e);
         }
 
         public event EventHandler<EventArgs>? DataRecevieCompleted;

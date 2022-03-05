@@ -15,7 +15,7 @@ namespace hiro
         private Label? selected = null;
         private int newflag = 0;//0=new,1=modify
         private int bflag = 0;
-        public static string ups = "latest";
+        private string ups = "latest";
         internal System.ComponentModel.BackgroundWorker? upbw = null;
         internal System.ComponentModel.BackgroundWorker? whatsbw = null;
         internal int touch = 0;
@@ -60,7 +60,7 @@ namespace hiro
             while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
             {
                 co = co[1..^1];
-                App.cmditems.Add(new cmditem(p, i, ti, co));
+                App.cmditems.Add(new Cmditem(p, i, ti, co));
                 i++;
                 p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
@@ -123,7 +123,7 @@ namespace hiro
                     ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
                     utils.Write_Ini(inipath, i.ToString(), "time", ti);
                 }
-                App.scheduleitems.Add(new scheduleitem(i, na, ti, co, double.Parse(re)));
+                App.scheduleitems.Add(new Scheduleitem(i, na, ti, co, double.Parse(re)));
                 i++;
                 ti = utils.Read_Ini(inipath, i.ToString(), "time", "");
                 co = utils.Read_Ini(inipath, i.ToString(), "command", "");
@@ -933,14 +933,14 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > 0 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
-                cmditem nec = new(App.cmditems[i - 1].page, App.cmditems[i - 1].id, App.cmditems[i].name, App.cmditems[i].command);
-                App.cmditems[i] = new(App.cmditems[i].page, App.cmditems[i].id, App.cmditems[i - 1].name, App.cmditems[i - 1].command);
+                Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command);
+                App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command);
                 App.cmditems[i - 1] = nec;
                 var inipath = App.dconfig;
-                utils.Write_Ini(inipath, i.ToString(), "title", nec.name);
-                utils.Write_Ini(inipath, i.ToString(), "command", "(" + nec.command + ")");
-                utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].name);
-                utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].command + ")");
+                utils.Write_Ini(inipath, i.ToString(), "title", nec.Name);
+                utils.Write_Ini(inipath, i.ToString(), "command", "(" + nec.Command + ")");
+                utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].Name);
+                utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].Command + ")");
                 dgi.SelectedIndex = i - 1;
                 App.Load_Menu();
             }
@@ -955,14 +955,14 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count - 1)
             {
                 var i = dgi.SelectedIndex;
-                cmditem nec = new(App.cmditems[i + 1].page, App.cmditems[i + 1].id, App.cmditems[i].name, App.cmditems[i].command);
-                App.cmditems[i] = new(App.cmditems[i].page, App.cmditems[i].id, App.cmditems[i + 1].name, App.cmditems[i + 1].command);
+                Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command);
+                App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command);
                 App.cmditems[i + 1] = nec;
                 var inipath = App.dconfig;
-                utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].name);
-                utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].command + ")");
-                utils.Write_Ini(inipath, (i + 2).ToString(), "title", App.cmditems[i + 1].name);
-                utils.Write_Ini(inipath, (i + 2).ToString(), "command", "(" + App.cmditems[i + 1].command + ")");
+                utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].Name);
+                utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].Command + ")");
+                utils.Write_Ini(inipath, (i + 2).ToString(), "title", App.cmditems[i + 1].Name);
+                utils.Write_Ini(inipath, (i + 2).ToString(), "command", "(" + App.cmditems[i + 1].Command + ")");
                 dgi.SelectedIndex = i + 1;
                 App.Load_Menu();
             }
@@ -980,8 +980,8 @@ namespace hiro
                 var inipath = App.dconfig;
                 while (i < App.cmditems.Count - 1)
                 {
-                    App.cmditems[i].name = App.cmditems[i + 1].name;
-                    App.cmditems[i].command = App.cmditems[i + 1].command;
+                    App.cmditems[i].Name = App.cmditems[i + 1].Name;
+                    App.cmditems[i].Command = App.cmditems[i + 1].Command;
                     utils.Write_Ini(inipath, (i + 1).ToString(), "title", utils.Read_Ini(inipath, (i + 2).ToString(), "title", " "));
                     utils.Write_Ini(inipath, (i + 1).ToString(), "command", utils.Read_Ini(inipath, (i + 2).ToString(), "command", " "));
                     i++;
@@ -1003,8 +1003,8 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 newflag = 1;
-                tb7.Text = App.cmditems[dgi.SelectedIndex].name;
-                tb8.Text = App.cmditems[dgi.SelectedIndex].command;
+                tb7.Text = App.cmditems[dgi.SelectedIndex].Name;
+                tb8.Text = App.cmditems[dgi.SelectedIndex].Command;
                 Set_Label(newx);
             }
         }
@@ -1165,7 +1165,7 @@ namespace hiro
                 };
                 upbw.RunWorkerCompleted += delegate
                 {
-                    check_update();
+                    Check_update();
                 };
                 upbw.RunWorkerAsync();
             }
@@ -1225,7 +1225,7 @@ namespace hiro
             tb7.SelectionStart = val + 4;
         }
 
-        private void ntn4_Click(object sender, RoutedEventArgs e)
+        private void Ntn4_Click(object sender, RoutedEventArgs e)
         {
             if (tb7.Text.IndexOf("[N]") + tb7.Text.IndexOf("[n]") > -2)
             {
@@ -1237,7 +1237,7 @@ namespace hiro
             }
         }
 
-        private void ntn5_Click(object sender, RoutedEventArgs e)
+        private void Ntn5_Click(object sender, RoutedEventArgs e)
         {
             if (tb7.Text.IndexOf("[S]") + tb7.Text.IndexOf("[s]") > -2)
             {
@@ -1249,7 +1249,7 @@ namespace hiro
             }
         }
 
-        private void ntn6_Click(object sender, RoutedEventArgs e)
+        private void Ntn6_Click(object sender, RoutedEventArgs e)
         {
             int val = tb8.SelectionStart;
             int val2 = tb8.SelectionLength;
@@ -1319,26 +1319,26 @@ namespace hiro
             }
         }
 
-        private void ntn9_Click(object sender, RoutedEventArgs e)
+        private void Ntn9_Click(object sender, RoutedEventArgs e)
         {
-            tb7.Text = App.cmditems[dgi.SelectedIndex].name;
-            tb8.Text = App.cmditems[dgi.SelectedIndex].command;
+            tb7.Text = App.cmditems[dgi.SelectedIndex].Name;
+            tb8.Text = App.cmditems[dgi.SelectedIndex].Command;
         }
 
-        private void ntnx_Click(object sender, RoutedEventArgs e)
+        private void Ntnx_Click(object sender, RoutedEventArgs e)
         {
             tb7.Text = "";
             tb8.Text = "";
         }
 
-        private void ntnx2_Click(object sender, RoutedEventArgs e)
+        private void Ntnx2_Click(object sender, RoutedEventArgs e)
         {
             tb7.Text = "";
             tb8.Text = "";
             Set_Label(itemx);
         }
 
-        private void ntnx1_Click(object sender, RoutedEventArgs e)
+        private void Ntnx1_Click(object sender, RoutedEventArgs e)
         {
             if (tb7.Text.Equals(string.Empty) || tb8.Text.Equals(string.Empty))
             {
@@ -1348,7 +1348,7 @@ namespace hiro
             {
                 var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
-                App.cmditems.Add(new cmditem(p, i, tb7.Text, tb8.Text));
+                App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text));
                 utils.Write_Ini(App.dconfig, i.ToString(), "title", tb7.Text);
                 utils.Write_Ini(App.dconfig, i.ToString(), "command", "(" + tb8.Text + ")");
                 tb7.Text = "";
@@ -1357,8 +1357,8 @@ namespace hiro
             else
             {
                 var i = dgi.SelectedIndex;
-                App.cmditems[i].name = tb7.Text;
-                App.cmditems[i].command = tb8.Text;
+                App.cmditems[i].Name = tb7.Text;
+                App.cmditems[i].Command = tb8.Text;
                 utils.Write_Ini(App.dconfig, (i + 1).ToString(), "title", tb7.Text);
                 utils.Write_Ini(App.dconfig, (i + 1).ToString(), "command", "(" + tb8.Text + ")");
                 tb7.Text = "";
@@ -1369,12 +1369,12 @@ namespace hiro
             Set_Label(itemx);
         }
 
-        private void dgi_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Dgi_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Btn6_Click(sender, e);
         }
 
-        private void rbtn15_Checked(object sender, RoutedEventArgs e)
+        private void Rbtn15_Checked(object sender, RoutedEventArgs e)
         {
             rbtn15.IsEnabled = false;
             rbtn14.IsEnabled = false;
@@ -1386,12 +1386,12 @@ namespace hiro
             rbtn14.IsEnabled = true;
         }
 
-        private void rbtn15_Unchecked(object sender, RoutedEventArgs e)
+        private void Rbtn15_Unchecked(object sender, RoutedEventArgs e)
         {
             btn10.IsEnabled = false;
         }
 
-        private void rbtn14_Checked(object sender, RoutedEventArgs e)
+        private void Rbtn14_Checked(object sender, RoutedEventArgs e)
         {
             rbtn15.IsEnabled = false;
             rbtn14.IsEnabled = false;
@@ -1402,7 +1402,7 @@ namespace hiro
             rbtn14.IsEnabled = true;
         }
 
-        private void btn10_Click(object sender, RoutedEventArgs e)
+        private void Btn10_Click(object sender, RoutedEventArgs e)
         {
             string strFileName = "";
             Microsoft.Win32.OpenFileDialog ofd = new()
@@ -1426,18 +1426,18 @@ namespace hiro
             }
         }
 
-        private void btn4_Click(object sender, RoutedEventArgs e)
+        private void Btn4_Click(object sender, RoutedEventArgs e)
         {
             btn4.IsEnabled = false;
             utils.Delay(200);
             btn4.IsEnabled = true;
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
-                utils.RunExe(App.cmditems[dgi.SelectedIndex].command);
+                utils.RunExe(App.cmditems[dgi.SelectedIndex].Command);
             }
         }
 
-        private void tb8_Drop(object sender, DragEventArgs e)
+        private void Tb8_Drop(object sender, DragEventArgs e)
         {
             if(e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -1457,7 +1457,7 @@ namespace hiro
             return;
         }
 
-        private void tb7_Drop(object sender, DragEventArgs e)
+        private void Tb7_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -1481,7 +1481,7 @@ namespace hiro
             return;
         }
 
-        private void tb7_DragEnter(object sender, DragEventArgs e)
+        private void Tb7_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
             {
@@ -1493,7 +1493,7 @@ namespace hiro
             }
         }
 
-        private void tb8_DragEnter(object sender, DragEventArgs e)
+        private void Tb8_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
             {
@@ -1505,7 +1505,7 @@ namespace hiro
             }
         }
 
-        private void tb8_DragOver(object sender, DragEventArgs e)
+        private void Tb8_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
             {
@@ -1517,7 +1517,7 @@ namespace hiro
             }
         }
 
-        private void tb7_DragOver(object sender, DragEventArgs e)
+        private void Tb7_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
             {
@@ -1534,17 +1534,17 @@ namespace hiro
             WindowState = WindowState.Minimized;
         }
 
-        private void tb2_TextChanged(object sender, TextChangedEventArgs e)
+        private void Tb2_TextChanged(object sender, TextChangedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "middleaction", tb2.Text);
         }
 
-        private void tb3_TextChanged(object sender, TextChangedEventArgs e)
+        private void Tb3_TextChanged(object sender, TextChangedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "rightaction", tb3.Text);
         }
 
-        private void ui_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Ui_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (utils.Read_Ini(App.dconfig, "config", "min", "1").Equals("1"))
             {
@@ -1558,19 +1558,19 @@ namespace hiro
             e.Cancel = true;
         }
 
-        private void configbar_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Configbar_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             configbar.Value += e.Delta * (configbar.Maximum - configbar.ViewportSize) / configbar.ViewportSize;
         }
 
-        private void titlelabel_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void Titlelabel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Thickness thickness = versionlabel.Margin;
             thickness.Left = titlelabel.Margin.Left + titlelabel.ActualWidth + 5;
             versionlabel.Margin = thickness;
         }
 
-        private void rbtn17_Checked(object sender, RoutedEventArgs e)
+        private void Rbtn17_Checked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "customnick", "2");
             tb10.IsEnabled = true;
@@ -1581,12 +1581,7 @@ namespace hiro
                 App.wnd.ti.ToolTipText = tb10.Text;
         }
 
-        private void rbtn17_Unchecked(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void tb10_TextChanged(object sender, TextChangedEventArgs e)
+        private void Tb10_TextChanged(object sender, TextChangedEventArgs e)
         {
             if(utils.Read_Ini(App.dconfig, "config", "customnick", "1").Equals("2"))
             {
@@ -1600,7 +1595,7 @@ namespace hiro
             
         }
 
-        private void autorun_Checked(object sender, RoutedEventArgs e)
+        private void Autorun_Checked(object sender, RoutedEventArgs e)
         {
             if (autorun.Tag != null && autorun.Tag.Equals("1"))
             {
@@ -1626,7 +1621,7 @@ namespace hiro
             autorun.Tag = "1";
         }
 
-        private void autorun_Unchecked(object sender, RoutedEventArgs e)
+        private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             if (autorun.Tag != null && autorun.Tag.Equals("1"))
             {
@@ -1652,7 +1647,7 @@ namespace hiro
             autorun.Tag = "1";
         }
 
-        private void rbtn16_Checked(object sender, RoutedEventArgs e)
+        private void Rbtn16_Checked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "customnick", "1");
             tb10.IsEnabled = false;
@@ -1663,12 +1658,12 @@ namespace hiro
                 App.wnd.ti.ToolTipText = App.AppTitle;
         }
 
-        private void schedulex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Schedulex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(schedulex);
         }
 
-        private void scbtn_1_Click(object sender, RoutedEventArgs e)
+        private void Scbtn_1_Click(object sender, RoutedEventArgs e)
         {
             newflag = 3;
             tb11.Text = "";
@@ -1678,14 +1673,14 @@ namespace hiro
             Set_Label(newx);
         }
 
-        private void scbtn_3_Click(object sender, RoutedEventArgs e)
+        private void Scbtn_3_Click(object sender, RoutedEventArgs e)
         {
             if (App.scheduleitems.Count != 0 && dgs.SelectedIndex > -1 && dgs.SelectedIndex < App.scheduleitems.Count)
             {
                 newflag = 2;
-                tb11.Text = App.scheduleitems[dgs.SelectedIndex].name;
-                tb12.Text = App.scheduleitems[dgs.SelectedIndex].time;
-                tb13.Text = App.scheduleitems[dgs.SelectedIndex].command;
+                tb11.Text = App.scheduleitems[dgs.SelectedIndex].Name;
+                tb12.Text = App.scheduleitems[dgs.SelectedIndex].Time;
+                tb13.Text = App.scheduleitems[dgs.SelectedIndex].Command;
                 tb14.Text = "";
                 switch (App.scheduleitems[dgs.SelectedIndex].re)
                 {
@@ -1707,7 +1702,7 @@ namespace hiro
             }
         }
 
-        private void scbtn_2_Click(object sender, RoutedEventArgs e)
+        private void Scbtn_2_Click(object sender, RoutedEventArgs e)
         {
             if (App.scheduleitems.Count != 0 && dgs.SelectedIndex > -1 && dgs.SelectedIndex < App.scheduleitems.Count)
             {
@@ -1716,11 +1711,11 @@ namespace hiro
             }
         }
 
-        private void scbtn_4_Click(object sender, RoutedEventArgs e)
+        private void Scbtn_4_Click(object sender, RoutedEventArgs e)
         {
-            tb11.Text = App.scheduleitems[dgs.SelectedIndex].name;
-            tb12.Text = App.scheduleitems[dgs.SelectedIndex].time;
-            tb13.Text = App.scheduleitems[dgs.SelectedIndex].command;
+            tb11.Text = App.scheduleitems[dgs.SelectedIndex].Name;
+            tb12.Text = App.scheduleitems[dgs.SelectedIndex].Time;
+            tb13.Text = App.scheduleitems[dgs.SelectedIndex].Command;
             tb14.Text = "";
             switch (App.scheduleitems[dgs.SelectedIndex].re)
             {
@@ -1740,7 +1735,7 @@ namespace hiro
             }
         }
 
-        private void scbtn_5_Click(object sender, RoutedEventArgs e)
+        private void Scbtn_5_Click(object sender, RoutedEventArgs e)
         {
             if (tb11.Text.Equals(string.Empty) || tb12.Text.Equals(string.Empty) || tb13.Text.Equals(string.Empty) || (tb14.Text.Equals(string.Empty) && tb14.IsEnabled == true) )
             {
@@ -1766,7 +1761,7 @@ namespace hiro
             if (newflag == 3)
             {
                 var i = App.scheduleitems.Count + 1;
-                App.scheduleitems.Add(new scheduleitem(i, tb11.Text, tb12.Text, tb13.Text,re));
+                App.scheduleitems.Add(new Scheduleitem(i, tb11.Text, tb12.Text, tb13.Text,re));
                 utils.Write_Ini(App.sconfig, i.ToString(), "name", tb11.Text);
                 utils.Write_Ini(App.sconfig, i.ToString(), "time", tb12.Text);
                 utils.Write_Ini(App.sconfig, i.ToString(), "command", "(" + tb13.Text + ")");
@@ -1775,9 +1770,9 @@ namespace hiro
             else
             {
                 var i = dgs.SelectedIndex;
-                App.scheduleitems[i].name = tb11.Text;
-                App.scheduleitems[i].time = tb12.Text;
-                App.scheduleitems[i].command = tb13.Text;
+                App.scheduleitems[i].Name = tb11.Text;
+                App.scheduleitems[i].Time = tb12.Text;
+                App.scheduleitems[i].Command = tb13.Text;
                 App.scheduleitems[i].re = re;
                 utils.Write_Ini(App.sconfig, (i + 1).ToString(), "name", tb11.Text);
                 utils.Write_Ini(App.sconfig, (i + 1).ToString(), "time", tb12.Text);
@@ -1836,7 +1831,7 @@ namespace hiro
             
         }
 
-        private void scbtn_7_Click(object sender, RoutedEventArgs e)
+        private void Scbtn_7_Click(object sender, RoutedEventArgs e)
         {
             tb11.Text = "";
             tb12.Text = "";
@@ -1844,7 +1839,7 @@ namespace hiro
             Set_Label(schedulex);
         }
 
-        private void scbtn_6_Click(object sender, RoutedEventArgs e)
+        private void Scbtn_6_Click(object sender, RoutedEventArgs e)
         {
             tb11.Text = "";
             tb12.Text = "";
@@ -1855,7 +1850,7 @@ namespace hiro
 
         private void Dgs_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            scbtn_3_Click(sender, e);
+            Scbtn_3_Click(sender, e);
         }
 
         private void Scbtn_8_Click(object sender, RoutedEventArgs e)
@@ -1936,7 +1931,7 @@ namespace hiro
             {
                 if (win is Alarm a)
                     a.Loadbgi(direction);
-                if (win is message e)
+                if (win is Message e)
                     e.Loadbgi(direction);
                 if (win is Sequence c)
                     c.Loadbgi(direction);
@@ -1968,32 +1963,27 @@ namespace hiro
             Blurbgi(0);
         }
 
-        private void verbose_Unchecked(object sender, RoutedEventArgs e)
+        private void Verbose_Unchecked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "verbose", "0");
         }
 
-        private void verbose_Checked(object sender, RoutedEventArgs e)
+        private void Verbose_Checked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "verbose", "1");
         }
 
-        private void animation_Checked(object sender, RoutedEventArgs e)
+        private void Animation_Checked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "ani", "1");
         }
 
-        private void animation_Unchecked(object sender, RoutedEventArgs e)
+        private void Animation_Unchecked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "ani", "0");
         }
 
-        private void tc_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            
-        }
-
-        private void tb8_TextChanged(object sender, TextChangedEventArgs e)
+        private void Tb8_TextChanged(object sender, TextChangedEventArgs e)
         {
             tb9.Text = utils.Get_CMD_Translation(tb8.Text);
             if(tb9.Text.Equals(""))
@@ -2006,7 +1996,7 @@ namespace hiro
             }
         }
 
-        private void btn8_Click(object sender, RoutedEventArgs e)
+        private void Btn8_Click(object sender, RoutedEventArgs e)
         {
             btn8.IsEnabled = false;
             utils.RunExe("mailto:xboriver@live.cn");
@@ -2014,7 +2004,7 @@ namespace hiro
             btn8.IsEnabled = true;
         }
 
-        private void btn9_Click(object sender, RoutedEventArgs e)
+        private void Btn9_Click(object sender, RoutedEventArgs e)
         {
             btn9.IsEnabled = false;
             if (whatsbw != null)
@@ -2031,9 +2021,9 @@ namespace hiro
             {
                 try
                 {
-                    string ti = wps.Substring(wps.IndexOf("<title>") + "<title>".Length);
-                    ti = ti.Substring(0, ti.IndexOf("<"));
-                    wps = wps.Substring(wps.IndexOf("</head>") + "</head>".Length);
+                    string ti = wps[(wps.IndexOf("<title>") + "<title>".Length)..];
+                    ti = ti[..ti.IndexOf("<")];
+                    wps = wps[(wps.IndexOf("</head>") + "</head>".Length)..];
                     utils.RunExe("alarm(" + ti + "," + wps.Replace("<br>", "\\n") + ")");
                     whatsbw.Dispose();
                     whatsbw = null;
@@ -2049,7 +2039,7 @@ namespace hiro
             btn9.IsEnabled = true;
         }
 
-        public void check_update()
+        public void Check_update()
         {
             chk_btn.Content = utils.Get_Transalte("checkup");
             pb.Visibility = Visibility.Hidden;
@@ -2065,12 +2055,12 @@ namespace hiro
             {
                 try
                 {
-                    string version = ups.Substring(ups.IndexOf("version:[") + "version:[".Length);
-                    version = version.Substring(0, version.IndexOf("]"));
-                    string info = ups.Substring(ups.IndexOf("info:[") + "info:[".Length);
-                    info = info.Substring(0, info.IndexOf("]")).Replace("\\n", Environment.NewLine);
-                    string url = ups.Substring(ups.IndexOf("url:[") + "url:[".Length);
-                    url = url.Substring(0, url.IndexOf("]"));
+                    string version = ups[(ups.IndexOf("version:[") + "version:[".Length)..];
+                    version = version[..version.IndexOf("]")];
+                    string info = ups[(ups.IndexOf("info:[") + "info:[".Length)..];
+                    info = info[..info.IndexOf("]")].Replace("\\n", Environment.NewLine);
+                    string url = ups[(ups.IndexOf("url:[") + "url:[".Length)..];
+                    url = url[..url.IndexOf("]")];
                     if (utils.Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
                     {
                         new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
@@ -2103,7 +2093,7 @@ namespace hiro
 
         }
 
-        private void schedulex_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void Schedulex_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if(App.dflag)
             {
@@ -2111,7 +2101,7 @@ namespace hiro
                 for (int i = 0; i < 1; i++)
                 {
                     dt = dt.AddSeconds(2);
-                    App.scheduleitems.Add(new scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
+                    App.scheduleitems.Add(new Scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
 
                 }
             }
@@ -2129,7 +2119,7 @@ namespace hiro
             };
             utils.Blur_Out(extended, bw);
         }
-        private void extend_background_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Extend_background_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             extended.IsEnabled = false;
             extend_background.IsEnabled = false;
@@ -2147,14 +2137,14 @@ namespace hiro
             sb.Begin();
         }
 
-        private void extended_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Extended_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Extend_Animation();
             touch++;
             utils.RunExe("notify(https://ftp.rexio.cn/hiro/hiro.php?r=touch&t=" + touch.ToString() + "&lang=" + App.lang + ",2)");
         }
 
-        private void avatar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Avatar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Thickness th = extend_background.Margin;
             th.Left = 0;
@@ -2179,12 +2169,12 @@ namespace hiro
             sb.Begin();
         }
 
-        private void win_style_Checked(object sender, RoutedEventArgs e)
+        private void Win_style_Checked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "toast", "1");
         }
 
-        private void win_style_Unchecked(object sender, RoutedEventArgs e)
+        private void Win_style_Unchecked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "toast", "0");
         }
@@ -2230,27 +2220,27 @@ namespace hiro
             }
         }
 
-        private void reverse_style_Checked(object sender, RoutedEventArgs e)
+        private void Reverse_style_Checked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "reverse", "1");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
         }
 
-        private void reverse_style_Unchecked(object sender, RoutedEventArgs e)
+        private void Reverse_style_Unchecked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "reverse", "0");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
         }
 
-        private void lock_style_Checked(object sender, RoutedEventArgs e)
+        private void Lock_style_Checked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "lock", "1");
             utils.Write_Ini(App.dconfig, "config", "lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
         }
 
-        private void lock_style_Unchecked(object sender, RoutedEventArgs e)
+        private void Lock_style_Unchecked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "lock", "0");
             if (App.wnd != null)
@@ -2264,7 +2254,7 @@ namespace hiro
             App.blurradius = 25;
         }
 
-        private void timex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Timex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(timex);
         }
@@ -2273,7 +2263,7 @@ namespace hiro
             Set_Label(newx);
         }
 
-        private String string_deal(String a, int b)
+        private static String String_deal(String a, int b)
         {
             try
             {
@@ -2286,7 +2276,7 @@ namespace hiro
             }
             if (a.Length > b)
             {
-                a = a.Substring(0, b);
+                a = a[..b];
             }
             else if (a.Length < b)
             {
@@ -2298,11 +2288,11 @@ namespace hiro
 
         private void Tp_Go(object sender, RoutedEventArgs e)
         {
-            tb12.Text = string_deal(year.Text, 4) + "/" + string_deal(month.Text, 2) + "/" + string_deal(day.Text, 2) + " " + string_deal(hour.Text, 2) + ":" + string_deal(minute.Text, 2) + ":" + string_deal(second.Text, 2);
+            tb12.Text = String_deal(year.Text, 4) + "/" + String_deal(month.Text, 2) + "/" + String_deal(day.Text, 2) + " " + String_deal(hour.Text, 2) + ":" + String_deal(minute.Text, 2) + ":" + String_deal(second.Text, 2);
             Set_Label(newx);
         }
 
-        private void year_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Year_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -2328,7 +2318,7 @@ namespace hiro
             }
         }
 
-        private void month_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Month_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -2360,7 +2350,7 @@ namespace hiro
             }
         }
 
-        private void hour_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Hour_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -2392,7 +2382,7 @@ namespace hiro
             }
         }
 
-        private void minute_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Minute_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -2424,7 +2414,7 @@ namespace hiro
             }
         }
 
-        private void second_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Second_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -2456,7 +2446,7 @@ namespace hiro
             }
         }
 
-        private void day_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Day_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -2488,7 +2478,7 @@ namespace hiro
             }
         }
 
-        private void month_TextChanged(object sender, TextChangedEventArgs e)
+        private void Month_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -2521,7 +2511,7 @@ namespace hiro
                 day.Text = MaxDay.ToString();
         }
 
-        private void day_TextChanged(object sender, TextChangedEventArgs e)
+        private void Day_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -2540,7 +2530,7 @@ namespace hiro
             }
         }
 
-        private void year_TextChanged(object sender, TextChangedEventArgs e)
+        private void Year_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -2568,7 +2558,7 @@ namespace hiro
                 day.Text = MaxDay.ToString();
         }
 
-        private void hour_TextChanged(object sender, TextChangedEventArgs e)
+        private void Hour_TextChanged(object sender, TextChangedEventArgs e)
         {
 
             try
@@ -2588,7 +2578,7 @@ namespace hiro
             }
         }
 
-        private void minute_TextChanged(object sender, TextChangedEventArgs e)
+        private void Minute_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -2607,7 +2597,7 @@ namespace hiro
             }
         }
 
-        private void second_TextChanged(object sender, TextChangedEventArgs e)
+        private void Second_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -2626,7 +2616,7 @@ namespace hiro
             }
         }
 
-        private void ui_StateChanged(object sender, EventArgs e)
+        private void Ui_StateChanged(object sender, EventArgs e)
         {
             if (WindowState == WindowState.Maximized)
                 WindowState = WindowState.Normal;

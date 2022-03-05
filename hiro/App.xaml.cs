@@ -22,7 +22,7 @@ namespace hiro
         internal static Color AppForeColor = Colors.White;
         internal static bool DarkModeEnabled = false;
         internal static bool restartflag = false;
-        internal static System.Collections.ObjectModel.ObservableCollection<scheduleitem> scheduleitems = new();
+        internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
         internal static System.Collections.ObjectModel.ObservableCollection<alarmwin> aw = new();
         internal static System.Collections.ObjectModel.ObservableCollection<language> la = new();
         internal static string LogFilePath = "C:\\1.log";
@@ -40,7 +40,7 @@ namespace hiro
         internal static double blurradius = 50.0;
         internal static double blursec = 500.0;
         internal static System.Windows.Threading.DispatcherTimer? timer;
-        internal static System.Collections.ObjectModel.ObservableCollection<cmditem> cmditems = new();
+        internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> cmditems = new();
         internal static int page = 0;
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient hc = new();
@@ -111,7 +111,7 @@ namespace hiro
             var port = utils.GetRandomUnusedPort();
             int MaxConnection = 69;
             System.Collections.Hashtable clientSessionTable = new ();
-            object clientSessionLock = new object();
+            object clientSessionLock = new();
             System.Net.IPEndPoint localEndPoint = new (System.Net.IPAddress.Any, port);
             System.Net.Sockets.Socket socketLister = new (System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
             socketLister.Bind(localEndPoint);
@@ -132,7 +132,7 @@ namespace hiro
             }
         }
 
-        private void InitializeStartParameters(StartupEventArgs e)
+        private static void InitializeStartParameters(StartupEventArgs e)
         {
             if (e.Args.Length >=1 && e.Args[0].ToLower().Equals("autostart_on"))
             {
@@ -219,7 +219,7 @@ namespace hiro
             }
             utils.LogtoFile("[NOTIFICATION]" + i.msg);
         }
-        private void Initialize_Notiy_Recall()
+        private static void Initialize_Notiy_Recall()
         {
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.OnActivated += toastArgs =>
             {
@@ -272,7 +272,7 @@ namespace hiro
             };
         }
 
-        private void InitializeInnerParameters()
+        private static void InitializeInnerParameters()
         {
             CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\editor\\");
@@ -305,7 +305,7 @@ namespace hiro
                 if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                 {
                     if (str.IndexOf("-") != -1)
-                        lang = str.Substring(0, str.IndexOf("-"));
+                        lang = str[..str.IndexOf("-")];
                     utils.LogtoFile("[ERROR]Translateion not found, try to initialize as " + lang.ToString());
                     if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                     {
@@ -340,10 +340,12 @@ namespace hiro
             }
         }
 
-        private void InitializeMethod()
+        private static void InitializeMethod()
         {
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = new TimeSpan(10000000);
+            timer = new()
+            {
+                Interval = new TimeSpan(10000000)
+            };
             timer.Tick += delegate
             {
                 TimerTick();
@@ -380,7 +382,7 @@ namespace hiro
             {
                     UpdateHomeLabel1("evening");
             }
-            else
+            else if (night.IndexOf("," + hr + ",") != -1)
             {
                     UpdateHomeLabel1("night");
             }
@@ -395,16 +397,16 @@ namespace hiro
             while (i <= scheduleitems.Count)
             {
                 System.Windows.Forms.Application.DoEvents();
-                if (scheduleitems[i - 1].time.Equals(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")))
+                if (scheduleitems[i - 1].Time.Equals(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")))
                 {
-                    if (scheduleitems[i - 1].command.ToLower().Equals("alarm") || scheduleitems[i - 1].command.ToLower().Equals("alarm()"))
+                    if (scheduleitems[i - 1].Command.ToLower().Equals("alarm") || scheduleitems[i - 1].Command.ToLower().Equals("alarm()"))
                     {
                         if (utils.Read_Ini(dconfig, "config", "toast", "0").Equals("1"))
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)
                             .AddText(utils.Get_Transalte("alarmtitle"))
-                            .AddText(scheduleitems[i - 1].name.Replace("\\n", Environment.NewLine))
+                            .AddText(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(utils.Get_Transalte("alarmok"))
                                         .AddArgument("action", "ok"))
@@ -416,7 +418,7 @@ namespace hiro
                         }
                         else
                         {
-                            Alarm ala = new(aw.Count, CustomedContnet: utils.Path_Prepare_EX(scheduleitems[i - 1].name.Replace("\\n", Environment.NewLine)));
+                            Alarm ala = new(aw.Count, CustomedContnet: utils.Path_Prepare_EX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)));
                             aw.Add(new alarmwin(ala, i - 1));
                             ala.Show();
                         }
@@ -430,19 +432,19 @@ namespace hiro
                             case -2.0:
                                 break;
                             case -1.0:
-                                scheduleitems[i - 1].time = DateTime.Now.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
-                                utils.Write_Ini(sconfig, i.ToString(), "time", scheduleitems[i - 1].time);
+                                scheduleitems[i - 1].Time = DateTime.Now.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
+                                utils.Write_Ini(sconfig, i.ToString(), "time", scheduleitems[i - 1].Time);
                                 break;
                             case 0.0:
-                                scheduleitems[i - 1].time = DateTime.Now.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
-                                utils.Write_Ini(sconfig, i.ToString(), "time", scheduleitems[i - 1].time);
+                                scheduleitems[i - 1].Time = DateTime.Now.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
+                                utils.Write_Ini(sconfig, i.ToString(), "time", scheduleitems[i - 1].Time);
                                 break;
                             default:
-                                scheduleitems[i - 1].time = DateTime.Now.AddDays(Math.Abs(scheduleitems[i - 1].re)).ToString("yyyy/MM/dd HH:mm:ss");
-                                utils.Write_Ini(sconfig, i.ToString(), "time", scheduleitems[i - 1].time);
+                                scheduleitems[i - 1].Time = DateTime.Now.AddDays(Math.Abs(scheduleitems[i - 1].re)).ToString("yyyy/MM/dd HH:mm:ss");
+                                utils.Write_Ini(sconfig, i.ToString(), "time", scheduleitems[i - 1].Time);
                                 break;
                         }
-                        utils.RunExe(scheduleitems[i - 1].command);
+                        utils.RunExe(scheduleitems[i - 1].Command);
                     }
                 }
                 i++;
@@ -485,7 +487,7 @@ namespace hiro
                 {
                     if (c + page * 10 > cmditems.Count)
                         break;
-                    var name = cmditems[c - 1 + page * 10].name;
+                    var name = cmditems[c - 1 + page * 10].Name;
                     if (name.Equals("-"))
                     {
                         wnd.cm.Items.Add(new Separator());
@@ -515,7 +517,7 @@ namespace hiro
                         {
                             String? str = mu.Tag.ToString();
                             if (str != null)
-                                utils.RunExe(cmditems[int.Parse(str) - 1].command);
+                                utils.RunExe(cmditems[int.Parse(str) - 1].Command);
 
                         }
                         catch (Exception ex)
@@ -596,8 +598,7 @@ namespace hiro
                 {
                     if (obj.GetType() == typeof(MenuItem))
                     {
-                        MenuItem? mi = obj as MenuItem;
-                        if (mi != null)
+                        if (obj is MenuItem mi)
                             utils.Set_Control_Location(mi, "context", location: false);
                     }
                 }

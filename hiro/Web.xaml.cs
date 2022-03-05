@@ -44,7 +44,7 @@ namespace hiro
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
         {
-            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
         }
 
@@ -83,7 +83,7 @@ namespace hiro
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
             prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? utils.Get_Transalte("webmusic") : "";
-            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
         }
 
@@ -111,14 +111,14 @@ namespace hiro
 
         private void CoreWebView2_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             Loading(false);
         }
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
-            string ti = (fixed_title == null) ? utils.Get_Transalte("webtitle") : fixed_title;
+            string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", utils.Get_Transalte("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
             Loading(true);
         }

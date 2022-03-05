@@ -166,7 +166,7 @@ namespace hiro
             }
             utils.CreateFolder(mSaveFileName);
             if (mSaveFileName.EndsWith("\\"))
-                mSaveFileName = mSaveFileName + strFileName;
+                mSaveFileName += strFileName;
             if (System.IO.File.Exists(mSaveFileName))
             {
                 Stop_Download(true);
@@ -232,7 +232,7 @@ namespace hiro
             long readLength = 0L;
             int length;
             successflag = true;
-            while ((length = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            while ((length = await contentStream.ReadAsync(buffer)) > 0)
             {
                 readLength += length;
                 try
@@ -249,7 +249,7 @@ namespace hiro
                 }
                 if (totalLength > 0)
                 {
-                    ala_title.Content = progress + string.Format("{0:F2}", Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2)) + "%" + "(" + formateSize(readLength + startpos) + "/" + formateSize(totalLength.Value) + ")";
+                    ala_title.Content = progress + string.Format("{0:F2}", Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2)) + "%" + "(" + FormateSize(readLength + startpos) + "/" + FormateSize(totalLength.Value) + ")";
                     Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.Value = Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2);
                     pb.IsIndeterminate = false;
@@ -261,7 +261,7 @@ namespace hiro
                 }
                 else
                 {
-                    ala_title.Content = progress + formateSize(readLength + startpos) + "/" + utils.Get_Transalte("dlunknown");
+                    ala_title.Content = progress + FormateSize(readLength + startpos) + "/" + utils.Get_Transalte("dlunknown");
                     Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.IsIndeterminate = true;
                 }
@@ -317,8 +317,8 @@ namespace hiro
                             {
                                 if (str.IndexOf("|") != -1)
                                 {
-                                    rurl = str.Substring(0, str.IndexOf("|"));
-                                    rpath = str.Substring(str.IndexOf("|") + 1);
+                                    rurl = str[..str.IndexOf("|")];
+                                    rpath = str[(str.IndexOf("|") + 1)..];
                                 }
                                 else
                                 {
@@ -360,14 +360,14 @@ namespace hiro
             }
             if (success && autorun.IsChecked == null)
             {
-                utils.RunExe(mSaveFileName.Substring(0, mSaveFileName.LastIndexOf("\\")));
+                utils.RunExe(mSaveFileName[..mSaveFileName.LastIndexOf("\\")]);
             }
             if (autorun.IsEnabled == false)
             {
                 Close();
             }
         }
-        public static string formateSize(double size)
+        public static string FormateSize(double size)
         {
             string[] units = new string[] { "B", "KB", "MB", "GB", "TB", "PB" };
             double mod = 1024.0;
@@ -379,7 +379,7 @@ namespace hiro
             }
             return size.ToString("f2") + units[i];
         }
-        private void albtn_1_Click(object sender, RoutedEventArgs e)
+        private void Albtn_1_Click(object sender, RoutedEventArgs e)
         {
             if (albtn_1.Content.Equals(utils.Get_Transalte("dlstart")))
             {
@@ -397,24 +397,19 @@ namespace hiro
             }
         }
 
-        private void alarmgrid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Alarmgrid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
         }
 
-        private void minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }
 
-        private void closebtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Closebtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             this.Close();
-        }
-
-        private void copyclip_Checked(object sender, RoutedEventArgs e)
-        {
-            clips = Clipboard.GetText();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -423,13 +418,13 @@ namespace hiro
                 Stop_Download(false);
         }
 
-        private void textBoxHttpUrl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void TextBoxHttpUrl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if(Clipboard.ContainsText())
                 textBoxHttpUrl.Text = Clipboard.GetText();
         }
 
-        private void urllabel_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Urllabel_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Clipboard.ContainsText())
                 textBoxHttpUrl.Text = Clipboard.GetText();
@@ -446,13 +441,13 @@ namespace hiro
             bflag = 0;
         }
 
-        private void autorun_Indeterminate(object sender, RoutedEventArgs e)
+        private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
             autorun.Content = utils.Get_Transalte("dlopen");
             utils.Set_Control_Location(autorun, "dlopen", bottom: true);
         }
 
-        private void autorun_Unchecked(object sender, RoutedEventArgs e)
+        private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             autorun.Content = utils.Get_Transalte("dlrun");
             utils.Set_Control_Location(autorun, "dlrun", bottom: true);

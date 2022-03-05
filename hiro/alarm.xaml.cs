@@ -138,15 +138,13 @@ namespace hiro
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-
         {
             switch (msg)
             {
-                case 0x0083://prevent system from drawing outline
+                case 0x0083:
                     handled = true;
                     break;
                 default:
-                    //Console.WriteLine("Msg: " + m.Msg + ";LParam: " + m.LParam + ";WParam: " + m.WParam + ";Result: " + m.Result);
                     break;
             }
             return IntPtr.Zero;

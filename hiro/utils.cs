@@ -9,7 +9,7 @@ using Windows.Security.Credentials.UI;
 namespace hiro
 {
     #region 命令项目定义
-    public class cmditem : INotifyPropertyChanged
+    public class Cmditem : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         private int p;
@@ -17,97 +17,85 @@ namespace hiro
         private string na;
         private string co;
 
-        public int page {
+        public int Page {
             get { return p; }
             set
             {
                 p = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(page)));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Page)));
             }
         }
-        public int id {
+        public int Id {
             get { return i; }
             set
             {
                 i = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(id)));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
             }
         }
-        public string name { 
+        public string Name { 
             get { return na; } 
             set 
             { 
                 na = value;
-            if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(name)));
-                } 
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
 }
-        public string command
+        public string Command
         {
             get { return co; }
             set
             {
                 co = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(command)));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Command)));
             }
         }
 
-        public cmditem()
+        public Cmditem()
         {
-            page = -1;
-            id = -1;
-            name = string.Empty;
-            command = string.Empty;
+            Page = -1;
+            Id = -1;
+            Name = string.Empty;
+            Command = string.Empty;
             p = -1;
-            id = -1;
+            Id = -1;
             na = string.Empty;
             co = string.Empty;
         }
-        public cmditem(int a, int b, string c, string d)
+        public Cmditem(int a, int b, string c, string d)
         {
-            page = a;
-            id = b;
-            name = c;
-            command = d;
+            Page = a;
+            Id = b;
+            Name = c;
+            Command = d;
             p = a;
-            id = b;
+            Id = b;
             na = c;
             co = d;
         }
-        public cmditem(cmditem c)
+        public Cmditem(Cmditem c)
         {
             if (c == null)
             {
-                page = -1;
-                id = -1;
-                name = string.Empty;
-                command = string.Empty;
+                Page = -1;
+                Id = -1;
+                Name = string.Empty;
+                Command = string.Empty;
                 p = -1;
-                id = -1;
+                Id = -1;
                 na = string.Empty;
                 co = string.Empty;
             }
             else
             {
-                page = c.page;
-                id = c.id;
-                name = c.name;
-                command = c.command;
-                p = c.page;
-                id = c.id;
-                na = c.name;
-                co = c.command;
+                Page = c.Page;
+                Id = c.Id;
+                Name = c.Name;
+                Command = c.Command;
+                p = c.Page;
+                Id = c.Id;
+                na = c.Name;
+                co = c.Command;
             }
         }
 
@@ -115,7 +103,7 @@ namespace hiro
     #endregion
 
     #region 日程项目定义
-    public class scheduleitem : INotifyPropertyChanged
+    public class Scheduleitem : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         private int i;
@@ -123,87 +111,75 @@ namespace hiro
         private string ti;
         private string co;
         public double re;
-        public string time
+        public string Time
         {
             get { return ti; }
             set
             {
                 ti = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(time)));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Time)));
             }
         }
-        public int id
+        public int Id
         {
             get { return i; }
             set
             {
                 i = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(id)));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
             }
         }
-        public string name
+        public string Name
         {
             get { return na; }
             set
             {
                 na = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(name)));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
-        public string command
+        public string Command
         {
             get { return co; }
             set
             {
                 co = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(command)));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Command)));
             }
         }
 
-        public scheduleitem()
+        public Scheduleitem()
         {
-            time = "19000101000000";
-            id = -1;
-            name = string.Empty;
-            command = string.Empty;
+            Time = "19000101000000";
+            Id = -1;
+            Name = string.Empty;
+            Command = string.Empty;
             re = -2.0;
             ti = "19000101000000";
             i = -1;
             na = string.Empty;
             co = string.Empty;
         }
-        public scheduleitem(int b, string a, string c, string d, double e)
+        public Scheduleitem(int b, string a, string c, string d, double e)
         {
-            name = a;
-            id = b;
-            time = c;
-            command = d;
+            Name = a;
+            Id = b;
+            Time = c;
+            Command = d;
             re = e;
             na = a;
             i = b;
             ti = c;
             co = d;
         }
-        public scheduleitem(scheduleitem c)
+        public Scheduleitem(Scheduleitem c)
         {
             if (c == null)
             {
-                time = "19000101000000";
-                id = -1;
-                name = string.Empty;
-                command = string.Empty;
+                Time = "19000101000000";
+                Id = -1;
+                Name = string.Empty;
+                Command = string.Empty;
                 re = -2.0;
                 ti = "19000101000000";
                 i = -1;
@@ -212,15 +188,15 @@ namespace hiro
             }
             else
             {
-                time = c.time;
-                id = c.id;
-                name = c.name;
-                command = c.command;
+                Time = c.Time;
+                Id = c.Id;
+                Name = c.Name;
+                Command = c.Command;
                 re = c.re;
-                ti = c.time;
-                i = c.id;
-                na = c.name;
-                co = c.command;
+                ti = c.Time;
+                i = c.Id;
+                na = c.Name;
+                co = c.Command;
             }
         }
 
@@ -1314,7 +1290,7 @@ namespace hiro
                 Background? bg = null;
                 if (Read_Ini(toolstr, "Action", "Background", "true").ToLower().Equals("true"))
                     bg = new();
-                message msg = new();
+                Message msg = new();
                 msg.bg = bg;
                 msg.Title = Path_Prepare(Path_Prepare_EX(Read_Ini(toolstr, "Message", "title", Get_Transalte("syntax")))) + " - " + App.AppTitle;
                 msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(toolstr, "Message", "title", Get_Transalte("syntax")))));
@@ -2490,22 +2466,22 @@ namespace hiro
                 dtFormat.ShortDatePattern = "yyyy/MM/dd HH:mm:ss";
                 try
                 {
-                    DateTime dt = Convert.ToDateTime(App.scheduleitems[id].time, dtFormat);
+                    DateTime dt = Convert.ToDateTime(App.scheduleitems[id].Time, dtFormat);
                     switch (App.scheduleitems[id].re)
                     {
                         case -2.0:
                             break;
                         case -1.0:
-                            App.scheduleitems[id].time = dt.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
-                            Write_Ini(App.sconfig, (id + 1).ToString(), "time", App.scheduleitems[id].time);
+                            App.scheduleitems[id].Time = dt.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
+                            Write_Ini(App.sconfig, (id + 1).ToString(), "time", App.scheduleitems[id].Time);
                             break;
                         case 0.0:
-                            App.scheduleitems[id].time = dt.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
-                            Write_Ini(App.sconfig, (id + 1).ToString(), "time", App.scheduleitems[id].time);
+                            App.scheduleitems[id].Time = dt.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
+                            Write_Ini(App.sconfig, (id + 1).ToString(), "time", App.scheduleitems[id].Time);
                             break;
                         default:
-                            App.scheduleitems[id].time = dt.AddDays(Math.Abs(App.scheduleitems[id].re)).ToString("yyyy/MM/dd HH:mm:ss");
-                            Write_Ini(App.sconfig, (id + 1).ToString(), "time", App.scheduleitems[id].time);
+                            App.scheduleitems[id].Time = dt.AddDays(Math.Abs(App.scheduleitems[id].re)).ToString("yyyy/MM/dd HH:mm:ss");
+                            Write_Ini(App.sconfig, (id + 1).ToString(), "time", App.scheduleitems[id].Time);
                             break;
                     }
                 }
@@ -2524,9 +2500,9 @@ namespace hiro
             {
                 while (id < App.scheduleitems.Count - 1)
                 {
-                    App.scheduleitems[id].name = App.scheduleitems[id + 1].name;
-                    App.scheduleitems[id].command = App.scheduleitems[id + 1].command;
-                    App.scheduleitems[id].time = App.scheduleitems[id + 1].time;
+                    App.scheduleitems[id].Name = App.scheduleitems[id + 1].Name;
+                    App.scheduleitems[id].Command = App.scheduleitems[id + 1].Command;
+                    App.scheduleitems[id].Time = App.scheduleitems[id + 1].Time;
                     Write_Ini(inipath, (id + 1).ToString(), "name", Read_Ini(inipath, (id + 2).ToString(), "name", " "));
                     Write_Ini(inipath, (id + 1).ToString(), "command", Read_Ini(inipath, (id + 2).ToString(), "command", " "));
                     Write_Ini(inipath, (id + 1).ToString(), "time", Read_Ini(inipath, (id + 2).ToString(), "time", " "));
@@ -2546,7 +2522,7 @@ namespace hiro
         public static void Delay_Alarm(int id)
         {
             if (id > -1)
-                App.scheduleitems[id].time = DateTime.Now.AddMinutes(5.0).ToString("yyyy/MM/dd HH:mm:ss");
+                App.scheduleitems[id].Time = DateTime.Now.AddMinutes(5.0).ToString("yyyy/MM/dd HH:mm:ss");
             else
                 App.Notify(new noticeitem(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
         }

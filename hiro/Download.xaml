@@ -8,15 +8,15 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="alarm" Height="320" Width="800" ResizeMode="CanMinimize" WindowStyle="None" Icon="/hiro_circle.ico" WindowStartupLocation="Manual" Closing="Window_Closing">
-    <Grid x:Name="alarmgrid" MouseLeftButtonDown="alarmgrid_MouseLeftButtonDown">
+    <Grid x:Name="alarmgrid" MouseLeftButtonDown="Alarmgrid_MouseLeftButtonDown">
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="borderlabel" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <Label x:Name="ala_title" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="20" FontWeight="Bold" Style="{DynamicResource HiroLabel}"/>
-        <Button x:Name="albtn_1" Content="Pause" HorizontalAlignment="Right" Margin="0,0,10,10" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{x:Null}" Foreground="White" Height="25" VerticalAlignment="Bottom" Cursor="Hand" Click="albtn_1_Click"/>
-        <TextBox x:Name="textBoxHttpUrl" HorizontalAlignment="Left" Margin="50,105,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32" Cursor="IBeam" MouseDoubleClick="textBoxHttpUrl_MouseDoubleClick"/>
+        <Button x:Name="albtn_1" Content="Pause" HorizontalAlignment="Right" Margin="0,0,10,10" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{x:Null}" Foreground="White" Height="25" VerticalAlignment="Bottom" Cursor="Hand" Click="Albtn_1_Click"/>
+        <TextBox x:Name="textBoxHttpUrl" HorizontalAlignment="Left" Margin="50,105,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32" Cursor="IBeam" MouseDoubleClick="TextBoxHttpUrl_MouseDoubleClick"/>
         <TextBox x:Name="SavePath" HorizontalAlignment="Left" Margin="50,173,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32"/>
         <ProgressBar x:Name="pb" HorizontalAlignment="Left" Height="3" Margin="50,255,0,0" VerticalAlignment="Top" Width="665" BorderBrush="#0067DAFF" Foreground="White" Background="Transparent"/>
-        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="minbtn_MouseLeftButtonDown">
+        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
             <Label.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
@@ -38,7 +38,7 @@
                 </EventTrigger>
             </Label.Triggers>
         </Label>
-        <Label x:Name="closebtn" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="closebtn_MouseLeftButtonDown" >
+        <Label x:Name="closebtn" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown" >
             <Label.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
@@ -60,9 +60,9 @@
                 </EventTrigger>
             </Label.Triggers>
         </Label>
-        <Label x:Name="urllabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" MouseDoubleClick="urllabel_MouseDoubleClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}"/>
+        <Label x:Name="urllabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" MouseDoubleClick="Urllabel_MouseDoubleClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}"/>
         <Label x:Name="pathlabel" Content="Time Up!" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}"/>
-        <CheckBox x:Name="autorun" Content="Run When Completed" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground="Black" VerticalContentAlignment="Bottom" Width="200" Height="35" IsThreeState="True" Indeterminate="autorun_Indeterminate" Unchecked="autorun_Unchecked"/>
+        <CheckBox x:Name="autorun" Content="Run When Completed" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground="Black" VerticalContentAlignment="Bottom" Width="200" Height="35" IsThreeState="True" Indeterminate="Autorun_Indeterminate" Unchecked="Autorun_Unchecked"/>
         <Button x:Name="coloruse1" Content="Button" Visibility="Hidden"/>
     </Grid>
 </Window>
