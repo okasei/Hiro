@@ -315,47 +315,6 @@ namespace hiro
 
     #endregion
 
-    #region 快捷键注册定义
-
-    public class HiroHotKey
-    {
-
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
-        static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
-  
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-
-        public enum HotkeyModifiers
-         {
-            MOD_NONE = 0x0,
-            MOD_ALT = 0x1,
-            MOD_CONTROL = 0x2,
-            MOD_SHIFT = 0x4,
-            MOD_WIN = 0x8
-         }
-
-        public static int RegisterKey(IntPtr hwnd, uint fsModifiers, System.Windows.Input.Key key)
-         {
-             int id = keyid;
-             keyid += 2;
-             var vk = System.Windows.Input.KeyInterop.VirtualKeyFromKey(key);
-             if (!RegisterHotKey(hwnd, id, fsModifiers, (uint) vk))
-                 throw new Exception("regist hotkey fail.");
-            return id;
-         }
-
-        public static void UnRegisterKey(IntPtr hWnd, int id)
-         {
-            UnregisterHotKey(hWnd, id);
-         }
-
-        static int keyid = 10;
-
-    }
-    #endregion
-
     public partial class utils : Component
     {
         #region 自动生成
@@ -2706,7 +2665,62 @@ namespace hiro
         }
         #endregion
 
-        public static string DeleteUnVisibleChar(string sourceString)
+        #region 快捷键注册定义
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+        static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        public enum HotkeyModifiers
+        {
+            MOD_NONE = 0x0,
+            MOD_ALT = 0x1,
+            MOD_CONTROL = 0x2,
+            MOD_SHIFT = 0x4,
+            MOD_WIN = 0x8
+        }
+
+        public static int RegisterKey(IntPtr hwnd, uint fsModifiers, System.Windows.Input.Key key)
+        {
+            int id = keyid;
+            keyid += 2;
+            var vk = System.Windows.Input.KeyInterop.VirtualKeyFromKey(key);
+            if (!RegisterHotKey(hwnd, id, fsModifiers, (uint)vk))
+            {
+                string msg = "";
+                IntPtr tempptr = IntPtr.Zero;
+                int sa = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
+                utils.LogtoFile(sa.ToString() + ":" + msg);
+            }
+            return id;
+        }
+
+        public static bool UnRegisterKey(IntPtr hWnd, int id)
+        {
+            bool a = UnregisterHotKey(hWnd, id);
+            if (!a)
+            {
+                string msg = "";
+                IntPtr tempptr = IntPtr.Zero;
+                int sa = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
+                utils.LogtoFile(sa.ToString() + ":" + msg);
+            }
+            return a;
+        }
+
+        static int keyid = 10;
+
+        [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
+        public extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
+    #endregion
+
+
+    public static string DeleteUnVisibleChar(string sourceString)
         {
             System.Text.StringBuilder sBuilder = new System.Text.StringBuilder(131);
             for (int i = 0; i < sourceString.Length; i++)
@@ -2714,7 +2728,7 @@ namespace hiro
                 int Unicode = sourceString[i];
                 if (Unicode >= 16)
                 {
-                    sBuilder.Append(sourceString[i].ToString());
+                    sBuilder.Append(sourceString[i]);
                 }
             }
             return sBuilder.ToString();

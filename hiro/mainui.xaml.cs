@@ -30,6 +30,8 @@ namespace hiro
             Load_Translate();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Border");
             Load_Border();
+            utils.LogtoFile("[HIROWEGO]Main Window: Load Data");
+            Load_Data();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Colors");
             Load_Colors();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Position");
@@ -438,6 +440,121 @@ namespace hiro
                 App.wnd.cm.Background = new SolidColorBrush(App.AppAccentColor);
             }
             Load_Labels(false);
+        }
+
+        public void Load_Data()
+        {
+            App.cmditems.Clear();
+            var i = 1;
+            var p = 1;
+            var inipath = App.dconfig;
+            var ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
+            var co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+            while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
+            {
+                var key = utils.Read_Ini(App.dconfig, i.ToString(), "hotkey", "").Trim();
+                try
+                {
+                    if (key.IndexOf(",") != -1)
+                    {
+                        var mo = uint.Parse(key.Substring(0, key.IndexOf(",")));
+                        var vkey = uint.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
+                        try
+                        {
+                            if (mo != 0 && vkey != 0)
+                            {
+                                App.vs.Add(utils.RegisterKey(App.WND_Handle, mo, (Key)vkey));
+                                App.vs.Add(i - 1);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            utils.LogtoFile("[ERROR]Error occurred while trying to register hotkey " + mo + "+" + vkey + ":" + ex.Message);
+                        }
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+                co = co[1..^1];
+                App.cmditems.Add(new Cmditem(p, i, ti, co, key));
+                i++;
+                p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
+                ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
+                co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+            }
+
+            App.scheduleitems.Clear();
+            i = 1;
+            inipath = App.sconfig;
+            ti = utils.Read_Ini(inipath, i.ToString(), "time", "");
+            co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+            var na = utils.Read_Ini(inipath, i.ToString(), "name", "");
+            var re = utils.Read_Ini(inipath, i.ToString(), "repeat", "-2.0");
+            if (co.Length >= 2)
+                co = co[1..^1];
+            while (!ti.Equals("") && !co.Equals("") && !na.Equals("") && !re.Equals(""))
+            {
+                System.Globalization.DateTimeFormatInfo dtFormat = new()
+                {
+                    ShortDatePattern = "yyyy/MM/dd HH:mm:ss"
+                };
+                if (double.Parse(re) == -1.0)
+                {
+                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                    DateTime now = DateTime.Now;
+                    TimeSpan ts = dt - now;
+                    while (ts.TotalMinutes < 0)
+                    {
+                        dt = dt.AddDays(1.0);
+                        ts = dt - now;
+                    }
+                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
+                }
+                else if (double.Parse(re) == 0.0)
+                {
+                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                    DateTime now = DateTime.Now;
+                    TimeSpan ts = dt - now;
+                    while (ts.TotalMinutes < 0)
+                    {
+                        dt = dt.AddDays(7.0);
+                        ts = dt - now;
+                    }
+                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
+                }
+                else if (double.Parse(re) == -2.0)
+                {
+
+                }
+                else
+                {
+                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                    DateTime now = DateTime.Now;
+                    TimeSpan ts = dt - now;
+                    while (ts.TotalMinutes < 0)
+                    {
+                        dt = dt.AddDays(double.Parse(re));
+                        ts = dt - now;
+                    }
+                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
+                }
+                App.scheduleitems.Add(new Scheduleitem(i, na, ti, co, double.Parse(re)));
+                i++;
+                ti = utils.Read_Ini(inipath, i.ToString(), "time", "");
+                co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+                na = utils.Read_Ini(inipath, i.ToString(), "name", "");
+                re = utils.Read_Ini(inipath, i.ToString(), "repeat", "-2.0");
+                if (co.Length >= 2)
+                    co = co[1..^1];
+            }
+            App.Load_Menu();
         }
 
         public void Load_Translate()
@@ -920,14 +1037,24 @@ namespace hiro
                 utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", App.cmditems[i].HotKey);
                 dgi.SelectedIndex = i - 1;
                 App.Load_Menu();
-                var vsi = MainWindow.FindHotkeyById(i - 1);
-                var vsx = MainWindow.FindHotkeyById(i);
+                var vsi = FindHotkeyById(i - 1);
+                var vsx = FindHotkeyById(i);
                 if (vsi > -1)
-                    MainWindow.vs[vsi + 1] = i;
+                    App.vs[vsi + 1] = i;
                 if (vsx > -1)
-                    MainWindow.vs[vsx + 1] = i - 1;
+                    App.vs[vsx + 1] = i - 1;
             }
             GC.Collect();
+        }
+
+        public static int FindHotkeyById(int id)
+        {
+            for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
+            {
+                if (App.vs[vsi + 1] == id)
+                    return vsi;
+            }
+            return -1;
         }
 
         private void Btn3_Click(object sender, RoutedEventArgs e)
@@ -950,12 +1077,12 @@ namespace hiro
                 utils.Write_Ini(inipath, (i + 2).ToString(), "hotkey", App.cmditems[i + 1].HotKey);
                 dgi.SelectedIndex = i + 1;
                 App.Load_Menu();
-                var vsi = MainWindow.FindHotkeyById(i + 1);
-                var vsx = MainWindow.FindHotkeyById(i);
+                var vsi = FindHotkeyById(i + 1);
+                var vsx = FindHotkeyById(i);
                 if (vsi > -1)
-                    MainWindow.vs[vsi + 1] = i;
+                    App.vs[vsi + 1] = i;
                 if (vsx > -1)
-                    MainWindow.vs[vsx + 1] = i +1;
+                    App.vs[vsx + 1] = i +1;
             }
             GC.Collect();
         }
@@ -985,10 +1112,10 @@ namespace hiro
                     App.page--;
                     App.Load_Menu();
             }
-            var vsi = MainWindow.FindHotkeyById(dgi.SelectedIndex);
-            if (vsi > -1 && App.wnd != null)
+            var vsi = FindHotkeyById(dgi.SelectedIndex);
+            if (vsi > -1)
             {
-                App.wnd.UnregisterKey(vsi);
+                UnregisterKey(vsi);
             }
             btn5.IsEnabled = true;
             GC.Collect();
@@ -1377,7 +1504,7 @@ namespace hiro
                     {
                         if (App.wnd != null)
                         {
-                            App.wnd.RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
+                            RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
                         }
                     }
                     catch(Exception ex)
@@ -1391,38 +1518,58 @@ namespace hiro
                 var i = dgi.SelectedIndex;
                 App.cmditems[i].Name = tb7.Text;
                 App.cmditems[i].Command = tb8.Text;
-                App.cmditems[i].HotKey = hk;
                 utils.Write_Ini(App.dconfig, (i + 1).ToString(), "title", tb7.Text);
                 utils.Write_Ini(App.dconfig, (i + 1).ToString(), "command", "(" + tb8.Text + ")");
                 utils.Write_Ini(App.dconfig, (i + 1).ToString(), "hotkey", hk);
-                var vsi = MainWindow.FindHotkeyById(i);
-                if (vsi > -1)
+                if (!App.cmditems[i].HotKey.Equals(hk))
                 {
-                    if (App.wnd != null)
+                    App.cmditems[i].HotKey = hk;
+                    UnregisterKey(FindHotkeyById(i));
+                    if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
                     {
-                        App.wnd.UnregisterKey(vsi);
-                    }
-                }
-                if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
-                {
-                    try
-                    {
-                        if (App.wnd != null)
+                        try
                         {
-                            App.wnd.RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
+                            if (App.wnd != null)
+                            {
+                                RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        utils.LogtoFile("[ERROR]" + ex.Message);
+                        catch (Exception ex)
+                        {
+                            utils.LogtoFile("[ERROR]" + ex.Message);
+                        }
                     }
                 }
             }
+                
             tb7.Text = "";
             tb8.Text = "";
             App.Load_Menu();
             newflag = 0;
             Set_Label(itemx);
+        }
+
+        public void UnregisterKey(int id)
+        {
+            if (id < 0)
+                return;
+            var bo = utils.UnRegisterKey(App.WND_Handle, App.vs[id]);
+            if (bo)
+            {
+                utils.LogtoFile("[REGISTER]Successfully unregistered.");
+            }
+            else
+            {
+                utils.LogtoFile("[REGISTER]Unregisteration failed.");
+            }
+            App.vs.RemoveAt(id);
+            App.vs.RemoveAt(id);
+        }
+
+        public void RegisterKey(uint modi, Key id, int cid)
+        {
+            App.vs.Add(utils.RegisterKey(App.WND_Handle, modi, id));
+            App.vs.Add(cid);
         }
 
         private int Index_Modifier(bool direction, int val)

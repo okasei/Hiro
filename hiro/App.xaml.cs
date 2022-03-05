@@ -41,11 +41,13 @@ namespace hiro
         internal static double blursec = 500.0;
         internal static System.Windows.Threading.DispatcherTimer? timer;
         internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> cmditems = new();
+        internal static System.Collections.ObjectModel.ObservableCollection<int> vs = new();
         internal static int page = 0;
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient hc = new();
         internal static SolidColorBrush ForeBrush = new();
         internal static int ColorCD = -1;
+        internal static IntPtr WND_Handle = IntPtr.Zero;
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
