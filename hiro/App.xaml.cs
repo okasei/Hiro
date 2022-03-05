@@ -46,8 +46,6 @@ namespace hiro
         internal static System.Net.Http.HttpClient hc = new();
         internal static SolidColorBrush ForeBrush = new();
         internal static int ColorCD = -1;
-        internal static int port = 4174;
-        internal static HiroApp ha = new();
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
@@ -84,6 +82,7 @@ namespace hiro
                     recStr = utils.Path_Prepare_EX(utils.Path_Prepare(recStr)).Trim();
                     if (System.IO.File.Exists(recStr))
                     {
+                        HiroApp ha = new();
                         ha.msg = utils.Read_Ini(recStr, "App", "Msg", "nop");
                         ha.appID = utils.Read_Ini(recStr, "App", "ID", "null");
                         ha.appName = utils.Read_Ini(recStr, "App", "Name", "null");
@@ -105,14 +104,12 @@ namespace hiro
                     Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
                 };
                 bw.RunWorkerAsync();
-
         }
-
 
         private void Build_Socket()
         {
-            port = utils.GetRandomUnusedPort();
-            int MaxConnection = 10;
+            var port = utils.GetRandomUnusedPort();
+            int MaxConnection = 69;
             System.Collections.Hashtable clientSessionTable = new ();
             object clientSessionLock = new object();
             System.Net.IPEndPoint localEndPoint = new (System.Net.IPAddress.Any, port);
@@ -122,7 +119,6 @@ namespace hiro
             try
             {
                 socketLister.Listen(MaxConnection);
-                //Console.WriteLine("服务器Socket监听已经打开...");
                 System.ComponentModel.BackgroundWorker bw = new();
                 bw.DoWork += delegate
                 {
@@ -134,13 +130,6 @@ namespace hiro
             {
                 utils.LogtoFile("[ERROR]" + ex.Message);
             }
-        }
-
-
-    protected override void OnStartup(StartupEventArgs e)
-        {
-            RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
-            base.OnStartup(e);
         }
 
         private void InitializeStartParameters(StartupEventArgs e)

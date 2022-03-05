@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="Ui_MouseDown" Background="White" WindowStartupLocation="Manual" Closing="ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="ui_Loaded">
+        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="Ui_MouseDown" Background="White" WindowStartupLocation="Manual" Closing="ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="Ui_Loaded" StateChanged="ui_StateChanged">
     <Grid>
         <Label x:Name="bgimage" HorizontalAlignment="Stretch" Background="Coral" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="bglabel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" MouseDown="Bglabel_MouseDown" Height="30" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
@@ -28,7 +28,7 @@
 
         </Grid>
         <Label x:Name="titlelabel" Style="{DynamicResource HiroLabel}" Content="Hiro" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Segoe UI" FontWeight="Bold" MouseDown="Titlelabel_MouseDown" FontSize="14" Height="27" SizeChanged="titlelabel_SizeChanged"/>
-        <Label x:Name="versionlabel" Style="{DynamicResource HiroLabel}" Content="♥" HorizontalAlignment="Left" Margin="37,5,0,0" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontWeight="Bold" FontFamily="Segoe UI" FontSize="10" RenderTransformOrigin="0.543,0.235" VerticalContentAlignment="Bottom" Height="21" MouseDoubleClick="versionlabel_MouseDoubleClick"/>
+        <Label x:Name="versionlabel" Style="{DynamicResource HiroLabel}" Content="♥" HorizontalAlignment="Left" Margin="37,5,0,0" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontWeight="Bold" FontFamily="Segoe UI" FontSize="10" RenderTransformOrigin="0.543,0.235" VerticalContentAlignment="Bottom" Height="21" MouseDoubleClick="Versionlabel_MouseDoubleClick"/>
         <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
             <Label.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
@@ -215,7 +215,7 @@
                     <CheckBox x:Name="verbose" Content="Show More Message" HorizontalAlignment="Left" Margin="173,519,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Unchecked="verbose_Unchecked" Checked="verbose_Checked"/>
                     <CheckBox x:Name="animation" Content="Enable Animation" HorizontalAlignment="Left" Margin="173,549,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Checked="animation_Checked" Unchecked="animation_Unchecked"/>
                     <CheckBox x:Name="win_style" Content="Windows Style" HorizontalAlignment="Left" Margin="173,572,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Checked="win_style_Checked" Unchecked="win_style_Unchecked"/>
-                    <ComboBox x:Name="langbox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="103,609,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True">
+                    <ComboBox x:Name="langbox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="103,609,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True">
                     </ComboBox>
                     <Label x:Name="langlabel" Style="{DynamicResource HiroLabel}" Content="Language" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Segoe UI" Margin="13,609,0,0" Height="24" Width="71" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <CheckBox x:Name="reverse_style" Content="Reverse Foreground" HorizontalAlignment="Left" Margin="288,572,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Checked="reverse_style_Checked" Unchecked="reverse_style_Unchecked"/>

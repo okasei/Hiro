@@ -1236,7 +1236,7 @@ namespace hiro
                 if (App.mn != null)
                 {
                     App.mn.Visibility = System.Windows.Visibility.Visible;
-                    App.mn.Set_Label(App.mn.helpx);
+                    App.mn.Set_Label(App.mn.configx);
                 }
                 return;
             }
@@ -2016,26 +2016,12 @@ namespace hiro
             string[] filenames = System.IO.Directory.GetFileSystemEntries(srcdir);
             foreach (string file in filenames)
             {
+                string newdest = desfolderdir + file.Replace(srcdir, "");
+                CreateFolder(newdest);
                 if (System.IO.Directory.Exists(file))
-                {
-                    string currentdir = desfolderdir + "\\" + file.Substring(file.LastIndexOf("\\") + 1);
-                    if (!System.IO.Directory.Exists(currentdir))
-                    {
-                        System.IO.Directory.CreateDirectory(currentdir);
-                    }
-                    CopyDirectory(file, desfolderdir);
-                }
+                    CopyDirectory(file, newdest);
                 else
-                {
-                    string srcfileName = file.Substring(file.LastIndexOf("\\") + 1);
-                    srcfileName = desfolderdir + "\\" + srcfileName;
-                    if (!System.IO.Directory.Exists(desfolderdir))
-                    {
-                        System.IO.Directory.CreateDirectory(desfolderdir);
-                    }
-
-                    System.IO.File.Copy(file, srcfileName);
-                }
+                    System.IO.File.Copy(file, newdest);
             }
         }
 

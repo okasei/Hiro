@@ -117,7 +117,7 @@ namespace hiro
                         byte[] data = new byte[REnd];
                         Array.Copy(msgBuffer, 0, data, 0, REnd);
                         OnDataRecevieCompleted(new());
-                        ClientSocket.BeginReceive(msgBuffer, 0, msgBuffer.Length, 0, new AsyncCallback(ReceiveCallback), null);
+                        //ClientSocket.BeginReceive(msgBuffer, 0, msgBuffer.Length, 0, new AsyncCallback(ReceiveCallback), null);
                     }
                     else
                         Dispose();

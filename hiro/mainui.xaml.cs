@@ -2189,7 +2189,7 @@ namespace hiro
             utils.Write_Ini(App.dconfig, "config", "toast", "0");
         }
 
-        private void langbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Langbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             App.lang = App.la[langbox.SelectedIndex].name;
             App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].name + ".hlp";
@@ -2199,7 +2199,7 @@ namespace hiro
             App.Load_Menu();
         }
 
-        private void ui_Loaded(object sender, RoutedEventArgs e)
+        private void Ui_Loaded(object sender, RoutedEventArgs e)
         {
             langbox.Items.Clear();
             langbox.ItemsSource = App.la;
@@ -2214,7 +2214,7 @@ namespace hiro
             }
         }
 
-        private void versionlabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Versionlabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (App.dflag)
             {
@@ -2624,6 +2624,12 @@ namespace hiro
             {
                 second.Text = DateTime.Now.Second.ToString();
             }
+        }
+
+        private void ui_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+                WindowState = WindowState.Normal;
         }
     }
 }
