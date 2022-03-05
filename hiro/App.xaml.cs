@@ -24,7 +24,7 @@ namespace hiro
         internal static bool restartflag = false;
         internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
         internal static System.Collections.ObjectModel.ObservableCollection<alarmwin> aw = new();
-        internal static System.Collections.ObjectModel.ObservableCollection<language> la = new();
+        internal static System.Collections.ObjectModel.ObservableCollection<Language> la = new();
         internal static string LogFilePath = "C:\\1.log";
         internal static string LangFilePath = "C:\\1.hlp";
         internal static string dconfig = "C:\\";
@@ -334,7 +334,7 @@ namespace hiro
                     string name = fi.Name.Replace(".hlp", "");
                     if(!langname.Equals("null"))
                     {
-                        la.Add(new language(name, langname));
+                        la.Add(new Language(name, langname));
                     }
                 }
             }
@@ -596,11 +596,8 @@ namespace hiro
                 wnd.cm.Items.Add(exit);
                 foreach (object obj in wnd.cm.Items)
                 {
-                    if (obj.GetType() == typeof(MenuItem))
-                    {
-                        if (obj is MenuItem mi)
-                            utils.Set_Control_Location(mi, "context", location: false);
-                    }
+                    if (obj is MenuItem mi)
+                        utils.Set_Control_Location(mi, "context", location: false);
                 }
             }
             GC.Collect();

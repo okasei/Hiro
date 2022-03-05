@@ -16,6 +16,7 @@ namespace hiro
         private int i;
         private string na;
         private string co;
+        private string hk;
 
         public int Page {
             get { return p; }
@@ -51,54 +52,41 @@ namespace hiro
             }
         }
 
+        public string HotKey
+        {
+            get { return hk; }
+            set
+            {
+                hk = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HotKey)));
+            }
+        }
         public Cmditem()
         {
             Page = -1;
             Id = -1;
             Name = string.Empty;
             Command = string.Empty;
+            HotKey = string.Empty;
             p = -1;
             Id = -1;
             na = string.Empty;
             co = string.Empty;
+            hk = string.Empty;
         }
-        public Cmditem(int a, int b, string c, string d)
+        public Cmditem(int a, int b, string c, string d, string e)
         {
             Page = a;
             Id = b;
             Name = c;
             Command = d;
+            HotKey = e;
             p = a;
             Id = b;
             na = c;
             co = d;
+            hk = e;
         }
-        public Cmditem(Cmditem c)
-        {
-            if (c == null)
-            {
-                Page = -1;
-                Id = -1;
-                Name = string.Empty;
-                Command = string.Empty;
-                p = -1;
-                Id = -1;
-                na = string.Empty;
-                co = string.Empty;
-            }
-            else
-            {
-                Page = c.Page;
-                Id = c.Id;
-                Name = c.Name;
-                Command = c.Command;
-                p = c.Page;
-                Id = c.Id;
-                na = c.Name;
-                co = c.Command;
-            }
-        }
-
     }
     #endregion
 
@@ -237,44 +225,42 @@ namespace hiro
     #endregion
 
     #region 语言项目定义
-    public class language : INotifyPropertyChanged
+    public class Language : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         private string na;
         private string la;
-        public string name
+        public string Name
         {
             get { return na; }
             set
             {
                 na = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(name)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
-        public string langname
+        public string Langname
         {
             get { return la; }
             set
             {
                 la = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(langname)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Langname)));
             }
         }
 
-        public language()
+        public Language()
         {
-            name = "null";
-            langname = "null";
+            Name = "null";
+            Langname = "null";
             na = "null";
             la = "null";
         }
 
-        public language(string Name, string LangName)
+        public Language(string Name, string LangName)
         {
-            name = Name;
-            langname = LangName;
+            this.Name = Name;
+            Langname = LangName;
             na = Name;
             la = LangName;
         }
@@ -327,6 +313,47 @@ namespace hiro
         }
     }
 
+    #endregion
+
+    #region 快捷键注册定义
+
+    public class HiroHotKey
+    {
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+  
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        public enum HotkeyModifiers
+         {
+            MOD_NONE = 0x0,
+            MOD_ALT = 0x1,
+            MOD_CONTROL = 0x2,
+            MOD_SHIFT = 0x4,
+            MOD_WIN = 0x8
+         }
+
+        public static int RegisterKey(IntPtr hwnd, uint fsModifiers, System.Windows.Input.Key key)
+         {
+             int id = keyid;
+             keyid += 2;
+             var vk = System.Windows.Input.KeyInterop.VirtualKeyFromKey(key);
+             if (!RegisterHotKey(hwnd, id, fsModifiers, (uint) vk))
+                 throw new Exception("regist hotkey fail.");
+            return id;
+         }
+
+        public static void UnRegisterKey(IntPtr hWnd, int id)
+         {
+            UnregisterHotKey(hWnd, id);
+         }
+
+        static int keyid = 10;
+
+    }
     #endregion
 
     public partial class utils : Component
@@ -1301,7 +1328,7 @@ namespace hiro
                 toolstr = Path_Prepare_EX(Path_Prepare(Read_Ini(toolstr, "Message", "content", Get_Transalte("syntax"))));
                 if (toolstr.ToLower().StartsWith("http://") || toolstr.ToLower().StartsWith("https://"))
                 {
-                    msg.sv.Content = Get_Transalte("loading");
+                    msg.sv.Content = Get_Transalte("msgload");
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {

@@ -70,6 +70,7 @@ namespace hiro
             wv2.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             wv2.CoreWebView2.IsDefaultDownloadDialogOpenChanged += CoreWebView2_IsDefaultDownloadDialogOpenChanged;
             wvpb.Foreground = new SolidColorBrush(App.AppAccentColor);
+            wv2.CoreWebView2.Settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62";
         }
 
         private void CoreWebView2_IsDefaultDownloadDialogOpenChanged(object? sender, object e)
@@ -182,6 +183,7 @@ namespace hiro
                 else
                 {
                     Web web = new(e.Uri);
+                    web.WindowState = WindowState;
                     web.Show();
                 }
             }

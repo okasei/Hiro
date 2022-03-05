@@ -8,7 +8,56 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="Ui_MouseDown" Background="White" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="Ui_Loaded" StateChanged="Ui_StateChanged">
+        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="Ui_MouseDown" Background="White" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="Ui_Loaded" StateChanged="Ui_StateChanged"
+    xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
+    <Window.Resources>
+        <materialDesign:BrushRoundConverter x:Key="BrushRoundConverter"/>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2 2 2 2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="True" StrokeThickness="1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="MaterialDesignComboBoxItemTemplate" TargetType="{x:Type ComboBoxItem}">
+            <Grid x:Name="GridWrapper">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Border x:Name="BackBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
+                <Border x:Name="MouseOverBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Opacity="0" SnapsToDevicePixels="True"/>
+                <Border x:Name="SelectedBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" Opacity="0" RenderTransformOrigin="0.5,0.5"/>
+                <wpf:Ripple ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" Focusable="False" Feedback="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" HorizontalAlignment="Stretch" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" RecognizesAccessKey="False" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" VerticalAlignment="Stretch"/>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" TargetName="GridWrapper" Value="{x:Static wpf:Constants.TextBoxNotEnabledOpacity}"/>
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Tag" Value="{StaticResource AllowCollapse}"/>
+                        <Condition Property="IsSelected" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Height" Value="0"/>
+                </MultiTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="HiroComboBoxItemContainerStyle" TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Padding" Value="16 8"/>
+            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Template" Value="{StaticResource MaterialDesignComboBoxItemTemplate}"/>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Label x:Name="bgimage" HorizontalAlignment="Stretch" Background="Coral" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="bglabel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" MouseDown="Bglabel_MouseDown" Height="30" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
@@ -49,10 +98,10 @@
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
-                </Label.Triggers>
+            </Label.Triggers>
         </Label>
         <ProgressBar x:Name="pb" Height="5" Width="548" Background="Transparent" BorderBrush="{x:Null}"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" IsIndeterminate="True" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.RowSpan="2" Visibility="Hidden"/>
-        <TabControl x:Name="tc" Margin="130,30,0,-15" Background="Transparent" BorderBrush="{x:Null}" Foreground="{x:Null}" TabStripPlacement="Bottom" Grid.Column="2" Width="420" Height="440" SelectedIndex="6" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top">
+        <TabControl x:Name="tc" Margin="130,30,0,-15" Background="Transparent" BorderBrush="{x:Null}" Foreground="{x:Null}" TabStripPlacement="Bottom" Grid.Column="2" Width="420" Height="440" SelectedIndex="1" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top">
             <TabControl.ItemContainerStyle>
                 <Style>
                     <Setter Property="TabItem.Visibility" Value="Collapsed"/>
@@ -65,10 +114,10 @@
             <Grid x:Name="itemg" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="420">
                 <DataGrid x:Name="dgi" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Background="Transparent" HeadersVisibility="Column" FontFamily="Segoe UI" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="#99FFFFFF" SelectionMode="Single" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="410" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding page, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Page" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
-                        <DataGridTextColumn Binding="{Binding id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="ID" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
-                        <DataGridTextColumn Binding="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Name" FontFamily="Segoe UI" CanUserResize="True" Width="160"/>
-                        <DataGridTextColumn Binding="{Binding command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Command" FontFamily="Segoe UI" CanUserResize="True" Width="160"/>
+                        <DataGridTextColumn Binding="{Binding Page, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Page" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
+                        <DataGridTextColumn Binding="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="ID" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
+                        <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Name" FontFamily="Segoe UI" CanUserResize="True" Width="160"/>
+                        <DataGridTextColumn Binding="{Binding Command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Command" FontFamily="Segoe UI" CanUserResize="True" Width="160"/>
                     </DataGrid.Columns>
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -113,10 +162,10 @@
             <Grid x:Name="scheduleg" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="420">
                 <DataGrid x:Name="dgs" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Background="Transparent" HeadersVisibility="Column" FontFamily="Segoe UI" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="#99FFFFFF" SelectionMode="Single" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="410" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgs_MouseDoubleClick">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="ID" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
-                        <DataGridTextColumn Binding="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Name" FontFamily="Segoe UI" CanUserResize="True" Width="120"/>
-                        <DataGridTextColumn Binding="{Binding time, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Time" FontFamily="Segoe UI" CanUserResize="True" Width="120"/>
-                        <DataGridTextColumn Binding="{Binding command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Command" FontFamily="Segoe UI" CanUserResize="True" Width="120"/>
+                        <DataGridTextColumn Binding="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="ID" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
+                        <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Name" FontFamily="Segoe UI" CanUserResize="True" Width="120"/>
+                        <DataGridTextColumn Binding="{Binding Time, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Time" FontFamily="Segoe UI" CanUserResize="True" Width="120"/>
+                        <DataGridTextColumn Binding="{Binding Command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Command" FontFamily="Segoe UI" CanUserResize="True" Width="120"/>
                     </DataGrid.Columns>
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -215,9 +264,9 @@
                     <CheckBox x:Name="verbose" Content="Show More Message" HorizontalAlignment="Left" Margin="173,519,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Unchecked="Verbose_Unchecked" Checked="Verbose_Checked"/>
                     <CheckBox x:Name="animation" Content="Enable Animation" HorizontalAlignment="Left" Margin="173,549,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Checked="Animation_Checked" Unchecked="Animation_Unchecked"/>
                     <CheckBox x:Name="win_style" Content="Windows Style" HorizontalAlignment="Left" Margin="173,572,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Checked="Win_style_Checked" Unchecked="Win_style_Unchecked"/>
-                    <ComboBox x:Name="langbox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="103,609,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True">
-                    </ComboBox>
-                    <Label x:Name="langlabel" Style="{DynamicResource HiroLabel}" Content="Language" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Segoe UI" Margin="13,609,0,0" Height="24" Width="71" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <Label x:Name="langlabel"  Content="Language" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Segoe UI" Margin="13,609,0,0" Height="24" Width="71" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <Label x:Name="langname" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Background="Transparent"/>
+                    <ComboBox x:Name="langbox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="103,609,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}"/>
                     <CheckBox x:Name="reverse_style" Content="Reverse Foreground" HorizontalAlignment="Left" Margin="288,572,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Checked="Reverse_style_Checked" Unchecked="Reverse_style_Unchecked"/>
                     <CheckBox x:Name="lock_style" Content="Lock Background" HorizontalAlignment="Left" Margin="285,619,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Checked="Lock_style_Checked" Unchecked="Lock_style_Unchecked"/>
                 </Grid>
@@ -249,6 +298,11 @@
                 <Button x:Name="ntn6" Content="&quot;A&quot;" HorizontalAlignment="Left" Margin="225,80,0,0" Width="45" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{Binding BorderBrush, ElementName=btn1}" Foreground="{Binding Foreground, ElementName=btn1}" Background="{Binding Background, ElementName=btn1}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn6_Click"/>
                 <Button x:Name="ntn7" Content="explorer" HorizontalAlignment="Left" Margin="275,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{Binding BorderBrush, ElementName=btn1}" Foreground="{Binding Foreground, ElementName=btn1}" Background="{Binding Background, ElementName=btn1}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn7_Click"/>
                 <Button x:Name="ntn8" Content="Open…" HorizontalAlignment="Left" Margin="335,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{Binding BorderBrush, ElementName=btn1}" Foreground="{Binding Foreground, ElementName=btn1}" Background="{Binding Background, ElementName=btn1}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn8_Click"/>
+                <Label x:Name="klabel" Content="Hotkey" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top"  Foreground ="{Binding Foreground, ElementName=btn1}" FontFamily="Segoe UI"/>
+                <Label x:Name="modiname" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Background="Transparent" Margin="95,145,0,0"/>
+                <ComboBox x:Name="modibox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="61,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{Binding Path = Foreground, ElementName = btn1 }" SelectionChanged="Modibox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="33"/>
+                <Label x:Name="keylabel" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" Background="Transparent" Margin="238,145,0,0"/>
+                <ComboBox x:Name="keybox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="200,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{Binding Path = Foreground, ElementName = btn1 }" SelectionChanged="Keybox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="33"/>
             </Grid>
             <Grid x:Name="newsg" HorizontalAlignment="Left" VerticalAlignment="Top" Height="420" Width="400">
                 <Label x:Name="sclabel1" Style="{DynamicResource HiroLabel}" Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Segoe UI"/>

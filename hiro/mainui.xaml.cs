@@ -34,8 +34,6 @@ namespace hiro
             Load_Colors();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Position");
             Load_Position();
-            utils.LogtoFile("[HIROWEGO]Main UI: Load Data");
-            Load_Data();
             utils.LogtoFile("[HIROWEGO]Main UI: Set Home");
             Set_Label(homex);
             autorun.Tag = "1";
@@ -47,92 +45,7 @@ namespace hiro
                     Blurbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
                 };
             utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
-            utils.LogtoFile("[HIROWEGO]MainUI: Loaded");
-        }
-        public static void Load_Data()
-        {
-            App.cmditems.Clear();
-            var i = 1;
-            var p = 1;
-            var inipath = App.dconfig;
-            var ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
-            var co = utils.Read_Ini(inipath, i.ToString(), "command", "");
-            while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
-            {
-                co = co[1..^1];
-                App.cmditems.Add(new Cmditem(p, i, ti, co));
-                i++;
-                p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
-                ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
-                co = utils.Read_Ini(inipath, i.ToString(), "command","");
-            }
-
-            App.scheduleitems.Clear();
-            i = 1;
-            inipath = App.sconfig;
-            ti = utils.Read_Ini(inipath, i.ToString(), "time", "");
-            co = utils.Read_Ini(inipath, i.ToString(), "command", "");
-            var na = utils.Read_Ini(inipath, i.ToString(), "name", "");
-            var re = utils.Read_Ini(inipath, i.ToString(), "repeat", "-2.0");
-            if (co.Length >= 2)
-                co = co[1..^1];
-            while (!ti.Equals("") && !co.Equals("") && !na.Equals("") && !re.Equals(""))
-            {
-                System.Globalization.DateTimeFormatInfo dtFormat = new()
-                {
-                    ShortDatePattern = "yyyy/MM/dd HH:mm:ss"
-                };
-                if (double.Parse(re) == -1.0)
-                {
-                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                    DateTime now = DateTime.Now;
-                    TimeSpan ts = dt - now;
-                    while (ts.TotalMinutes < 0)
-                    {
-                        dt = dt.AddDays(1.0);
-                        ts = dt - now;
-                    }
-                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
-                }else if (double.Parse(re) == 0.0)
-                {
-                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                    DateTime now = DateTime.Now;
-                    TimeSpan ts = dt - now;
-                    while (ts.TotalMinutes < 0)
-                    {
-                        dt = dt.AddDays(7.0);
-                        ts = dt - now;
-                    }
-                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
-                }else if (double.Parse(re) == -2.0)
-                {
-                    
-                }
-                else
-                {
-                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                    DateTime now = DateTime.Now;
-                    TimeSpan ts = dt - now;
-                    while (ts.TotalMinutes < 0)
-                    {
-                        dt = dt.AddDays(double.Parse(re));
-                        ts = dt - now;
-                    }
-                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
-                }
-                App.scheduleitems.Add(new Scheduleitem(i, na, ti, co, double.Parse(re)));
-                i++;
-                ti = utils.Read_Ini(inipath, i.ToString(), "time", "");
-                co = utils.Read_Ini(inipath, i.ToString(), "command", "");
-                na = utils.Read_Ini(inipath, i.ToString(), "name", "");
-                re = utils.Read_Ini(inipath, i.ToString(), "repeat", "-2.0");
-                if (co.Length >= 2)
-                    co = co[1..^1];
-            }
-            App.Load_Menu();
+            utils.LogtoFile("[HIROWEGO]Main UI: Loaded");
         }
         public void InitializeUIWindow()
         {
@@ -385,6 +298,7 @@ namespace hiro
             utils.Set_Control_Location(bg_label,"background");
             utils.Set_Control_Location(langlabel,"language");
             utils.Set_Control_Location(langbox,"langbox");
+            utils.Set_Control_Location(langname,"langbox");
             utils.Set_Control_Location(moreandsoon,"morecome");
 
             utils.Set_Control_Location(tb1, "lefttb");
@@ -395,6 +309,13 @@ namespace hiro
             utils.Set_Control_Location(tb6, "helptb");
             utils.Set_Control_Location(tb7, "nametb");
             utils.Set_Control_Location(tb8, "cmdtb");
+
+            utils.Set_Control_Location(klabel, "hotkey");
+            utils.Set_Control_Location(modibox, "modifier");
+            utils.Set_Control_Location(modiname, "modifier");
+            utils.Set_Control_Location(keybox, "vkey");
+            utils.Set_Control_Location(keylabel, "vkey");
+
             utils.Set_Control_Location(tb9, "detailtb");
             utils.Set_Control_Location(tb10, "hirotb");
             utils.Set_Control_Location(tb11, "scnametb");
@@ -430,6 +351,12 @@ namespace hiro
             utils.Set_Grid_Location(bg_grid, "backg");
             utils.Set_Grid_Location(name_grid, "nameg");
             utils.Set_Grid_Location(timeg, "timeg");
+
+            foreach (object obj in langbox.Items)
+            {
+                if (obj is ComboBoxItem mi)
+                    utils.Set_Control_Location(mi, "combo", location: false);
+            }
 
             Thickness thickness = configg.Margin;
             thickness.Top = 0.0;
@@ -501,17 +428,7 @@ namespace hiro
             btn1.Background = new SolidColorBrush(Color.FromArgb(160, App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
             btn1.Foreground = Foreground;
             btn1.BorderBrush = new SolidColorBrush(App.AppForeColor);
-
-            if (App.AppForeColor == Colors.White)
-            {
-                langbox.Foreground = new SolidColorBrush(Colors.Black);
-                langbox.Background = new SolidColorBrush(Color.FromArgb(160,255,255,255));
-            }
-            else
-            {
-                langbox.Background = new SolidColorBrush(Colors.Transparent);
-                langbox.Foreground = btn1.Foreground;
-            }
+            
             #endregion
             coloruse1.Background = new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
             minbtn.Background = new SolidColorBrush(Color.FromArgb(0, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
@@ -577,6 +494,7 @@ namespace hiro
             ntn6.Content = utils.Get_Transalte("quot");
             ntn7.Content = utils.Get_Transalte("explorer");
             ntn8.Content = utils.Get_Transalte("openfile");
+            klabel.Content = utils.Get_Transalte("hotkey");
             ntn9.Content = utils.Get_Transalte("reset");
             ntnx.Content = utils.Get_Transalte("clear");
             ntnx1.Content = utils.Get_Transalte("ok");
@@ -625,6 +543,61 @@ namespace hiro
             tpbtn1.Content = utils.Get_Transalte("timeok");
             tpbtn2.Content = utils.Get_Transalte("timecancel");
             tb6.Text = utils.Get_Transalte("helptext") + utils.Get_Transalte("helptext_ext") + utils.Get_Transalte("helptext_ext2");
+
+            modibox.Items.Clear();
+            keybox.Items.Clear();
+            string[] ars = { "nomodi", "altkey", "shiftkey", "ctrlkey", "winkey", "cakey", "cskey", "wakey", "wskey" };
+            foreach(var arss in ars)
+            {
+                modibox.Items.Add(new ComboBoxItem()
+                {
+                    Content = utils.Get_Transalte(arss)
+                });
+            }
+            keybox.Items.Add(new ComboBoxItem()
+            {
+                Content = utils.Get_Transalte("novkey")
+            });
+            string[] crs = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+            foreach(var crss in crs)
+            {
+                keybox.Items.Add(new ComboBoxItem()
+                {
+                    Content = utils.Get_Transalte("charkey").Replace("%c", crss)
+                });
+            }
+            for (int nuss = 0; nuss < 10; nuss++)
+            {
+                keybox.Items.Add(new ComboBoxItem()
+                {
+                    Content = utils.Get_Transalte("numkey").Replace("%n", nuss.ToString())
+                });
+            }
+            for (int nuss = 1; nuss < 13; nuss++)
+            {
+                keybox.Items.Add(new ComboBoxItem()
+                {
+                    Content = utils.Get_Transalte("fnkey").Replace("%f", "F" + nuss.ToString())
+                });
+            }
+            keybox.Items.Add(new ComboBoxItem()
+            {
+                Content = utils.Get_Transalte("space")
+            });
+            keybox.Items.Add(new ComboBoxItem()
+            {
+                Content = utils.Get_Transalte("esc")
+            });
+            foreach (object obj in modibox.Items)
+            {
+                if (obj is ComboBoxItem mi)
+                    utils.Set_Control_Location(mi, "moditem", location: false);
+            }
+            foreach (object obj in keybox.Items)
+            {
+                if (obj is ComboBoxItem mi)
+                    utils.Set_Control_Location(mi, "vkeyitem", location: false);
+            }
         }
         public void Load_Labels(bool reload = true)
         {
@@ -864,6 +837,8 @@ namespace hiro
                     newx.Content = utils.Get_Transalte("new");
                     tb7.Text = "";
                     tb8.Text = "";
+                    keybox.SelectedIndex = 0;
+                    modibox.SelectedIndex = 0;
                 }
                 else if(newflag == 2)
                 {
@@ -933,16 +908,24 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > 0 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
-                Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command);
-                App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command);
+                Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
+                App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command, App.cmditems[i - 1].HotKey);
                 App.cmditems[i - 1] = nec;
                 var inipath = App.dconfig;
                 utils.Write_Ini(inipath, i.ToString(), "title", nec.Name);
                 utils.Write_Ini(inipath, i.ToString(), "command", "(" + nec.Command + ")");
+                utils.Write_Ini(inipath, i.ToString(), "hotkey", nec.HotKey);
                 utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].Name);
                 utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].Command + ")");
+                utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", App.cmditems[i].HotKey);
                 dgi.SelectedIndex = i - 1;
                 App.Load_Menu();
+                var vsi = MainWindow.FindHotkeyById(i - 1);
+                var vsx = MainWindow.FindHotkeyById(i);
+                if (vsi > -1)
+                    MainWindow.vs[vsi + 1] = i;
+                if (vsx > -1)
+                    MainWindow.vs[vsx + 1] = i - 1;
             }
             GC.Collect();
         }
@@ -955,16 +938,24 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count - 1)
             {
                 var i = dgi.SelectedIndex;
-                Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command);
-                App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command);
+                Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
+                App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command, App.cmditems[i + 1].HotKey);
                 App.cmditems[i + 1] = nec;
                 var inipath = App.dconfig;
                 utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].Name);
                 utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].Command + ")");
+                utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", App.cmditems[i].HotKey);
                 utils.Write_Ini(inipath, (i + 2).ToString(), "title", App.cmditems[i + 1].Name);
                 utils.Write_Ini(inipath, (i + 2).ToString(), "command", "(" + App.cmditems[i + 1].Command + ")");
+                utils.Write_Ini(inipath, (i + 2).ToString(), "hotkey", App.cmditems[i + 1].HotKey);
                 dgi.SelectedIndex = i + 1;
                 App.Load_Menu();
+                var vsi = MainWindow.FindHotkeyById(i + 1);
+                var vsx = MainWindow.FindHotkeyById(i);
+                if (vsi > -1)
+                    MainWindow.vs[vsi + 1] = i;
+                if (vsx > -1)
+                    MainWindow.vs[vsx + 1] = i +1;
             }
             GC.Collect();
         }
@@ -973,7 +964,6 @@ namespace hiro
         {
             btn5.IsEnabled = false;
             utils.Delay(200);
-            btn5.IsEnabled = true;
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
@@ -995,6 +985,12 @@ namespace hiro
                     App.page--;
                     App.Load_Menu();
             }
+            var vsi = MainWindow.FindHotkeyById(dgi.SelectedIndex);
+            if (vsi > -1 && App.wnd != null)
+            {
+                App.wnd.UnregisterKey(vsi);
+            }
+            btn5.IsEnabled = true;
             GC.Collect();
         }
 
@@ -1005,6 +1001,28 @@ namespace hiro
                 newflag = 1;
                 tb7.Text = App.cmditems[dgi.SelectedIndex].Name;
                 tb8.Text = App.cmditems[dgi.SelectedIndex].Command;
+                var key = App.cmditems[dgi.SelectedIndex].HotKey;
+                try
+                {
+                    if (key.IndexOf(",") != -1)
+                    {
+                        var mo = int.Parse(key.Substring(0, key.IndexOf(",")));
+                        var vkey = int.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
+                        modibox.SelectedIndex = Index_Modifier(false, mo);
+                        keybox.SelectedIndex = Index_vKey(false, vkey);
+                    }
+                    else
+                    {
+                        modibox.SelectedIndex = 0;
+                        keybox.SelectedIndex = 0;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    modibox.SelectedIndex = 0;
+                    keybox.SelectedIndex = 0;
+                }
                 Set_Label(newx);
             }
         }
@@ -1344,29 +1362,113 @@ namespace hiro
             {
                 return;
             }
+            var hk = Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + Index_vKey(true, keybox.SelectedIndex).ToString();
             if (newflag == 0)
             {
                 var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
-                App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text));
+                App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text, hk));
                 utils.Write_Ini(App.dconfig, i.ToString(), "title", tb7.Text);
                 utils.Write_Ini(App.dconfig, i.ToString(), "command", "(" + tb8.Text + ")");
-                tb7.Text = "";
-                tb8.Text = "";
+                utils.Write_Ini(App.dconfig, i.ToString(), "hotkey", hk);
+                if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
+                {
+                    try
+                    {
+                        if (App.wnd != null)
+                        {
+                            App.wnd.RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
             }
             else
             {
                 var i = dgi.SelectedIndex;
                 App.cmditems[i].Name = tb7.Text;
                 App.cmditems[i].Command = tb8.Text;
+                App.cmditems[i].HotKey = hk;
                 utils.Write_Ini(App.dconfig, (i + 1).ToString(), "title", tb7.Text);
                 utils.Write_Ini(App.dconfig, (i + 1).ToString(), "command", "(" + tb8.Text + ")");
-                tb7.Text = "";
-                tb8.Text = "";
+                utils.Write_Ini(App.dconfig, (i + 1).ToString(), "hotkey", hk);
+                var vsi = MainWindow.FindHotkeyById(i);
+                if (vsi > -1)
+                {
+                    if (App.wnd != null)
+                    {
+                        App.wnd.UnregisterKey(vsi);
+                    }
+                }
+                if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
+                {
+                    try
+                    {
+                        if (App.wnd != null)
+                        {
+                            App.wnd.RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
             }
+            tb7.Text = "";
+            tb8.Text = "";
             App.Load_Menu();
             newflag = 0;
             Set_Label(itemx);
+        }
+
+        private int Index_Modifier(bool direction, int val)
+        {
+            //direction: true->index to true value
+            int[] mo = { 0, 1, 2, 4, 8, 5, 6, 9, 10 };
+            if (direction)
+            {
+                if (val > -1 && val < 9)
+                    return mo[val];
+            }
+            else
+            {
+                for (int mos = 0; mos < mo.Length; mos++)
+                {
+                    if (mo[mos] == val)
+                    {
+                        return mos;
+                    }
+                }
+            }
+            return 0;
+        }
+        private int Index_vKey(bool direction, int val)
+        {
+            //direction: true->index to true value
+            int[] mo = { 0, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+                                34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+                                90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101,
+                                18, 13 };
+            if (direction)
+            {
+                if (val > -1 && val < mo.Length)
+                    return mo[val];
+            }
+            else
+            {
+                for (int mos = 0; mos < mo.Length; mos++)
+                {
+                    if (mo[mos] == val)
+                    {
+                        return mos;
+                    }
+                }
+            }
+            return 0;
         }
 
         private void Dgi_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -2181,8 +2283,9 @@ namespace hiro
 
         private void Langbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            App.lang = App.la[langbox.SelectedIndex].name;
-            App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].name + ".hlp";
+            App.lang = App.la[langbox.SelectedIndex].Name;
+            langname.Content = App.la[langbox.SelectedIndex].Langname;
+            App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].Name + ".hlp";
             utils.Write_Ini(App.dconfig, "config", "lang", App.lang);
             Load_Translate();
             Load_Position();
@@ -2193,11 +2296,11 @@ namespace hiro
         {
             langbox.Items.Clear();
             langbox.ItemsSource = App.la;
-            langbox.DisplayMemberPath = "langname";
-            langbox.SelectedValuePath = "langname";
+            langbox.DisplayMemberPath = "Langname";
+            langbox.SelectedValuePath = "Langname";
             for (int i = 0; i < App.la.Count; i++)
             {
-                if (App.lang.Equals(App.la[i].name))
+                if (App.lang.Equals(App.la[i].Name))
                 {
                     langbox.SelectedIndex = i;
                 }
@@ -2620,6 +2723,34 @@ namespace hiro
         {
             if (WindowState == WindowState.Maximized)
                 WindowState = WindowState.Normal;
+        }
+
+        private void Modibox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (modibox.SelectedIndex < 0)
+            {
+                modiname.Content = "";
+                return;
+            }
+            var cbi = modibox.Items.GetItemAt(modibox.SelectedIndex) as ComboBoxItem;
+            if (cbi != null && cbi.Content != null)
+            {
+                modiname.Content = cbi.Content.ToString();
+            }
+        }
+
+        private void Keybox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (keybox.SelectedIndex < 0)
+            {
+                keylabel.Content = "";
+                return;
+            }
+            var cbi = keybox.Items.GetItemAt(keybox.SelectedIndex) as ComboBoxItem;
+            if (cbi != null && cbi.Content != null)
+            {
+                keylabel.Content = cbi.Content.ToString();
+            }
         }
     }
 }

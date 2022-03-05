@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace hiro
@@ -12,6 +13,7 @@ namespace hiro
         internal System.Windows.Controls.ContextMenu? cm = null;
         internal Windows.Networking.Connectivity.NetworkConnectivityLevel ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
         internal string rec_nc = "";
+        internal static System.Collections.ObjectModel.ObservableCollection<int> vs = new();
         public MainWindow()
         {
             InitializeComponent();
@@ -37,6 +39,28 @@ namespace hiro
             {
                 utils.LogtoFile("[ERROR]" + ex.Message);
             }
+        }
+
+        public static int FindHotkeyById(int id)
+        {
+            for (int vsi = 0; vsi < vs.Count - 1; vsi = vsi + 2)
+            {
+                if (vs[vsi + 1] == id)
+                    return vsi;
+            }
+            return -1;
+        }
+
+        public void UnregisterKey(int id)
+        {
+            HiroHotKey.UnRegisterKey(new System.Windows.Interop.WindowInteropHelper(this).Handle, id);
+            vs.RemoveAt(id);
+            vs.RemoveAt(id);
+        }
+        public void RegisterKey(uint modi, Key id, int cid)
+        {
+            vs.Add(HiroHotKey.RegisterKey(new System.Windows.Interop.WindowInteropHelper(this).Handle, modi, id));
+            vs.Add(cid);
         }
 
         private void PowerManager_EnergySaverStatusChanged(object? sender, object e)
@@ -153,7 +177,127 @@ namespace hiro
             System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
             source.AddHook(WndProc);
             utils.LogtoFile("[HIROWEGO]Main Window: AddHook WndProc");
+            utils.LogtoFile("[HIROWEGO]Main Window: Load Data");
+            Load_Data();
         }
+
+        public void Load_Data()
+        {
+            App.cmditems.Clear();
+            var i = 1;
+            var p = 1;
+            var inipath = App.dconfig;
+            var ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
+            var co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+            while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
+            {
+                var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
+                var hwnd = windowInteropHelper.Handle;
+                var key = utils.Read_Ini(App.dconfig, i.ToString(), "hotkey", "").Trim();
+                try
+                {
+                    if (key.IndexOf(",") != -1)
+                    {
+                        var mo = uint.Parse(key.Substring(0, key.IndexOf(",")));
+                        var vkey = uint.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
+                        try
+                        {
+                            if (mo != 0 && vkey != 0)
+                            {
+                                vs.Add(HiroHotKey.RegisterKey(hwnd, mo, (Key)vkey));
+                                vs.Add(i - 1);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            utils.LogtoFile("[ERROR]Error occurred while trying to register hotkey " + mo + "+" + vkey + ":" + ex.Message);
+                        }
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+                co = co[1..^1];
+                App.cmditems.Add(new Cmditem(p, i, ti, co, key));
+                i++;
+                p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
+                ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
+                co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+            }
+
+            App.scheduleitems.Clear();
+            i = 1;
+            inipath = App.sconfig;
+            ti = utils.Read_Ini(inipath, i.ToString(), "time", "");
+            co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+            var na = utils.Read_Ini(inipath, i.ToString(), "name", "");
+            var re = utils.Read_Ini(inipath, i.ToString(), "repeat", "-2.0");
+            if (co.Length >= 2)
+                co = co[1..^1];
+            while (!ti.Equals("") && !co.Equals("") && !na.Equals("") && !re.Equals(""))
+            {
+                System.Globalization.DateTimeFormatInfo dtFormat = new()
+                {
+                    ShortDatePattern = "yyyy/MM/dd HH:mm:ss"
+                };
+                if (double.Parse(re) == -1.0)
+                {
+                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                    DateTime now = DateTime.Now;
+                    TimeSpan ts = dt - now;
+                    while (ts.TotalMinutes < 0)
+                    {
+                        dt = dt.AddDays(1.0);
+                        ts = dt - now;
+                    }
+                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
+                }
+                else if (double.Parse(re) == 0.0)
+                {
+                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                    DateTime now = DateTime.Now;
+                    TimeSpan ts = dt - now;
+                    while (ts.TotalMinutes < 0)
+                    {
+                        dt = dt.AddDays(7.0);
+                        ts = dt - now;
+                    }
+                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
+                }
+                else if (double.Parse(re) == -2.0)
+                {
+
+                }
+                else
+                {
+                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                    DateTime now = DateTime.Now;
+                    TimeSpan ts = dt - now;
+                    while (ts.TotalMinutes < 0)
+                    {
+                        dt = dt.AddDays(double.Parse(re));
+                        ts = dt - now;
+                    }
+                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    utils.Write_Ini(inipath, i.ToString(), "time", ti);
+                }
+                App.scheduleitems.Add(new Scheduleitem(i, na, ti, co, double.Parse(re)));
+                i++;
+                ti = utils.Read_Ini(inipath, i.ToString(), "time", "");
+                co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+                na = utils.Read_Ini(inipath, i.ToString(), "name", "");
+                re = utils.Read_Ini(inipath, i.ToString(), "repeat", "-2.0");
+                if (co.Length >= 2)
+                    co = co[1..^1];
+            }
+            App.Load_Menu();
+        }
+
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
@@ -166,10 +310,6 @@ namespace hiro
                 case 0x0083://prevent system from drawing outline
                     handled = true;
                     break;
-                /*case 0x001A:
-                    if (Program.isWin11)
-                        Set_System_Color();
-                    break;*/
                 case 0x0218:
                     if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
                     {
@@ -203,6 +343,25 @@ namespace hiro
                         App.Notify(new noticeitem(mms, 2, utils.Get_Transalte("device")));
                     }
                     break;
+                case 0x0312:
+                    System.ComponentModel.BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        var indexid = wParam.ToInt32();
+                        for (int vsi = 0; vsi < vs.Count - 1; vsi = vsi + 2)
+                        {
+                            if (vs[vsi] == indexid)
+                            {
+                                Dispatcher.Invoke(delegate
+                                {
+                                    utils.RunExe(App.cmditems[vs[vsi + 1]].Command);
+                                });
+                                break;
+                            }
+                        }
+                    };
+                    bw.RunWorkerAsync();
+                    break;
                 default:
                     if (App.dflag)
                         utils.LogtoFile("[DEBUG]Msg: " + msg.ToString() + ";LParam: " + lParam.ToString() + ";WParam: " + wParam.ToString());
@@ -229,48 +388,30 @@ namespace hiro
             }
             foreach (Window win in Application.Current.Windows)
             {
-                if (win.GetType() == typeof(Alarm))
-                {
                     if (win is Alarm a)
                     {
                         a.Load_Colors();
                     }
-                }
-                if (win.GetType() == typeof(Download))
-                {
-                    if (win is Download a)
+                    if (win is Download b)
                     {
-                        a.Load_Colors();
+                        b.Load_Colors();
                     }
-                }
-                if (win.GetType() == typeof(Lockscr))
-                {
-                    if (win is Lockscr a)
+                    if (win is Lockscr c)
                     {
-                        a.Load_Colors();
+                        c.Load_Colors();
                     }
-                }
-                if (win.GetType() == typeof(Message))
-                {
-                    if (win is Message a)
+                    if (win is Message f)
                     {
-                        a.Load_Colors();
+                        f.Load_Colors();
                     }
-                }
-                if (win.GetType() == typeof(Sequence))
-                {
-                    if (win is Sequence a)
+                    if (win is Sequence d)
                     {
-                        a.Load_Colors();
+                        d.Load_Colors();
                     }
-                }
-                if (win.GetType() == typeof(Web))
-                {
-                    if (win is Web a)
+                    if (win is Web e)
                     {
-                        a.wvpb.Foreground = new SolidColorBrush(App.AppAccentColor);
+                        e.wvpb.Foreground = new SolidColorBrush(App.AppAccentColor);
                     }
-                }
                 System.Windows.Forms.Application.DoEvents();
             }
         }
