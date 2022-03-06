@@ -663,7 +663,7 @@ namespace hiro
 
             modibox.Items.Clear();
             keybox.Items.Clear();
-            string[] ars = { "nomodi", "altkey", "shiftkey", "ctrlkey", "winkey", "cakey", "cskey", "wakey", "wskey" };
+            string[] ars = { "nomodi", "altkey", "shiftkey", "ctrlkey", "winkey", "cakey", "cskey", "wakey", "wskey", "caskey", "waskey" };
             foreach(var arss in ars)
             {
                 modibox.Items.Add(new ComboBoxItem()
@@ -1099,13 +1099,21 @@ namespace hiro
                 {
                     App.cmditems[i].Name = App.cmditems[i + 1].Name;
                     App.cmditems[i].Command = App.cmditems[i + 1].Command;
+                    App.cmditems[i].HotKey = App.cmditems[i + 1].HotKey;
                     utils.Write_Ini(inipath, (i + 1).ToString(), "title", utils.Read_Ini(inipath, (i + 2).ToString(), "title", " "));
                     utils.Write_Ini(inipath, (i + 1).ToString(), "command", utils.Read_Ini(inipath, (i + 2).ToString(), "command", " "));
+                    utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", utils.Read_Ini(inipath, (i + 2).ToString(), "hotkey", " "));
                     i++;
                     System.Windows.Forms.Application.DoEvents();
+                    var vst = FindHotkeyById(i);
+                    if (vst > -1)
+                    {
+                        App.vs[vst + 1]--;
+                    }
                 }
                 utils.Write_Ini(inipath, (i + 1).ToString(), "title", " ");
                 utils.Write_Ini(inipath, (i + 1).ToString(), "command", " ");
+                utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", " ");
                 App.cmditems.RemoveAt(i);
                 var total = (App.cmditems.Count % 10 == 0) ? App.cmditems.Count / 10 : App.cmditems.Count / 10 + 1;
                 if (App.page > total - 1 && App.page > 0)
@@ -1135,8 +1143,8 @@ namespace hiro
                     {
                         var mo = int.Parse(key.Substring(0, key.IndexOf(",")));
                         var vkey = int.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
-                        modibox.SelectedIndex = Index_Modifier(false, mo);
-                        keybox.SelectedIndex = Index_vKey(false, vkey);
+                        modibox.SelectedIndex = utils.Index_Modifier(false, mo);
+                        keybox.SelectedIndex = utils.Index_vKey(false, vkey);
                     }
                     else
                     {
@@ -1489,7 +1497,7 @@ namespace hiro
             {
                 return;
             }
-            var hk = Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + Index_vKey(true, keybox.SelectedIndex).ToString();
+            var hk = utils.Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + utils.Index_vKey(true, keybox.SelectedIndex).ToString();
             if (newflag == 0)
             {
                 var i = App.cmditems.Count + 1;
@@ -1504,7 +1512,7 @@ namespace hiro
                     {
                         if (App.wnd != null)
                         {
-                            RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
+                            RegisterKey((uint)utils.Index_Modifier(true, modibox.SelectedIndex), (Key)utils.Index_vKey(true, keybox.SelectedIndex), i);
                         }
                     }
                     catch(Exception ex)
@@ -1531,7 +1539,7 @@ namespace hiro
                         {
                             if (App.wnd != null)
                             {
-                                RegisterKey((uint)Index_Modifier(true, modibox.SelectedIndex), (Key)Index_vKey(true, keybox.SelectedIndex), i);
+                                RegisterKey((uint)utils.Index_Modifier(true, modibox.SelectedIndex), (Key)utils.Index_vKey(true, keybox.SelectedIndex), i);
                             }
                         }
                         catch (Exception ex)
@@ -1570,52 +1578,6 @@ namespace hiro
         {
             App.vs.Add(utils.RegisterKey(App.WND_Handle, modi, id));
             App.vs.Add(cid);
-        }
-
-        private int Index_Modifier(bool direction, int val)
-        {
-            //direction: true->index to true value
-            int[] mo = { 0, 1, 2, 4, 8, 5, 6, 9, 10 };
-            if (direction)
-            {
-                if (val > -1 && val < 9)
-                    return mo[val];
-            }
-            else
-            {
-                for (int mos = 0; mos < mo.Length; mos++)
-                {
-                    if (mo[mos] == val)
-                    {
-                        return mos;
-                    }
-                }
-            }
-            return 0;
-        }
-        private int Index_vKey(bool direction, int val)
-        {
-            //direction: true->index to true value
-            int[] mo = { 0, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
-                                34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
-                                90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101,
-                                18, 13 };
-            if (direction)
-            {
-                if (val > -1 && val < mo.Length)
-                    return mo[val];
-            }
-            else
-            {
-                for (int mos = 0; mos < mo.Length; mos++)
-                {
-                    if (mo[mos] == val)
-                    {
-                        return mos;
-                    }
-                }
-            }
-            return 0;
         }
 
         private void Dgi_MouseDoubleClick(object sender, MouseButtonEventArgs e)

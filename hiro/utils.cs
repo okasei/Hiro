@@ -317,6 +317,9 @@ namespace hiro
 
     public partial class utils : Component
     {
+
+        static int keyid = 10;
+
         #region 自动生成
         public utils()
         {
@@ -2665,7 +2668,7 @@ namespace hiro
         }
         #endregion
 
-        #region 快捷键注册定义
+        #region 热键相关
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
@@ -2694,7 +2697,8 @@ namespace hiro
                 IntPtr tempptr = IntPtr.Zero;
                 int sa = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
                 FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
-                utils.LogtoFile(sa.ToString() + ":" + msg);
+                RunExe("notify(" + Get_Transalte("regfailed").Replace("%n", sa.ToString()) + ",2)");
+                utils.LogtoFile("[ERROR]Register hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
             }
             return id;
         }
@@ -2708,12 +2712,57 @@ namespace hiro
                 IntPtr tempptr = IntPtr.Zero;
                 int sa = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
                 FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
-                utils.LogtoFile(sa.ToString() + ":" + msg);
+                RunExe("notify(" + Get_Transalte("unregfailed").Replace("%n", sa.ToString()) + ",2)");
+                utils.LogtoFile("[ERROR]Unregister hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
             }
             return a;
         }
 
-        static int keyid = 10;
+        public static int Index_Modifier(bool direction, int val)
+        {
+            //direction: true->index to true value
+            int[] mo = { 0, 1, 2, 4, 8, 5, 6, 9, 10, 7, 11 };
+            if (direction)
+            {
+                if (val > -1 && val < mo.Length)
+                    return mo[val];
+            }
+            else
+            {
+                for (int mos = 0; mos < mo.Length; mos++)
+                {
+                    if (mo[mos] == val)
+                    {
+                        return mos;
+                    }
+                }
+            }
+            return 0;
+        }
+        public static int Index_vKey(bool direction, int val)
+        {
+            //direction: true->index to true value
+            int[] mo = { 0, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+                                34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+                                90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101,
+                                18, 13 };
+            if (direction)
+            {
+                if (val > -1 && val < mo.Length)
+                    return mo[val];
+            }
+            else
+            {
+                for (int mos = 0; mos < mo.Length; mos++)
+                {
+                    if (mo[mos] == val)
+                    {
+                        return mos;
+                    }
+                }
+            }
+            return 0;
+        }
 
         [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
         public extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
