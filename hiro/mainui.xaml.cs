@@ -2861,5 +2861,70 @@ namespace hiro
                 keylabel.Content = cbi.Content.ToString();
             }
         }
+
+        private void tb8_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (tb8.Text.ToLower().StartsWith("key("))
+            {
+                InputMethod.SetPreferredImeState(tb8, InputMethodState.Off);//禁用输入法
+            }
+            else
+            {
+                InputMethod.SetPreferredImeState(tb8, InputMethodState.On);//启用用输入法
+            }
+
+            if (tb8.Text.ToLower().StartsWith("key(") && !tb8.Text.EndsWith(")"))
+            {
+                uint[] modi = { (uint)Key.LeftAlt, (uint)Key.RightAlt, 156, (uint)Key.LeftCtrl, (uint)Key.RightCtrl, (uint)Key.LeftShift, (uint)Key.RightShift, (uint)Key.LWin, (uint)Key.RWin };
+                uint[] modint = { 1, 1, 1, 2, 2, 4, 4, 8, 8 };
+                string[] allowed = { "", ",0,2,4,6,8,10,12,14,", ",0,1,4,8,5,9,12,13,", "", ",0,1,2,8,3,9,10,11,", "", "", "", ",0,1,2,4,3,5,6,7," };
+                uint uin = (uint)e.Key;
+                bool ismodi = false;
+                for (int mmi = 0; mmi < modi.Length; mmi++)
+                {
+                    if (uin == modi[mmi])
+                    {
+                        ismodi = true;
+                        uin = modint[mmi];
+                        break;
+                    }
+                }
+                if (tb8.Text.IndexOf(",") == -1 )
+                {
+                    if (ismodi)
+                        tb8.Text = tb8.Text[..4] + uin.ToString() + ",";
+                    else
+                        tb8.Text = tb8.Text[..4] + "0," + uin.ToString() + ")";
+                }
+                else
+                {
+                    if (!ismodi)
+                        tb8.Text = tb8.Text[..(tb8.Text.IndexOf(",") + 1)] + uin.ToString() + ")";
+                    else
+                    {
+                        uint modn = 0;
+                        try
+                        {
+                            var ts = tb8.Text.Trim();
+                            ts = ts.Substring(ts.IndexOf("(") + 1, ts.Length - ts.IndexOf("(") - 1);
+                            ts = ts[0..^1];
+                            modn = uint.Parse(ts);
+                        }
+                        catch(Exception ex)
+                        {
+                            utils.LogtoFile("[ERROR]" + ex.Message);
+                        }
+                        if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
+                        {
+                            modn += uin;
+                            tb8.Text = tb8.Text[..4] + modn.ToString() + ",";
+                            
+                        }
+                        
+                    }
+                }
+                e.Handled = true;
+            }
+        }
     }
 }

@@ -1757,6 +1757,93 @@ namespace hiro
                     SetWiFiState(situation);
                 return;
             }
+            if (path.ToLower().StartsWith("key("))
+            {
+                if (path.LastIndexOf(")") != -1)
+                {
+                    path = path[4..path.LastIndexOf(")")];
+                    if (path.StartsWith("\""))
+                        path = path[1..];
+                    if (path.EndsWith("\""))
+                        path = path[0..^1];
+                    try
+                    {
+                        string para = "";
+                        int pathi = 0;
+                        System.Collections.ObjectModel.ObservableCollection<byte> modi = new(); 
+                        if (path.IndexOf(",") != -1)
+                        {
+                            para = path.Substring(path.IndexOf(",") + 1, path.Length - path.IndexOf(",") - 1).ToLower();
+                            path = path.Substring(0, path.Length - 1 - para.Length);
+                            pathi = int.Parse(path);
+                            if (pathi >= 8)
+                            {
+                                while (pathi >= 8)
+                                {
+                                    pathi -= 8;
+                                }
+                                modi.Add(0x5B);//Windows
+                            }
+                            if (pathi >= 4)
+                            {
+                                while (pathi >= 4)
+                                {
+                                    pathi -= 4;
+                                }
+                                modi.Add(0x10);
+                            }
+                            if (pathi >= 2)
+                            {
+                                while (pathi >= 2)
+                                {
+                                    pathi -= 2;
+                                }
+                                modi.Add(0x11);
+                            }
+                            if (pathi >= 1)
+                                modi.Add(0x12);
+                        }
+                        byte parai = (byte)System.Windows.Input.KeyInterop.VirtualKeyFromKey((System.Windows.Input.Key)int.Parse(para));
+                        for (int i = 0; i < modi.Count; i++)
+                        {
+                            keybd_event(modi[i], MapVirtualKey(modi[i], 0), 0x0001, 0);
+                        }
+                        keybd_event(parai, MapVirtualKey(parai, 0), 0x0001, 0);
+                        keybd_event(parai, MapVirtualKey(parai, 0), 0x0001 | 0x0002, 0);
+                        for (int i = modi.Count - 1; i >= 0 ; i--)
+                        {
+                            keybd_event(modi[i], MapVirtualKey(modi[i], 0), 0x0001 | 0x0002, 0);
+                        }
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
+                return;
+            }
+            if (path.ToLower().StartsWith("vol("))
+            {
+                switch(path.ToLower())
+                {
+                    case "vol(up)":
+                        keybd_event(0xAF, MapVirtualKey(0xAF, 0), 0x0001, 0);
+                        keybd_event(0xAF, MapVirtualKey(0xAF, 0), 0x0001 | 0x0002, 0);
+                        break;
+                    case "vol(down)":
+                        keybd_event(0xAE, MapVirtualKey(0xAE, 0), 0x0001, 0);
+                        keybd_event(0xAE, MapVirtualKey(0xAE, 0), 0x0001 | 0x0002, 0);
+                        break;
+                    case "vol(mute)":
+                        keybd_event(0xAD, MapVirtualKey(0xAD, 0), 0x0001, 0);
+                        keybd_event(0xAD, MapVirtualKey(0xAD, 0), 0x0001 | 0x0002, 0);
+                        break;
+                    default:
+                        break;
+                }
+                return;
+            }
             try
             {
                 ProcessStartInfo pinfo = new();
@@ -1809,6 +1896,12 @@ namespace hiro
                 RunExe("exit()");
             return;
         }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
 
         private async static void SetBthState(bool? bluetoothState)
         {
@@ -2766,10 +2859,10 @@ namespace hiro
 
         [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
         public extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
-    #endregion
+        #endregion
 
-
-    public static string DeleteUnVisibleChar(string sourceString)
+        #region 杂项功能
+        public static string DeleteUnVisibleChar(string sourceString)
         {
             System.Text.StringBuilder sBuilder = new System.Text.StringBuilder(131);
             for (int i = 0; i < sourceString.Length; i++)
@@ -2791,6 +2884,7 @@ namespace hiro
             listener.Stop();
             return port;
         }
+        #endregion
 
     }
 
