@@ -280,6 +280,7 @@ namespace hiro
             utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\editor\\");
             utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\");
             utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\");
+            utils.CreateFolder(CurrentDirectory + "\\users\\default\\cache\\");
             utils.CreateFolder(CurrentDirectory + "\\system\\lang\\");
             utils.CreateFolder(CurrentDirectory + "\\system\\wallpaper\\");
             LogFilePath = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";

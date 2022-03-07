@@ -11,7 +11,10 @@
         <DockPanel DockPanel.Dock="Bottom" x:Name="wvframe">
             <ProgressBar x:Name="wvpb" Background="Transparent" IsIndeterminate="True" Visibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5" BorderBrush="{x:Null}"/>
         </DockPanel>
-        <wv2:WebView2 x:Name="wv2"
-                  Source="about:blank"/>
+        <wv2:WebView2 x:Name="wv2">
+            <wv2:WebView2.CreationProperties>
+                <wv2:CoreWebView2CreationProperties UserDataFolder=".\users\default\cache\"/>
+            </wv2:WebView2.CreationProperties>
+        </wv2:WebView2>
     </DockPanel>
 </Window>

@@ -30,7 +30,7 @@ namespace hiro
             Load_Translate();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Border");
             Load_Border();
-            utils.LogtoFile("[HIROWEGO]Main Window: Load Data");
+            utils.LogtoFile("[HIROWEGO]Main UI: Load Data");
             Load_Data();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Colors");
             Load_Colors();
