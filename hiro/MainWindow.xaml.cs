@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace hiro
@@ -160,9 +159,8 @@ namespace hiro
             switch (msg)
             {
                 case 0x0320://系统颜色改变
-                    if (utils.Read_Ini(App.dconfig, "config", "lock", "0").Equals("1"))
-                        break;
-                    App.ColorCD = 3;
+                    if (utils.Read_Ini(App.dconfig, "config", "lockcolor", "default").Equals("default"))
+                        App.ColorCD = 3;
                     break;
                 case 0x0083://prevent system from drawing outline
                     handled = true;

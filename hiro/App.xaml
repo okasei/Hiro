@@ -5,91 +5,18 @@
              xmlns:local="clr-namespace:hiro"
              Startup="Hiro_We_Go"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime">
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
     <Application.Resources>
         <ResourceDictionary>
-            <Style x:Key="HiroLabel" TargetType="{x:Type Label}">
-                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Padding" Value="4"/>
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="VerticalContentAlignment" Value="Top"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Label}">
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" RecognizesAccessKey="False" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsEnabled" Value="false">
-                                    <Setter Property="Opacity" Value=".56"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            
-            <Style x:Key="HiroContextMenu" TargetType="ContextMenu">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ContextMenu">
-                            <mwt:SystemDropShadowChrome Color="#00FFFFFF" Name="Shdw" SnapsToDevicePixels="True">
-                                <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Background="{TemplateBinding Panel.Background}" Name="ContextMenuBorder">
-                                    <ScrollViewer Style="{DynamicResource {ComponentResourceKey TypeInTargetAssembly=FrameworkElement, ResourceId=MenuScrollViewer}}" Name="ContextMenuScrollViewer" Margin="1,0,1,0" Grid.ColumnSpan="2">
-                                        <Grid RenderOptions.ClearTypeHint="Enabled">
-                                            <Canvas Width="0" Height="0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                                <Rectangle Fill="{x:Null}" Name="OpaqueRect" Width="Auto" Height="Auto" />
-                                            </Canvas>
-                                            <Rectangle RadiusX="2" RadiusY="2" Fill="#FFF1F1F1" Width="0" Margin="1,2,1,2" HorizontalAlignment="Left" />
-                                            <Rectangle Fill="#FFE2E3E3" Width="1" Margin="-1,2,0,2" HorizontalAlignment="Left" />
-                                            <Rectangle Fill="#FFFFFFFF" Width="1" Margin="-1,2,0,2" HorizontalAlignment="Left" />
-                                            <ItemsPresenter Name="ItemsPresenter" Margin="{TemplateBinding Control.Padding}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" KeyboardNavigation.DirectionalNavigation="Cycle" />
-                                        </Grid>
-                                    </ScrollViewer>
-                                </Border>
-                            </mwt:SystemDropShadowChrome>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="ContextMenuService.HasDropShadow">
-                                    <Setter Property="FrameworkElement.Margin" TargetName="Shdw">
-                                        <Setter.Value>
-                                            <Thickness>0,0,2,2</Thickness>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="mwt:SystemDropShadowChrome.Color" TargetName="Shdw">
-                                        <Setter.Value>
-                                            <Color>#71000000</Color>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Trigger.Value>
-                                        <system:Boolean>True</system:Boolean>
-                                    </Trigger.Value>
-                                </Trigger>
-                                <Trigger Property="ScrollViewer.CanContentScroll" SourceName="ContextMenuScrollViewer">
-                                    <Setter Property="Canvas.Top" TargetName="OpaqueRect">
-                                        <Setter.Value>
-                                            <Binding Path="VerticalOffset" ElementName="ContextMenuScrollViewer" />
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="Canvas.Left" TargetName="OpaqueRect">
-                                        <Setter.Value>
-                                            <Binding Path="HorizontalOffset" ElementName="ContextMenuScrollViewer" />
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Trigger.Value>
-                                        <system:Boolean>False</system:Boolean>
-                                    </Trigger.Value>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
 
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="LightBlue" SecondaryColor="Orange" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="/HiroStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

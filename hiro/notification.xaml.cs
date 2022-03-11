@@ -21,7 +21,7 @@ namespace hiro
         public notification()
         {
             InitializeComponent();
-            this.Title = utils.Get_Transalte("notitle") + " - " + App.AppTitle;
+            Title = utils.Get_Transalte("notitle") + " - " + App.AppTitle;
             Load_Color();
             utils.Set_Control_Location(notinfo, "notify");
             Title = App.AppTitle;
@@ -112,17 +112,20 @@ namespace hiro
         public void Load_Color()
         {
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            System.Windows.Media.Animation.Storyboard? sb = new();
             if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
-                sb = utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sb);
-            else
-                sb = utils.AddColorAnimaton(App.AppAccentColor, 0, this, "Background.Color", sb);
-            sb.Completed += delegate
+            {
+                System.Windows.Media.Animation.Storyboard? sb = new();
+                utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sb);
+                sb.Completed += delegate
                 {
                     Background = new SolidColorBrush(App.AppAccentColor);
                     sb = null;
                 };
-            sb.Begin();
+                sb.Begin();
+            }
+            else
+                Background = new SolidColorBrush(App.AppAccentColor);
+
         }
 
         private void Next_Msg()

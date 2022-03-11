@@ -2702,7 +2702,7 @@ namespace hiro
 
         public static void IntializeColorParameters()
         {
-            if (utils.Read_Ini(App.dconfig, "config", "lock", "0").Equals("1"))
+            if (!utils.Read_Ini(App.dconfig, "config", "lockcolor", "default").Equals("default"))
             {
                 try
                 {
@@ -2719,25 +2719,22 @@ namespace hiro
             {
                 App.AppAccentColor = GetThemeColor();
             }
-            double luminance = (0.299 * App.AppAccentColor.R + 0.587 * App.AppAccentColor.G + 0.114 * App.AppAccentColor.B) / 255;
+            App.AppForeColor = Get_ForeColor(App.AppAccentColor, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1"));
+            utils.LogtoFile("[HIROWEGO]Accent Color: " + App.AppAccentColor.ToString());
+            utils.LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
+        }
+
+        public static System.Windows.Media.Color Get_ForeColor(System.Windows.Media.Color AccentColor, bool Reverse = false)
+        {
+            double luminance = (0.299 * AccentColor.R + 0.587 * AccentColor.G + 0.114 * AccentColor.B) / 255;
             if (luminance > 0.5)
             {
-                if (utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1"))
-                    App.AppForeColor = System.Windows.Media.Colors.White;
-                else
-                    App.AppForeColor = System.Windows.Media.Colors.Black;
+                return Reverse ? System.Windows.Media.Colors.White : System.Windows.Media.Colors.Black;
             }
             else
             {
-                if (utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1"))
-                    App.AppForeColor = System.Windows.Media.Colors.Black;
-                else
-                    App.AppForeColor = System.Windows.Media.Colors.White;
+                return Reverse ? System.Windows.Media.Colors.Black : System.Windows.Media.Colors.White;
             }
-
-
-            utils.LogtoFile("[HIROWEGO]Accent Color: " + App.AppAccentColor.ToString());
-            utils.LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
         }
 
         [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#95")]

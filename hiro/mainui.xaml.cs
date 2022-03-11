@@ -171,10 +171,6 @@ namespace hiro
                 reverse_style.IsChecked = true;
             else
                 reverse_style.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "config", "lock", "0").Equals("1"))
-                lock_style.IsChecked = true;
-            else
-                lock_style.IsChecked = false;
             tb1.Text = utils.Read_Ini(App.dconfig, "config", "leftaction", "");
             tb2.Text = utils.Read_Ini(App.dconfig, "config", "middleaction", "");
             tb3.Text = utils.Read_Ini(App.dconfig, "config", "rightaction", "");
@@ -225,7 +221,7 @@ namespace hiro
             utils.Set_Control_Location(btn7, "lock");
             utils.Set_Control_Location(btn8, "feedback");
             utils.Set_Control_Location(btn9, "whatsnew");
-            utils.Set_Control_Location(btn10, "bgopen");
+            utils.Set_Control_Location(btn10, "bgcustom");
             utils.Set_Control_Location(rbtn1, "showwin");
             utils.Set_Control_Location(rbtn2, "showmenu");
             utils.Set_Control_Location(rbtn3, "runcmd");
@@ -239,8 +235,8 @@ namespace hiro
             utils.Set_Control_Location(rbtn11, "callcus");
             utils.Set_Control_Location(rbtn12, "disabled");
             utils.Set_Control_Location(rbtn13, "runcmd4");
-            utils.Set_Control_Location(rbtn14, "systheme");
-            utils.Set_Control_Location(rbtn15, "custheme");
+            utils.Set_Control_Location(rbtn14, "colortheme");
+            utils.Set_Control_Location(rbtn15, "imagetheme");
             utils.Set_Control_Location(rbtn16, "namehiro");
             utils.Set_Control_Location(rbtn17, "namecus");
             utils.Set_Control_Location(rbtn18, "alarmonce");
@@ -275,7 +271,6 @@ namespace hiro
             utils.Set_Control_Location(blureff,"blurbox");
             utils.Set_Control_Location(win_style,"winbox");
             utils.Set_Control_Location(reverse_style,"reversebox");
-            utils.Set_Control_Location(lock_style,"lockbox");
             utils.Set_Control_Location(verbose,"verbosebox");
             utils.Set_Control_Location(animation,"anibox");
             utils.Set_Control_Location(lc_label,"leftclick");
@@ -296,7 +291,9 @@ namespace hiro
             utils.Set_Control_Location(helpx,"help", location: false);
             utils.Set_Control_Location(aboutx,"about", location: false);
             utils.Set_Control_Location(newx,"new", location: false);
+            utils.Set_Control_Location(colorx,"color", location: false);
             utils.Set_Control_Location(timex,"time", location: false);
+            utils.Set_Control_Location(colorx,"color", location: false);
             utils.Set_Control_Location(bg_label,"background");
             utils.Set_Control_Location(langlabel,"language");
             utils.Set_Control_Location(langbox,"langbox");
@@ -337,6 +334,18 @@ namespace hiro
             utils.Set_Control_Location(tpbtn1, "timeok", bottom: true, right: true);
             utils.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
 
+            utils.Set_Control_Location(color_title, "cotitle");
+            utils.Set_Control_Location(color_r, "cor");
+            utils.Set_Control_Location(r_slider, "cors");
+            utils.Set_Control_Location(color_g, "cog");
+            utils.Set_Control_Location(g_slider, "cogs");
+            utils.Set_Control_Location(color_b, "cob");
+            utils.Set_Control_Location(b_slider, "cobs");
+            utils.Set_Control_Location(color_ex, "coex");
+            utils.Set_Control_Location(cobtn1, "cook", bottom: true, right: true);
+            utils.Set_Control_Location(cobtn2, "cocancel", bottom: true, right: true);
+            utils.Set_Control_Location(cobtn3, "coreset", bottom: true);
+
             utils.Set_Grid_Location(homeg, "homeg");
             utils.Set_Grid_Location(itemg, "itemg");
             utils.Set_Grid_Location(scheduleg, "scheduleg");
@@ -353,6 +362,7 @@ namespace hiro
             utils.Set_Grid_Location(bg_grid, "backg");
             utils.Set_Grid_Location(name_grid, "nameg");
             utils.Set_Grid_Location(timeg, "timeg");
+            utils.Set_Grid_Location(colorg, "colorg");
 
             foreach (object obj in langbox.Items)
             {
@@ -450,14 +460,17 @@ namespace hiro
             var inipath = App.dconfig;
             var ti = utils.Read_Ini(inipath, i.ToString(), "title", "");
             var co = utils.Read_Ini(inipath, i.ToString(), "command", "");
+            bool reged = false;
+            if (App.vs.Count > 0)
+                reged = true;
             while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
             {
                 var key = utils.Read_Ini(App.dconfig, i.ToString(), "hotkey", "").Trim();
                 try
                 {
-                    if (key.IndexOf(",") != -1)
+                    if (!reged && key.IndexOf(",") != -1)
                     {
-                        var mo = uint.Parse(key.Substring(0, key.IndexOf(",")));
+                        var mo = uint.Parse(key[..key.IndexOf(",")]);
                         var vkey = uint.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
                         try
                         {
@@ -570,6 +583,7 @@ namespace hiro
             helpx.Content = utils.Get_Transalte("help");
             aboutx.Content = utils.Get_Transalte("about");
             newx.Content = utils.Get_Transalte("new");
+            colorx.Content = utils.Get_Transalte("color");
             timex.Content = utils.Get_Transalte("time");
             tp_title.Content = utils.Get_Transalte("time");
             btn1.Content = utils.Get_Transalte("inew");
@@ -581,7 +595,7 @@ namespace hiro
             btn7.Content = utils.Get_Transalte("lock");
             btn8.Content = utils.Get_Transalte("feedback");
             btn9.Content = utils.Get_Transalte("whatsnew");
-            btn10.Content = utils.Get_Transalte("bgopen");
+            btn10.Content = utils.Get_Transalte("bgcustom");
             rbtn1.Content = utils.Get_Transalte("showwin");
             rbtn2.Content = utils.Get_Transalte("showmenu");
             rbtn3.Content = utils.Get_Transalte("runcmd");
@@ -595,8 +609,8 @@ namespace hiro
             rbtn11.Content = utils.Get_Transalte("callcus");
             rbtn12.Content = utils.Get_Transalte("disabled");
             rbtn13.Content = utils.Get_Transalte("runcmd");
-            rbtn14.Content = utils.Get_Transalte("systheme");
-            rbtn15.Content = utils.Get_Transalte("custheme");
+            rbtn14.Content = utils.Get_Transalte("colortheme");
+            rbtn15.Content = utils.Get_Transalte("imagetheme");
             rbtn16.Content = utils.Get_Transalte("namehiro");
             rbtn17.Content = utils.Get_Transalte("namecus");
             rbtn18.Content = utils.Get_Transalte("alarmonce");
@@ -632,7 +646,6 @@ namespace hiro
             blureff.Content = utils.Get_Transalte("blurbox");
             win_style.Content = utils.Get_Transalte("winbox");
             reverse_style.Content = utils.Get_Transalte("reversebox");
-            lock_style.Content = utils.Get_Transalte("lockbox");
             verbose.Content = utils.Get_Transalte("verbosebox");
             animation.Content = utils.Get_Transalte("anibox");
             lc_label.Content = utils.Get_Transalte("leftclick");
@@ -659,6 +672,14 @@ namespace hiro
             dgs.Columns[3].Header = utils.Get_Transalte("scommand");
             tpbtn1.Content = utils.Get_Transalte("timeok");
             tpbtn2.Content = utils.Get_Transalte("timecancel");
+            color_title.Content = utils.Get_Transalte("cotitle");
+            color_r.Content = utils.Get_Transalte("cor").Replace("%n", r_slider.Value.ToString());
+            color_g.Content = utils.Get_Transalte("cog").Replace("%n", g_slider.Value.ToString());
+            color_b.Content = utils.Get_Transalte("cob").Replace("%n", b_slider.Value.ToString());
+            color_ex.Content = utils.Get_Transalte("coex").Replace("\\n", Environment.NewLine);
+            cobtn1.Content = utils.Get_Transalte("cook");
+            cobtn2.Content = utils.Get_Transalte("cocancel");
+            cobtn3.Content = utils.Get_Transalte("coreset");
             tb6.Text = utils.Get_Transalte("helptext") + utils.Get_Transalte("helptext_ext") + utils.Get_Transalte("helptext_ext2");
 
             modibox.Items.Clear();
@@ -727,6 +748,7 @@ namespace hiro
                 helpx.Background = new SolidColorBrush(Colors.Transparent);
                 aboutx.Background = new SolidColorBrush(Colors.Transparent);
                 newx.Background = new SolidColorBrush(Colors.Transparent);
+                colorx.Background = new SolidColorBrush(Colors.Transparent);
                 timex.Background = new SolidColorBrush(Colors.Transparent);
                 homex.IsEnabled = true;
                 itemx.IsEnabled = true;
@@ -735,6 +757,7 @@ namespace hiro
                 helpx.IsEnabled = true;
                 aboutx.IsEnabled = true;
                 newx.IsEnabled = true;
+                colorx.IsEnabled = true;
                 timex.IsEnabled = true;
                 
             }
@@ -744,7 +767,8 @@ namespace hiro
             configx.Foreground = Foreground;
             helpx.Foreground = Foreground;
             aboutx.Foreground = Foreground;
-            newx.Foreground = Foreground;   
+            newx.Foreground = Foreground;
+            colorx.Foreground = Foreground;   
             timex.Foreground = Foreground;   
         }
         #endregion
@@ -812,6 +836,10 @@ namespace hiro
             if (label != timex)
             {
                 timex.Visibility = Visibility.Hidden;
+            }
+            if (label != colorx)
+            {
+                colorx.Visibility = Visibility.Hidden;
             }
             double duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
@@ -976,6 +1004,11 @@ namespace hiro
                 timex.Visibility = Visibility.Visible;
                 tc.SelectedIndex = 8;
             }
+            if (label == colorx)
+            {
+                colorx.Visibility = Visibility.Visible;
+                tc.SelectedIndex = 9;
+            }
             label.IsEnabled = false;
             System.ComponentModel.BackgroundWorker bw = new();
             bw.RunWorkerCompleted += delegate
@@ -1009,6 +1042,11 @@ namespace hiro
         private void Newx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(newx);
+        }
+        
+        private void Colorx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Set_Label(colorx);
         }
 
         private void Btn1_Click(object sender, RoutedEventArgs e)
@@ -1597,11 +1635,6 @@ namespace hiro
             rbtn14.IsEnabled = true;
         }
 
-        private void Rbtn15_Unchecked(object sender, RoutedEventArgs e)
-        {
-            btn10.IsEnabled = false;
-        }
-
         private void Rbtn14_Checked(object sender, RoutedEventArgs e)
         {
             rbtn15.IsEnabled = false;
@@ -1615,25 +1648,37 @@ namespace hiro
 
         private void Btn10_Click(object sender, RoutedEventArgs e)
         {
-            string strFileName = "";
-            Microsoft.Win32.OpenFileDialog ofd = new()
+            if (rbtn15.IsChecked == true)
             {
-                Filter = utils.Get_Transalte("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + utils.Get_Transalte("allfiles") + "|*.*",
-                ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
-                CheckFileExists = true, //验证路径的有效性
-                CheckPathExists = true,//验证路径的有效性
-                Title = utils.Get_Transalte("openfile") + " - " + App.AppTitle
-            };
-            if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
-            {
-                strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
+                string strFileName = "";
+                Microsoft.Win32.OpenFileDialog ofd = new()
+                {
+                    Filter = utils.Get_Transalte("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + utils.Get_Transalte("allfiles") + "|*.*",
+                    ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
+                    CheckFileExists = true, //验证路径的有效性
+                    CheckPathExists = true,//验证路径的有效性
+                    Title = utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                };
+                if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
+                {
+                    strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
 
+                }
+                if (System.IO.File.Exists(strFileName))
+                {
+                    utils.Write_Ini(App.dconfig, "config", "backimage", strFileName);
+                    utils.Set_Bgimage(bgimage);
+                    color_ex.Foreground = new SolidColorBrush(App.AppForeColor);
+                    color_ex.Background = new SolidColorBrush(App.AppAccentColor);
+                    Blurbgi(Convert.ToInt16(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
+                }
             }
-            if (System.IO.File.Exists(strFileName))
+            else
             {
-                utils.Write_Ini(App.dconfig, "config", "backimage", strFileName);
-                utils.Set_Bgimage(bgimage);
-                Blurbgi(Convert.ToInt16(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
+                r_slider.Value = App.AppAccentColor.R;
+                g_slider.Value = App.AppAccentColor.G;
+                b_slider.Value = App.AppAccentColor.B;
+                Set_Label(colorx);
             }
         }
 
@@ -2159,9 +2204,9 @@ namespace hiro
                     blureff.IsEnabled = true;
                     rbtn14.IsEnabled = true;
                     rbtn15.IsEnabled = true;
+                    btn10.IsEnabled = true;
                     if (rbtn15.IsChecked == true)
-                        btn10.IsEnabled = true;
-                    blureff.IsEnabled = btn10.IsEnabled;
+                        blureff.IsEnabled = true;
                 }
             };
             utils.Blur_Animation(direction, animation, bgimage, this, bw);
@@ -2442,19 +2487,6 @@ namespace hiro
         private void Reverse_style_Unchecked(object sender, RoutedEventArgs e)
         {
             utils.Write_Ini(App.dconfig, "config", "reverse", "0");
-            if (App.wnd != null)
-                App.wnd.Load_All_Colors();
-        }
-
-        private void Lock_style_Checked(object sender, RoutedEventArgs e)
-        {
-            utils.Write_Ini(App.dconfig, "config", "lock", "1");
-            utils.Write_Ini(App.dconfig, "config", "lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
-        }
-
-        private void Lock_style_Unchecked(object sender, RoutedEventArgs e)
-        {
-            utils.Write_Ini(App.dconfig, "config", "lock", "0");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
         }
@@ -2925,6 +2957,52 @@ namespace hiro
                 }
                 e.Handled = true;
             }
+        }
+
+        private void R_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            color_r.Content = utils.Get_Transalte("cor").Replace("%n", ((byte)r_slider.Value).ToString());
+            Color color = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
+            color_ex.Background = new SolidColorBrush(color);
+            color_ex.Foreground = new SolidColorBrush(utils.Get_ForeColor(color, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1")));
+        }
+
+        private void G_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            color_g.Content = utils.Get_Transalte("cog").Replace("%n", ((byte)g_slider.Value).ToString());
+            Color color = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
+            color_ex.Background = new SolidColorBrush(color);
+            color_ex.Foreground = new SolidColorBrush(utils.Get_ForeColor(color, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1")));
+        }
+
+        private void B_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            color_b.Content = utils.Get_Transalte("cob").Replace("%n", ((byte)b_slider.Value).ToString());
+            Color color = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
+            color_ex.Background = new SolidColorBrush(color);
+            color_ex.Foreground = new SolidColorBrush(utils.Get_ForeColor(color, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1")));
+        }
+
+        private void Cobtn3_Click(object sender, RoutedEventArgs e)
+        {
+            utils.Write_Ini(App.dconfig, "config", "lockcolor", "default");
+            if (App.wnd != null)
+                App.wnd.Load_All_Colors();
+            Set_Label(configx);
+        }
+
+        private void Cobtn1_Click(object sender, RoutedEventArgs e)
+        {
+            App.AppAccentColor = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
+            utils.Write_Ini(App.dconfig, "config", "lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            if (App.wnd != null)
+                App.wnd.Load_All_Colors();
+            Set_Label(configx);
+        }
+
+        private void Cobtn2_Click(object sender, RoutedEventArgs e)
+        {
+            Set_Label(configx);
         }
     }
 }
