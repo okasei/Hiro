@@ -63,8 +63,6 @@ namespace hiro
             InitializeMethod();
             InitializeStartParameters(e);
             Build_Socket();
-            utils.HiroParse("1(1)");
-            utils.HiroParse("1()");
         }
 
         private void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)

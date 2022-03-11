@@ -168,6 +168,7 @@ namespace hiro
                     {
                         Sequence sq = new();
                         sq.parent = this;
+                        sq.Show();
                         sq.ThreadSeq(toolstr);
                         Visibility = Visibility.Hidden;
                         return;
@@ -181,6 +182,11 @@ namespace hiro
         }
         public void ThreadSeq(String path)
         {
+            if(!System.IO.File.Exists(path))
+            {
+                Close();
+                return;
+            }
             string[] filec = System.IO.File.ReadAllLines(path);
             foreach (var cm in filec)
             {

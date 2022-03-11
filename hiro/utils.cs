@@ -1668,7 +1668,6 @@ namespace hiro
                 if (temp.Length == 0)
                     return res;
                 res.Add(temp);
-                utils.LogtoFile(temp);
             }
             return res;
         }
