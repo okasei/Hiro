@@ -10,7 +10,7 @@ namespace hiro
     /// <summary>
     /// notification.xaml の相互作用ロジック
     /// </summary>
-    public partial class notification : Window
+    public partial class Notification : Window
     {
         internal string msg;
         internal DispatcherTimer timer;
@@ -18,7 +18,7 @@ namespace hiro
         internal double i = 0.01;
         internal double ai = 0.01;
         internal bool[] animation = { true, false };
-        public notification()
+        public Notification()
         {
             InitializeComponent();
             Title = utils.Get_Transalte("notitle") + " - " + App.AppTitle;
@@ -208,7 +208,7 @@ namespace hiro
             Load_Noti_Position();
             utils.Blur_Out(notinfo);
         }
-        private void noti_Loaded(object sender, RoutedEventArgs e)
+        private void Noti_Loaded(object sender, RoutedEventArgs e)
         {
             if (App.noticeitems[0].msg.IndexOf("\\n") != -1)
             {
@@ -221,12 +221,12 @@ namespace hiro
             Load_Noti_Position();
         }
 
-        private void noti_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Noti_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             flag[1] = 0;
         }
 
-        private void notinfo_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Notinfo_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             flag[1] = 0;
         }

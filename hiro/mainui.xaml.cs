@@ -25,6 +25,12 @@ namespace hiro
             InitializeComponent();
             utils.LogtoFile("[HIROWEGO]Main UI: Initializing");
             SourceInitialized += OnSourceInitialized;
+            MainUI_Initialize();
+            MainUI_FirstInitialize();
+        }
+
+        public void MainUI_Initialize()
+        {
             InitializeUIWindow();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Transaltation");
             Load_Translate();
@@ -36,6 +42,10 @@ namespace hiro
             Load_Colors();
             utils.LogtoFile("[HIROWEGO]Main UI: Load Position");
             Load_Position();
+        }
+
+        public void MainUI_FirstInitialize()
+        {
             utils.LogtoFile("[HIROWEGO]Main UI: Set Home");
             Set_Label(homex);
             autorun.Tag = "1";
@@ -48,7 +58,9 @@ namespace hiro
                 };
             utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
             utils.LogtoFile("[HIROWEGO]Main UI: Loaded");
+            color_picker.MouseMove += Color_picker_ColorChanged;
         }
+
         public void InitializeUIWindow()
         {
             App.restartflag = false;
@@ -266,39 +278,39 @@ namespace hiro
             utils.Set_Control_Location(scbtn_8, "sc15m", right: true);
             utils.Set_Control_Location(scbtn_9, "sc1h", right: true);
             utils.Set_Control_Location(scbtn_10, "sc1d", right: true);
-            utils.Set_Control_Location(cb_box,"minclose");
-            utils.Set_Control_Location(autorun,"autorun");
-            utils.Set_Control_Location(blureff,"blurbox");
-            utils.Set_Control_Location(win_style,"winbox");
-            utils.Set_Control_Location(reverse_style,"reversebox");
-            utils.Set_Control_Location(verbose,"verbosebox");
-            utils.Set_Control_Location(animation,"anibox");
-            utils.Set_Control_Location(lc_label,"leftclick");
-            utils.Set_Control_Location(mc_label,"middleclick");
-            utils.Set_Control_Location(rc_label,"rightclick");
-            utils.Set_Control_Location(call_label,"callmethod");
-            utils.Set_Control_Location(name_label,"namelabel");
-            utils.Set_Control_Location(ar_label,"autoexe");
-            utils.Set_Control_Location(glabel,"itemname");
-            utils.Set_Control_Location(glabel2,"command");
-            utils.Set_Control_Location(sclabel1,"scname");
-            utils.Set_Control_Location(sclabel2,"sctime");
-            utils.Set_Control_Location(sclabel3,"sccommand");
-            utils.Set_Control_Location(homex,"home", location: false);
-            utils.Set_Control_Location(itemx,"item", location: false);
-            utils.Set_Control_Location(schedulex,"schedule", location: false);
-            utils.Set_Control_Location(configx,"config", location: false);
-            utils.Set_Control_Location(helpx,"help", location: false);
-            utils.Set_Control_Location(aboutx,"about", location: false);
-            utils.Set_Control_Location(newx,"new", location: false);
-            utils.Set_Control_Location(colorx,"color", location: false);
-            utils.Set_Control_Location(timex,"time", location: false);
-            utils.Set_Control_Location(colorx,"color", location: false);
-            utils.Set_Control_Location(bg_label,"background");
-            utils.Set_Control_Location(langlabel,"language");
-            utils.Set_Control_Location(langbox,"langbox");
-            utils.Set_Control_Location(langname,"langbox");
-            utils.Set_Control_Location(moreandsoon,"morecome");
+            utils.Set_Control_Location(cb_box, "minclose");
+            utils.Set_Control_Location(autorun, "autorun");
+            utils.Set_Control_Location(blureff, "blurbox");
+            utils.Set_Control_Location(win_style, "winbox");
+            utils.Set_Control_Location(reverse_style, "reversebox");
+            utils.Set_Control_Location(verbose, "verbosebox");
+            utils.Set_Control_Location(animation, "anibox");
+            utils.Set_Control_Location(lc_label, "leftclick");
+            utils.Set_Control_Location(mc_label, "middleclick");
+            utils.Set_Control_Location(rc_label, "rightclick");
+            utils.Set_Control_Location(call_label, "callmethod");
+            utils.Set_Control_Location(name_label, "namelabel");
+            utils.Set_Control_Location(ar_label, "autoexe");
+            utils.Set_Control_Location(glabel, "itemname");
+            utils.Set_Control_Location(glabel2, "command");
+            utils.Set_Control_Location(sclabel1, "scname");
+            utils.Set_Control_Location(sclabel2, "sctime");
+            utils.Set_Control_Location(sclabel3, "sccommand");
+            utils.Set_Control_Location(homex, "home", location: false);
+            utils.Set_Control_Location(itemx, "item", location: false);
+            utils.Set_Control_Location(schedulex, "schedule", location: false);
+            utils.Set_Control_Location(configx, "config", location: false);
+            utils.Set_Control_Location(helpx, "help", location: false);
+            utils.Set_Control_Location(aboutx, "about", location: false);
+            utils.Set_Control_Location(newx, "new", location: false);
+            utils.Set_Control_Location(colorx, "color", location: false);
+            utils.Set_Control_Location(timex, "time", location: false);
+            utils.Set_Control_Location(colorx, "color", location: false);
+            utils.Set_Control_Location(bg_label, "background");
+            utils.Set_Control_Location(langlabel, "language");
+            utils.Set_Control_Location(langbox, "langbox");
+            utils.Set_Control_Location(langname, "langbox");
+            utils.Set_Control_Location(moreandsoon, "morecome");
 
             utils.Set_Control_Location(tb1, "lefttb");
             utils.Set_Control_Location(tb2, "middletb");
@@ -335,12 +347,8 @@ namespace hiro
             utils.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
 
             utils.Set_Control_Location(color_title, "cotitle");
-            utils.Set_Control_Location(color_r, "cor");
-            utils.Set_Control_Location(r_slider, "cors");
-            utils.Set_Control_Location(color_g, "cog");
-            utils.Set_Control_Location(g_slider, "cogs");
-            utils.Set_Control_Location(color_b, "cob");
-            utils.Set_Control_Location(b_slider, "cobs");
+            utils.Set_Control_Location(color_picker, "copicker");
+            utils.Set_Control_Location(color_text, "coval");
             utils.Set_Control_Location(color_ex, "coex");
             utils.Set_Control_Location(cobtn1, "cook", bottom: true, right: true);
             utils.Set_Control_Location(cobtn2, "cocancel", bottom: true, right: true);
@@ -440,7 +448,7 @@ namespace hiro
             btn1.Background = new SolidColorBrush(Color.FromArgb(160, App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
             btn1.Foreground = Foreground;
             btn1.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            
+
             #endregion
             coloruse1.Background = new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
             minbtn.Background = new SolidColorBrush(Color.FromArgb(0, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
@@ -673,9 +681,6 @@ namespace hiro
             tpbtn1.Content = utils.Get_Transalte("timeok");
             tpbtn2.Content = utils.Get_Transalte("timecancel");
             color_title.Content = utils.Get_Transalte("cotitle");
-            color_r.Content = utils.Get_Transalte("cor").Replace("%n", r_slider.Value.ToString());
-            color_g.Content = utils.Get_Transalte("cog").Replace("%n", g_slider.Value.ToString());
-            color_b.Content = utils.Get_Transalte("cob").Replace("%n", b_slider.Value.ToString());
             color_ex.Content = utils.Get_Transalte("coex").Replace("\\n", Environment.NewLine);
             cobtn1.Content = utils.Get_Transalte("cook");
             cobtn2.Content = utils.Get_Transalte("cocancel");
@@ -685,7 +690,7 @@ namespace hiro
             modibox.Items.Clear();
             keybox.Items.Clear();
             string[] ars = { "nomodi", "altkey", "shiftkey", "ctrlkey", "winkey", "cakey", "cskey", "wakey", "wskey", "caskey", "waskey" };
-            foreach(var arss in ars)
+            foreach (var arss in ars)
             {
                 modibox.Items.Add(new ComboBoxItem()
                 {
@@ -697,7 +702,7 @@ namespace hiro
                 Content = utils.Get_Transalte("novkey")
             });
             string[] crs = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-            foreach(var crss in crs)
+            foreach (var crss in crs)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
@@ -759,7 +764,7 @@ namespace hiro
                 newx.IsEnabled = true;
                 colorx.IsEnabled = true;
                 timex.IsEnabled = true;
-                
+
             }
             homex.Foreground = Foreground;
             itemx.Foreground = Foreground;
@@ -768,15 +773,15 @@ namespace hiro
             helpx.Foreground = Foreground;
             aboutx.Foreground = Foreground;
             newx.Foreground = Foreground;
-            colorx.Foreground = Foreground;   
-            timex.Foreground = Foreground;   
+            colorx.Foreground = Foreground;
+            timex.Foreground = Foreground;
         }
         #endregion
 
 
         private void Ui_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            
+
         }
 
         private void Titlelabel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -791,7 +796,7 @@ namespace hiro
 
         private void Closebtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if(extended.Visibility == Visibility.Visible)
+            if (extended.Visibility == Visibility.Visible)
             {
                 extended.IsEnabled = false;
                 extend_background.IsEnabled = false;
@@ -862,9 +867,9 @@ namespace hiro
             {
                 tc.SelectedIndex = 0;
             }
-            if(label == itemx)
+            if (label == itemx)
             {
-                if(!App.Locked)
+                if (!App.Locked)
                     tc.SelectedIndex = 1;
                 else
                 {
@@ -883,7 +888,7 @@ namespace hiro
                     {
                         if (App.mn != null)
                         {
-                            if(App.Locked)
+                            if (App.Locked)
                                 App.mn.versionlabel.Content = App.AppVersion + " 🔒";
                             else
                                 App.mn.versionlabel.Content = App.AppVersion;
@@ -894,7 +899,7 @@ namespace hiro
                     return;
                 }
             }
-            if(label == schedulex)
+            if (label == schedulex)
             {
                 if (!App.Locked)
                     tc.SelectedIndex = 2;
@@ -926,7 +931,7 @@ namespace hiro
                     return;
                 }
             }
-            if(label == configx)
+            if (label == configx)
             {
                 if (!App.Locked)
                     tc.SelectedIndex = 3;
@@ -958,24 +963,24 @@ namespace hiro
                     return;
                 }
             }
-            if(label == helpx)
+            if (label == helpx)
             {
                 tc.SelectedIndex = 4;
             }
-            if(label == aboutx)
+            if (label == aboutx)
             {
                 tc.SelectedIndex = 5;
             }
-            if(label == newx)
+            if (label == newx)
             {
                 newx.Visibility = Visibility.Visible;
-                if(newflag == 1)
+                if (newflag == 1)
                 {
                     tc.SelectedIndex = 6;
                     ntn9.Visibility = Visibility.Visible;
                     newx.Content = utils.Get_Transalte("mod");
                 }
-                else if(newflag == 0)
+                else if (newflag == 0)
                 {
                     tc.SelectedIndex = 6;
                     ntn9.Visibility = Visibility.Hidden;
@@ -985,13 +990,13 @@ namespace hiro
                     keybox.SelectedIndex = 0;
                     modibox.SelectedIndex = 0;
                 }
-                else if(newflag == 2)
+                else if (newflag == 2)
                 {
                     tc.SelectedIndex = 7;
                     scbtn_4.Visibility = Visibility.Visible;
                     newx.Content = utils.Get_Transalte("mod");
                 }
-                else if(newflag == 3)
+                else if (newflag == 3)
                 {
                     tc.SelectedIndex = 7;
                     scbtn_4.Visibility = Visibility.Hidden;
@@ -1043,7 +1048,7 @@ namespace hiro
         {
             Set_Label(newx);
         }
-        
+
         private void Colorx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(colorx);
@@ -1120,7 +1125,7 @@ namespace hiro
                 if (vsi > -1)
                     App.vs[vsi + 1] = i;
                 if (vsx > -1)
-                    App.vs[vsx + 1] = i +1;
+                    App.vs[vsx + 1] = i + 1;
             }
             GC.Collect();
         }
@@ -1156,7 +1161,7 @@ namespace hiro
                 var total = (App.cmditems.Count % 10 == 0) ? App.cmditems.Count / 10 : App.cmditems.Count / 10 + 1;
                 if (App.page > total - 1 && App.page > 0)
                     App.page--;
-                    App.Load_Menu();
+                App.Load_Menu();
             }
             var vsi = FindHotkeyById(dgi.SelectedIndex);
             if (vsi > -1)
@@ -1179,7 +1184,7 @@ namespace hiro
                 {
                     if (key.IndexOf(",") != -1)
                     {
-                        var mo = int.Parse(key.Substring(0, key.IndexOf(",")));
+                        var mo = int.Parse(key[..key.IndexOf(",")]);
                         var vkey = int.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
                         modibox.SelectedIndex = utils.Index_Modifier(false, mo);
                         keybox.SelectedIndex = utils.Index_vKey(false, vkey);
@@ -1190,7 +1195,7 @@ namespace hiro
                         keybox.SelectedIndex = 0;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
                     modibox.SelectedIndex = 0;
@@ -1337,7 +1342,7 @@ namespace hiro
                 btn7.IsEnabled = true;
             };
             bw.RunWorkerAsync();
-                
+
         }
 
         private void Chk_btn_Click(object sender, RoutedEventArgs e)
@@ -1553,7 +1558,7 @@ namespace hiro
                             RegisterKey((uint)utils.Index_Modifier(true, modibox.SelectedIndex), (Key)utils.Index_vKey(true, keybox.SelectedIndex), i);
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         utils.LogtoFile("[ERROR]" + ex.Message);
                     }
@@ -1587,7 +1592,7 @@ namespace hiro
                     }
                 }
             }
-                
+
             tb7.Text = "";
             tb8.Text = "";
             App.Load_Menu();
@@ -1675,9 +1680,8 @@ namespace hiro
             }
             else
             {
-                r_slider.Value = App.AppAccentColor.R;
-                g_slider.Value = App.AppAccentColor.G;
-                b_slider.Value = App.AppAccentColor.B;
+                color_picker.Color = App.AppAccentColor;
+                Unify_Color(true);
                 Set_Label(colorx);
             }
         }
@@ -1695,7 +1699,7 @@ namespace hiro
 
         private void Tb8_Drop(object sender, DragEventArgs e)
         {
-            if(e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string path = (string)e.Data.GetData(DataFormats.FileDrop);
                 tb8.Text = path;
@@ -1703,7 +1707,7 @@ namespace hiro
                     Ntn1_Click(sender, e);
 
             }
-            if(e.Data.GetDataPresent(DataFormats.Text))
+            if (e.Data.GetDataPresent(DataFormats.Text))
             {
                 string path = (string)e.Data.GetData(DataFormats.Text);
                 tb8.Text = path;
@@ -1809,7 +1813,7 @@ namespace hiro
             else
             {
                 utils.RunExe("exit()");
-                utils.LogtoFile("[INFOMATION]Main UI: Closing " + e.GetType().ToString());  
+                utils.LogtoFile("[INFOMATION]Main UI: Closing " + e.GetType().ToString());
             }
             e.Cancel = true;
         }
@@ -1839,7 +1843,7 @@ namespace hiro
 
         private void Tb10_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(utils.Read_Ini(App.dconfig, "config", "customnick", "1").Equals("2"))
+            if (utils.Read_Ini(App.dconfig, "config", "customnick", "1").Equals("2"))
             {
                 utils.Write_Ini(App.dconfig, "config", "customhiro", tb10.Text);
                 App.AppTitle = tb10.Text;
@@ -1848,7 +1852,7 @@ namespace hiro
                 if (App.wnd != null)
                     App.wnd.ti.ToolTipText = tb10.Text;
             }
-            
+
         }
 
         private void Autorun_Checked(object sender, RoutedEventArgs e)
@@ -1963,7 +1967,7 @@ namespace hiro
             if (App.scheduleitems.Count != 0 && dgs.SelectedIndex > -1 && dgs.SelectedIndex < App.scheduleitems.Count)
             {
                 utils.Delete_Alarm(dgs.SelectedIndex);
-                
+
             }
         }
 
@@ -1993,7 +1997,7 @@ namespace hiro
 
         private void Scbtn_5_Click(object sender, RoutedEventArgs e)
         {
-            if (tb11.Text.Equals(string.Empty) || tb12.Text.Equals(string.Empty) || tb13.Text.Equals(string.Empty) || (tb14.Text.Equals(string.Empty) && tb14.IsEnabled == true) )
+            if (tb11.Text.Equals(string.Empty) || tb12.Text.Equals(string.Empty) || tb13.Text.Equals(string.Empty) || (tb14.Text.Equals(string.Empty) && tb14.IsEnabled == true))
             {
                 return;
             }
@@ -2002,13 +2006,13 @@ namespace hiro
                 re = -1.0;
             if (rbtn20.IsChecked == true)
                 re = 0.0;
-            if(rbtn21.IsChecked == true)
+            if (rbtn21.IsChecked == true)
             {
                 try
                 {
                     re = double.Parse(tb14.Text);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
                     re = -2.0;
@@ -2017,7 +2021,7 @@ namespace hiro
             if (newflag == 3)
             {
                 var i = App.scheduleitems.Count + 1;
-                App.scheduleitems.Add(new Scheduleitem(i, tb11.Text, tb12.Text, tb13.Text,re));
+                App.scheduleitems.Add(new Scheduleitem(i, tb11.Text, tb12.Text, tb13.Text, re));
                 utils.Write_Ini(App.sconfig, i.ToString(), "name", tb11.Text);
                 utils.Write_Ini(App.sconfig, i.ToString(), "time", tb12.Text);
                 utils.Write_Ini(App.sconfig, i.ToString(), "command", "(" + tb13.Text + ")");
@@ -2084,7 +2088,7 @@ namespace hiro
                     App.Notify(new noticeitem(utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, schedulex.Content.ToString()));
                 }
             }
-            
+
         }
 
         private void Scbtn_7_Click(object sender, RoutedEventArgs e)
@@ -2242,7 +2246,7 @@ namespace hiro
         private void Tb8_TextChanged(object sender, TextChangedEventArgs e)
         {
             tb9.Text = utils.Get_CMD_Translation(tb8.Text);
-            if(tb9.Text.Equals(""))
+            if (tb9.Text.Equals(""))
             {
                 tb9.Visibility = Visibility.Hidden;
             }
@@ -2288,7 +2292,7 @@ namespace hiro
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
                 }
-                
+
             };
             whatsbw.RunWorkerAsync();
             utils.Delay(200);
@@ -2343,15 +2347,15 @@ namespace hiro
                     utils.LogtoFile("[ERROR]" + ex.Message);
                     App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2, utils.Get_Transalte("checkup")));
                 }
-                
-                    
+
+
             }
 
         }
 
         private void Schedulex_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if(App.dflag)
+            if (App.dflag)
             {
                 DateTime dt = DateTime.Now.AddSeconds(5);
                 for (int i = 0; i < 1; i++)
@@ -2361,7 +2365,7 @@ namespace hiro
 
                 }
             }
-            
+
         }
 
         private void Extend_Animation()
@@ -2410,7 +2414,7 @@ namespace hiro
             extend_background.Height = Height;
             extend_background.Background = new SolidColorBrush(Colors.Coral);
             extended.Visibility = Visibility.Visible;
-            extend_background.Visibility = Visibility.Visible; 
+            extend_background.Visibility = Visibility.Visible;
             Storyboard? sb = new();
             sb = utils.AddDoubleAnimaton(1, App.blursec, extended, "Opacity", sb, 0);
             sb = utils.AddDoubleAnimaton(1, App.blursec, extend_background, "Opacity", sb, 0);
@@ -2894,7 +2898,7 @@ namespace hiro
             }
         }
 
-        private void tb8_KeyDown(object sender, KeyEventArgs e)
+        private void Tb8_KeyDown(object sender, KeyEventArgs e)
         {
             if (tb8.Text.ToLower().StartsWith("key("))
             {
@@ -2921,7 +2925,7 @@ namespace hiro
                         break;
                     }
                 }
-                if (tb8.Text.IndexOf(",") == -1 )
+                if (tb8.Text.IndexOf(",") == -1)
                 {
                     if (ismodi)
                         tb8.Text = tb8.Text[..4] + uin.ToString() + ",";
@@ -2942,7 +2946,7 @@ namespace hiro
                             ts = ts[0..^1];
                             modn = uint.Parse(ts);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             utils.LogtoFile("[ERROR]" + ex.Message);
                         }
@@ -2950,37 +2954,13 @@ namespace hiro
                         {
                             modn += uin;
                             tb8.Text = tb8.Text[..4] + modn.ToString() + ",";
-                            
+
                         }
-                        
+
                     }
                 }
                 e.Handled = true;
             }
-        }
-
-        private void R_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            color_r.Content = utils.Get_Transalte("cor").Replace("%n", ((byte)r_slider.Value).ToString());
-            Color color = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
-            color_ex.Background = new SolidColorBrush(color);
-            color_ex.Foreground = new SolidColorBrush(utils.Get_ForeColor(color, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1")));
-        }
-
-        private void G_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            color_g.Content = utils.Get_Transalte("cog").Replace("%n", ((byte)g_slider.Value).ToString());
-            Color color = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
-            color_ex.Background = new SolidColorBrush(color);
-            color_ex.Foreground = new SolidColorBrush(utils.Get_ForeColor(color, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1")));
-        }
-
-        private void B_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            color_b.Content = utils.Get_Transalte("cob").Replace("%n", ((byte)b_slider.Value).ToString());
-            Color color = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
-            color_ex.Background = new SolidColorBrush(color);
-            color_ex.Foreground = new SolidColorBrush(utils.Get_ForeColor(color, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1")));
         }
 
         private void Cobtn3_Click(object sender, RoutedEventArgs e)
@@ -2993,7 +2973,7 @@ namespace hiro
 
         private void Cobtn1_Click(object sender, RoutedEventArgs e)
         {
-            App.AppAccentColor = Color.FromRgb((byte)r_slider.Value, (byte)g_slider.Value, (byte)b_slider.Value);
+            App.AppAccentColor = color_picker.Color;
             utils.Write_Ini(App.dconfig, "config", "lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
@@ -3003,6 +2983,42 @@ namespace hiro
         private void Cobtn2_Click(object sender, RoutedEventArgs e)
         {
             Set_Label(configx);
+        }
+
+        private void Color_picker_ColorChanged(object sender, MouseEventArgs e)
+        {
+                Unify_Color();
+        }
+
+        private void Unify_Color(bool force = false)
+        {
+            if (color_picker.Color != App.AppAccentColor || force)
+            {
+                color_text.Text = string.Format("#{0:X2}{1:X2}{2:X2}", color_picker.Color.R, color_picker.Color.G, color_picker.Color.B);
+                color_ex.Background = new SolidColorBrush(color_picker.Color);
+                color_ex.Foreground = new SolidColorBrush(utils.Get_ForeColor(color_picker.Color, utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1")));
+            }
+        }
+        private void Color_text_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (!color_text.Text.StartsWith("#"))
+                    color_text.Text = "#" + color_text.Text;
+                if (color_text.Text.Length == 7)
+                {
+                    try
+                    {
+                        color_picker.Color = (Color)ColorConverter.ConvertFromString(color_text.Text);
+                    }
+                    catch (Exception ex)
+                    {
+                        utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                }
+                Unify_Color();
+                e.Handled = true;
+            }
         }
     }
 }

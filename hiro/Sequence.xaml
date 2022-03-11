@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
-        Title="Sequence" Height="450" Width="800" ResizeMode="NoResize" WindowStyle="None" ShowInTaskbar="False" Topmost="True" Icon="/hiro_circle.ico" SizeChanged="seq_SizeChanged">
+        Title="Sequence" Height="450" Width="800" ResizeMode="NoResize" WindowStyle="None" ShowInTaskbar="False" Topmost="True" Icon="/hiro_circle.ico" SizeChanged="Seq_SizeChanged" Closing="Seq_Closing">
     <Window.Background>
         <ImageBrush Stretch="UniformToFill"/>
     </Window.Background>

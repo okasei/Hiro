@@ -32,7 +32,7 @@ namespace hiro
         internal static bool Locked = true;
         internal static MainWindow? wnd;
         internal static Mainui? mn = null;
-        internal static notification? noti = null;
+        internal static Notification? noti = null;
         internal static Editor? ed = null;
         internal static Lockscr? ls = null;
         internal static List<noticeitem> noticeitems = new();
@@ -63,6 +63,8 @@ namespace hiro
             InitializeMethod();
             InitializeStartParameters(e);
             Build_Socket();
+            utils.HiroParse("1(1)");
+            utils.HiroParse("1()");
         }
 
         private void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
@@ -205,7 +207,7 @@ namespace hiro
                 noticeitems.Add(i);
                 if (noti == null)
                 {
-                    noti = new notification();
+                    noti = new Notification();
                     noti.Show();
                 }
                 else

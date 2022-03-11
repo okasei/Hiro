@@ -203,7 +203,7 @@ namespace hiro
                     bw.DoWork += delegate
                     {
                         var indexid = wParam.ToInt32();
-                        for (int vsi = 0; vsi < App.vs.Count - 1; vsi = vsi + 2)
+                        for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
                         {
                             if (App.vs[vsi] == indexid)
                             {

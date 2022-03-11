@@ -135,7 +135,7 @@ namespace hiro
                 }
                 else
                 {
-                    App.Notify(new noticeitem(utils.Get_Transalte("syntax"), 2, Title));
+                    App.Notify(new noticeitem(utils.Get_Transalte("syntax"), 2, utils.Get_Transalte("download")));
                     textBoxHttpUrl.Focus();//url地址栏获取焦点
                     Stop_Download(false);
                     return;
@@ -182,7 +182,7 @@ namespace hiro
             catch (Exception ex)
             {
                 utils.LogtoFile("[ERROR]" + ex.Message);
-                App.Notify(new noticeitem(utils.Get_Transalte("dlerror"), 2, Title));
+                App.Notify(new noticeitem(utils.Get_Transalte("dlerror"), 2, utils.Get_Transalte("download")));
                 Stop_Download(false);
                 return;
             }
@@ -243,7 +243,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     utils.LogtoFile("[ERROR]" + ex.Message);
-                    App.Notify(new noticeitem(utils.Get_Transalte("dlerror"), 2, Title));
+                    App.Notify(new noticeitem(utils.Get_Transalte("dlerror"), 2, utils.Get_Transalte("download")));
                     successflag = false;
                     break;
                 }
@@ -350,7 +350,7 @@ namespace hiro
             stopflag = 1;
             if (success)
             {
-                App.Notify(new noticeitem(utils.Get_Transalte("dlsuccess"), 2, Title));
+                App.Notify(new noticeitem(utils.Get_Transalte("dlsuccess"), 2, utils.Get_Transalte("download")));
                 current = -1;
                 listfile = "";
             }

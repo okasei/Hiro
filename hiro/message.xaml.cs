@@ -105,7 +105,10 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            utils.Set_Bgimage(bgimage);
+            if (toolstr != null && System.IO.File.Exists(utils.Path_Prepare_EX(utils.Path_Prepare(utils.Read_Ini(toolstr, "Message", "Background", "")))))
+                utils.Set_Bgimage(bgimage, utils.Path_Prepare_EX(utils.Path_Prepare(utils.Read_Ini(toolstr, "Message", "Background", ""))));
+            else
+                utils.Set_Bgimage(bgimage);
             bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
             utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;

@@ -10,9 +10,9 @@
     <Copyright>Copyright© 2022 N+ Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>😝 Hiro 🥰</Product>
-    <FileVersion>2.1.8</FileVersion>
-    <AssemblyVersion>2.1.8</AssemblyVersion>
-    <Version>2.1.8</Version>
+    <FileVersion>2.2.1</FileVersion>
+    <AssemblyVersion>2.2.1</AssemblyVersion>
+    <Version>2.2.1</Version>
     <PackageId>😝 Hiro 🥰</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
@@ -41,13 +41,16 @@
 
   <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-    <PackageReference Include="MaterialDesignColors" Version="2.0.5-ci94" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.4.0-ci94" />
+    <PackageReference Include="MaterialDesignColors" Version="2.0.5-ci94">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="MaterialDesignThemes" Version="4.4.0-ci94">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1158-prerelease" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Core" Version="1.1.0.2" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>

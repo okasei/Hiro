@@ -11,11 +11,11 @@ namespace hiro
     /// </summary>
     public partial class Sequence : Window
     {
-        internal string? path = null;
-        internal int depth = 0;
-        internal int flag = 0;//0=ready,1=gg,2=skip
-        internal int aflag = -1;
         internal int bflag = 0;
+        internal int ci = 0;
+        internal int tick = 0;
+        internal Sequence? parent = null;
+        private System.Collections.ObjectModel.ObservableCollection<string> cmds = new();
         public Sequence()
         {
             InitializeComponent();
@@ -29,10 +29,19 @@ namespace hiro
             maxwidth = (maxwidth > btnwidth) ? maxwidth : btnwidth;
             con.MaxWidth = maxwidth;
             textblock.MaxWidth = maxwidth;
-            this.Width = maxwidth;
+            Width = maxwidth;
             SourceInitialized += OnSourceInitialized;
             utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
+
+        private void TimerTick()
+        {
+            if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
+                return;
+            tick--;
+            Resizel(ci + 1, cmds.Count);                
+        }
+
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
@@ -51,7 +60,6 @@ namespace hiro
                     handled = true;
                     break;
                 default:
-                    //Console.WriteLine("Msg: " + m.Msg + ";LParam: " + m.LParam + ";WParam: " + m.WParam + ";Result: " + m.Result);
                     break;
             }
             return IntPtr.Zero;
@@ -95,145 +103,109 @@ namespace hiro
 
         public void SeqExe(String path)
         {
-            this.path = path;
-            /*th = new System.Threading.Thread(ThreadSeq);
-            th.Start();*/
             ThreadSeq(path);
+        }
+        internal void Next_CMD()
+        {
+            if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
+                return;
+            if (cmds.Count <= ci)
+            {
+                Close();
+                return;
+            }
+            string sc = utils.Path_Prepare_EX(utils.Path_Prepare(cmds[ci]));
+            if (App.dflag)
+                utils.LogtoFile("[SEQUENCE]" + sc);
+            skipbtn.Visibility = Visibility.Hidden;
+            Resizel(ci + 1, cmds.Count);
+            ci++;
+            if (sc.ToLower().Equals("trap") || sc.ToLower().Equals("trap()"))
+            {
+                pausebtn.Content = utils.Get_Transalte("seqconti");
+                return;
+            }
+            if (sc.ToLower().StartsWith("pause("))
+            {
+                var scp = utils.HiroParse(sc);
+                try
+                {
+                    tick = scp.Count == 0 ? 5 : int.Parse(scp[0]);
+                }
+                catch(Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    tick = 5;
+                }
+                skipbtn.Visibility = Visibility.Visible;
+                System.Windows.Threading.DispatcherTimer dt = new()
+                {
+                    Interval = new TimeSpan(10000000)
+                };
+                dt.Tick += delegate
+                {
+                    TimerTick();
+                    if (tick < 1)
+                    {
+                        Next_CMD();
+                        dt.Stop();
+                    }
+                };
+                dt.Start();
+                Resizel((ci + 1), cmds.Count);
+                return;
+            }
+            if (sc.Length > 4 && sc.Substring(0, 4).ToLower() == "seq(")
+            {
+                if (sc.LastIndexOf(")") != -1)
+                {
+                    var toolstr = sc.Substring(4, sc.LastIndexOf(")") - 4);
+                    if (toolstr.StartsWith("\""))
+                        toolstr = toolstr.Substring(1);
+                    if (toolstr.EndsWith("\""))
+                        toolstr = toolstr.Substring(0, toolstr.Length - 1);
+                    if (System.IO.File.Exists(toolstr))
+                    {
+                        Sequence sq = new();
+                        sq.parent = this;
+                        sq.ThreadSeq(toolstr);
+                        Visibility = Visibility.Hidden;
+                        return;
+                    }
+                }
+                Next_CMD();
+                return;
+            }
+            utils.RunExe(sc);
+            Next_CMD();
         }
         public void ThreadSeq(String path)
         {
-            depth++;
-            int thd = depth;
             string[] filec = System.IO.File.ReadAllLines(path);
-            for (int cir = 0; cir < filec.Length; cir++)
+            foreach (var cm in filec)
             {
-                if (thd != depth || flag == 1)
-                    break;
-                var all = filec.Length;
-                var val = utils.Path_Prepare(filec[cir]);
-                if (App.dflag)
-                    utils.LogtoFile("[SEQUENCE]" + val);
-                var next = utils.Get_Transalte("seqnext");
-                var current = utils.Get_Transalte("seqcurrent") + val;
-                var inde = (cir + 1).ToString() + "/" + filec.Length.ToString();
-                skipbtn.Visibility = Visibility.Hidden;
-                if (cir >= filec.Length - 1)
-                    next += utils.Get_Transalte("seqfinish");
-                else
-                    next += filec[cir + 1];
-                while (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
-                {
-                    current = utils.Get_Transalte("seqpause");
-                    Resizel(inde + Environment.NewLine + current + Environment.NewLine + next, (cir + 1), all);
-                    utils.Delay(500);
-                    skipbtn.IsEnabled = false;
-                }
-                current = utils.Get_Transalte("seqcurrent") + val;
-                Resizel(inde + Environment.NewLine + current + Environment.NewLine + next, (cir + 1), all);
-                if (val.Length > 6 && val.Substring(0, 6).ToLower() == "pause(")
-                {
-                    String toolstr;
-                    if (val.LastIndexOf(")") != -1)
-                    {
-                        toolstr = val.Substring(6, val.LastIndexOf(")") - 6);
-                        var num = 0;
-                        try
-                        {
-                            num = Convert.ToInt32(toolstr);
-                        }
-                        catch
-                        {
-                            num = 5;
-                        }
-                        skipbtn.Visibility = (skipbtn.IsEnabled) ? Visibility.Visible : Visibility.Hidden;
-                        for (var inn = 0; inn < num; inn++)
-                        {
-                            while (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
-                            {
-                                utils.Delay(500);
-                                if (flag > 0)
-                                    break;
-                            }
-                            if (flag > 0)
-                            {
-                                flag = 0;
-                                break;
-                            }
-                            current = utils.Get_Transalte("seqcurrent") + val + Environment.NewLine + utils.Get_Transalte("seqcd").Replace("%s", (num - inn).ToString());
-                            Resizel(inde + Environment.NewLine + current + Environment.NewLine + next, (cir + 1), all);
-                            utils.Delay(1000);
-                        }
-                    }
-                    else
-                    {
-                        skipbtn.Visibility = (skipbtn.IsEnabled) ? Visibility.Visible : Visibility.Hidden;
-                        for (var inn = 0; inn < 5; inn++)
-                        {
-                            while (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
-                            {
-                                utils.Delay(500);
-                                if (flag > 0)
-                                    break;
-                            }
-                            if (flag > 0)
-                            {
-                                flag = 0;
-                                break;
-                            }
-                            current = utils.Get_Transalte("seqcurrent") + val + Environment.NewLine + utils.Get_Transalte("seqcd").Replace("%s", (5 - inn).ToString());
-                            Resizel(inde + Environment.NewLine + current + Environment.NewLine + next, (cir + 1), all);
-                            utils.Delay(1000);
-                        }
-                    }
-                    continue;
-                }
-                if (val.Length == 5 && val.Substring(0, 5).ToLower() == "pause")
-                {
-                    current = utils.Get_Transalte("seqcurrent") + utils.Get_Transalte("seqcd").Replace("%s", "1");
-                    Resizel(inde + Environment.NewLine + current + Environment.NewLine + next, (cir + 1), all);
-                    utils.Delay(1000);
-                    continue;
-                }
-                if (val.Length > 4 && val.Substring(0, 4).ToLower() == "seq(")
-                {
-                    if (val.LastIndexOf(")") != -1)
-                    {
-                        var toolstr = val.Substring(4, val.LastIndexOf(")") - 4);
-                        if (toolstr.StartsWith("\""))
-                            toolstr = toolstr.Substring(1);
-                        if (toolstr.EndsWith("\""))
-                            toolstr = toolstr.Substring(0, toolstr.Length - 1);
-                        if (!System.IO.File.Exists(toolstr))
-                        {
-                            continue;
-                        }
-                        ThreadSeq(toolstr);
-                    }
-                    continue;
-                }
-                if (val.ToLower() == "trap()")
-                {
-                    pausebtn.Content = utils.Get_Transalte("seqconti");
-                    while (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
-                    {
-                        utils.Delay(500);
-                    }
-                    continue;
-                }
-                val = val.Trim();
-                val.Replace(Environment.NewLine, "");
-                if (val.Length > 0)
-                    utils.RunExe(val);
-                utils.Delay(100);
+                cmds.Add(cm);
             }
-            depth--;
-            if (depth == 0)
-                this.Close();
+            Next_CMD();
         }
 
-        private void Resizel(string title, int cir, int all)
+        private void Resizel(int cir, int all)
         {
-            textblock.Text = title;
+            try
+            {
+                var next = utils.Get_Transalte("seqnext");
+                string sc = utils.Path_Prepare_EX(utils.Path_Prepare(cmds[ci]));
+                var current = utils.Get_Transalte("seqcurrent") + sc;
+                var inde = (ci + 1).ToString() + "/" + cmds.Count.ToString();
+                if (tick > 0)
+                    current = current + Environment.NewLine + utils.Get_Transalte("seqcd").Replace("%s", tick.ToString());
+                if (ci >= cmds.Count - 1)
+                    next += utils.Get_Transalte("seqfinish");
+                else
+                    next += cmds[ci + 1];
+                textblock.Text = inde + Environment.NewLine + current + Environment.NewLine + next;
+            }
+            catch { }
             Height = con.ActualHeight + 5 + cancelbtn.Height + cancelbtn.Margin.Bottom + 5;
             progress.Value = cir;
             progress.Maximum = all;
@@ -284,33 +256,22 @@ namespace hiro
         private void Rejectbtn_Click(object sender, RoutedEventArgs e)
         {
             if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
+            {
                 pausebtn.Content = utils.Get_Transalte("seqpause");
+                Next_CMD();
+            }
             else
                 pausebtn.Content = utils.Get_Transalte("seqconti");
         }
 
         private void Cancelbtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            switch (e.ChangedButton)
-            {
-                case MouseButton.Left:
-                    break;
-                case MouseButton.Right:
-                    depth = 0;
-                    flag = 1;
-                    if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
-                        pausebtn.Content = utils.Get_Transalte("seqpause");
-                    Close();
-                    break;
-                default:
-                    break;
-            }
+            Close();
         }
 
         private void Acceptbtn_Click(object sender, RoutedEventArgs e)
         {
-            flag = (flag == 0) ? 2 : flag;
-            skipbtn.Visibility = Visibility.Hidden;
+            tick = 0;
         }
 
         #region 任务栏位置获取
@@ -348,14 +309,7 @@ namespace hiro
 
         private void Cancelbtn_Click(object sender, RoutedEventArgs e)
         {
-            depth--;
-            if (depth == 0)
-            {
-                flag = 1;
-                if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
-                    pausebtn.Content = utils.Get_Transalte("seqpause");
-                Close();
-            }
+            Close();
         }
 
         public void Loadbgi(int direction)
@@ -369,9 +323,28 @@ namespace hiro
             bflag = 0;
         }
 
-        private void seq_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void Seq_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
+        }
+
+        private void Seq_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            pausebtn.Content = utils.Get_Transalte("seqconti");
+            tick = 0;
+            if (parent != null)
+            {
+                try
+                {
+                    parent.Visibility = Visibility.Visible;
+                    parent.Next_CMD();
+                }
+                catch (Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+                
+            }
         }
     }
 }
