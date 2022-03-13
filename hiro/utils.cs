@@ -521,7 +521,6 @@ namespace hiro
             }
 
         }
-
         public static void Set_Grid_Location(System.Windows.Controls.Grid sender, string val)
         {
             try
@@ -1013,14 +1012,13 @@ namespace hiro
                     Background? bg = null;
                     if (Read_Ini(parameter[0], "Action", "Background", "true").ToLower().Equals("true"))
                         bg = new();
-                    Message msg = new();
+                    Message msg = new(parameter[0]);
                     msg.bg = bg;
                     msg.Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "title", Get_Transalte("syntax")))) + " - " + App.AppTitle;
                     msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "title", Get_Transalte("syntax")))));
                     msg.acceptbtn.Content = Read_Ini(parameter[0], "Message", "accept", Get_Transalte("msgaccept"));
                     msg.rejectbtn.Content = Read_Ini(parameter[0], "Message", "reject", Get_Transalte("msgreject"));
                     msg.cancelbtn.Content = Read_Ini(parameter[0], "Message", "cancel", Get_Transalte("msgcancel"));
-                    msg.toolstr = parameter[0];
                     parameter[0] = Path_Prepare_EX(Path_Prepare(Read_Ini(parameter[0], "Message", "content", Get_Transalte("syntax"))));
                     if (parameter[0].ToLower().StartsWith("http://") || parameter[0].ToLower().StartsWith("https://"))
                     {
@@ -1225,18 +1223,27 @@ namespace hiro
                     }
                     else
                         web = new(parameter[0]);
+                    if (webpara.IndexOf("s") != -1)
+                        web.self = true;
+                    if (webpara.IndexOf("-m") != -1)
+                    {
+                        web.maxbtn.Visibility = System.Windows.Visibility.Collapsed;
+                        web.ResizeMode = System.Windows.ResizeMode.CanMinimize;
+                    }
+                    if (webpara.IndexOf("-r") != -1)
+                    {
+                        web.maxbtn.Visibility = System.Windows.Visibility.Collapsed;
+                        web.minbtn.Visibility = System.Windows.Visibility.Collapsed;
+                        web.ResizeMode = System.Windows.ResizeMode.NoResize;
+                    }
                     if (webpara.IndexOf("i") != -1)
                         web.WindowState = System.Windows.WindowState.Minimized;
                     else if (webpara.IndexOf("x") != -1)
                         web.WindowState = System.Windows.WindowState.Maximized;
-                    if (webpara.IndexOf("s") != -1)
-                        web.self = true;
-                    if (webpara.IndexOf("-m") != -1)
-                        web.ResizeMode = System.Windows.ResizeMode.CanMinimize;
-                    else if (webpara.IndexOf("-r") != -1)
-                        web.ResizeMode = System.Windows.ResizeMode.NoResize;
                     if (webpara.IndexOf("-c") != -1)
                         web.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+                    if (webpara.IndexOf("t") != -1)
+                        web.Topmost = true;
                     web.Show();
                     return;
                 }
@@ -1558,7 +1565,7 @@ namespace hiro
                         return;
                     if (0 < App.mn.tc.SelectedIndex && App.mn.tc.SelectedIndex < 4 || App.mn.tc.SelectedIndex > 5)
                         App.mn.Set_Label(App.mn.homex);
-                    App.mn.versionlabel.Content = App.AppVersion + " 🔒";
+                    App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                     return;
                 }
                 if (path.ToLower().StartsWith("auth()"))
@@ -1569,14 +1576,14 @@ namespace hiro
                     {
                         if (App.mn != null)
                         {
-                            App.mn.versionlabel.Content = App.AppVersion;
+                            App.mn.versionlabel.Content = res.ApplicationVersion;
                             App.Locked = false;
                         }
                     };
                     fa.RunWorkerCompleted += delegate
                     {
                         if (App.mn != null && App.Locked)
-                            App.mn.versionlabel.Content = App.AppVersion + " 🔒";
+                            App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                     };
                     Register(sc, fa, fa);
                     return;
@@ -1654,7 +1661,7 @@ namespace hiro
                 val = val.Substring(0, val.Length - 1);
             while(startIndex < endIndex)
             {
-                currentIndex = val.IndexOf(",", startIndex);
+                currentIndex = val.IndexOf(",", startIndex, StringComparison.Ordinal);
                 if (currentIndex == -1)
                 {
                     temp = val.Substring(startIndex);
@@ -2530,6 +2537,22 @@ namespace hiro
                 (byte)((0x0000FF00 & colorSetEx) >> 8), (byte)((0x00FF0000 & colorSetEx) >> 16));
 
             return colour;
+        }
+        #endregion
+
+        #region 颜色处理
+        public static System.Windows.Media.Color Color_Multiple(System.Windows.Media.Color origin, int Multiple)
+        {
+            Multiple = (Multiple > 255) ? 255 : (Multiple < 0) ? 0 : Multiple;
+            double new_R = origin.R * Multiple / 255;
+            double new_B = origin.B * Multiple / 255;
+            double new_G = origin.G * Multiple / 255;
+            return System.Windows.Media.Color.FromRgb((byte)new_R, (byte)new_G, (byte)new_B);
+        }
+
+        public static System.Windows.Media.Color Color_Transparent(System.Windows.Media.Color origin, int val)
+        {
+            return System.Windows.Media.Color.FromArgb((byte)val, origin.R, origin.G, origin.B);
         }
         #endregion
 

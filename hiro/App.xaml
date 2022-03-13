@@ -10,7 +10,6 @@
     xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
     <Application.Resources>
         <ResourceDictionary>
-
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="LightBlue" SecondaryColor="Orange" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />

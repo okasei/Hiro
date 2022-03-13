@@ -109,12 +109,12 @@ namespace hiro
             textBoxHttpUrl.Foreground = new SolidColorBrush(App.AppForeColor);
             SavePath.Foreground = new SolidColorBrush(App.AppForeColor);
             autorun.Foreground = new SolidColorBrush(App.AppForeColor);
-            albtn_1.Background = new SolidColorBrush(Color.FromArgb(160, App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            albtn_1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
             albtn_1.BorderThickness = new Thickness(1, 1, 1, 1);
             albtn_1.BorderBrush = new SolidColorBrush(App.AppForeColor);
             pb.Foreground = albtn_1.Foreground;
             borderlabel.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            coloruse1.Background = new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
+            coloruse1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, 80));
         }
 
         public async void StartDownload()

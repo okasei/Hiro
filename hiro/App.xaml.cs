@@ -17,11 +17,8 @@ namespace hiro
         internal static string Username = Environment.UserName;
         internal static int CustomUsernameFlag = 0;
         internal static string AppTitle = res.ApplicationName;
-        internal static string AppVersion = res.ApplicationVersion;
         internal static Color AppAccentColor = Colors.Coral;
         internal static Color AppForeColor = Colors.White;
-        internal static bool DarkModeEnabled = false;
-        internal static bool restartflag = false;
         internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
         internal static System.Collections.ObjectModel.ObservableCollection<alarmwin> aw = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Language> la = new();
@@ -36,16 +33,15 @@ namespace hiro
         internal static Editor? ed = null;
         internal static Lockscr? ls = null;
         internal static List<noticeitem> noticeitems = new();
-        internal static int editpage = 0;
         internal static double blurradius = 50.0;
         internal static double blursec = 500.0;
+        internal static byte trval = 160;
         internal static System.Windows.Threading.DispatcherTimer? timer;
         internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> cmditems = new();
         internal static System.Collections.ObjectModel.ObservableCollection<int> vs = new();
         internal static int page = 0;
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient hc = new();
-        internal static SolidColorBrush ForeBrush = new();
         internal static int ColorCD = -1;
         internal static IntPtr WND_Handle = IntPtr.Zero;
         #endregion
@@ -221,6 +217,7 @@ namespace hiro
             }
             utils.LogtoFile("[NOTIFICATION]" + i.msg);
         }
+
         private static void Initialize_Notiy_Recall()
         {
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.OnActivated += toastArgs =>
@@ -326,8 +323,6 @@ namespace hiro
             {
                 AppTitle = res.ApplicationName;
             }
-            var page = int.Parse(utils.Read_Ini(dconfig, "config", "EditPage", "0"));
-            editpage = page;
             System.IO.DirectoryInfo di = new(CurrentDirectory + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
             {

@@ -265,7 +265,7 @@ namespace hiro
                     }
                     if (win is Web e)
                     {
-                        e.wvpb.Foreground = new SolidColorBrush(App.AppAccentColor);
+                        e.Load_Color();
                     }
                 System.Windows.Forms.Application.DoEvents();
             }
@@ -355,17 +355,6 @@ namespace hiro
                 }
             };
         }
-
-        #region 颜色处理
-        public static Color Color_Multiple(Color origin, int Multiple)
-        {
-            Multiple = (Multiple > 255) ? 255 : (Multiple < 0) ? 0 : Multiple;
-            double new_R = origin.R * Multiple / 255;
-            double new_B = origin.B * Multiple / 255;
-            double new_G = origin.G * Multiple / 255;
-            return Color.FromRgb((byte)new_R, (byte)new_G, (byte)new_B);
-        }
-        #endregion
 
         private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

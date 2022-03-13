@@ -16,50 +16,51 @@ namespace hiro
         public int runoutflag = 0;
         public int allow = 0;
         public int bflag = 0;
+        internal int editpage = 0;
         public Editor()
         {
             InitializeComponent();
-            utils.Set_Control_Location(previous, "edipre", bottom: true);
-            utils.Set_Control_Location(next, "edinext", bottom: true);
-            utils.Set_Control_Location(status, "estatus", bottom: true);
-            slider.Style = new Style();
-            this.Title = utils.Get_Transalte("edititle") + " - " + App.AppTitle;
-            System.Windows.Threading.DispatcherTimer timer = new();
-            timer.Interval = new TimeSpan(10000000);
-            timer.Tick += delegate
-             {
-                 utils.Delay(1);
-                 if (savetime > 0 && saveflag == 1)
-                 {
-                     savetime--;
-                     if (savetime == 5)
-                     {
-                         Save();
-                     }
-                     if(savetime < 5)
-                     {
-                         saveflag = 0;
-                         status.Content = utils.Get_Transalte("estatus").Replace("%p", App.editpage.ToString()).Replace("%w", con.Text.Length.ToString()) + " - " + utils.Get_Transalte("eready");
-                     }
-                 }
-                 if(saveflag == 0 && !status.Content.Equals(utils.Get_Transalte("estatus").Replace("%p", App.editpage.ToString()).Replace("%w", con.Text.Length.ToString())))
-                 {
-                     status.Content = utils.Get_Transalte("estatus").Replace("%p", App.editpage.ToString()).Replace("%w", con.Text.Length.ToString());
-                 }
-             };
-            timer.Start();
+            editpage = int.Parse(utils.Read_Ini(App.dconfig, "config", "EditPage", "0"));
+            Load_Position();
+            
+            Title = utils.Get_Transalte("edititle") + " - " + App.AppTitle;
             Load();
             con.Focus();
             slider.Value = double.Parse(utils.Read_Ini(App.dconfig, "config", "EditOpacity", "1"));
             allow = 1;
             slider.IsEnabled = true;
-            this.Opacity = (float)slider.Value;
+            Opacity = (float)slider.Value;
+            System.Windows.Threading.DispatcherTimer timer = new();
+            timer.Interval = new TimeSpan(10000000);
+            timer.Tick += delegate
+            {
+                utils.Delay(1);
+                if (savetime > 0 && saveflag == 1)
+                {
+                    savetime--;
+                    if (savetime == 5)
+                    {
+                        Save(true);
+                    }
+                    if (savetime < 5)
+                    {
+                        saveflag = 0;
+                        status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()) + " - " + utils.Get_Transalte("eready");
+                    }
+                }
+                if (saveflag == 0 && !status.Content.Equals(utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString())))
+                {
+                    status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                }
+            };
+            timer.Start();
         }
-        public void Save()
+
+        public void Save(bool show = false)
         {
             if(con.IsEnabled)
             {
-                string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + App.editpage.ToString() + ".het";
+                string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
                 if (!System.IO.File.Exists(path))
                     System.IO.File.Create(path).Close();
                 System.IO.FileStream fs = new(path, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite);
@@ -69,13 +70,16 @@ namespace hiro
                 sw.Close();
                 fs.Close();
             }
-            status.Content = utils.Get_Transalte("estatus").Replace("%p", App.editpage.ToString()).Replace("%w", con.Text.Length.ToString()) + " - " + utils.Get_Transalte("esaved").Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
-            saveflag = 1;
-            savetime = 2;
+            if (show)
+            {
+                status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()) + " - " + utils.Get_Transalte("esaved").Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
+                saveflag = 1;
+                savetime = 2;
+            }
         }
         public void Load()
         {
-            string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + App.editpage.ToString() + ".het";
+            string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
             if (!System.IO.File.Exists(path))
             {
                 System.IO.File.Create(path).Close();
@@ -88,9 +92,7 @@ namespace hiro
             sr.Close();
             sr.Dispose();
             fs.Close();
-            utils.Write_Ini(App.dconfig, "config", "EditPage", App.editpage.ToString());
-            saveflag = 1;
-            savetime = 2;
+            utils.Write_Ini(App.dconfig, "config", "EditPage", editpage.ToString());
         }
         public void Load_Color()
         {
@@ -101,11 +103,15 @@ namespace hiro
         }
         public void Load_Position()
         {
+            utils.Set_Control_Location(previous, "edipre", bottom: true);
+            utils.Set_Control_Location(next, "edinext", bottom: true);
+            utils.Set_Control_Location(status, "estatus", bottom: true);
+            slider.Style = new Style();
             //main
-            this.SetValue(LeftProperty, 0.0);
-            this.SetValue(TopProperty, SystemParameters.PrimaryScreenHeight * -6 / 10);
-            this.Width = SystemParameters.PrimaryScreenWidth;
-            this.Height = SystemParameters.PrimaryScreenHeight * 6 / 10;
+            SetValue(LeftProperty, 0.0);
+            SetValue(TopProperty, SystemParameters.PrimaryScreenHeight * -6 / 10);
+            Width = SystemParameters.PrimaryScreenWidth;
+            Height = SystemParameters.PrimaryScreenHeight * 6 / 10;
             //status
             utils.Set_Control_Location(con, "etext");
             //textbox
@@ -113,7 +119,7 @@ namespace hiro
             con.SetValue(TopProperty, 0.0);
             con.Width = this.ActualWidth;
             con.Height = this.Height - previous.Margin.Bottom - previous.Height - 2;
-            status.Content = utils.Get_Transalte("estatus").Replace("%p", App.editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Loadbgi();
         }
         private void Run_In()
@@ -159,21 +165,31 @@ namespace hiro
         }
         private void Edi_Loaded(object sender, RoutedEventArgs e)
         {
-            Load_Position();
             Load_Color();
             Run_In();
         }
         private void Previous_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Save();
-            App.editpage--;
-            Load();
+            PreviousPage();
         }
 
+        private void PreviousPage()
+        {
+            if (savetime > 0 && saveflag == 1)
+                Save();
+            editpage--;
+            Load();
+        }
         private void Next_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Save();
-            App.editpage++;
+            NextPage();
+        }
+
+        private void NextPage()
+        {
+            if (savetime > 0 && saveflag == 1)
+                Save();
+            editpage++;
             Load();
         }
 
@@ -181,7 +197,7 @@ namespace hiro
         {
             if (e.KeyStates == Keyboard.GetKeyStates(Key.Return) && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                Save();
+                Save(true);
                 e.Handled = true;
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.X) && Keyboard.Modifiers == ModifierKeys.Alt)
@@ -202,21 +218,17 @@ namespace hiro
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.Z) && Keyboard.Modifiers == ModifierKeys.Shift)
             {
-                Save();
-                App.editpage--;
-                Load();
+                PreviousPage();
                 e.Handled = true;
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.X) && Keyboard.Modifiers == ModifierKeys.Shift)
             {
-                Save();
-                App.editpage++;
-                Load();
+                NextPage();
                 e.Handled = true;
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.S) && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                Save();
+                Save(true);
                 e.Handled = true;
             }
         }
@@ -225,7 +237,7 @@ namespace hiro
         {
             saveflag = 1;
             savetime = 10;
-            status.Content = utils.Get_Transalte("estatus").Replace("%p", App.editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
         }
 
         private void Edi_Deactivated(object sender, EventArgs e)
@@ -266,14 +278,14 @@ namespace hiro
             if (e.KeyStates == Keyboard.GetKeyStates(Key.Z) && Keyboard.Modifiers == ModifierKeys.Shift)
             {
                 Save();
-                App.editpage--;
+                editpage--;
                 Load();
                 e.Handled = true;
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.X) && Keyboard.Modifiers == ModifierKeys.Shift)
             {
                 Save();
-                App.editpage++;
+                editpage++;
                 Load();
                 e.Handled = true;
             }

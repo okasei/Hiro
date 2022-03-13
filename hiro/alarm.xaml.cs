@@ -24,18 +24,6 @@ namespace hiro
             Height = SystemParameters.PrimaryScreenHeight * 3 / 4;
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 8);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 8);
-            /*try
-            {
-                System.Media.SoundPlayer sndPlayer = new(Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\Media\\Windows Notify System Generic.wav");
-                //循环播放
-                // sndPlayer.PlayLooping();
-                //播放一次
-                sndPlayer.Play();
-            }
-            catch (Exception ex)
-            {
-                utils.LogtoFile("[ERROR]" + ex.Message);
-            }*/
             Load_Colors();
             Load_Position(OneButtonOnly);
             Loaded += delegate
@@ -113,7 +101,7 @@ namespace hiro
         { 
             ala_title.Foreground = new SolidColorBrush(App.AppForeColor);
             content.Foreground = new SolidColorBrush(App.AppForeColor);
-            albtn_1.Background = new SolidColorBrush(Color.FromArgb(160, App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            albtn_1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
             albtn_2.Background = albtn_1.Background;
             albtn_3.Background = albtn_1.Background;
             albtn_1.Foreground = new SolidColorBrush(App.AppForeColor);

@@ -63,14 +63,15 @@ namespace hiro
 
         public void InitializeUIWindow()
         {
-            App.restartflag = false;
-            closebtn.Background = new SolidColorBrush(Color.FromArgb(0, 255, 0, 0));
+            reverse_style.IsEnabled = false;
+            tr_btn.IsEnabled = false;
+            blureff.IsEnabled = false;
             dgi.ItemsSource = App.cmditems;
             dgs.ItemsSource = App.scheduleitems;
             if (App.Locked)
-                versionlabel.Content = App.AppVersion + " 🔒";
+                versionlabel.Content = res.ApplicationVersion + " 🔒";
             else
-                versionlabel.Content = App.AppVersion;
+                versionlabel.Content = res.ApplicationVersion;
             utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
             switch (utils.Read_Ini(App.dconfig, "config", "leftclick", "1"))
             {
@@ -121,74 +122,40 @@ namespace hiro
                     App.Username = App.EnvironmentUsername;
                     break;
             }
-            switch (utils.Read_Ini(App.dconfig, "config", "autoexe", "1"))
+            rbtn13.IsChecked = utils.Read_Ini(App.dconfig, "config", "autoexe", "1").Equals("2");
+            rbtn12.IsChecked = !rbtn13.IsChecked;
+            cb_box.IsChecked = utils.Read_Ini(App.dconfig, "config", "min", "1").Equals("1");
+            rbtn15.IsChecked = utils.Read_Ini(App.dconfig, "config", "background", "1").Equals("2");
+            rbtn14.IsChecked = !rbtn15.IsChecked;
+            rbtn17.IsChecked = utils.Read_Ini(App.dconfig, "config", "customnick", "1").Equals("2");
+            rbtn16.IsChecked = !rbtn17.IsChecked;
+            if (rbtn17.IsChecked == true)
             {
-                case "2":
-                    rbtn13.IsChecked = true;
-                    break;
-                default:
-                    rbtn12.IsChecked = true;
-                    break;
-            }
-            if (utils.Read_Ini(App.dconfig, "config", "min", "1") == "1")
-            {
-                cb_box.IsChecked = true;
-            }
-            else
-            {
-                cb_box.IsChecked = false;
-            }
-            if (utils.Read_Ini(App.dconfig, "config", "background", "1") == "2")
-            {
-                rbtn15.IsChecked = true;
-            }
-            else
-            {
-                rbtn14.IsChecked = true;
-            }
-            if (utils.Read_Ini(App.dconfig, "config", "customnick", "1") == "2")
-            {
-                rbtn17.IsChecked = true;
                 App.AppTitle = utils.Read_Ini(App.dconfig, "config", "customhiro", "Hiro");
                 if (App.wnd != null)
                     App.wnd.ti.ToolTipText = utils.Read_Ini(App.dconfig, "config", "customhiro", "Hiro");
             }
-            else
-            {
-                rbtn16.IsChecked = true;
-            }
-            if (utils.Read_Ini(App.dconfig, "config", "autorun", "0").Equals("1"))
-                autorun.IsChecked = true;
-            else
-                autorun.IsChecked = false;
+            autorun.IsChecked = utils.Read_Ini(App.dconfig, "config", "autorun", "0").Equals("1");
             blureff.IsChecked = utils.Read_Ini(App.dconfig, "config", "blur", "0") switch
             {
                 "2" => null,
                 "1" => true,
                 _ => false,
             };
-            if (utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1"))
-                verbose.IsChecked = true;
-            else
-                verbose.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("1"))
-                animation.IsChecked = true;
-            else
-                animation.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
-                win_style.IsChecked = true;
-            else
-                win_style.IsChecked = false;
-            if (utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1"))
-                reverse_style.IsChecked = true;
-            else
-                reverse_style.IsChecked = false;
+            verbose.IsChecked = utils.Read_Ini(App.dconfig, "config", "verbose", "1").Equals("1");
+            animation.IsChecked = utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("1");
+            win_style.IsChecked = utils.Read_Ini(App.dconfig, "config", "toast", "0").Equals("1");
+            reverse_style.IsChecked = utils.Read_Ini(App.dconfig, "config", "reverse", "0").Equals("1");
+            tr_btn.IsChecked = utils.Read_Ini(App.dconfig, "config", "trbtn", "0").Equals("1");
             tb1.Text = utils.Read_Ini(App.dconfig, "config", "leftaction", "");
             tb2.Text = utils.Read_Ini(App.dconfig, "config", "middleaction", "");
             tb3.Text = utils.Read_Ini(App.dconfig, "config", "rightaction", "");
             tb4.Text = utils.Read_Ini(App.dconfig, "config", "customname", "");
             tb5.Text = utils.Read_Ini(App.dconfig, "config", "autoaction", "");
             tb10.Text = utils.Read_Ini(App.dconfig, "config", "customhiro", "");
+            reverse_style.IsEnabled = true;
+            tr_btn.IsEnabled = true;
+            blureff.IsEnabled = true;
         }
         private void Configbar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -205,7 +172,10 @@ namespace hiro
             utils.LogtoFile("[HIROWEGO]Main UI: AddHook WndProc");
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
-
+        [System.Runtime.InteropServices.DllImport("User32.dll")]
+        private static extern IntPtr GetWindowDC(IntPtr hwnd);
+        [System.Runtime.InteropServices.DllImport("User32.dll")]
+        private static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
@@ -283,6 +253,7 @@ namespace hiro
             utils.Set_Control_Location(blureff, "blurbox");
             utils.Set_Control_Location(win_style, "winbox");
             utils.Set_Control_Location(reverse_style, "reversebox");
+            utils.Set_Control_Location(tr_btn, "trbtnbox");
             utils.Set_Control_Location(verbose, "verbosebox");
             utils.Set_Control_Location(animation, "anibox");
             utils.Set_Control_Location(lc_label, "leftclick");
@@ -445,13 +416,13 @@ namespace hiro
             Foreground = new SolidColorBrush(App.AppForeColor);
 
             #region 颜色
-            btn1.Background = new SolidColorBrush(Color.FromArgb(160, App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            btn1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
             btn1.Foreground = Foreground;
             btn1.BorderBrush = new SolidColorBrush(App.AppForeColor);
 
             #endregion
-            coloruse1.Background = new SolidColorBrush(Color.FromArgb(80, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
-            minbtn.Background = new SolidColorBrush(Color.FromArgb(0, App.AppForeColor.R, App.AppForeColor.G, App.AppForeColor.B));
+            coloruse1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppForeColor, 80));
+            minbtn.Background = new SolidColorBrush(utils.Color_Transparent(App.AppForeColor, 0));
             if (App.wnd != null && App.wnd.cm != null)
             {
                 App.wnd.cm.Foreground = new SolidColorBrush(App.AppForeColor);
@@ -580,7 +551,7 @@ namespace hiro
 
         public void Load_Translate()
         {
-            Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", App.AppVersion);
+            Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
             titlelabel.Content = App.AppTitle;
             minbtn.ToolTip = utils.Get_Transalte("min");
             closebtn.ToolTip = utils.Get_Transalte("close");
@@ -654,6 +625,7 @@ namespace hiro
             blureff.Content = utils.Get_Transalte("blurbox");
             win_style.Content = utils.Get_Transalte("winbox");
             reverse_style.Content = utils.Get_Transalte("reversebox");
+            tr_btn.Content = utils.Get_Transalte("trbtnbox");
             verbose.Content = utils.Get_Transalte("verbosebox");
             animation.Content = utils.Get_Transalte("anibox");
             lc_label.Content = utils.Get_Transalte("leftclick");
@@ -880,7 +852,7 @@ namespace hiro
                         App.Locked = false;
                         if (App.mn != null)
                         {
-                            App.mn.versionlabel.Content = App.AppVersion;
+                            App.mn.versionlabel.Content = res.ApplicationVersion;
                             App.mn.Set_Label(itemx);
                         }
                     };
@@ -889,9 +861,9 @@ namespace hiro
                         if (App.mn != null)
                         {
                             if (App.Locked)
-                                App.mn.versionlabel.Content = App.AppVersion + " 🔒";
+                                App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                             else
-                                App.mn.versionlabel.Content = App.AppVersion;
+                                App.mn.versionlabel.Content = res.ApplicationVersion;
                             App.mn.Set_Label(homex);
                         }
                     };
@@ -912,7 +884,7 @@ namespace hiro
                         App.Locked = false;
                         if (App.mn != null)
                         {
-                            App.mn.versionlabel.Content = App.AppVersion;
+                            App.mn.versionlabel.Content = res.ApplicationVersion;
                             App.mn.Set_Label(schedulex);
                         }
                     };
@@ -921,9 +893,9 @@ namespace hiro
                         if (App.mn != null)
                         {
                             if (App.Locked)
-                                App.mn.versionlabel.Content = App.AppVersion + " 🔒";
+                                App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                             else
-                                App.mn.versionlabel.Content = App.AppVersion;
+                                App.mn.versionlabel.Content = res.ApplicationVersion;
                             App.mn.Set_Label(homex);
                         }
                     };
@@ -944,7 +916,7 @@ namespace hiro
                         App.Locked = false;
                         if (App.mn != null)
                         {
-                            App.mn.versionlabel.Content = App.AppVersion;
+                            App.mn.versionlabel.Content = res.ApplicationVersion;
                             App.mn.Set_Label(configx);
                         }
                     };
@@ -953,9 +925,9 @@ namespace hiro
                         if (App.mn != null)
                         {
                             if (App.Locked)
-                                App.mn.versionlabel.Content = App.AppVersion + " 🔒";
+                                App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                             else
-                                App.mn.versionlabel.Content = App.AppVersion;
+                                App.mn.versionlabel.Content = res.ApplicationVersion;
                             App.mn.Set_Label(homex);
                         }
                     };
@@ -1337,7 +1309,7 @@ namespace hiro
             bw.RunWorkerCompleted += delegate
             {
                 App.Locked = true;
-                versionlabel.Content = App.AppVersion + " 🔒";
+                versionlabel.Content = res.ApplicationVersion + " 🔒";
                 Set_Label(homex);
                 btn7.IsEnabled = true;
             };
@@ -1835,7 +1807,7 @@ namespace hiro
             utils.Write_Ini(App.dconfig, "config", "customnick", "2");
             tb10.IsEnabled = true;
             App.AppTitle = tb10.Text;
-            Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", App.AppVersion);
+            Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
             titlelabel.Content = App.AppTitle;
             if (App.wnd != null)
                 App.wnd.ti.ToolTipText = tb10.Text;
@@ -1847,7 +1819,7 @@ namespace hiro
             {
                 utils.Write_Ini(App.dconfig, "config", "customhiro", tb10.Text);
                 App.AppTitle = tb10.Text;
-                Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", App.AppVersion);
+                Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
                 titlelabel.Content = App.AppTitle;
                 if (App.wnd != null)
                     App.wnd.ti.ToolTipText = tb10.Text;
@@ -1912,7 +1884,7 @@ namespace hiro
             utils.Write_Ini(App.dconfig, "config", "customnick", "1");
             tb10.IsEnabled = false;
             App.AppTitle = res.ApplicationName;
-            Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", App.AppVersion);
+            Title = App.AppTitle + " - " + utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
             titlelabel.Content = App.AppTitle;
             if (App.wnd != null)
                 App.wnd.ti.ToolTipText = App.AppTitle;
@@ -2197,6 +2169,8 @@ namespace hiro
                     c.Loadbgi(direction);
                 if (win is Download d)
                     d.Loadbgi(direction);
+                if (win is Web f)
+                    f.Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"));
                 System.Windows.Forms.Application.DoEvents();
             }
             bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
@@ -2275,7 +2249,7 @@ namespace hiro
             string wps = "";
             whatsbw.DoWork += delegate
             {
-                wps = utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + App.AppVersion + "&lang=" + App.lang);
+                wps = utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + res.ApplicationVersion + "&lang=" + App.lang);
             };
             whatsbw.RunWorkerCompleted += delegate
             {
@@ -2987,7 +2961,7 @@ namespace hiro
 
         private void Color_picker_ColorChanged(object sender, MouseEventArgs e)
         {
-                Unify_Color();
+            Unify_Color();
         }
 
         private void Unify_Color(bool force = false)
@@ -3019,6 +2993,22 @@ namespace hiro
                 Unify_Color();
                 e.Handled = true;
             }
+        }
+
+        private void Tr_btn_Checked(object sender, RoutedEventArgs e)
+        {
+            utils.Write_Ini(App.dconfig, "config", "trbtn", "1");
+            App.trval = 0;
+            if (App.wnd != null)
+                App.wnd.Load_All_Colors();
+        }
+
+        private void Tr_btn_Unchecked(object sender, RoutedEventArgs e)
+        {
+            utils.Write_Ini(App.dconfig, "config", "trbtn", "0");
+            App.trval = 160;
+            if (App.wnd != null)
+                App.wnd.Load_All_Colors();
         }
     }
 }

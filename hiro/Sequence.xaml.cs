@@ -79,7 +79,7 @@ namespace hiro
             skipbtn.Foreground = textblock.Foreground;
             pausebtn.Foreground = textblock.Foreground;
             cancelbtn.Foreground = textblock.Foreground;
-            skipbtn.Background = new SolidColorBrush(Color.FromArgb(160, App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            skipbtn.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
             pausebtn.Background = skipbtn.Background;
             cancelbtn.Background = skipbtn.Background;
             skipbtn.BorderThickness = new Thickness(1, 1, 1, 1);

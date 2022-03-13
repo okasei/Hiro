@@ -15,9 +15,18 @@ namespace hiro
         private WindowState ws = WindowState.Normal;
         private WindowStyle wt = WindowStyle.None;
         private string prefix = "";
-        public Web(string? uri = null,string? title = null)
+        private bool secure = false;
+        internal int bflag = 0;
+        public Web(string? uri = null, string? title = null)
         {
             InitializeComponent();
+            Load_Color();
+            Load_Translate();
+            Refreash_Layout();
+            Loaded += delegate
+            {
+                Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"));
+            };
             if (uri != null)
             {
                 if (uri.ToLower().Equals("hiro://clear"))
@@ -54,6 +63,15 @@ namespace hiro
             App.Notify(new(utils.Get_Transalte("webclear"), 2, utils.Get_Transalte("Web")));
             Close();
         }
+        public void Loadbgi(int direction, bool animation)
+        {
+            if (bflag == 1)
+                return;
+            bflag = 1;
+            utils.Set_Bgimage(bgimage);
+            utils.Blur_Animation(direction, animation, bgimage, this);
+            bflag = 0;
+        }
 
         private void Wv2_CoreWebView2InitializationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
         {
@@ -69,8 +87,19 @@ namespace hiro
             wv2.CoreWebView2.ContainsFullScreenElementChanged += CoreWebView2_ContainsFullScreenElementChanged;
             wv2.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             wv2.CoreWebView2.IsDefaultDownloadDialogOpenChanged += CoreWebView2_IsDefaultDownloadDialogOpenChanged;
-            wvpb.Foreground = new SolidColorBrush(App.AppAccentColor);
             wv2.CoreWebView2.Settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62";
+            if (fixed_title == null) 
+                URLBtn.Visibility = Visibility.Visible;
+        }
+
+        public void Load_Color()
+        {
+            Background = new SolidColorBrush(App.AppAccentColor);
+            TitleLabel.Foreground = new SolidColorBrush(App.AppForeColor);
+            wvpb.Foreground = new SolidColorBrush(App.AppForeColor);
+            CBtn.Foreground = new SolidColorBrush(App.AppForeColor);
+            CBtn.Background = new SolidColorBrush(utils.Color_Transparent(App.AppForeColor, 80));
+            utils.Set_Bgimage(bgimage);
         }
 
         private void CoreWebView2_IsDefaultDownloadDialogOpenChanged(object? sender, object e)
@@ -92,6 +121,7 @@ namespace hiro
         {
             if (wv2.CoreWebView2.ContainsFullScreenElement)
             {
+                TitleGrid.Visibility = Visibility.Collapsed;
                 wt = WindowStyle;
                 ws = WindowState;
                 rm = ResizeMode;
@@ -102,11 +132,13 @@ namespace hiro
             }
             else
             {
+                TitleGrid.Visibility = Visibility.Visible;
                 WindowStyle = wt;
                 WindowState = ws;
                 ResizeMode = rm;
                 System.Windows.Controls.Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
                 System.Windows.Controls.Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
+                Refreash_Layout();
             }
         }
 
@@ -114,6 +146,7 @@ namespace hiro
         {
             string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
+            URLBtn.Content = secure ? utils.Get_Transalte("websecure") : utils.Get_Transalte("webinsecure");
             Loading(false);
         }
 
@@ -121,6 +154,7 @@ namespace hiro
         {
             string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", utils.Get_Transalte("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
+            secure = true;
             Loading(true);
         }
 
@@ -139,11 +173,15 @@ namespace hiro
 
         private void CoreWebView2_FrameNavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
+            PreBtn.Visibility = wv2.CoreWebView2.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+            NextBtn.Visibility = wv2.CoreWebView2.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
             Loading(false);
         }
 
         private void CoreWebView2_FrameNavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
+            if (e.Uri.ToLower().StartsWith("http://"))
+                secure = false;
             Loading(true);
         }
 
@@ -151,12 +189,12 @@ namespace hiro
         {
             if (state)
             {
-                wvframe.Visibility = Visibility.Visible;
+                wvpb.Visibility = Visibility.Visible;
                 Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Indeterminate, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             }
             else
             {
-                wvframe.Visibility = Visibility.Collapsed;
+                wvpb.Visibility = Visibility.Collapsed;
                 Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             }
         }
@@ -193,6 +231,96 @@ namespace hiro
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             wv2.Dispose();
+        }
+
+        private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void Closebtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Close();
+        }
+
+        private void Maxbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            Refreash_Layout();
+        }
+
+        public void Refreash_Layout()
+        {
+            TitleGrid.Height = WindowState == WindowState.Maximized ? 26 : 32;
+            WebGrid.Margin = TitleGrid.Visibility == Visibility.Collapsed ? new(0) : WindowState == WindowState.Maximized ? new(0, 26, 0, 0) : new(0, 32, 0, 0);
+            maxbtn.Visibility = ResizeMode == ResizeMode.NoResize || ResizeMode == ResizeMode.CanMinimize ? Visibility.Collapsed : WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Visible;
+            resbtn.Visibility = ResizeMode == ResizeMode.NoResize || ResizeMode == ResizeMode.CanMinimize ? Visibility.Collapsed : WindowState == WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
+            closebtn.Margin = WindowState == WindowState.Maximized ? new(0, -5, 0, 0) : new(0, -2, 0, 0);
+            closebtn.Height = WindowState == WindowState.Maximized ? 30 : 32;
+            BaseGrid.Margin = WindowState == WindowState.Maximized ? new(6) : new(0);
+            utils.Set_Control_Location(URLBtn, "websecure", location: false);
+            utils.Set_Control_Location(URLBox, "weburl", location: false);
+            utils.Set_Control_Location(PreBtn, "webpre", location: false);
+            utils.Set_Control_Location(NextBtn, "webnext", location: false);
+        }
+
+        public void Load_Translate()
+        {
+            minbtn.ToolTip = utils.Get_Transalte("min");
+            closebtn.ToolTip = utils.Get_Transalte("close");
+            maxbtn.ToolTip = utils.Get_Transalte("max");
+            resbtn.ToolTip = utils.Get_Transalte("restore");
+            PreBtn.ToolTip = utils.Get_Transalte("webpre");
+            NextBtn.ToolTip = utils.Get_Transalte("webnext");
+            URLBtn.Content = utils.Get_Transalte("webinsecure");
+        }
+
+        private void Resbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        private void TitleGrid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
+
+        private void PreBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            wv2.CoreWebView2.GoBack();
+        }
+
+        private void NextBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            wv2.CoreWebView2.GoForward();
+        }
+
+        private void URLBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TitleLabel.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
+            URLBox.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            URLBox.Text = wv2.CoreWebView2.Source;
+        }
+
+        private void URLBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key == System.Windows.Input.Key.Enter)
+            {
+                URLBox.Visibility = Visibility.Collapsed;
+                TitleLabel.Visibility = Visibility.Visible;
+                wv2.CoreWebView2.Navigate(URLBox.Text);
+                e.Handled = true;
+            }
+            if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                URLBox.Visibility = Visibility.Collapsed;
+                TitleLabel.Visibility = Visibility.Visible;
+                e.Handled = true;
+            }
         }
     }
 }

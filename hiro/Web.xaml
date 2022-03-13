@@ -1,4 +1,4 @@
-﻿<Window x:Class="hiro.Web"
+﻿<Window x:Name="window" x:Class="hiro.Web"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,15 +6,194 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
-        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen">
-    <DockPanel>
-        <DockPanel DockPanel.Dock="Bottom" x:Name="wvframe">
-            <ProgressBar x:Name="wvpb" Background="Transparent" IsIndeterminate="True" Visibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5" BorderBrush="{x:Null}"/>
-        </DockPanel>
-        <wv2:WebView2 x:Name="wv2">
-            <wv2:WebView2.CreationProperties>
-                <wv2:CoreWebView2CreationProperties UserDataFolder=".\users\default\cache\"/>
-            </wv2:WebView2.CreationProperties>
-        </wv2:WebView2>
-    </DockPanel>
+        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"  MouseDown="TitleGrid_MouseDown">
+    <WindowChrome.WindowChrome>
+        <WindowChrome x:Name="Chrome"  GlassFrameThickness="0 1 0 0" NonClientFrameEdges="Left,Right,Bottom" CaptionHeight="0" UseAeroCaptionButtons="False"></WindowChrome>
+    </WindowChrome.WindowChrome>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Label x:Name="bgimage" Width="{Binding ActualWidth,ElementName=window}" Height="{Binding ActualHeight,ElementName=window}" Margin="0,0,0,0"/>
+        <Grid x:Name="BaseGrid" MouseDown="TitleGrid_MouseDown">
+            <Grid x:Name="WebGrid" Margin="0 32 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <wv2:WebView2 x:Name="wv2">
+                    <wv2:WebView2.CreationProperties>
+                        <wv2:CoreWebView2CreationProperties UserDataFolder=".\users\default\cache\"/>
+                    </wv2:WebView2.CreationProperties>
+                </wv2:WebView2>
+            </Grid>
+            <Grid x:Name="TitleGrid" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <ProgressBar x:Name="wvpb" Background="Transparent" IsIndeterminate="True" Visibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5" BorderBrush="{x:Null}"/>
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MouseDown="TitleGrid_MouseDown">
+                        <Grid Width="5"></Grid>
+                        <Label x:Name="PreBtn" Content="◀" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = CBtn }" Width="35" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="PreBtn_MouseLeftButtonDown">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Background.Color, ElementName=CBtn}" 
+                                        Storyboard.TargetName="PreBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="PreBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="NextBtn" Content="▶" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = CBtn }" Width="35" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="NextBtn_MouseLeftButtonDown">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Background.Color, ElementName=CBtn}" 
+                                        Storyboard.TargetName="NextBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="NextBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="URLBtn" Content="Secure" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = CBtn }" Width="Auto" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="URLBtn_MouseLeftButtonDown">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Background.Color, ElementName=CBtn}" 
+                                        Storyboard.TargetName="URLBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="URLBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Grid Width="5"></Grid>
+                        <TextBox x:Name="URLBox" VerticalContentAlignment="Center" Margin="0,3,0,0" Visibility="Collapsed" Foreground="{Binding Path = Foreground, ElementName = CBtn }" FontStretch="{Binding FontStretch,ElementName=TitleLabel}" FontStyle="{Binding FontStyle,ElementName=TitleLabel}" FontWeight="{Binding FontWeight,ElementName=TitleLabel}" FontSize="{Binding FontSize,ElementName=TitleLabel}" FontFamily="{Binding FontFamily,ElementName=TitleLabel}" Width="{Binding ActualWidth,ElementName=window}" TextWrapping="NoWrap" KeyDown="URLBox_KeyDown"></TextBox>
+                        <Label x:Name ="TitleLabel" Style="{DynamicResource HiroLabel}" VerticalContentAlignment="Center" FontSize="12" Content= "{Binding Title, ElementName=window}" Foreground="{Binding Path = Foreground, ElementName = CBtn }" VerticalAlignment="Stretch" />
+                        <Grid Width="5"></Grid>
+                        <Button x:Name="CBtn" Content="Hiro" Visibility="Collapsed"></Button>
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+                        <Label x:Name="minbtn" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = CBtn }" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
+                            <Path Width="50" Height="30" Data="M 18,15 H 28" Stroke="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Background.Color, ElementName=CBtn}" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="maxbtn" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = CBtn }" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Maxbtn_MouseLeftButtonDown">
+                            <Path Width="50" Height="30" Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Background.Color, ElementName=CBtn}" 
+                                        Storyboard.TargetName="maxbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="maxbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="resbtn" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{Binding Path = Foreground, ElementName = CBtn }" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Resbtn_MouseLeftButtonDown">
+                            <Path Width="50" Height="30" Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{Binding Background.Color, ElementName=CBtn}" 
+                                        Storyboard.TargetName="resbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="resbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="closebtn" Grid.Column="2" HorizontalAlignment="Right" Margin="0,-5,0,0" VerticalAlignment="Center" Background="#00000000"  Foreground ="{Binding Path = Foreground, ElementName = CBtn }" Width="55" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown"  Grid.RowSpan="2">
+                            <Path Width="50" Height="30" Data="M 18,11 27,20 M 18,20 27,11" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="Red" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Grid Width="10"></Grid>
+                    </StackPanel>
+                </DockPanel>
+            </Grid>
+        </Grid>
+    </Grid>
 </Window>

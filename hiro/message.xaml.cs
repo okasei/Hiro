@@ -16,9 +16,28 @@ namespace hiro
         internal String? toolstr = null;
         internal int aflag = -1;
         internal int bflag = 0;
-        public Message()
+        public Message(string? config = null)
         {
             InitializeComponent();
+            toolstr = config;
+            if (toolstr != null)
+            {
+                string sndPath = utils.Path_Prepare_EX(utils.Path_Prepare(utils.Read_Ini(toolstr, "Message", "Music", "")));
+                if (System.IO.File.Exists(sndPath))
+                try
+                {
+                    System.Media.SoundPlayer sndPlayer = new(sndPath);
+                    //循环播放
+                    // sndPlayer.PlayLooping();
+                    //播放一次
+                    sndPlayer.Play();
+                }
+                catch (Exception ex)
+                {
+                    utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+            }
+            
             SourceInitialized += OnSourceInitialized;
             Loaded += delegate
             {
@@ -29,6 +48,7 @@ namespace hiro
                     utils.LogtoFile("[MESSAGE]Content: " + backcontent.Content);
                 }
             };
+                
             utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -93,7 +113,7 @@ namespace hiro
             acceptbtn.Foreground = new SolidColorBrush(App.AppForeColor);
             rejectbtn.Foreground = new SolidColorBrush(App.AppForeColor);
             cancelbtn.Foreground = new SolidColorBrush(App.AppForeColor);
-            acceptbtn.Background = new SolidColorBrush(Color.FromArgb(160, App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            acceptbtn.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
             rejectbtn.Background = acceptbtn.Background;
             cancelbtn.Background = acceptbtn.Background;
             acceptbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
