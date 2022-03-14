@@ -2170,7 +2170,7 @@ namespace hiro
                 if (win is Download d)
                     d.Loadbgi(direction);
                 if (win is Web f)
-                    f.Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"));
+                    f.Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), false);
                 System.Windows.Forms.Application.DoEvents();
             }
             bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");

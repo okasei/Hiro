@@ -23,10 +23,6 @@ namespace hiro
             Load_Color();
             Load_Translate();
             Refreash_Layout();
-            Loaded += delegate
-            {
-                Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"));
-            };
             if (uri != null)
             {
                 if (uri.ToLower().Equals("hiro://clear"))
@@ -223,6 +219,7 @@ namespace hiro
                     Web web = new(e.Uri);
                     web.WindowState = WindowState;
                     web.Show();
+                    web.Refreash_Layout();
                 }
             }
             e.Handled = true;
@@ -255,6 +252,7 @@ namespace hiro
 
         public void Refreash_Layout()
         {
+
             TitleGrid.Height = WindowState == WindowState.Maximized ? 26 : 32;
             WebGrid.Margin = TitleGrid.Visibility == Visibility.Collapsed ? new(0) : WindowState == WindowState.Maximized ? new(0, 26, 0, 0) : new(0, 32, 0, 0);
             maxbtn.Visibility = ResizeMode == ResizeMode.NoResize || ResizeMode == ResizeMode.CanMinimize ? Visibility.Collapsed : WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Visible;
@@ -266,6 +264,7 @@ namespace hiro
             utils.Set_Control_Location(URLBox, "weburl", location: false);
             utils.Set_Control_Location(PreBtn, "webpre", location: false);
             utils.Set_Control_Location(NextBtn, "webnext", location: false);
+            Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), false);
         }
 
         public void Load_Translate()
@@ -275,7 +274,9 @@ namespace hiro
             maxbtn.ToolTip = utils.Get_Transalte("max");
             resbtn.ToolTip = utils.Get_Transalte("restore");
             PreBtn.ToolTip = utils.Get_Transalte("webpre");
+            PreBtn.Content = utils.Get_Transalte("webprec").Replace("%s", "◀");
             NextBtn.ToolTip = utils.Get_Transalte("webnext");
+            NextBtn.Content = utils.Get_Transalte("webnextc").Replace("%s", "▶");
             URLBtn.Content = utils.Get_Transalte("webinsecure");
         }
 
@@ -310,6 +311,14 @@ namespace hiro
         {
             if(e.Key == System.Windows.Input.Key.Enter)
             {
+                if (URLBox.Text.ToLower().Equals("topmost:on") || URLBox.Text.ToLower().Equals("topmost:true"))
+                    Topmost = true;
+                if (URLBox.Text.ToLower().Equals("topmost:off") || URLBox.Text.ToLower().Equals("topmost:false"))
+                    Topmost = false;
+                if (URLBox.Text.ToLower().Equals("mute:on") || URLBox.Text.ToLower().Equals("mute:true"))
+                    wv2.CoreWebView2.IsMuted = true;
+                if (URLBox.Text.ToLower().Equals("mute:off") || URLBox.Text.ToLower().Equals("mute:false"))
+                    wv2.CoreWebView2.IsMuted = false;
                 URLBox.Visibility = Visibility.Collapsed;
                 TitleLabel.Visibility = Visibility.Visible;
                 wv2.CoreWebView2.Navigate(URLBox.Text);
@@ -321,6 +330,19 @@ namespace hiro
                 TitleLabel.Visibility = Visibility.Visible;
                 e.Handled = true;
             }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Refreash_Layout();
+        }
+
+        private void Window_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (maxbtn.Visibility == Visibility.Visible)
+                WindowState = WindowState.Maximized;
+            else if (resbtn.Visibility == Visibility.Visible)
+                WindowState = WindowState.Normal;
         }
     }
 }

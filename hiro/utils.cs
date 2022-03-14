@@ -1245,6 +1245,7 @@ namespace hiro
                     if (webpara.IndexOf("t") != -1)
                         web.Topmost = true;
                     web.Show();
+                    web.Refreash_Layout();
                     return;
                 }
                 if (path.ToLower().StartsWith("bluetooth("))
@@ -2045,19 +2046,21 @@ namespace hiro
                 RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
             };
             System.Windows.Thickness tn = label.Margin;
-            if (win.Width > win.Height)
+            var WinWidth = win.WindowState == System.Windows.WindowState.Maximized ? win.ActualWidth : win.Width;
+            var WinHeight = win.WindowState == System.Windows.WindowState.Maximized ? win.ActualHeight : win.Height;
+            if (WinWidth > WinHeight)
             {
                 tn.Top = -rd;
-                tn.Left = -rd * win.Width / win.Height;
+                tn.Left = -rd * WinWidth / WinHeight;
             }
             else
             {
                 tn.Left = -rd;
-                tn.Top = -rd * win.Height / win.Width;
+                tn.Top = -rd * WinHeight / WinWidth;
             }
             label.Margin = tn;
-            label.Width = win.Width - tn.Left * 2;
-            label.Height = win.Height - tn.Top * 2;
+            label.Width = WinWidth - tn.Left * 2;
+            label.Height = WinHeight - tn.Top * 2;
         }
         #endregion
 
