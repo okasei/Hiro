@@ -1244,6 +1244,8 @@ namespace hiro
                         web.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
                     if (webpara.IndexOf("t") != -1)
                         web.Topmost = true;
+                    if (webpara.IndexOf("b") != -1)
+                        web.URLBtn.Visibility = System.Windows.Visibility.Visible;
                     web.Show();
                     web.Refreash_Layout();
                     return;

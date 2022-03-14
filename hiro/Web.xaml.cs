@@ -321,7 +321,8 @@ namespace hiro
                     wv2.CoreWebView2.IsMuted = false;
                 URLBox.Visibility = Visibility.Collapsed;
                 TitleLabel.Visibility = Visibility.Visible;
-                wv2.CoreWebView2.Navigate(URLBox.Text);
+                if (fixed_title == null)
+                    wv2.CoreWebView2.Navigate(URLBox.Text);
                 e.Handled = true;
             }
             if (e.Key == System.Windows.Input.Key.Escape)
