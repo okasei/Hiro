@@ -708,6 +708,9 @@ namespace hiro
         #region 运行文件
         public static void RunExe(String path, string? source = null)
         {
+            Navigate navi = new();
+            navi.Show();
+            return;
             try
             {
                 path = Path_Prepare_EX(Path_Prepare(path));

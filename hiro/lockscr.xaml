@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
-        Title="lockscr" Height="450" Width="800" WindowStyle="None" Topmost="True" MouseLeftButtonDown="Ls_MouseLeftButtonDown" WindowStartupLocation="Manual" WindowState="Normal" IsTabStop="False" ResizeMode="NoResize" Loaded="Ls_Loaded" Closing="Ls_Closing" Icon="/hiro_circle.ico">
+        Title="lockscr" Height="450" Width="800" WindowStyle="None" Topmost="True" WindowStartupLocation="Manual" WindowState="Normal" IsTabStop="False" ResizeMode="NoResize" Loaded="Ls_Loaded" Closing="Ls_Closing" Icon="/hiro_circle.ico" KeyDown="Ls_KeyDown" MouseDown="ls_MouseDown">
     <Window.Background>
         <ImageBrush Stretch="UniformToFill"/>
     </Window.Background>

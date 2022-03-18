@@ -12,6 +12,7 @@ namespace hiro
     {
         internal bool ca = true;
         internal bool exist = false;
+        private bool authing = false;
         public Lockscr()
         {
             InitializeComponent();
@@ -141,16 +142,21 @@ namespace hiro
             }
         }
 
-        private void Ls_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Request_Authentication()
         {
+            if (authing)
+                return;
+            authing = true;
             System.ComponentModel.BackgroundWorker sc = new();
             System.ComponentModel.BackgroundWorker fa = new();
             sc.RunWorkerCompleted += delegate
             {
-                this.Run_Out();
+                Run_Out();
             };
             fa.RunWorkerCompleted += delegate
             {
+                authing = false;
+                Activate();
             };
             utils.Register(sc, fa, fa);
         }
@@ -162,6 +168,16 @@ namespace hiro
         private void Ls_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = ca;
+        }
+
+        private void Ls_KeyDown(object sender, KeyEventArgs e)
+        {
+            Request_Authentication();
+        }
+
+        private void ls_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Request_Authentication();
         }
     }
 }

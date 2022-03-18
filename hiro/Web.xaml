@@ -24,7 +24,7 @@
                 <ProgressBar x:Name="wvpb" Background="Transparent" IsIndeterminate="True" Visibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5" BorderBrush="{x:Null}"/>
                 <DockPanel LastChildFill="True" >
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Stretch">
-                        <Label x:Name="soundbtn" Content="&#xE995;" FontFamily="Segoe MDL2 Assets" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{Binding Foreground, ElementName=CBtn}" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Soundbtn_MouseLeftButtonDown">
+                        <Label x:Name="soundbtn" Content="&#xE995;" FontFamily="Segoe MDL2 Assets" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{Binding Foreground, ElementName=CBtn}" Width="35" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Soundbtn_MouseLeftButtonDown">
                             <Label.Triggers>
                                 <EventTrigger RoutedEvent="UIElement.MouseEnter">
                                     <BeginStoryboard>
@@ -46,7 +46,7 @@
                                 </EventTrigger>
                             </Label.Triggers>
                         </Label>
-                        <Label x:Name="topbtn" Content="&#xE718;" FontFamily="Segoe MDL2 Assets"  Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{Binding Foreground, ElementName=CBtn}" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Topbtn_MouseLeftButtonDown">
+                        <Label x:Name="topbtn" Content="&#xE718;" FontFamily="Segoe MDL2 Assets"  Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{Binding Foreground, ElementName=CBtn}" Width="35" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Topbtn_MouseLeftButtonDown">
                             <Label.Triggers>
                                 <EventTrigger RoutedEvent="UIElement.MouseEnter">
                                     <BeginStoryboard>
@@ -238,7 +238,6 @@
                         <Grid Width="5"/>
                         <Button x:Name="CBtn" Content="Hiro" Visibility="Collapsed"/>
                     </DockPanel>
-                    
                 </DockPanel>
             </Grid>
         </Grid>
