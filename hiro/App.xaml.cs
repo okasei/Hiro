@@ -77,6 +77,8 @@ namespace hiro
                 socketConnection.DataRecevieCompleted += delegate
                 {
                     string recStr = utils.DeleteUnVisibleChar(System.Text.Encoding.ASCII.GetString(socketConnection.msgBuffer));
+                    byte[] outputb = Convert.FromBase64String(recStr);
+                    recStr = System.Text.Encoding.Default.GetString(outputb);
                     recStr = utils.Path_Prepare_EX(utils.Path_Prepare(recStr)).Trim();
                     if (System.IO.File.Exists(recStr))
                     {
@@ -404,7 +406,7 @@ namespace hiro
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)
                             .AddText(utils.Get_Transalte("alarmtitle"))
-                            .AddText(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))
+                            .AddText(utils.Path_Prepare_EX(utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(utils.Get_Transalte("alarmok"))
                                         .AddArgument("action", "ok"))
@@ -416,7 +418,7 @@ namespace hiro
                         }
                         else
                         {
-                            Alarm ala = new(aw.Count, CustomedContnet: utils.Path_Prepare_EX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)));
+                            Alarm ala = new(aw.Count, CustomedContnet: utils.Path_Prepare_EX(utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))));
                             aw.Add(new alarmwin(ala, i - 1));
                             ala.Show();
                         }
@@ -462,6 +464,9 @@ namespace hiro
                 val = (CustomUsernameFlag == 0) ? utils.Get_Transalte(val).Replace("%u", EnvironmentUsername) : utils.Get_Transalte(val + "cus").Replace("%u", Username);
                 if (!mn.homelabel1.Content.Equals(val))
                     mn.homelabel1.Content = val;
+                val = utils.Path_Prepare(utils.Path_Prepare_EX(utils.Get_Transalte("copyright")));
+                    if (!mn.homelabel2.Text.Equals(val))
+                    mn.homelabel2.Text = val;
             }
         }
 

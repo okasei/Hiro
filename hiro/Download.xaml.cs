@@ -100,21 +100,11 @@ namespace hiro
         }
         public void Load_Colors()
         {
-            ala_title.Foreground = new SolidColorBrush(App.AppForeColor);
-            albtn_1.Foreground = new SolidColorBrush(App.AppForeColor);
-            urllabel.Foreground = new SolidColorBrush(App.AppForeColor);
-            pathlabel.Foreground = new SolidColorBrush(App.AppForeColor);
-            minbtn.Foreground = new SolidColorBrush(App.AppForeColor);
-            closebtn.Foreground = new SolidColorBrush(App.AppForeColor);
-            textBoxHttpUrl.Foreground = new SolidColorBrush(App.AppForeColor);
-            SavePath.Foreground = new SolidColorBrush(App.AppForeColor);
-            autorun.Foreground = new SolidColorBrush(App.AppForeColor);
             albtn_1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
             albtn_1.BorderThickness = new Thickness(1, 1, 1, 1);
-            albtn_1.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            pb.Foreground = albtn_1.Foreground;
-            borderlabel.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            coloruse1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, 80));
+            coloruse1.Background = new SolidColorBrush(utils.Color_Transparent(App.AppForeColor, 80));
+            coloruse1.Foreground = new SolidColorBrush(App.AppForeColor);
+            coloruse1.BorderBrush = new SolidColorBrush(App.AppForeColor);
         }
 
         public async void StartDownload()
@@ -141,7 +131,6 @@ namespace hiro
                     return;
                 }
             }
-
             string strFileName = rurl;
             strFileName = strFileName[(strFileName.LastIndexOf("/") + 1)..];
             if (strFileName.LastIndexOf("?") != -1)
@@ -226,7 +215,6 @@ namespace hiro
                 request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(startpos, totalLength);
                 response = await App.hc.SendAsync(request, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             }
-            
             var contentStream = await response.Content.ReadAsStreamAsync();
             byte[] buffer = new byte[4 * 1024];//4KB缓存
             long readLength = 0L;
@@ -402,14 +390,9 @@ namespace hiro
             utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
         }
 
-        private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
         private void Closebtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -451,6 +434,12 @@ namespace hiro
         {
             autorun.Content = utils.Get_Transalte("dlrun");
             utils.Set_Control_Location(autorun, "dlrun", bottom: true);
+        }
+
+        private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+            e.Handled = true;
         }
     }
 

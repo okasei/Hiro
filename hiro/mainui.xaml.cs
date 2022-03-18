@@ -194,6 +194,8 @@ namespace hiro
         #region UI相关
         public void Load_Position()
         {
+            utils.Set_Control_Location(titlelabel, "title");
+            utils.Set_Control_Location(versionlabel, "version");
             utils.Set_Control_Location(btn1, "inew");
             utils.Set_Control_Location(btn2, "iup");
             utils.Set_Control_Location(btn3, "idown");

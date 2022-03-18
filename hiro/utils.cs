@@ -467,50 +467,52 @@ namespace hiro
                         sender.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
                     if (bottom == true)
                         sender.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
-                    var loc = Read_Ini(path, "location", val, string.Empty);
-                    loc = loc.Trim().Replace("%b", " ");
-                    loc = loc[(loc.IndexOf("{") + 1)..];
-                    loc = loc[..loc.LastIndexOf("}")];
-                    var fontname = loc[..loc.IndexOf(",")];
-                    loc = loc[(fontname.Length + 1)..];
-                    var fontsize = loc[..loc.IndexOf(",")];
-                    loc = loc[(fontsize.Length + 1)..];
-                    var fontweight = loc[..loc.IndexOf(",")];
-                    loc = loc[(fontweight.Length + 1)..];
-                    var fontstyle = loc[..loc.IndexOf(",")];
-                    loc = loc[(fontstyle.Length + 1)..];
-                    var left = loc.Substring(0, loc.IndexOf(","));
-                    loc = loc[(left.Length + 1)..];
-                    var top = loc[..loc.IndexOf(",")];
-                    loc = loc[(top.Length + 1)..];
-                    var width = loc.Substring(0, loc.IndexOf(","));
-                    loc = loc[(width.Length + 1)..];
-                    var height = loc;
-                    if (fontname != "-1")
-                        sender.FontFamily = new System.Windows.Media.FontFamily(fontname);
-                    if (fontsize != "-1")
-                        sender.FontSize = double.Parse(fontsize);
-                    sender.FontWeight = fontweight switch
+                    var result = HiroParse(Read_Ini(path, "location", val, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
+                    if (!result[0].Equals("-1"))
+                        sender.FontFamily = new System.Windows.Media.FontFamily(result[0]);
+                    if (!result[1].Equals("-1"))
+                        sender.FontSize = double.Parse(result[1]);
+                    sender.FontStretch = result[2] switch
                     {
-                        "0" => System.Windows.FontWeights.Light,
-                        "1" => System.Windows.FontWeights.Bold,
-                        _ => System.Windows.FontWeights.Normal,
+                        "1" => System.Windows.FontStretches.UltraCondensed,
+                        "2" => System.Windows.FontStretches.ExtraCondensed,
+                        "3" => System.Windows.FontStretches.Condensed,
+                        "4" => System.Windows.FontStretches.SemiCondensed,
+                        "5" => System.Windows.FontStretches.Medium,
+                        "6" => System.Windows.FontStretches.SemiExpanded,
+                        "7" => System.Windows.FontStretches.Expanded,
+                        "8" => System.Windows.FontStretches.ExtraExpanded,
+                        "9" => System.Windows.FontStretches.UltraExpanded,
+                        _ => System.Windows.FontStretches.Normal
                     };
-                    sender.FontStyle = fontstyle switch
+                    sender.FontWeight = result[3] switch
                     {
-                        "0" => System.Windows.FontStyles.Italic,
-                        "1" => System.Windows.FontStyles.Oblique,
-                        _ => System.Windows.FontStyles.Normal,
+                        "1" => System.Windows.FontWeights.Thin,
+                        "2" => System.Windows.FontWeights.UltraLight,
+                        "3" => System.Windows.FontWeights.Light,
+                        "4" => System.Windows.FontWeights.Medium,
+                        "5" => System.Windows.FontWeights.SemiBold,
+                        "6" => System.Windows.FontWeights.Bold,
+                        "7" => System.Windows.FontWeights.UltraBold,
+                        "8" => System.Windows.FontWeights.Black,
+                        "9" => System.Windows.FontWeights.UltraBlack,
+                        _ => System.Windows.FontWeights.Normal
+                    };
+                    sender.FontStyle = result[4] switch
+                    {
+                        "1" => System.Windows.FontStyles.Italic,
+                        "2" => System.Windows.FontStyles.Oblique,
+                        _ => System.Windows.FontStyles.Normal
                     };
                     if (location)
                     {
-                        sender.Width = (!width.Equals("-1")) ? double.Parse(width) : sender.Width;
-                        sender.Height = (!height.Equals("-1")) ? double.Parse(height) : sender.Height;
+                        sender.Width = (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
+                        sender.Height = (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
                         System.Windows.Thickness thickness = new();
-                        thickness.Left = (!left.Equals("-1")) ? right ? 0.0 : double.Parse(left) : sender.Margin.Left;
-                        thickness.Right = (!left.Equals("-1")) ? !right ? sender.Margin.Right : double.Parse(left) : sender.Margin.Right;
-                        thickness.Top = (!top.Equals("-1")) ? bottom ? 0.0 : double.Parse(top) : sender.Margin.Top;
-                        thickness.Bottom = (!top.Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(top) : sender.Margin.Bottom;
+                        thickness.Left = (!result[5].Equals("-1")) ? right ? 0.0 : double.Parse(result[5]) : sender.Margin.Left;
+                        thickness.Right = (!result[5].Equals("-1")) ? !right ? sender.Margin.Right : double.Parse(result[5]) : sender.Margin.Right;
+                        thickness.Top = (!result[6].Equals("-1")) ? bottom ? 0.0 : double.Parse(result[6]) : sender.Margin.Top;
+                        thickness.Bottom = (!result[6].Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(result[6]) : sender.Margin.Bottom;
                         sender.Margin = thickness;
                     }
                 }
@@ -562,20 +564,26 @@ namespace hiro
         #endregion
 
         #region 字符串处理
-        public static String Path_Replace(String path, String toReplace, String replaced)
+        public static String Path_Replace(String path, String toReplace, String replaced, bool CaseSensitive = false)
         {
             var resu = (replaced.EndsWith("\\")) ? replaced.Substring(0, replaced.Length - 1) : replaced;
-            resu = Microsoft.VisualBasic.Strings.Replace(path, toReplace, resu, 1, -1, Microsoft.VisualBasic.CompareMethod.Text);
+            if (CaseSensitive)
+                resu = path.Replace(toReplace, resu);
+            else
+                resu = Microsoft.VisualBasic.Strings.Replace(path, toReplace, resu, 1, -1, Microsoft.VisualBasic.CompareMethod.Text);
             if (resu != null)
                 return resu;
             else
                 return "";
         }
 
-        private static String Anti_Path_Replace(String path, String replaced, String toReplace)
+        private static String Anti_Path_Replace(String path, String replaced, String toReplace, bool CaseSensitive = false)
         {
             var resu = (toReplace.EndsWith("\\")) ? toReplace.Substring(0, toReplace.Length - 1) : toReplace;
-            resu = Microsoft.VisualBasic.Strings.Replace(path, resu, replaced, 1, -1, Microsoft.VisualBasic.CompareMethod.Text);
+            if (CaseSensitive)
+                resu = path.Replace(resu, replaced);
+            else
+                resu = Microsoft.VisualBasic.Strings.Replace(path, resu, replaced, 1, -1, Microsoft.VisualBasic.CompareMethod.Text);
             if (resu != null)
                 return resu;
             else
@@ -662,16 +670,16 @@ namespace hiro
             path = Path_Replace(path, "<yy>", DateTime.Now.ToString("yy"));
             path = Path_Replace(path, "<MMMM>", DateTime.Now.ToString("MMMM"));
             path = Path_Replace(path, "<MMM>", DateTime.Now.ToString("MMM"));
-            path = Path_Replace(path, "<MM>", DateTime.Now.ToString("MM"));
-            path = Path_Replace(path, "<M>", DateTime.Now.ToString("M"));
+            path = Path_Replace(path, "<MM>", DateTime.Now.ToString("MM"), true);
+            path = Path_Replace(path, "<M>", DateTime.Now.ToString("M"), true);
             path = Path_Replace(path, "<dddd>", DateTime.Now.ToString("dddd"));
             path = Path_Replace(path, "<ddd>", DateTime.Now.ToString("ddd"));
             path = Path_Replace(path, "<dd>", DateTime.Now.ToString("dd"));
             path = Path_Replace(path, "<d>", DateTime.Now.ToString("d"));
-            path = Path_Replace(path, "<HH>", DateTime.Now.ToString("HH"));
-            path = Path_Replace(path, "<hh>", DateTime.Now.ToString("hh"));
-            path = Path_Replace(path, "<mm>", DateTime.Now.ToString("mm"));
-            path = Path_Replace(path, "<m>", DateTime.Now.ToString("m"));
+            path = Path_Replace(path, "<HH>", DateTime.Now.ToString("HH"), true);
+            path = Path_Replace(path, "<hh>", DateTime.Now.ToString("hh"), true);
+            path = Path_Replace(path, "<mm>", DateTime.Now.ToString("mm"), true);
+            path = Path_Replace(path, "<m>", DateTime.Now.ToString("m"), true);
             path = Path_Replace(path, "<ss>", DateTime.Now.ToString("ss"));
             path = Path_Replace(path, "<s>", DateTime.Now.ToString("s"));
             path = Path_Replace(path, "<version>", res.ApplicationVersion);
@@ -1127,7 +1135,7 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                utils.LogtoFile("[ERROR]" + ex.Message);
+                                LogtoFile("[ERROR]" + ex.Message);
                             }
                         else
                             App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
@@ -1140,7 +1148,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        utils.LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]" + ex.Message);
                     }
                     return;
                 }
@@ -1243,9 +1251,13 @@ namespace hiro
                     if (webpara.IndexOf("-c") != -1)
                         web.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
                     if (webpara.IndexOf("t") != -1)
+                    {
                         web.Topmost = true;
+                        web.topbtn.ToolTip = utils.Get_Transalte("webbottom");
+                    }
+                        
                     if (webpara.IndexOf("b") != -1)
-                        web.URLBtn.Visibility = System.Windows.Visibility.Visible;
+                        web.URLGrid.Visibility = System.Windows.Visibility.Visible;
                     web.Show();
                     web.Refreash_Layout();
                     return;
@@ -1369,7 +1381,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("move("))
                 {
-                    if (!System.IO.File.Exists(parameter[1]))
+                    if (!System.IO.File.Exists(parameter[0]))
                     {
                         try
                         {
@@ -1384,6 +1396,7 @@ namespace hiro
                     }
                     try
                     {
+                        CreateFolder(parameter[1]);
                         System.IO.File.Move(parameter[0], parameter[1]);
                     }
                     catch (Exception ex)
@@ -1395,7 +1408,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("copy("))
                 {
-                    if (!System.IO.File.Exists(parameter[1]))
+                    if (!System.IO.File.Exists(parameter[0]))
                     {
                         if (System.IO.Directory.Exists(parameter[0]))
                             try
@@ -1405,7 +1418,7 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                utils.LogtoFile("[ERROR]" + ex.Message);
+                                LogtoFile("[ERROR]" + ex.Message);
                             }
                         else
                             App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
@@ -1413,12 +1426,13 @@ namespace hiro
                     }
                     try
                     {
+                        CreateFolder(parameter[1]);
                         System.IO.File.Copy(parameter[0], parameter[1]);
                     }
                     catch (Exception ex)
                     {
                         App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        utils.LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]" + ex.Message);
                     }
                     return;
                 }

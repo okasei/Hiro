@@ -100,7 +100,7 @@
             </Label.Triggers>
         </Label>
         <ProgressBar x:Name="pb" Height="5" Width="548" Background="Transparent" BorderBrush="{x:Null}"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" IsIndeterminate="True" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.RowSpan="2" Visibility="Hidden"/>
-        <TabControl x:Name="tc" Margin="130,30,0,-15" Background="Transparent" BorderBrush="{x:Null}" Foreground="{x:Null}" TabStripPlacement="Bottom" Grid.Column="2" Width="420" Height="440" SelectedIndex="3" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top">
+        <TabControl x:Name="tc" Margin="130,30,0,-15" Background="Transparent" BorderBrush="{x:Null}" Foreground="{x:Null}" TabStripPlacement="Bottom" Grid.Column="2" Width="420" Height="440" SelectedIndex="0" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top">
             <TabControl.ItemContainerStyle>
                 <Style>
                     <Setter Property="TabItem.Visibility" Value="Collapsed"/>
@@ -108,7 +108,7 @@
             </TabControl.ItemContainerStyle>
             <Grid x:Name="homeg" HorizontalAlignment="Left" VerticalAlignment="Top" Height="420" Width="400">
                 <Label x:Name="homelabel1" Style="{DynamicResource HiroLabel}" Content="Good morning, user!" HorizontalAlignment="Center" Margin="0,50,0,0" VerticalAlignment="Top"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" FontFamily="Segoe UI" FontWeight="Bold" FontSize="24"/>
-                <Label x:Name="homelabel2" Style="{DynamicResource HiroLabel}" Content="Copyright © 2022 N+&#xA;All Rights Reserved." HorizontalAlignment="Center" Margin="0,351,0,20" VerticalAlignment="Bottom"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="False" FontFamily="Segoe UI"/>
+                <TextBlock x:Name="homelabel2" Text="Copyright © N+&#xA;All Rights Reserved." HorizontalAlignment="Center" Margin="0,340,0,30" VerticalAlignment="Bottom"  Foreground ="{Binding Path = Foreground, ElementName = btn1 }" UseLayoutRounding="False" FontFamily="Segoe UI" FlowDirection="LeftToRight" TextWrapping="WrapWithOverflow" FontStyle="Normal" FontStretch="Normal"/>
             </Grid>
             <Grid x:Name="itemg" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="420">
                 <DataGrid x:Name="dgi" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Background="Transparent" HeadersVisibility="Column" FontFamily="Segoe UI" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="#99FFFFFF" SelectionMode="Single" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="410" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick">

@@ -66,9 +66,10 @@ namespace hiro
                 if (Windows.System.Power.PowerManager.BatteryStatus != Windows.System.Power.BatteryStatus.Charging)
                 {
                     var low = utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
+                    var notice = utils.Read_Ini(App.LangFilePath, "local", "tippower", "").Replace("[", "[,").Replace("]", ",]").Trim();
                     if (low.IndexOf(p.ToString()) != -1)
                         App.Notify(new noticeitem(utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2, utils.Get_Transalte("battery")));
-                    else if (p % 10 == 0)
+                    else if (notice.IndexOf(p.ToString()) != -1)
                         App.Notify(new noticeitem(utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2, utils.Get_Transalte("battery")));
                 }
             }

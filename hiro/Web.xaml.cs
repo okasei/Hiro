@@ -83,9 +83,16 @@ namespace hiro
             wv2.CoreWebView2.ContainsFullScreenElementChanged += CoreWebView2_ContainsFullScreenElementChanged;
             wv2.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             wv2.CoreWebView2.IsDefaultDownloadDialogOpenChanged += CoreWebView2_IsDefaultDownloadDialogOpenChanged;
+            wv2.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
             wv2.CoreWebView2.Settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62";
             if (fixed_title == null) 
-                URLBtn.Visibility = Visibility.Visible;
+                URLGrid.Visibility = Visibility.Visible;
+        }
+
+        private void CoreWebView2_HistoryChanged(object? sender, object e)
+        {
+            PreBtn.Visibility = wv2.CoreWebView2.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+            NextBtn.Visibility = wv2.CoreWebView2.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void Load_Color()
@@ -109,6 +116,7 @@ namespace hiro
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
             prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? utils.Get_Transalte("webmusic") : "";
+            soundbtn.Visibility = wv2.CoreWebView2.IsDocumentPlayingAudio ? Visibility.Visible : Visibility.Collapsed;
             string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
         }
@@ -143,6 +151,8 @@ namespace hiro
             string ti = fixed_title ?? utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             URLBtn.Content = secure ? utils.Get_Transalte("websecure") : utils.Get_Transalte("webinsecure");
+            URLSign.Content = secure ? "\uF61A" : "\uF618";
+            URLBtn.ToolTip = secure ? utils.Get_Transalte("websecuretip") : utils.Get_Transalte("webinsecuretip");
             Loading(false);
         }
 
@@ -169,8 +179,6 @@ namespace hiro
 
         private void CoreWebView2_FrameNavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            PreBtn.Visibility = wv2.CoreWebView2.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
-            NextBtn.Visibility = wv2.CoreWebView2.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
             Loading(false);
         }
 
@@ -233,6 +241,7 @@ namespace hiro
         private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             WindowState = WindowState.Minimized;
+            e.Handled = true;
         }
 
         private void Closebtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -243,6 +252,7 @@ namespace hiro
         private void Maxbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             WindowState = WindowState.Maximized;
+            e.Handled = true;
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -278,26 +288,34 @@ namespace hiro
             NextBtn.ToolTip = utils.Get_Transalte("webnext");
             NextBtn.Content = utils.Get_Transalte("webnextc").Replace("%s", "▶");
             URLBtn.Content = utils.Get_Transalte("webinsecure");
+            URLSign.Content = "\uF618";
+            URLBtn.ToolTip = utils.Get_Transalte("webinsecuretip");
+            topbtn.ToolTip = Topmost ? utils.Get_Transalte("webbottom") : utils.Get_Transalte("webtop");
+            soundbtn.ToolTip = utils.Get_Transalte("webmute");
         }
 
         private void Resbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             WindowState = WindowState.Normal;
+            e.Handled = true;
         }
 
         private void TitleGrid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+            e.Handled = true;
         }
 
         private void PreBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             wv2.CoreWebView2.GoBack();
+            e.Handled = true;
         }
 
         private void NextBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             wv2.CoreWebView2.GoForward();
+            e.Handled = true;
         }
 
         private void URLBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -305,6 +323,7 @@ namespace hiro
             TitleLabel.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
             URLBox.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
             URLBox.Text = wv2.CoreWebView2.Source;
+            e.Handled = true;
         }
 
         private void URLBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -344,6 +363,23 @@ namespace hiro
                 WindowState = WindowState.Maximized;
             else if (resbtn.Visibility == Visibility.Visible)
                 WindowState = WindowState.Normal;
+            e.Handled = true;
+        }
+
+        private void Soundbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            wv2.CoreWebView2.IsMuted = !wv2.CoreWebView2.IsMuted;
+            soundbtn.Content = wv2.CoreWebView2.IsMuted ? "\uE198" : "\uE995";
+            soundbtn.ToolTip = wv2.CoreWebView2.IsMuted ? utils.Get_Transalte("websound") : utils.Get_Transalte("webmute");
+            e.Handled = true;
+        }
+
+        private void Topbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Topmost = !Topmost;
+            topbtn.Content = Topmost ? "\uE77A" : "\uE718";
+            topbtn.ToolTip = Topmost ? utils.Get_Transalte("webbottom") : utils.Get_Transalte("webtop");
+            e.Handled = true;
         }
     }
 }

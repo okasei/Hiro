@@ -20,10 +20,10 @@ namespace hiro
         {
             InitializeComponent();
             SourceInitialized += OnSourceInitialized;
-            Width = SystemParameters.PrimaryScreenWidth * 3 / 4;
-            Height = SystemParameters.PrimaryScreenHeight * 3 / 4;
-            Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 8);
-            Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 8);
+            Width = SystemParameters.PrimaryScreenWidth * 5 / 8;
+            Height = SystemParameters.PrimaryScreenHeight * 5 / 8;
+            Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth * 3 / 16);
+            Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight * 3 / 16);
             Load_Colors();
             Load_Position(OneButtonOnly);
             Loaded += delegate
