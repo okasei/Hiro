@@ -1,0 +1,85 @@
+﻿<Page x:Class="hiro.Hiro_NewItem"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:hiro"
+      xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+      xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="420" d:DesignWidth="420"
+      Title="Hiro_NewItem">
+    <Page.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <materialDesign:BrushRoundConverter x:Key="BrushRoundConverter"/>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2 2 2 2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="True" StrokeThickness="1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="MaterialDesignComboBoxItemTemplate" TargetType="{x:Type ComboBoxItem}">
+            <Grid x:Name="GridWrapper">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Border x:Name="BackBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
+                <Border x:Name="MouseOverBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Opacity="0" SnapsToDevicePixels="True"/>
+                <Border x:Name="SelectedBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" Opacity="0" RenderTransformOrigin="0.5,0.5"/>
+                <wpf:Ripple ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" Focusable="False" Feedback="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" HorizontalAlignment="Stretch" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" RecognizesAccessKey="False" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" VerticalAlignment="Stretch"/>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" TargetName="GridWrapper" Value="{x:Static wpf:Constants.TextBoxNotEnabledOpacity}"/>
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Tag" Value="{StaticResource AllowCollapse}"/>
+                        <Condition Property="IsSelected" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Height" Value="0"/>
+                </MultiTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="HiroComboBoxItemContainerStyle" TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Padding" Value="16 8"/>
+            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Template" Value="{StaticResource MaterialDesignComboBoxItemTemplate}"/>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Label x:Name="glabel" Style="{DynamicResource HiroLabel}" Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
+        <TextBox x:Name="tb7" HorizontalAlignment="Left" Margin="0,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" Drop="Tb7_Drop" DragEnter="Tb7_DragEnter" AllowDrop="True" DragOver="Tb7_DragOver"/>
+        <Label x:Name="glabel2" Content="Command" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
+        <TextBox x:Name="tb8" HorizontalAlignment="Left" Margin="0,106,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" Drop="Tb8_Drop" DragOver="Tb8_DragOver" AllowDrop="True" TextChanged="Tb8_TextChanged" KeyDown="Tb8_KeyDown"/>
+        <TextBox x:Name="tb9" HorizontalAlignment="Left" Margin="0,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" Height="230" IsReadOnly="True" Visibility="Hidden"/>
+        <Button x:Name="ntn1" BorderThickness="1" Content="Filename" HorizontalAlignment="Left" Margin="95,10,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn1_Click"/>
+        <Button x:Name="ntn2" BorderThickness="1" Content="Hidden" HorizontalAlignment="Left" Margin="160,10,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn2_Click"/>
+        <Button x:Name="ntn3" BorderThickness="1" Content="Unformat" HorizontalAlignment="Left" Margin="225,10,0,0" Width="65" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn3_Click"/>
+        <Button x:Name="ntn4" BorderThickness="1" Content="Ban" HorizontalAlignment="Left" Margin="295,10,0,0" Width="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn4_Click"/>
+        <Button x:Name="ntn5" BorderThickness="1" Content="Selected" HorizontalAlignment="Left" Margin="335,10,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn5_Click"/>
+        <Button x:Name="ntnx2" BorderThickness="1" Content="Cancel" HorizontalAlignment="Left" Margin="335,390,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntnx2_Click"/>
+        <Button x:Name="ntnx1" BorderThickness="1" Content="OK" HorizontalAlignment="Left" Margin="275,390,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntnx1_Click"/>
+        <Button x:Name="ntn9" BorderThickness="1" Content="Reset" HorizontalAlignment="Left" Margin="10,390,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn9_Click"/>
+        <Button x:Name="ntnx" BorderThickness="1" Content="Clear" HorizontalAlignment="Left" Margin="215,390,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntnx_Click"/>
+        <Button x:Name="ntn6" BorderThickness="1" Content="&quot;A&quot;" HorizontalAlignment="Left" Margin="225,80,0,0" Width="45" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn6_Click"/>
+        <Button x:Name="ntn7" BorderThickness="1" Content="explorer" HorizontalAlignment="Left" Margin="275,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn7_Click"/>
+        <Button x:Name="ntn8" BorderThickness="1" Content="Open…" HorizontalAlignment="Left" Margin="335,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn8_Click"/>
+        <Label x:Name="klabel" Content="Hotkey" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
+        <Label x:Name="modiname" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent" Margin="95,145,0,0"/>
+        <ComboBox x:Name="modibox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="61,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Modibox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="33"/>
+        <Label x:Name="keylabel" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent" Margin="238,145,0,0"/>
+        <ComboBox x:Name="keybox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="200,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Keybox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="33"/>
+    </Grid>
+</Page>

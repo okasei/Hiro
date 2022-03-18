@@ -708,9 +708,6 @@ namespace hiro
         #region 运行文件
         public static void RunExe(String path, string? source = null)
         {
-            Navigate navi = new();
-            navi.Show();
-            return;
             try
             {
                 path = Path_Prepare_EX(Path_Prepare(path));
@@ -1583,8 +1580,7 @@ namespace hiro
                     App.Locked = true;
                     if (App.mn == null)
                         return;
-                    if (0 < App.mn.tc.SelectedIndex && App.mn.tc.SelectedIndex < 4 || App.mn.tc.SelectedIndex > 5)
-                        App.mn.Set_Label(App.mn.homex);
+                    App.mn.Set_Label(App.mn.homex);
                     App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                     return;
                 }
@@ -2672,6 +2668,38 @@ namespace hiro
                 }
             }
             return 0;
+        }
+
+        public static int FindHotkeyById(int id)
+        {
+            for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
+            {
+                if (App.vs[vsi + 1] == id)
+                    return vsi;
+            }
+            return -1;
+        }
+        public static void UnregisterKey(int id)
+        {
+            if (id < 0)
+                return;
+            var bo = UnRegisterKey(App.WND_Handle, App.vs[id]);
+            if (bo)
+            {
+                LogtoFile("[REGISTER]Successfully unregistered.");
+            }
+            else
+            {
+                LogtoFile("[REGISTER]Unregisteration failed.");
+            }
+            App.vs.RemoveAt(id);
+            App.vs.RemoveAt(id);
+        }
+
+        public static void Registerkey(uint modi, System.Windows.Input.Key id, int cid)
+        {
+            App.vs.Add(utils.RegisterKey(App.WND_Handle, modi, id));
+            App.vs.Add(cid);
         }
 
         [System.Runtime.InteropServices.DllImport("Kernel32.dll")]

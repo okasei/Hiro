@@ -5,10 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:hiro"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="420" d:DesignWidth="420"
       Title="Hiro_Home">
-
+    <Page.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+    </Page.Resources>
     <Grid>
-        
+        <TextBlock x:Name="Hello" Text="Good morning, user!" HorizontalAlignment="Center" Margin="0,50,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontWeight="Bold" FontSize="24"/>
+        <TextBlock x:Name="Copyright" Text="Copyright © N+&#xA;All Rights Reserved." HorizontalAlignment="Center" Margin="0,340,0,30" VerticalAlignment="Bottom"  Foreground ="{DynamicResource AppFore}" UseLayoutRounding="False" FontFamily="Segoe UI" FlowDirection="LeftToRight" TextWrapping="WrapWithOverflow" FontStyle="Normal" FontStretch="Normal"/>
     </Grid>
 </Page>

@@ -366,25 +366,28 @@ namespace hiro
             afternoon = afternoon.Replace("[", "[,").Replace("]", ",]").Trim();
             evening = evening.Replace("[", "[,").Replace("]", ",]").Trim();
             night = night.Replace("[", "[,").Replace("]", ",]").Trim();
-            if (morning.IndexOf("," + hr + ",") != -1)
+            if (mn != null)
             {
-                    UpdateHomeLabel1("morning");
-            }
-            else if (noon.IndexOf("," + hr + ",") != -1)
-            {
-                    UpdateHomeLabel1("noon");
-            }
-            else if (afternoon.IndexOf("," + hr + ",") != -1)
-            {
-                    UpdateHomeLabel1("afternoon");
-            }
-            else if (evening.IndexOf("," + hr + ",") != -1)
-            {
-                    UpdateHomeLabel1("evening");
-            }
-            else if (night.IndexOf("," + hr + ",") != -1)
-            {
-                    UpdateHomeLabel1("night");
+                if (morning.IndexOf("," + hr + ",") != -1)
+                {
+                    mn.Set_Home_Labels("morning");
+                }
+                else if (noon.IndexOf("," + hr + ",") != -1)
+                {
+                    mn.Set_Home_Labels("noon");
+                }
+                else if (afternoon.IndexOf("," + hr + ",") != -1)
+                {
+                    mn.Set_Home_Labels("afternoon");
+                }
+                else if (evening.IndexOf("," + hr + ",") != -1)
+                {
+                    mn.Set_Home_Labels("evening");
+                }
+                else if (night.IndexOf("," + hr + ",") != -1)
+                {
+                    mn.Set_Home_Labels("night");
+                }
             }
             var tim = utils.Read_Ini(LangFilePath, "local", "locktime", "HH:mm");
             var dat = utils.Read_Ini(LangFilePath, "local", "lockdate", "MM/dd (ddd)");
@@ -454,19 +457,6 @@ namespace hiro
                 if (ColorCD == 0 && wnd != null)
                     wnd.Load_All_Colors();
                 ColorCD--;
-            }
-        }
-
-        public static void UpdateHomeLabel1(string val)
-        {
-            if (mn != null)
-            {
-                val = (CustomUsernameFlag == 0) ? utils.Get_Transalte(val).Replace("%u", EnvironmentUsername) : utils.Get_Transalte(val + "cus").Replace("%u", Username);
-                if (!mn.homelabel1.Content.Equals(val))
-                    mn.homelabel1.Content = val;
-                val = utils.Path_Prepare(utils.Path_Prepare_EX(utils.Get_Transalte("copyright")));
-                    if (!mn.homelabel2.Text.Equals(val))
-                    mn.homelabel2.Text = val;
             }
         }
 

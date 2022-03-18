@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Media.Animation;
 
 namespace hiro
 {
@@ -23,6 +14,25 @@ namespace hiro
         public Hiro_Home()
         {
             InitializeComponent();
+            Hiro_Initialize();
+            Loaded += Hiro_Home_Loaded;
+        }
+
+        private void Hiro_Initialize()
+        {
+            Load_Color();
+        }
+
+        private void Hiro_Home_Loaded(object sender, RoutedEventArgs e)
+        {
+            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
+            if (animation)
+                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
+        }
+
+        public void Load_Color()
+        {
+            Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
         }
     }
 }

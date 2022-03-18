@@ -1,0 +1,18 @@
+﻿<Page x:Class="hiro.Hiro_About"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:hiro"
+      mc:Ignorable="d" 
+      d:DesignHeight="420" d:DesignWidth="420"
+      Title="Hiro_About">
+    <Page.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+    </Page.Resources>
+    <Grid>
+        <Button BorderThickness="1" x:Name="chk_btn" Content="Check Update" HorizontalAlignment="Center" Margin="0,255,0,0" VerticalAlignment="Top" Cursor="Hand" Click="Chk_btn_Click" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" />
+        <Image x:Name="avatar" Margin="0,30,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="180" Width="180" Source="/hiro_circle.ico" MouseLeftButtonDown="Avatar_MouseLeftButtonDown"/>
+    </Grid>
+</Page>
