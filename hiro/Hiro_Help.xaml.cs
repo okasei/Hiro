@@ -16,14 +16,21 @@ namespace hiro
         {
             InitializeComponent();
             Hiro_Initialize();
-            Loaded += Hiro_Help_Loaded;
+            Loaded += delegate
+            {
+                HiHiro();
+            };
         }
 
-        private void Hiro_Help_Loaded(object sender, RoutedEventArgs e)
+        public void HiHiro()
         {
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            if (animation)
-                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(1, btn9, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(1, btn8, sb, 50, null);
+                sb.Begin();
+            }
         }
         private void Hiro_Initialize()
         {
@@ -35,28 +42,28 @@ namespace hiro
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppAccent"] = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
         public void Load_Translate()
         {
-            btn8.Content = utils.Get_Transalte("feedback");
-            btn9.Content = utils.Get_Transalte("whatsnew");
-            tb6.Text = utils.Get_Transalte("helptext") + utils.Get_Transalte("helptext_ext") + utils.Get_Transalte("helptext_ext2");
+            btn8.Content = Hiro_Utils.Get_Transalte("feedback");
+            btn9.Content = Hiro_Utils.Get_Transalte("whatsnew");
+            tb6.Text = Hiro_Utils.Get_Transalte("helptext") + Hiro_Utils.Get_Transalte("helptext_ext") + Hiro_Utils.Get_Transalte("helptext_ext2");
         }
 
         public void Load_Position()
         {
-            utils.Set_Control_Location(btn8, "feedback");
-            utils.Set_Control_Location(btn9, "whatsnew");
-            utils.Set_Control_Location(tb6, "helptb");
+            Hiro_Utils.Set_Control_Location(btn8, "feedback");
+            Hiro_Utils.Set_Control_Location(btn9, "whatsnew");
+            Hiro_Utils.Set_Control_Location(tb6, "helptb");
         }
 
         private void Btn8_Click(object sender, RoutedEventArgs e)
         {
             btn8.IsEnabled = false;
-            utils.RunExe("mailto:xboriver@live.cn");
-            utils.Delay(200);
+            Hiro_Utils.RunExe("mailto:xboriver@live.cn");
+            Hiro_Utils.Delay(200);
             btn8.IsEnabled = true;
         }
 
@@ -71,7 +78,7 @@ namespace hiro
             string wps = "";
             whatsbw.DoWork += delegate
             {
-                wps = utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + res.ApplicationVersion + "&lang=" + App.lang);
+                wps = Hiro_Utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + res.ApplicationVersion + "&lang=" + App.lang);
             };
             whatsbw.RunWorkerCompleted += delegate
             {
@@ -80,18 +87,18 @@ namespace hiro
                     string ti = wps[(wps.IndexOf("<title>") + "<title>".Length)..];
                     ti = ti[..ti.IndexOf("<")];
                     wps = wps[(wps.IndexOf("</head>") + "</head>".Length)..];
-                    utils.RunExe("alarm(" + ti + "," + wps.Replace("<br>", "\\n") + ")");
+                    Hiro_Utils.RunExe("alarm(" + ti + "," + wps.Replace("<br>", "\\n") + ")");
                     whatsbw.Dispose();
                     whatsbw = null;
                 }
                 catch (Exception ex)
                 {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                 }
 
             };
             whatsbw.RunWorkerAsync();
-            utils.Delay(200);
+            Hiro_Utils.Delay(200);
             btn9.IsEnabled = true;
         }
     }

@@ -3,27 +3,28 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace hiro
 {
     /// <summary>
     /// Sequence.xaml の相互作用ロジック
     /// </summary>
-    public partial class Sequence : Window
+    public partial class Hiro_Sequence : Window
     {
         internal int bflag = 0;
         internal int ci = 0;
         internal int tick = 0;
-        internal Sequence? parent = null;
+        internal Hiro_Sequence? parent = null;
         private System.Collections.ObjectModel.ObservableCollection<string> cmds = new();
-        public Sequence()
+        public Hiro_Sequence()
         {
             InitializeComponent();
             Load_Colors();
-            Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             Load_Position();
             Load_Translate();
-            Title = utils.Get_Transalte("seqtitle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Transalte("seqtitle") + " - " + App.AppTitle;
             var maxwidth = SystemParameters.PrimaryScreenWidth / 5;
             var btnwidth = skipbtn.Width + skipbtn.Margin.Right + 5;
             maxwidth = (maxwidth > btnwidth) ? maxwidth : btnwidth;
@@ -31,12 +32,28 @@ namespace hiro
             textblock.MaxWidth = maxwidth;
             Width = maxwidth;
             SourceInitialized += OnSourceInitialized;
-            utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            Loaded += delegate
+            {
+                HiHiro();
+            };
+        }
+
+        public void HiHiro()
+        {
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && Visibility == Visibility.Visible)
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(3, skipbtn, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, pausebtn, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, cancelbtn, sb, -50, null);
+                sb.Begin();
+            }
         }
 
         private void TimerTick()
         {
-            if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Utils.Get_Transalte("seqconti")))
                 return;
             tick--;
             Resizel(ci + 1, cmds.Count);                
@@ -68,10 +85,10 @@ namespace hiro
 
         public void Load_Translate()
         {
-            skipbtn.Content = utils.Get_Transalte("seqskip");
-            textblock.Text = utils.Get_Transalte("seqload");
-            pausebtn.Content = utils.Get_Transalte("seqpause");
-            cancelbtn.Content = utils.Get_Transalte("seqcancel");
+            skipbtn.Content = Hiro_Utils.Get_Transalte("seqskip");
+            textblock.Text = Hiro_Utils.Get_Transalte("seqload");
+            pausebtn.Content = Hiro_Utils.Get_Transalte("seqpause");
+            cancelbtn.Content = Hiro_Utils.Get_Transalte("seqcancel");
         }
         public void Load_Colors()
         {
@@ -79,7 +96,7 @@ namespace hiro
             skipbtn.Foreground = textblock.Foreground;
             pausebtn.Foreground = textblock.Foreground;
             cancelbtn.Foreground = textblock.Foreground;
-            skipbtn.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            skipbtn.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             pausebtn.Background = skipbtn.Background;
             cancelbtn.Background = skipbtn.Background;
             skipbtn.BorderThickness = new Thickness(1, 1, 1, 1);
@@ -93,10 +110,10 @@ namespace hiro
         }
         public void Load_Position()
         {
-            utils.Set_Control_Location(skipbtn, "seqskip", bottom: true, right: true);
-            utils.Set_Control_Location(pausebtn, "seqpause", bottom: true, right: true);
-            utils.Set_Control_Location(cancelbtn, "seqcancel", bottom: true, right: true);
-            utils.Set_Control_Location(con, "seqcontent");
+            Hiro_Utils.Set_Control_Location(skipbtn, "seqskip", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(pausebtn, "seqpause", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(cancelbtn, "seqcancel", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(con, "seqcontent");
             textblock.FontFamily = con.FontFamily;
             textblock.FontSize = con.FontSize;
         }
@@ -107,34 +124,34 @@ namespace hiro
         }
         internal void Next_CMD()
         {
-            if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Utils.Get_Transalte("seqconti")))
                 return;
             if (cmds.Count <= ci)
             {
                 Close();
                 return;
             }
-            string sc = utils.Path_Prepare_EX(utils.Path_Prepare(cmds[ci]));
+            string sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
             if (App.dflag)
-                utils.LogtoFile("[SEQUENCE]" + sc);
+                Hiro_Utils.LogtoFile("[SEQUENCE]" + sc);
             skipbtn.Visibility = Visibility.Hidden;
             Resizel(ci + 1, cmds.Count);
             ci++;
             if (sc.ToLower().Equals("trap") || sc.ToLower().Equals("trap()"))
             {
-                pausebtn.Content = utils.Get_Transalte("seqconti");
+                pausebtn.Content = Hiro_Utils.Get_Transalte("seqconti");
                 return;
             }
             if (sc.ToLower().StartsWith("pause("))
             {
-                var scp = utils.HiroParse(sc);
+                var scp = Hiro_Utils.HiroParse(sc);
                 try
                 {
                     tick = scp.Count == 0 ? 5 : int.Parse(scp[0]);
                 }
                 catch(Exception ex)
                 {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                     tick = 5;
                 }
                 skipbtn.Visibility = Visibility.Visible;
@@ -166,7 +183,7 @@ namespace hiro
                         toolstr = toolstr.Substring(0, toolstr.Length - 1);
                     if (System.IO.File.Exists(toolstr))
                     {
-                        Sequence sq = new();
+                        Hiro_Sequence sq = new();
                         sq.parent = this;
                         sq.Show();
                         sq.ThreadSeq(toolstr);
@@ -177,7 +194,7 @@ namespace hiro
                 Next_CMD();
                 return;
             }
-            utils.RunExe(sc);
+            Hiro_Utils.RunExe(sc);
             Next_CMD();
         }
         public void ThreadSeq(String path)
@@ -197,18 +214,20 @@ namespace hiro
 
         private void Resizel(int cir, int all)
         {
+            bool changed = false;
             try
             {
-                var next = utils.Get_Transalte("seqnext");
-                string sc = utils.Path_Prepare_EX(utils.Path_Prepare(cmds[ci]));
-                var current = utils.Get_Transalte("seqcurrent") + sc;
+                var next = Hiro_Utils.Get_Transalte("seqnext");
+                string sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
+                var current = Hiro_Utils.Get_Transalte("seqcurrent") + sc;
                 var inde = (ci + 1).ToString() + "/" + cmds.Count.ToString();
                 if (tick > 0)
-                    current = current + Environment.NewLine + utils.Get_Transalte("seqcd").Replace("%s", tick.ToString());
+                    current = current + Environment.NewLine + Hiro_Utils.Get_Transalte("seqcd").Replace("%s", tick.ToString());
                 if (ci >= cmds.Count - 1)
-                    next += utils.Get_Transalte("seqfinish");
+                    next += Hiro_Utils.Get_Transalte("seqfinish");
                 else
                     next += cmds[ci + 1];
+                changed = textblock.Text == inde + Environment.NewLine + current + Environment.NewLine + next;
                 textblock.Text = inde + Environment.NewLine + current + Environment.NewLine + next;
             }
             catch { }
@@ -232,6 +251,15 @@ namespace hiro
             {
                 Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
                 Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
+            }
+            if (Visibility == Visibility.Visible && changed)
+            {
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddPowerAnimation(0, textblock, sb, 50, null);
+                    sb.Begin();
+                }
             }
         }
 
@@ -261,13 +289,13 @@ namespace hiro
 
         private void Rejectbtn_Click(object sender, RoutedEventArgs e)
         {
-            if (pausebtn.Content.Equals(utils.Get_Transalte("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Utils.Get_Transalte("seqconti")))
             {
-                pausebtn.Content = utils.Get_Transalte("seqpause");
+                pausebtn.Content = Hiro_Utils.Get_Transalte("seqpause");
                 Next_CMD();
             }
             else
-                pausebtn.Content = utils.Get_Transalte("seqconti");
+                pausebtn.Content = Hiro_Utils.Get_Transalte("seqconti");
         }
 
         private void Cancelbtn_MouseDown(object sender, MouseButtonEventArgs e)
@@ -323,20 +351,20 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            utils.Set_Bgimage(bgimage);
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            utils.Blur_Animation(direction, animation, bgimage, this);
+            Hiro_Utils.Set_Bgimage(bgimage);
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
         private void Seq_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
         }
 
         private void Seq_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            pausebtn.Content = utils.Get_Transalte("seqconti");
+            pausebtn.Content = Hiro_Utils.Get_Transalte("seqconti");
             tick = 0;
             if (parent != null)
             {
@@ -347,7 +375,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                 }
                 
             }

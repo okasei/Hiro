@@ -12,13 +12,31 @@ namespace hiro
     /// </summary>
     public partial class Hiro_Items : Page
     {
-        private Mainui? Hiro_Main = null;
-        public Hiro_Items(Mainui? Parent)
+        private Hiro_MainUI? Hiro_Main = null;
+        public Hiro_Items(Hiro_MainUI? Parent)
         {
             InitializeComponent();
             Hiro_Main = Parent;
             Hiro_Initialize();
-            Loaded += Hiro_Items_Loaded;
+            Loaded += delegate
+            {
+                HiHiro();
+            };
+        }
+
+        public void HiHiro()
+        {
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(1, btn1, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(1, btn2, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(1, btn3, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(1, btn4, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(1, btn5, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(1, btn6, sb, 50, null);
+                sb.Begin();
+            }
         }
 
         private void Hiro_Initialize()
@@ -29,43 +47,36 @@ namespace hiro
             dgi.ItemsSource = App.cmditems;
         }
 
-        private void Hiro_Items_Loaded(object sender, RoutedEventArgs e)
-        {
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            if (animation)
-                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
-        }
-
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppForeDim"] = new SolidColorBrush(utils.Color_Transparent(App.AppForeColor, 80));
-            Resources["AppAccent"] = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
         public void Load_Translate()
         {
-            btn1.Content = utils.Get_Transalte("inew");
-            btn2.Content = utils.Get_Transalte("iup");
-            btn3.Content = utils.Get_Transalte("idown");
-            btn4.Content = utils.Get_Transalte("ilaunch");
-            btn5.Content = utils.Get_Transalte("idelete");
-            btn6.Content = utils.Get_Transalte("imodify");
-            dgi.Columns[0].Header = utils.Get_Transalte("page");
-            dgi.Columns[1].Header = utils.Get_Transalte("id");
-            dgi.Columns[2].Header = utils.Get_Transalte("name");
-            dgi.Columns[3].Header = utils.Get_Transalte("command");
+            btn1.Content = Hiro_Utils.Get_Transalte("inew");
+            btn2.Content = Hiro_Utils.Get_Transalte("iup");
+            btn3.Content = Hiro_Utils.Get_Transalte("idown");
+            btn4.Content = Hiro_Utils.Get_Transalte("ilaunch");
+            btn5.Content = Hiro_Utils.Get_Transalte("idelete");
+            btn6.Content = Hiro_Utils.Get_Transalte("imodify");
+            dgi.Columns[0].Header = Hiro_Utils.Get_Transalte("page");
+            dgi.Columns[1].Header = Hiro_Utils.Get_Transalte("id");
+            dgi.Columns[2].Header = Hiro_Utils.Get_Transalte("Name");
+            dgi.Columns[3].Header = Hiro_Utils.Get_Transalte("Command");
         }
 
         public void Load_Position()
         {
-            utils.Set_Control_Location(btn1, "inew");
-            utils.Set_Control_Location(btn2, "iup");
-            utils.Set_Control_Location(btn3, "idown");
-            utils.Set_Control_Location(btn4, "ilaunch");
-            utils.Set_Control_Location(btn5, "idelete");
-            utils.Set_Control_Location(btn6, "imodify");
-            utils.Set_Control_Location(dgi, "data");
+            Hiro_Utils.Set_Control_Location(btn1, "inew");
+            Hiro_Utils.Set_Control_Location(btn2, "iup");
+            Hiro_Utils.Set_Control_Location(btn3, "idown");
+            Hiro_Utils.Set_Control_Location(btn4, "ilaunch");
+            Hiro_Utils.Set_Control_Location(btn5, "idelete");
+            Hiro_Utils.Set_Control_Location(btn6, "imodify");
+            Hiro_Utils.Set_Control_Location(dgi, "data");
         }
 
         private void Dgi_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -75,19 +86,19 @@ namespace hiro
 
         private void Btn1_Click(object sender, RoutedEventArgs e)
         {
-            Hiro_NewItem hn = new(Hiro_Main);
-            hn.Load_ComboBox();
-            hn.ntn9.Visibility = Visibility.Hidden;
-            hn.tb7.Text = "";
-            hn.tb8.Text = "";
-            hn.keybox.SelectedIndex = 0;
-            hn.modibox.SelectedIndex = 0;
             if (Hiro_Main != null)
             {
-                Hiro_Main.newx.Content = utils.Get_Transalte("new");
+                if (Hiro_Main.hiro_newitem == null)
+                    Hiro_Main.hiro_newitem = new(Hiro_Main);
+                Hiro_Main.hiro_newitem.Load_ComboBox();
+                Hiro_Main.hiro_newitem.ntn9.Visibility = Visibility.Hidden;
+                Hiro_Main.hiro_newitem.tb7.Text = "";
+                Hiro_Main.hiro_newitem.tb8.Text = "";
+                Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
+                Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
+                Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("new");
+                Hiro_Main.current = Hiro_Main.hiro_newitem;
                 Hiro_Main.Set_Label(Hiro_Main.newx);
-                Hiro_Main.current = hn;
-                Hiro_Main.frame.Content = hn;
             }
             
         }
@@ -95,7 +106,7 @@ namespace hiro
         private void Btn2_Click(object sender, RoutedEventArgs e)
         {
             btn2.IsEnabled = false;
-            utils.Delay(200);
+            Hiro_Utils.Delay(200);
             btn2.IsEnabled = true;
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > 0 && dgi.SelectedIndex < App.cmditems.Count)
             {
@@ -104,16 +115,16 @@ namespace hiro
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command, App.cmditems[i - 1].HotKey);
                 App.cmditems[i - 1] = nec;
                 var inipath = App.dconfig;
-                utils.Write_Ini(inipath, i.ToString(), "title", nec.Name);
-                utils.Write_Ini(inipath, i.ToString(), "command", "(" + nec.Command + ")");
-                utils.Write_Ini(inipath, i.ToString(), "hotkey", nec.HotKey);
-                utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].Name);
-                utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].Command + ")");
-                utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", App.cmditems[i].HotKey);
+                Hiro_Utils.Write_Ini(inipath, i.ToString(), "Title", nec.Name);
+                Hiro_Utils.Write_Ini(inipath, i.ToString(), "Command", "(" + nec.Command + ")");
+                Hiro_Utils.Write_Ini(inipath, i.ToString(), "HotKey", nec.HotKey);
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", App.cmditems[i].Name);
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", "(" + App.cmditems[i].Command + ")");
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
                 dgi.SelectedIndex = i - 1;
                 App.Load_Menu();
-                var vsi = utils.FindHotkeyById(i - 1);
-                var vsx = utils.FindHotkeyById(i);
+                var vsi = Hiro_Utils.FindHotkeyById(i - 1);
+                var vsx = Hiro_Utils.FindHotkeyById(i);
                 if (vsi > -1)
                     App.vs[vsi + 1] = i;
                 if (vsx > -1)
@@ -125,7 +136,7 @@ namespace hiro
         private void Btn3_Click(object sender, RoutedEventArgs e)
         {
             btn3.IsEnabled = false;
-            utils.Delay(200);
+            Hiro_Utils.Delay(200);
             btn3.IsEnabled = true;
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count - 1)
             {
@@ -134,16 +145,16 @@ namespace hiro
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command, App.cmditems[i + 1].HotKey);
                 App.cmditems[i + 1] = nec;
                 var inipath = App.dconfig;
-                utils.Write_Ini(inipath, (i + 1).ToString(), "title", App.cmditems[i].Name);
-                utils.Write_Ini(inipath, (i + 1).ToString(), "command", "(" + App.cmditems[i].Command + ")");
-                utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", App.cmditems[i].HotKey);
-                utils.Write_Ini(inipath, (i + 2).ToString(), "title", App.cmditems[i + 1].Name);
-                utils.Write_Ini(inipath, (i + 2).ToString(), "command", "(" + App.cmditems[i + 1].Command + ")");
-                utils.Write_Ini(inipath, (i + 2).ToString(), "hotkey", App.cmditems[i + 1].HotKey);
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", App.cmditems[i].Name);
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", "(" + App.cmditems[i].Command + ")");
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
+                Hiro_Utils.Write_Ini(inipath, (i + 2).ToString(), "Title", App.cmditems[i + 1].Name);
+                Hiro_Utils.Write_Ini(inipath, (i + 2).ToString(), "Command", "(" + App.cmditems[i + 1].Command + ")");
+                Hiro_Utils.Write_Ini(inipath, (i + 2).ToString(), "HotKey", App.cmditems[i + 1].HotKey);
                 dgi.SelectedIndex = i + 1;
                 App.Load_Menu();
-                var vsi = utils.FindHotkeyById(i + 1);
-                var vsx = utils.FindHotkeyById(i);
+                var vsi = Hiro_Utils.FindHotkeyById(i + 1);
+                var vsx = Hiro_Utils.FindHotkeyById(i);
                 if (vsi > -1)
                     App.vs[vsi + 1] = i;
                 if (vsx > -1)
@@ -155,7 +166,7 @@ namespace hiro
         private void Btn5_Click(object sender, RoutedEventArgs e)
         {
             btn5.IsEnabled = false;
-            utils.Delay(200);
+            Hiro_Utils.Delay(200);
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
@@ -165,30 +176,30 @@ namespace hiro
                     App.cmditems[i].Name = App.cmditems[i + 1].Name;
                     App.cmditems[i].Command = App.cmditems[i + 1].Command;
                     App.cmditems[i].HotKey = App.cmditems[i + 1].HotKey;
-                    utils.Write_Ini(inipath, (i + 1).ToString(), "title", utils.Read_Ini(inipath, (i + 2).ToString(), "title", " "));
-                    utils.Write_Ini(inipath, (i + 1).ToString(), "command", utils.Read_Ini(inipath, (i + 2).ToString(), "command", " "));
-                    utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", utils.Read_Ini(inipath, (i + 2).ToString(), "hotkey", " "));
+                    Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", Hiro_Utils.Read_Ini(inipath, (i + 2).ToString(), "Title", " "));
+                    Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", Hiro_Utils.Read_Ini(inipath, (i + 2).ToString(), "Command", " "));
+                    Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", Hiro_Utils.Read_Ini(inipath, (i + 2).ToString(), "HotKey", " "));
                     i++;
                     System.Windows.Forms.Application.DoEvents();
-                    var vst = utils.FindHotkeyById(i);
+                    var vst = Hiro_Utils.FindHotkeyById(i);
                     if (vst > -1)
                     {
                         App.vs[vst + 1]--;
                     }
                 }
-                utils.Write_Ini(inipath, (i + 1).ToString(), "title", " ");
-                utils.Write_Ini(inipath, (i + 1).ToString(), "command", " ");
-                utils.Write_Ini(inipath, (i + 1).ToString(), "hotkey", " ");
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", " ");
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", " ");
+                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", " ");
                 App.cmditems.RemoveAt(i);
                 var total = (App.cmditems.Count % 10 == 0) ? App.cmditems.Count / 10 : App.cmditems.Count / 10 + 1;
                 if (App.page > total - 1 && App.page > 0)
                     App.page--;
                 App.Load_Menu();
             }
-            var vsi = utils.FindHotkeyById(dgi.SelectedIndex);
+            var vsi = Hiro_Utils.FindHotkeyById(dgi.SelectedIndex);
             if (vsi > -1)
             {
-                utils.UnregisterKey(vsi);
+                Hiro_Utils.UnregisterKey(vsi);
             }
             btn5.IsEnabled = true;
             GC.Collect();
@@ -196,14 +207,15 @@ namespace hiro
 
         private void Btn6_Click(object sender, RoutedEventArgs e)
         {
-            if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
+            if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count && Hiro_Main != null)
             {
-                Hiro_NewItem hn = new(Hiro_Main);
-                hn.index = dgi.SelectedIndex;
-                hn.Load_ComboBox();
-                hn.ntn9.Visibility = Visibility.Visible;
-                hn.tb7.Text = App.cmditems[dgi.SelectedIndex].Name;
-                hn.tb8.Text = App.cmditems[dgi.SelectedIndex].Command;
+                if (Hiro_Main.hiro_newitem == null)
+                    Hiro_Main.hiro_newitem = new(Hiro_Main);
+                Hiro_Main.hiro_newitem.index = dgi.SelectedIndex;
+                Hiro_Main.hiro_newitem.Load_ComboBox();
+                Hiro_Main.hiro_newitem.ntn9.Visibility = Visibility.Visible;
+                Hiro_Main.hiro_newitem.tb7.Text = App.cmditems[dgi.SelectedIndex].Name;
+                Hiro_Main.hiro_newitem.tb8.Text = App.cmditems[dgi.SelectedIndex].Command;
                 var key = App.cmditems[dgi.SelectedIndex].HotKey;
                 try
                 {
@@ -211,40 +223,35 @@ namespace hiro
                     {
                         var mo = int.Parse(key[..key.IndexOf(",")]);
                         var vkey = int.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
-                        hn.modibox.SelectedIndex = utils.Index_Modifier(false, mo);
-                        hn.keybox.SelectedIndex = utils.Index_vKey(false, vkey);
+                        Hiro_Main.hiro_newitem.modibox.SelectedIndex = Hiro_Utils.Index_Modifier(false, mo);
+                        Hiro_Main.hiro_newitem.keybox.SelectedIndex = Hiro_Utils.Index_vKey(false, vkey);
                     }
                     else
                     {
-                        hn.modibox.SelectedIndex = 0;
-                        hn.keybox.SelectedIndex = 0;
+                        Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
+                        Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
                     }
                 }
                 catch (Exception ex)
                 {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
-                    hn.modibox.SelectedIndex = 0;
-                    hn.keybox.SelectedIndex = 0;
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
+                    Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
                 }
-                if (Hiro_Main != null)
-                {
-                    Hiro_Main.newx.Content = utils.Get_Transalte("mod");
-                    Hiro_Main.Set_Label(Hiro_Main.newx);
-                    Hiro_Main.current = hn;
-                    Hiro_Main.frame.Content = hn;
-                }
-                
+                Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("mod");
+                Hiro_Main.current = Hiro_Main.hiro_newitem;
+                Hiro_Main.Set_Label(Hiro_Main.newx);                
             }
         }
 
         private void Btn4_Click(object sender, RoutedEventArgs e)
         {
             btn4.IsEnabled = false;
-            utils.Delay(200);
+            Hiro_Utils.Delay(200);
             btn4.IsEnabled = true;
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
-                utils.RunExe(App.cmditems[dgi.SelectedIndex].Command);
+                Hiro_Utils.RunExe(App.cmditems[dgi.SelectedIndex].Command);
             }
         }
     }

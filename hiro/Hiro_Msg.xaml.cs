@@ -4,25 +4,26 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace hiro
 {
     /// <summary>
     /// message.xaml の相互作用ロジック
     /// </summary>
-    public partial class Message : Window
+    public partial class Hiro_Msg : Window
     {
-        internal Background? bg = null;
+        internal Hiro_Background? bg = null;
         internal String? toolstr = null;
         internal int aflag = -1;
         internal int bflag = 0;
-        public Message(string? config = null)
+        public Hiro_Msg(string? config = null)
         {
             InitializeComponent();
             toolstr = config;
             if (toolstr != null)
             {
-                string sndPath = utils.Path_Prepare_EX(utils.Path_Prepare(utils.Read_Ini(toolstr, "Message", "Music", "")));
+                string sndPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Music", "")));
                 if (System.IO.File.Exists(sndPath))
                 try
                 {
@@ -34,23 +35,54 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                 }
             }
-            
             SourceInitialized += OnSourceInitialized;
-            Loaded += delegate
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
-                Loadbgi(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")));
+                acceptbtn.Visibility = Visibility.Visible;
+                rejectbtn.Visibility = Visibility.Visible;
+                cancelbtn.Visibility = Visibility.Visible;
+                backtitle.Visibility = Visibility.Visible;
+                backcontent.Visibility = Visibility.Visible;
+            };
+                Loaded += delegate
+            {
+                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                 if (App.dflag)
                 {
-                    utils.LogtoFile("[MESSAGE]Title: " + backtitle.Content);
-                    utils.LogtoFile("[MESSAGE]Content: " + backcontent.Content);
+                    Hiro_Utils.LogtoFile("[MESSAGE]Title: " + backtitle.Content);
+                    Hiro_Utils.LogtoFile("[MESSAGE]Content: " + backcontent.Content);
                 }
             };
-                
-            utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            ContentRendered += delegate
+            {
+                Hiro_Utils.Delay(1);
+                HiHiro();
+            };
+            Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
+
+        public void HiHiro()
+        {
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                acceptbtn.Visibility = Visibility.Visible;
+                rejectbtn.Visibility = Visibility.Visible;
+                cancelbtn.Visibility = Visibility.Visible;
+                backtitle.Visibility = Visibility.Visible;
+                backcontent.Visibility = Visibility.Visible;
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(3, acceptbtn, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, rejectbtn, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, cancelbtn, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(0, backtitle, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(0, backcontent, sb, 50, null);
+                sb.Begin();
+            }
+        }
+
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
@@ -82,17 +114,17 @@ namespace hiro
             {
                 bg.Show();
             }
-            Width = (toolstr != null && System.IO.File.Exists(toolstr) && !utils.Read_Ini(toolstr, "location", "width", "-1").Equals("-1")) ? double.Parse(utils.Read_Ini(toolstr, "location", "width", "-1")) : SystemParameters.PrimaryScreenWidth;
-            Height = (toolstr != null && System.IO.File.Exists(toolstr) && !utils.Read_Ini(toolstr, "location", "width", "-1").Equals("-1")) ? double.Parse(utils.Read_Ini(toolstr, "location", "height", "-1")) : 200;
+            Width = (toolstr != null && System.IO.File.Exists(toolstr) && !Hiro_Utils.Read_Ini(toolstr, "location", "width", "-1").Equals("-1")) ? double.Parse(Hiro_Utils.Read_Ini(toolstr, "location", "width", "-1")) : SystemParameters.PrimaryScreenWidth;
+            Height = (toolstr != null && System.IO.File.Exists(toolstr) && !Hiro_Utils.Read_Ini(toolstr, "location", "width", "-1").Equals("-1")) ? double.Parse(Hiro_Utils.Read_Ini(toolstr, "location", "height", "-1")) : 200;
             if (toolstr != null && System.IO.File.Exists(toolstr))
             {
-                utils.Set_Control_Location(backtitle, "title", extra: true, path: toolstr);
-                utils.Set_Control_Location(cancelbtn, "cancel", extra: true, bottom: true, right: true, path: toolstr);
-                utils.Set_Control_Location(rejectbtn, "reject", extra: true, bottom: true, right: true, path: toolstr);
-                utils.Set_Control_Location(acceptbtn, "accept", extra: true, bottom: true, right: true, path: toolstr);
+                Hiro_Utils.Set_Control_Location(backtitle, "title", extra: true, path: toolstr);
+                Hiro_Utils.Set_Control_Location(cancelbtn, "cancel", extra: true, bottom: true, right: true, path: toolstr);
+                Hiro_Utils.Set_Control_Location(rejectbtn, "reject", extra: true, bottom: true, right: true, path: toolstr);
+                Hiro_Utils.Set_Control_Location(acceptbtn, "accept", extra: true, bottom: true, right: true, path: toolstr);
                 backcontent.Height = Height - backtitle.Height - backtitle.Margin.Top * 2 - acceptbtn.Margin.Bottom * 2 - acceptbtn.Height;
                 var le = backcontent.Width;
-                utils.Set_Control_Location(backcontent, "content", extra: true, path: toolstr);
+                Hiro_Utils.Set_Control_Location(backcontent, "content", extra: true, path: toolstr);
                 if (le == backcontent.Width)
                     backcontent.Width = Width - backcontent.Margin.Left * 2;
                 sv.FontFamily = backcontent.FontFamily;
@@ -113,7 +145,7 @@ namespace hiro
             acceptbtn.Foreground = new SolidColorBrush(App.AppForeColor);
             rejectbtn.Foreground = new SolidColorBrush(App.AppForeColor);
             cancelbtn.Foreground = new SolidColorBrush(App.AppForeColor);
-            acceptbtn.Background = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            acceptbtn.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             rejectbtn.Background = acceptbtn.Background;
             cancelbtn.Background = acceptbtn.Background;
             acceptbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
@@ -125,21 +157,21 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            if (toolstr != null && System.IO.File.Exists(utils.Path_Prepare_EX(utils.Path_Prepare(utils.Read_Ini(toolstr, "Message", "Background", "")))))
-                utils.Set_Bgimage(bgimage, utils.Path_Prepare_EX(utils.Path_Prepare(utils.Read_Ini(toolstr, "Message", "Background", ""))));
+            if (toolstr != null && System.IO.File.Exists(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", "")))))
+                Hiro_Utils.Set_Bgimage(bgimage, Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", ""))));
             else
-                utils.Set_Bgimage(bgimage);
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            utils.Blur_Animation(direction, animation, bgimage, this);
+                Hiro_Utils.Set_Bgimage(bgimage);
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
         private void Acceptbtn_Click(object sender, RoutedEventArgs e)
         {
             if (App.dflag)
-                utils.LogtoFile("[MESSAGE]Accept Button Clicked");
+                Hiro_Utils.LogtoFile("[MESSAGE]Accept Button Clicked");
             if (toolstr != null)
-                utils.RunExe(utils.Read_Ini(toolstr, "Action", "accept", "nop"));
+                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "accept", "nop"));
             if (bg != null)
                 bg.Fade_Out();
             Close();
@@ -148,9 +180,9 @@ namespace hiro
         private void Rejectbtn_Click(object sender, RoutedEventArgs e)
         {
             if (App.dflag)
-                utils.LogtoFile("[MESSAGE]Reject Button Clicked");
+                Hiro_Utils.LogtoFile("[MESSAGE]Reject Button Clicked");
             if (toolstr != null)
-                utils.RunExe(utils.Read_Ini(toolstr, "Action", "reject", "nop"));
+                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "reject", "nop"));
             if (bg != null)
                 bg.Fade_Out();
             Close();
@@ -159,9 +191,9 @@ namespace hiro
         private void Cancelbtn_Click(object sender, RoutedEventArgs e)
         {
             if (App.dflag)
-                utils.LogtoFile("[MESSAGE]Cancel Button Clicked");
+                Hiro_Utils.LogtoFile("[MESSAGE]Cancel Button Clicked");
             if (toolstr != null)
-                utils.RunExe(utils.Read_Ini(toolstr, "Action", "cancel", "nop"));
+                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "cancel", "nop"));
             if (bg != null)
                 bg.Fade_Out();
             Close();
@@ -171,7 +203,7 @@ namespace hiro
         {
             if (bg != null)
                 bg.Fade_Out();
-            if (toolstr != null && utils.Read_Ini(toolstr, "Action", "Delete", "false").ToLower().Equals("true"))
+            if (toolstr != null && Hiro_Utils.Read_Ini(toolstr, "Action", "Delete", "false").ToLower().Equals("true"))
             {
                 System.IO.File.Delete(toolstr);
             }
@@ -181,7 +213,7 @@ namespace hiro
         {
             if (bg == null)
             {
-                utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+                Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
             }
         }
 

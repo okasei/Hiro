@@ -12,14 +12,38 @@ namespace hiro
     /// </summary>
     public partial class Hiro_NewItem : Page
     {
-        private Mainui? Hiro_Main = null;
+        private Hiro_MainUI? Hiro_Main = null;
         internal int index = -1;
-        public Hiro_NewItem(Mainui? Parent)
+        public Hiro_NewItem(Hiro_MainUI? Parent)
         {
             InitializeComponent();
             Hiro_Main = Parent;
             Hiro_Initialize();
-            Loaded += Hiro_NewItem_Loaded;
+            Loaded += delegate
+            {
+                HiHiro();
+            };
+        }
+
+        public void HiHiro()
+        {
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(1, ntn1, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, ntn2, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, ntn3, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, ntn4, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, ntn5, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(2, ntn6, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(2, ntn7, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(2, ntn8, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, ntn9, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, ntnx1, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, ntnx2, sb, -50, null);
+                sb.Begin();
+            }
         }
 
         private void Hiro_Initialize()
@@ -28,14 +52,6 @@ namespace hiro
             Load_Translate();
             Load_Position();
         }
-
-        private void Hiro_NewItem_Loaded(object sender, RoutedEventArgs e)
-        {
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            if (animation)
-                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
-        }
-
         public void Load_ComboBox()
         {
             modibox.Items.Clear();
@@ -45,104 +61,104 @@ namespace hiro
             {
                 modibox.Items.Add(new ComboBoxItem()
                 {
-                    Content = utils.Get_Transalte(arss)
+                    Content = Hiro_Utils.Get_Transalte(arss)
                 });
             }
             keybox.Items.Add(new ComboBoxItem()
             {
-                Content = utils.Get_Transalte("novkey")
+                Content = Hiro_Utils.Get_Transalte("novkey")
             });
             string[] crs = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
             foreach (var crss in crs)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = utils.Get_Transalte("charkey").Replace("%c", crss)
+                    Content = Hiro_Utils.Get_Transalte("charkey").Replace("%c", crss)
                 });
             }
             for (int nuss = 0; nuss < 10; nuss++)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = utils.Get_Transalte("numkey").Replace("%n", nuss.ToString())
+                    Content = Hiro_Utils.Get_Transalte("numkey").Replace("%n", nuss.ToString())
                 });
             }
             for (int nuss = 1; nuss < 13; nuss++)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = utils.Get_Transalte("fnkey").Replace("%f", "F" + nuss.ToString())
+                    Content = Hiro_Utils.Get_Transalte("fnkey").Replace("%f", "F" + nuss.ToString())
                 });
             }
             keybox.Items.Add(new ComboBoxItem()
             {
-                Content = utils.Get_Transalte("space")
+                Content = Hiro_Utils.Get_Transalte("space")
             });
             keybox.Items.Add(new ComboBoxItem()
             {
-                Content = utils.Get_Transalte("esc")
+                Content = Hiro_Utils.Get_Transalte("esc")
             });
             foreach (object obj in modibox.Items)
             {
                 if (obj is ComboBoxItem mi)
-                    utils.Set_Control_Location(mi, "moditem", location: false);
+                    Hiro_Utils.Set_Control_Location(mi, "moditem", location: false);
             }
             foreach (object obj in keybox.Items)
             {
                 if (obj is ComboBoxItem mi)
-                    utils.Set_Control_Location(mi, "vkeyitem", location: false);
+                    Hiro_Utils.Set_Control_Location(mi, "vkeyitem", location: false);
             }
         }
 
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppAccent"] = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
         public void Load_Translate()
         {
-            ntn1.Content = utils.Get_Transalte("filename");
-            ntn2.Content = utils.Get_Transalte("hide");
-            ntn3.Content = utils.Get_Transalte("unformat");
-            ntn4.Content = utils.Get_Transalte("ban");
-            ntn5.Content = utils.Get_Transalte("select");
-            ntn6.Content = utils.Get_Transalte("quot");
-            ntn7.Content = utils.Get_Transalte("explorer");
-            ntn8.Content = utils.Get_Transalte("openfile");
-            klabel.Content = utils.Get_Transalte("hotkey");
-            ntn9.Content = utils.Get_Transalte("reset");
-            ntnx.Content = utils.Get_Transalte("clear");
-            ntnx1.Content = utils.Get_Transalte("ok");
-            ntnx2.Content = utils.Get_Transalte("cancel");
-            glabel.Content = utils.Get_Transalte("itemname");
-            glabel2.Content = utils.Get_Transalte("cmd");
+            ntn1.Content = Hiro_Utils.Get_Transalte("filename");
+            ntn2.Content = Hiro_Utils.Get_Transalte("hide");
+            ntn3.Content = Hiro_Utils.Get_Transalte("unformat");
+            ntn4.Content = Hiro_Utils.Get_Transalte("ban");
+            ntn5.Content = Hiro_Utils.Get_Transalte("select");
+            ntn6.Content = Hiro_Utils.Get_Transalte("quot");
+            ntn7.Content = Hiro_Utils.Get_Transalte("explorer");
+            ntn8.Content = Hiro_Utils.Get_Transalte("openfile");
+            klabel.Content = Hiro_Utils.Get_Transalte("HotKey");
+            ntn9.Content = Hiro_Utils.Get_Transalte("reset");
+            ntnx.Content = Hiro_Utils.Get_Transalte("clear");
+            ntnx1.Content = Hiro_Utils.Get_Transalte("ok");
+            ntnx2.Content = Hiro_Utils.Get_Transalte("cancel");
+            glabel.Content = Hiro_Utils.Get_Transalte("itemname");
+            glabel2.Content = Hiro_Utils.Get_Transalte("cmd");
         }
 
         public void Load_Position()
         {
-            utils.Set_Control_Location(ntn1, "filename", right: true);
-            utils.Set_Control_Location(ntn2, "hide", right: true);
-            utils.Set_Control_Location(ntn3, "unformat", right: true);
-            utils.Set_Control_Location(ntn4, "ban", right: true);
-            utils.Set_Control_Location(ntn5, "select", right: true);
-            utils.Set_Control_Location(ntn6, "quot", right: true);
-            utils.Set_Control_Location(ntn7, "explorer", right: true);
-            utils.Set_Control_Location(ntn8, "openfile", right: true);
-            utils.Set_Control_Location(ntn9, "reset", bottom: true);
-            utils.Set_Control_Location(ntnx, "clear", bottom: true, right: true);
-            utils.Set_Control_Location(ntnx1, "ok", bottom: true, right: true);
-            utils.Set_Control_Location(ntnx2, "cancel", bottom: true, right: true);
-            utils.Set_Control_Location(tb7, "nametb");
-            utils.Set_Control_Location(tb8, "cmdtb");
-            utils.Set_Control_Location(klabel, "hotkey");
-            utils.Set_Control_Location(modibox, "modifier");
-            utils.Set_Control_Location(modiname, "modifier");
-            utils.Set_Control_Location(keybox, "vkey");
-            utils.Set_Control_Location(keylabel, "vkey");
-            utils.Set_Control_Location(glabel, "itemname");
-            utils.Set_Control_Location(glabel2, "command");
-            utils.Set_Control_Location(tb9, "detailtb");
+            Hiro_Utils.Set_Control_Location(ntn1, "filename", right: true);
+            Hiro_Utils.Set_Control_Location(ntn2, "hide", right: true);
+            Hiro_Utils.Set_Control_Location(ntn3, "unformat", right: true);
+            Hiro_Utils.Set_Control_Location(ntn4, "ban", right: true);
+            Hiro_Utils.Set_Control_Location(ntn5, "select", right: true);
+            Hiro_Utils.Set_Control_Location(ntn6, "quot", right: true);
+            Hiro_Utils.Set_Control_Location(ntn7, "explorer", right: true);
+            Hiro_Utils.Set_Control_Location(ntn8, "openfile", right: true);
+            Hiro_Utils.Set_Control_Location(ntn9, "reset", bottom: true);
+            Hiro_Utils.Set_Control_Location(ntnx, "clear", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(ntnx1, "ok", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(ntnx2, "cancel", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(tb7, "nametb");
+            Hiro_Utils.Set_Control_Location(tb8, "cmdtb");
+            Hiro_Utils.Set_Control_Location(klabel, "hotkey");
+            Hiro_Utils.Set_Control_Location(modibox, "modifier");
+            Hiro_Utils.Set_Control_Location(modiname, "modifier");
+            Hiro_Utils.Set_Control_Location(keybox, "vkey");
+            Hiro_Utils.Set_Control_Location(keylabel, "vkey");
+            Hiro_Utils.Set_Control_Location(glabel, "itemname");
+            Hiro_Utils.Set_Control_Location(glabel2, "command");
+            Hiro_Utils.Set_Control_Location(tb9, "detailtb");
         }
 
         private void Ntn1_Click(object sender, RoutedEventArgs e)
@@ -257,11 +273,11 @@ namespace hiro
         {
             string strFileName = "";
             Microsoft.Win32.OpenFileDialog ofd = new();
-            ofd.Filter = utils.Get_Transalte("allfiles") + "|*.*";
+            ofd.Filter = Hiro_Utils.Get_Transalte("allfiles") + "|*.*";
             ofd.ValidateNames = true; // 验证用户输入是否是一个有效的Windows文件名
             ofd.CheckFileExists = true; //验证路径的有效性
             ofd.CheckPathExists = true;//验证路径的有效性
-            ofd.Title = utils.Get_Transalte("openfile") + " - " + App.AppTitle;
+            ofd.Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle;
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
                 strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
@@ -277,7 +293,7 @@ namespace hiro
                 }
                 if (strFileName.IndexOf(" ") != -1)
                     strFileName = "\"" + strFileName + "\"";
-                strFileName = utils.Anti_Path_Prepare(strFileName);
+                strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName);
                 tb8.Text = strFileName;
                 strFileName = strFileName[(strFileName.LastIndexOf("\\") + 1)..];
                 if (strFileName.LastIndexOf(".") != -1)
@@ -313,27 +329,27 @@ namespace hiro
             {
                 return;
             }
-            var hk = utils.Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + utils.Index_vKey(true, keybox.SelectedIndex).ToString();
+            var hk = Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + Hiro_Utils.Index_vKey(true, keybox.SelectedIndex).ToString();
             if (ntn9.Visibility == Visibility.Hidden)
             {
                 var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text, hk));
-                utils.Write_Ini(App.dconfig, i.ToString(), "title", tb7.Text);
-                utils.Write_Ini(App.dconfig, i.ToString(), "command", "(" + tb8.Text + ")");
-                utils.Write_Ini(App.dconfig, i.ToString(), "hotkey", hk);
+                Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "Title", tb7.Text);
+                Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "Command", "(" + tb8.Text + ")");
+                Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "HotKey", hk);
                 if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
                 {
                     try
                     {
                         if (App.wnd != null)
                         {
-                            utils.Registerkey((uint)utils.Index_Modifier(true, modibox.SelectedIndex), (Key)utils.Index_vKey(true, keybox.SelectedIndex), i);
+                            Hiro_Utils.RegisterKey((uint)Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex), (Key)Hiro_Utils.Index_vKey(true, keybox.SelectedIndex), i);
                         }
                     }
                     catch (Exception ex)
                     {
-                        utils.LogtoFile("[ERROR]" + ex.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                     }
                 }
             }
@@ -341,25 +357,25 @@ namespace hiro
             {
                 App.cmditems[index].Name = tb7.Text;
                 App.cmditems[index].Command = tb8.Text;
-                utils.Write_Ini(App.dconfig, (index + 1).ToString(), "title", tb7.Text);
-                utils.Write_Ini(App.dconfig, (index + 1).ToString(), "command", "(" + tb8.Text + ")");
-                utils.Write_Ini(App.dconfig, (index + 1).ToString(), "hotkey", hk);
+                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Title", tb7.Text);
+                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Command", "(" + tb8.Text + ")");
+                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "HotKey", hk);
                 if (!App.cmditems[index].HotKey.Equals(hk))
                 {
                     App.cmditems[index].HotKey = hk;
-                    utils.UnregisterKey(utils.FindHotkeyById(index));
+                    Hiro_Utils.UnregisterKey(Hiro_Utils.FindHotkeyById(index));
                     if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
                     {
                         try
                         {
                             if (App.wnd != null)
                             {
-                                utils.Registerkey((uint)utils.Index_Modifier(true, modibox.SelectedIndex), (Key)utils.Index_vKey(true, keybox.SelectedIndex), index);
+                                Hiro_Utils.RegisterKey((uint)Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex), (Key)Hiro_Utils.Index_vKey(true, keybox.SelectedIndex), index);
                             }
                         }
                         catch (Exception ex)
                         {
-                            utils.LogtoFile("[ERROR]" + ex.Message);
+                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                         }
                     }
                 }
@@ -542,7 +558,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            utils.LogtoFile("[ERROR]" + ex.Message);
+                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                         }
                         if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
                         {
@@ -559,7 +575,7 @@ namespace hiro
 
         private void Tb8_TextChanged(object sender, TextChangedEventArgs e)
         {
-            tb9.Text = utils.Get_CMD_Translation(tb8.Text);
+            tb9.Text = Hiro_Utils.Get_CMD_Translation(tb8.Text);
             if (tb9.Text.Equals(""))
             {
                 tb9.Visibility = Visibility.Hidden;

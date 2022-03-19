@@ -15,19 +15,57 @@ namespace hiro
         {
             InitializeComponent();
             Hiro_Initialize();
-            Loaded += Hiro_Home_Loaded;
         }
 
         private void Hiro_Initialize()
         {
             Load_Color();
+            Update_Labels();
         }
 
-        private void Hiro_Home_Loaded(object sender, RoutedEventArgs e)
+        public void Update_Labels()
         {
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            if (animation)
-                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
+            var hr = DateTime.Now.Hour;
+            var morning = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "morning", "[6,7,8,9,10]");
+            var noon = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "noon", "[11,12,13]");
+            var afternoon = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
+            var evening = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "evening", "[19,20,21,22]");
+            var night = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "night", "[23,0,1,2,3,4,5]");
+            morning = morning.Replace("[", "[,").Replace("]", ",]").Trim();
+            noon = noon.Replace("[", "[,").Replace("]", ",]").Trim();
+            afternoon = afternoon.Replace("[", "[,").Replace("]", ",]").Trim();
+            evening = evening.Replace("[", "[,").Replace("]", ",]").Trim();
+            night = night.Replace("[", "[,").Replace("]", ",]").Trim();
+            if (morning.IndexOf("," + hr + ",") != -1)
+            {
+                Set_Labels("morning");
+            }
+            else if (noon.IndexOf("," + hr + ",") != -1)
+            {
+                Set_Labels("noon");
+            }
+            else if (afternoon.IndexOf("," + hr + ",") != -1)
+            {
+                Set_Labels("afternoon");
+            }
+            else if (evening.IndexOf("," + hr + ",") != -1)
+            {
+                Set_Labels("evening");
+            }
+            else if (night.IndexOf("," + hr + ",") != -1)
+            {
+                Set_Labels("night");
+            }
+        }
+
+        private void Set_Labels(string val)
+        {
+            val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Transalte(val).Replace("%u", App.EnvironmentUsername) : Hiro_Utils.Get_Transalte(val + "cus").Replace("%u", App.Username);
+            if (!Hello.Text.Equals(val))
+                Hello.Text = val;
+            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Transalte("copyright")));
+            if (!Copyright.Text.Equals(val))
+                Copyright.Text = val;
         }
 
         public void Load_Color()

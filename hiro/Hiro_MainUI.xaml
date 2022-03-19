@@ -1,14 +1,14 @@
-﻿<Window
+﻿<Window x:Class="hiro.Hiro_MainUI"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
-         x:Name="ui" x:Class="hiro.Mainui"
+         x:Name="ui"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="Ui_MouseDown" Background="White" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="Ui_Loaded" StateChanged="Ui_StateChanged"
+        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" Background="White" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="Ui_Loaded" StateChanged="Ui_StateChanged"
  >
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
@@ -28,10 +28,9 @@
             <Label x:Name="configx" Style="{DynamicResource HiroLabel}" Content="Config" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" MouseLeftButtonDown="Configx_MouseLeftButtonDown" Height="32" VerticalAlignment="Top" Margin="0,96,0,0"/>
             <Label x:Name="helpx" Style="{DynamicResource HiroLabel}" Content="Help" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" MouseLeftButtonDown="Helpx_MouseLeftButtonDown" Height="32" VerticalAlignment="Top" Margin="0,128,0,0"/>
             <Label x:Name="aboutx" Style="{DynamicResource HiroLabel}" Content="About" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" MouseLeftButtonDown="Aboutx_MouseLeftButtonDown" Height="32" VerticalAlignment="Top" Margin="0,160,0,0"/>
-            <Label x:Name="newx" Style="{DynamicResource HiroLabel}" Content="New" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Visible" MouseLeftButtonDown="Newx_MouseLeftButtonDown" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,192,0,0"/>
-            <Label x:Name="colorx" Style="{DynamicResource HiroLabel}" Content="Color" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Visible" MouseLeftButtonDown="Colorx_MouseLeftButtonDown" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,192,0,0"/>
-            <Label x:Name="timex" Style="{DynamicResource HiroLabel}" Content="Time" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Visible" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,224,0,0" MouseLeftButtonDown="Timex_MouseLeftButtonDown"/>
-            <Button x:Name="coloruse1" Content="Button" Visibility="Hidden" Foreground ="{DynamicResource AppFore}"/>
+            <Label x:Name="newx" Style="{DynamicResource HiroLabel}" Content="New" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" MouseLeftButtonDown="Newx_MouseLeftButtonDown" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,192,0,0"/>
+            <Label x:Name="colorx" Style="{DynamicResource HiroLabel}" Content="Color" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" MouseLeftButtonDown="Colorx_MouseLeftButtonDown" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,192,0,0"/>
+            <Label x:Name="timex" Style="{DynamicResource HiroLabel}" Content="Time" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,224,0,0" MouseLeftButtonDown="Timex_MouseLeftButtonDown"/>
         </Grid>
         <Label x:Name="titlelabel" Style="{DynamicResource HiroLabel}" Content="Hiro" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontWeight="Bold" MouseDown="Titlelabel_MouseDown" FontSize="14" Height="27" SizeChanged="Titlelabel_SizeChanged"/>
         <Label x:Name="versionlabel" Style="{DynamicResource HiroLabel}" Content="♥" HorizontalAlignment="Left" Margin="37,5,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontWeight="Bold" FontFamily="Segoe UI" FontSize="10" RenderTransformOrigin="0.543,0.235" VerticalContentAlignment="Bottom" Height="21" MouseDoubleClick="Versionlabel_MouseDoubleClick"/>
@@ -40,7 +39,7 @@
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
                         <Storyboard>
-                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="{DynamicResource AppForeDimColor}" 
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
                                         Storyboard.TargetName="minbtn"                                             
                                         Storyboard.TargetProperty="Background.Color"/>
                         </Storyboard>
@@ -49,7 +48,7 @@
                 <EventTrigger RoutedEvent="MouseLeave">
                     <BeginStoryboard>
                         <Storyboard>
-                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
                                         Storyboard.TargetName="minbtn"                                             
                                         Storyboard.TargetProperty="Background.Color"/>
                         </Storyboard>
@@ -58,8 +57,7 @@
             </Label.Triggers>
         </Label>
         <ProgressBar x:Name="pb" Height="5" Width="548" Background="Transparent" BorderBrush="{x:Null}"  Foreground ="{DynamicResource AppFore}" IsIndeterminate="True" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.RowSpan="2" Visibility="Hidden"/>
-        <Frame x:Name="frame" NavigationUIVisibility="Hidden" Source="/Hiro_Home.xaml" Margin="130,30,0,-15" Background="Transparent" Grid.Column="2" Width="420" Height="440" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top">
-        </Frame>
+        <Frame x:Name="frame" NavigationUIVisibility="Hidden" Source="/Hiro_Home.xaml" Margin="130,30,0,0" Background="Transparent" Width="420" Height="420" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top" LoadCompleted="Frame_LoadCompleted" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.IsSharedSizeScope="True"/>
         <Label x:Name="extend_background" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Red" FontFamily="Segoe UI" FontWeight="Normal" FontSize="14" Height="30" Width="30" Visibility="Hidden" Margin="151,10,0,0" MouseLeftButtonDown="Extend_background_MouseLeftButtonDown"/>
         <Label x:Name="extended" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontWeight="Normal" FontSize="14" Height="30" Width="30" Visibility="Hidden" MouseLeftButtonDown="Extended_MouseLeftButtonDown" RenderTransformOrigin="0.5,0.5" Margin="1,1,1,1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
             <Label.Background>
@@ -71,7 +69,7 @@
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
                         <Storyboard>
-                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="Red" 
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="Red" 
                                         Storyboard.TargetName="closebtn"                                             
                                         Storyboard.TargetProperty="Background.Color"/>
                         </Storyboard>
@@ -80,7 +78,7 @@
                 <EventTrigger RoutedEvent="MouseLeave">
                     <BeginStoryboard>
                         <Storyboard>
-                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" To="#00000000" 
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
                                         Storyboard.TargetName="closebtn"                                             
                                         Storyboard.TargetProperty="Background.Color"/>
                         </Storyboard>

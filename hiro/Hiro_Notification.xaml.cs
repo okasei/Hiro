@@ -10,7 +10,7 @@ namespace hiro
     /// <summary>
     /// notification.xaml の相互作用ロジック
     /// </summary>
-    public partial class Notification : Window
+    public partial class Hiro_Notification : Window
     {
         internal string msg;
         internal DispatcherTimer timer;
@@ -18,12 +18,12 @@ namespace hiro
         internal double i = 0.01;
         internal double ai = 0.01;
         internal bool[] animation = { true, false };
-        public Notification()
+        public Hiro_Notification()
         {
             InitializeComponent();
-            Title = utils.Get_Transalte("notitle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Transalte("notitle") + " - " + App.AppTitle;
             Load_Color();
-            utils.Set_Control_Location(notinfo, "notify");
+            Hiro_Utils.Set_Control_Location(notinfo, "notify");
             Title = App.AppTitle;
             Width = SystemParameters.PrimaryScreenWidth;
             Height = 32;
@@ -31,7 +31,7 @@ namespace hiro
             SetValue(Canvas.TopProperty, 0.0);
             Opacity = 0.01;
             msg = "";
-            animation[0] = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
+            animation[0] = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             timer = new()
             {
                 Interval = new TimeSpan(100000)
@@ -52,7 +52,7 @@ namespace hiro
                     {
                         timer.Stop();
                         System.Windows.Media.Animation.Storyboard? sb = new();
-                        sb = utils.AddDoubleAnimaton(1, 300, this, "Opacity", sb);
+                        sb = Hiro_Utils.AddDoubleAnimaton(1, 300, this, "Opacity", sb);
                         sb.Completed += delegate
                         {
                             Opacity = 1;
@@ -87,7 +87,7 @@ namespace hiro
                     if (animation[0])
                     {
                         System.Windows.Media.Animation.Storyboard? sb = new();
-                        sb = utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
+                        sb = Hiro_Utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
                         sb.Completed += delegate
                         {
                             Opacity = 0;
@@ -112,10 +112,10 @@ namespace hiro
         public void Load_Color()
         {
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
-                utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sb);
+                Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sb);
                 sb.Completed += delegate
                 {
                     Background = new SolidColorBrush(App.AppAccentColor);
@@ -181,7 +181,7 @@ namespace hiro
         private void Load_Noti_Position()
         {
             Size msize = new();
-            utils.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+            Hiro_Utils.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
             Thickness th = notinfo.Margin;
             notinfo.Width = msize.Width;
             th.Left = Width / 2 - msize.Width / 2;
@@ -191,7 +191,7 @@ namespace hiro
                 th.Left = Width - msize.Width;
                 double time = (notinfo.Content != null) ? ((string)notinfo.Content).Length * 50 : 3000;
                 System.Windows.Media.Animation.Storyboard? sb = new();
-                sb = utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom));
+                sb = Hiro_Utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom));
                 sb.Completed += delegate
                 {
                     sb = null;
@@ -206,7 +206,7 @@ namespace hiro
         private void Ani()
         {
             Load_Noti_Position();
-            utils.Blur_Out(notinfo);
+            Hiro_Utils.Blur_Out(notinfo);
         }
         private void Noti_Loaded(object sender, RoutedEventArgs e)
         {

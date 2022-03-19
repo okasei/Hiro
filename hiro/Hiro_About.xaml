@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:hiro"
       mc:Ignorable="d" 
       d:DesignHeight="420" d:DesignWidth="420"
-      Title="Hiro_About">
+      Title="Hiro_About" KeepAlive="False">
     <Page.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>

@@ -8,23 +8,23 @@ using System.Windows.Media.Imaging;
 
 namespace hiro
 {
-    public partial class Lockscr : Window
+    public partial class Hiro_LockScreen : Window
     {
         internal bool ca = true;
         internal bool exist = false;
         private bool authing = false;
-        public Lockscr()
+        public Hiro_LockScreen()
         {
             InitializeComponent();
-            this.Title = utils.Get_Transalte("locktitle") + " - " + App.AppTitle;
+            this.Title = Hiro_Utils.Get_Transalte("locktitle") + " - " + App.AppTitle;
             Load_Colors();
             SetValue(Canvas.LeftProperty, 0.0);
             Canvas.SetTop(this, -SystemParameters.PrimaryScreenHeight);
             Width = SystemParameters.PrimaryScreenWidth;
             Height = SystemParameters.PrimaryScreenHeight;
-            utils.Set_Control_Location(timelabel, "locktime", bottom: true);
-            utils.Set_Control_Location(datelabel, "lockdate", bottom: true);
-            utils.ShowCursor(0);
+            Hiro_Utils.Set_Control_Location(timelabel, "locktime", bottom: true);
+            Hiro_Utils.Set_Control_Location(datelabel, "lockdate", bottom: true);
+            Hiro_Utils.ShowCursor(0);
             var filep = App.CurrentDirectory + "\\system\\wallpaper\\" + DateTime.Now.ToString("yyyyMMdd") + ".jpg";
             string wp = "";
             if (!System.IO.File.Exists(filep))
@@ -49,12 +49,12 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        utils.LogtoFile("[ERROR]" + ex.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                     }
                     StringBuilder wallPaperPath = new(200);
-                    if (utils.SystemParametersInfo(0x0073, 200, wallPaperPath, 0))
+                    if (Hiro_Utils.SystemParametersInfo(0x0073, 200, wallPaperPath, 0))
                     {
-                        utils.LogtoFile(wallPaperPath.ToString());
+                        Hiro_Utils.LogtoFile(wallPaperPath.ToString());
                         wp = wallPaperPath.ToString();
                         exist = true;
                         return;
@@ -72,26 +72,38 @@ namespace hiro
                     filep = System.IO.File.Exists(filep) ? filep : wp;
                     if (System.IO.File.Exists(filep))
                     {
+                        BitmapImage bi = new();
+                        bi.BeginInit();
+                        bi.CacheOption = BitmapCacheOption.OnLoad;
+                        bi.UriSource = new Uri(filep);
                         ImageBrush ib = new()
                         {
                             Stretch = Stretch.UniformToFill,
-                            ImageSource = new BitmapImage(new Uri(filep))
+                            ImageSource = bi
                         };
-                        bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
+                        bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
                         bgimage.Background = ib;
-                        utils.Blur_Animation(0, animation, bgimage, this);
+                        bi.EndInit();
+                        bi.Freeze();
+                        Hiro_Utils.Blur_Animation(0, animation, bgimage, this);
                     }
                 };
                 bw.RunWorkerAsync();
             }
             else
             {
+                BitmapImage bi = new();
+                bi.BeginInit();
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.UriSource = new Uri(filep);
                 ImageBrush ib = new()
                 {
                     Stretch = Stretch.UniformToFill,
-                    ImageSource = new BitmapImage(new Uri(filep))
+                    ImageSource = bi
                 };
                 bgimage.Background = ib;
+                bi.EndInit();
+                bi.Freeze();
                 exist = true;
             }
         }
@@ -105,10 +117,11 @@ namespace hiro
 
         private void Run_In()
         {
-            if(!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
+            if(!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, 0, TimeSpan.FromMilliseconds(800));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                dou.DecelerationRatio = 0.9;
                 dou.Completed += delegate
                 {
                     Canvas.SetTop(this, 0);
@@ -120,11 +133,12 @@ namespace hiro
         }
         private void Run_Out()
         {
-            utils.ShowCursor(1);
-            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
+            Hiro_Utils.ShowCursor(1);
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, TimeSpan.FromMilliseconds(600));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                dou.DecelerationRatio = 0.9;
                 dou.Completed += delegate
                 {
                     SetValue(TopProperty, -SystemParameters.PrimaryScreenHeight);
@@ -158,7 +172,7 @@ namespace hiro
                 authing = false;
                 Activate();
             };
-            utils.Register(sc, fa, fa);
+            Hiro_Utils.Register(sc, fa, fa);
         }
         private void Ls_Loaded(object sender, RoutedEventArgs e)
         {

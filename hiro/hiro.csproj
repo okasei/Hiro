@@ -9,11 +9,11 @@
     <ApplicationIcon>hiro_circle.ico</ApplicationIcon>
     <Copyright>Copyright© 2022 N+ Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
-    <Product>😝 Hiro 🥰</Product>
-    <FileVersion>2.2.1</FileVersion>
-    <AssemblyVersion>2.2.1</AssemblyVersion>
-    <Version>2.2.1</Version>
-    <PackageId>😝 Hiro 🥰</PackageId>
+    <Product>Hiro</Product>
+    <FileVersion>2.2.2</FileVersion>
+    <AssemblyVersion>2.2.2</AssemblyVersion>
+    <Version>2.2.2</Version>
+    <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -21,10 +21,6 @@
   <ItemGroup>
     <None Remove="hiro.png" />
     <None Remove="hiro_circle.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Remove="res.xaml" />
   </ItemGroup>
 
   <ItemGroup>

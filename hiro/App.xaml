@@ -12,9 +12,43 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Storyboard x:Key="AppLoad">
-                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" From="50,0,-50,0" To="0" DecelerationRatio=".9" />
-                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" From="0" To="1" />
+                    <Storyboard x:Key="AppLoad" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" From="50,0,-50,0" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" From="0"/>
+                    </Storyboard>
+                    <Storyboard x:Key="AppFade" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" To="50,0,-50,0" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" To="0" />
+                    </Storyboard>
+                    <Storyboard x:Key="AppLeftLoad" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" From="-50,0,50,0" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" From="0"/>
+                    </Storyboard>
+                    <Storyboard x:Key="AppLeftFade" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" To="-50,0,50,0" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" To="0" />
+                    </Storyboard>
+                    <Storyboard x:Key="AppUpLoad" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" From="0,-50,0,50" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" From="0"/>
+                    </Storyboard>
+                    <Storyboard x:Key="AppUpFade" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" To="0,-50,0,50" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" To="0" />
+                    </Storyboard>
+                    <Storyboard x:Key="AppDownLoad" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" From="0,50,0,-50" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" From="0"/>
+                    </Storyboard>
+                    <Storyboard x:Key="AppDownFade" FillBehavior="Stop">
+                        <ThicknessAnimation Duration="0:0:.45" Storyboard.TargetProperty="Margin" To="0,50,0,-50" DecelerationRatio=".8" />
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" To="0" />
+                    </Storyboard>
+                    <Storyboard x:Key="AppFadeIn" FillBehavior="Stop">
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" From="0"/>
+                    </Storyboard>
+                    <Storyboard x:Key="AppFadeOut" FillBehavior="Stop">
+                        <DoubleAnimation Duration="0:0:.35" Storyboard.TargetProperty="Opacity" To="0" />
                     </Storyboard>
                 </ResourceDictionary>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="LightBlue" SecondaryColor="Orange" />

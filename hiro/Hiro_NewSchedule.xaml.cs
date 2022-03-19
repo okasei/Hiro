@@ -12,21 +12,33 @@ namespace hiro
     /// </summary>
     public partial class Hiro_NewSchedule : Page
     {
-        private Mainui? Hiro_Main = null;
+        private Hiro_MainUI? Hiro_Main = null;
         internal int index = -1;
-        public Hiro_NewSchedule(Mainui? Parent)
+        public Hiro_NewSchedule(Hiro_MainUI? Parent)
         {
             InitializeComponent();
             Hiro_Main = Parent;
             Hiro_Initialize();
-            Loaded += Hiro_NewSchedule_Loaded;
+            Loaded += delegate
+            {
+                HiHiro();
+            };
         }
 
-        private void Hiro_NewSchedule_Loaded(object sender, RoutedEventArgs e)
+        public void HiHiro()
         {
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            if (animation)
-                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(3, scbtn_4, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, scbtn_5, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, scbtn_6, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, scbtn_7, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, scbtn_8, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, scbtn_9, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, scbtn_10, sb, -50, null);
+                sb.Begin();
+            }
         }
 
         private void Hiro_Initialize()
@@ -39,47 +51,47 @@ namespace hiro
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppAccent"] = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
         public void Load_Translate()
         {
-            rbtn18.Content = utils.Get_Transalte("alarmonce");
-            rbtn19.Content = utils.Get_Transalte("alarmed");
-            rbtn20.Content = utils.Get_Transalte("alarmew");
-            rbtn21.Content = utils.Get_Transalte("alarmat");
-            scbtn_4.Content = utils.Get_Transalte("screset");
-            scbtn_5.Content = utils.Get_Transalte("scok");
-            scbtn_6.Content = utils.Get_Transalte("scclear");
-            scbtn_7.Content = utils.Get_Transalte("sccancel");
-            scbtn_8.Content = utils.Get_Transalte("sc15m");
-            scbtn_9.Content = utils.Get_Transalte("sc1h");
-            scbtn_10.Content = utils.Get_Transalte("sc1d");
-            sclabel1.Content = utils.Get_Transalte("scname");
-            sclabel2.Content = utils.Get_Transalte("sctime");
-            sclabel3.Content = utils.Get_Transalte("sccmd");
+            rbtn18.Content = Hiro_Utils.Get_Transalte("alarmonce");
+            rbtn19.Content = Hiro_Utils.Get_Transalte("alarmed");
+            rbtn20.Content = Hiro_Utils.Get_Transalte("alarmew");
+            rbtn21.Content = Hiro_Utils.Get_Transalte("alarmat");
+            scbtn_4.Content = Hiro_Utils.Get_Transalte("screset");
+            scbtn_5.Content = Hiro_Utils.Get_Transalte("scok");
+            scbtn_6.Content = Hiro_Utils.Get_Transalte("scclear");
+            scbtn_7.Content = Hiro_Utils.Get_Transalte("sccancel");
+            scbtn_8.Content = Hiro_Utils.Get_Transalte("sc15m");
+            scbtn_9.Content = Hiro_Utils.Get_Transalte("sc1h");
+            scbtn_10.Content = Hiro_Utils.Get_Transalte("sc1d");
+            sclabel1.Content = Hiro_Utils.Get_Transalte("scname");
+            sclabel2.Content = Hiro_Utils.Get_Transalte("sctime");
+            sclabel3.Content = Hiro_Utils.Get_Transalte("sccmd");
         }
 
         public void Load_Position()
         {
-            utils.Set_Control_Location(rbtn18, "alarmonce");
-            utils.Set_Control_Location(rbtn19, "alarmed");
-            utils.Set_Control_Location(rbtn20, "alarmew");
-            utils.Set_Control_Location(rbtn21, "alarmat");
-            utils.Set_Control_Location(scbtn_4, "screset", bottom: true);
-            utils.Set_Control_Location(scbtn_5, "scok", bottom: true, right: true);
-            utils.Set_Control_Location(scbtn_6, "scclear", bottom: true, right: true);
-            utils.Set_Control_Location(scbtn_7, "sccancel", bottom: true, right: true);
-            utils.Set_Control_Location(scbtn_8, "sc15m", right: true);
-            utils.Set_Control_Location(scbtn_9, "sc1h", right: true);
-            utils.Set_Control_Location(scbtn_10, "sc1d", right: true);
-            utils.Set_Control_Location(sclabel1, "scname");
-            utils.Set_Control_Location(sclabel2, "sctime");
-            utils.Set_Control_Location(sclabel3, "sccommand");
-            utils.Set_Control_Location(tb11, "scnametb");
-            utils.Set_Control_Location(tb12, "sctimetb");
-            utils.Set_Control_Location(tb13, "sccmdtb");
-            utils.Set_Control_Location(tb14, "alarmattb");
+            Hiro_Utils.Set_Control_Location(rbtn18, "alarmonce");
+            Hiro_Utils.Set_Control_Location(rbtn19, "alarmed");
+            Hiro_Utils.Set_Control_Location(rbtn20, "alarmew");
+            Hiro_Utils.Set_Control_Location(rbtn21, "alarmat");
+            Hiro_Utils.Set_Control_Location(scbtn_4, "screset", bottom: true);
+            Hiro_Utils.Set_Control_Location(scbtn_5, "scok", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(scbtn_6, "scclear", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(scbtn_7, "sccancel", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(scbtn_8, "sc15m", right: true);
+            Hiro_Utils.Set_Control_Location(scbtn_9, "sc1h", right: true);
+            Hiro_Utils.Set_Control_Location(scbtn_10, "sc1d", right: true);
+            Hiro_Utils.Set_Control_Location(sclabel1, "scname");
+            Hiro_Utils.Set_Control_Location(sclabel2, "sctime");
+            Hiro_Utils.Set_Control_Location(sclabel3, "sccommand");
+            Hiro_Utils.Set_Control_Location(tb11, "scnametb");
+            Hiro_Utils.Set_Control_Location(tb12, "sctimetb");
+            Hiro_Utils.Set_Control_Location(tb13, "sccmdtb");
+            Hiro_Utils.Set_Control_Location(tb14, "alarmattb");
         }
 
 
@@ -126,7 +138,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                     re = -2.0;
                 }
             }
@@ -134,10 +146,10 @@ namespace hiro
             {
                 var i = App.scheduleitems.Count + 1;
                 App.scheduleitems.Add(new Scheduleitem(i, tb11.Text, tb12.Text, tb13.Text, re));
-                utils.Write_Ini(App.sconfig, i.ToString(), "name", tb11.Text);
-                utils.Write_Ini(App.sconfig, i.ToString(), "time", tb12.Text);
-                utils.Write_Ini(App.sconfig, i.ToString(), "command", "(" + tb13.Text + ")");
-                utils.Write_Ini(App.sconfig, i.ToString(), "repeat", re.ToString());
+                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Name", tb11.Text);
+                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Time", tb12.Text);
+                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Command", "(" + tb13.Text + ")");
+                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Repeat", re.ToString());
             }
             else
             {
@@ -146,10 +158,10 @@ namespace hiro
                 App.scheduleitems[i].Time = tb12.Text;
                 App.scheduleitems[i].Command = tb13.Text;
                 App.scheduleitems[i].re = re;
-                utils.Write_Ini(App.sconfig, (i + 1).ToString(), "name", tb11.Text);
-                utils.Write_Ini(App.sconfig, (i + 1).ToString(), "time", tb12.Text);
-                utils.Write_Ini(App.sconfig, (i + 1).ToString(), "command", "(" + tb13.Text + ")");
-                utils.Write_Ini(App.sconfig, (i + 1).ToString(), "repeat", re.ToString());
+                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Name", tb11.Text);
+                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Time", tb12.Text);
+                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Command", "(" + tb13.Text + ")");
+                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Repeat", re.ToString());
             }
             System.Globalization.DateTimeFormatInfo dtFormat = new()
             {
@@ -167,7 +179,7 @@ namespace hiro
                 if (Hiro_Main != null)
                 {
                     Hiro_Main.Set_Label(Hiro_Main.schedulex);
-                    App.Notify(new noticeitem(utils.Get_Transalte("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
+                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
                 }
             }
             else
@@ -192,15 +204,15 @@ namespace hiro
                     Hiro_Main.Set_Label(Hiro_Main.schedulex);
                     if (day > 0)
                     {
-                        App.Notify(new noticeitem(utils.Get_Transalte("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else if (hour > 0)
                     {
-                        App.Notify(new noticeitem(utils.Get_Transalte("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else
                     {
-                        App.Notify(new noticeitem(utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                 }
             }
@@ -265,20 +277,19 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
             }
-            Hiro_Time ht = new(Hiro_Main, this);
-            ht.year.Text = dt.Year.ToString();
-            ht.month.Text = dt.Month.ToString();
-            ht.day.Text = dt.Day.ToString();
-            ht.hour.Text = dt.Hour.ToString();
-            ht.minute.Text = dt.Minute.ToString();
-            ht.second.Text = dt.Second.ToString();
             if (Hiro_Main != null)
             {
+                if (Hiro_Main.hiro_time == null)
+                    Hiro_Main.hiro_time = new(Hiro_Main, this);
+                Hiro_Main.hiro_time.year.Text = dt.Year.ToString();
+                Hiro_Main.hiro_time.month.Text = dt.Month.ToString();
+                Hiro_Main.hiro_time.day.Text = dt.Day.ToString();
+                Hiro_Main.hiro_time.hour.Text = dt.Hour.ToString();
+                Hiro_Main.hiro_time.minute.Text = dt.Minute.ToString();
+                Hiro_Main.hiro_time.second.Text = dt.Second.ToString();
                 Hiro_Main.Set_Label(Hiro_Main.timex);
-                Hiro_Main.current = ht;
-                Hiro_Main.frame.Content = ht;
             }
         }
         private void Rbtn21_Checked(object sender, RoutedEventArgs e)

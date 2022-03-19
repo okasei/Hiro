@@ -3,13 +3,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace hiro
 {
     /// <summary>
     /// editor.xaml の相互作用ロジック
     /// </summary>
-    public partial class Editor : Window
+    public partial class Hiro_Editor : Window
     {
         public int saveflag = 0;
         public int savetime = 0;
@@ -17,16 +18,15 @@ namespace hiro
         public int allow = 0;
         public int bflag = 0;
         internal int editpage = 0;
-        public Editor()
+        public Hiro_Editor()
         {
             InitializeComponent();
-            editpage = int.Parse(utils.Read_Ini(App.dconfig, "config", "EditPage", "0"));
+            editpage = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "EditPage", "0"));
             Load_Position();
-            
-            Title = utils.Get_Transalte("edititle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Transalte("edititle") + " - " + App.AppTitle;
             Load();
             con.Focus();
-            slider.Value = double.Parse(utils.Read_Ini(App.dconfig, "config", "EditOpacity", "1"));
+            slider.Value = double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "EditOpacity", "1"));
             allow = 1;
             slider.IsEnabled = true;
             Opacity = (float)slider.Value;
@@ -34,65 +34,101 @@ namespace hiro
             timer.Interval = new TimeSpan(10000000);
             timer.Tick += delegate
             {
-                utils.Delay(1);
+                Hiro_Utils.Delay(1);
                 if (savetime > 0 && saveflag == 1)
                 {
                     savetime--;
-                    if (savetime == 5)
+                    if (savetime == 10)
                     {
                         Save(true);
                     }
-                    if (savetime < 5)
+                    if (savetime < 5 && savetime > 1)
+                    {
+                        var FinalText = Hiro_Utils.Get_Transalte("eready").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                        if (!status.Content.Equals(FinalText))
+                        {
+                            status.Content = FinalText;
+                            Hiro_Utils.LogtoFile("1");
+                            Update_Animation();
+                        }
+                    }
+                    if (savetime < 1)
                     {
                         saveflag = 0;
-                        status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()) + " - " + utils.Get_Transalte("eready");
                     }
                 }
-                if (saveflag == 0 && !status.Content.Equals(utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString())))
+                var StatusText = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                if (saveflag == 0 && !status.Content.Equals(StatusText))
                 {
-                    status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                    status.Content = StatusText;
+                    Hiro_Utils.LogtoFile("2");
+                    Update_Animation();
                 }
             };
             timer.Start();
+        }
+
+        private void Update_Animation()
+        {
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(3, status, sb, -50, null);
+                sb.Begin();
+            }
         }
 
         public void Save(bool show = false)
         {
             if(con.IsEnabled)
             {
-                string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
-                if (!System.IO.File.Exists(path))
-                    System.IO.File.Create(path).Close();
-                System.IO.FileStream fs = new(path, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite);
-                System.IO.StreamWriter sw = new(fs);
-                sw.Write(con.Text);
-                sw.Flush();
-                sw.Close();
-                fs.Close();
+                try
+                {
+                    string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
+                    if (!System.IO.File.Exists(path))
+                        System.IO.File.Create(path).Close();
+                    System.IO.FileStream fs = new(path, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite);
+                    System.IO.StreamWriter sw = new(fs);
+                    sw.Write(con.Text);
+                    sw.Flush();
+                    sw.Close();
+                    sw.Dispose();
+                    fs.Close();
+                    fs.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    con.Text = "";
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+                
             }
             if (show)
             {
-                status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()) + " - " + utils.Get_Transalte("esaved").Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
+                status.Content = Hiro_Utils.Get_Transalte("esaved").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()).Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
                 saveflag = 1;
-                savetime = 2;
+                savetime = 9;
+                Update_Animation();
+                Hiro_Utils.LogtoFile("3");
             }
+            else
+                savetime = -1;
         }
         public void Load()
         {
             string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
-            if (!System.IO.File.Exists(path))
+            try
             {
-                System.IO.File.Create(path).Close();
-                con.Text = "";
-                return;
+                con.Text = System.IO.File.ReadAllText(path);
             }
-            System.IO.FileStream fs = new(path, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite);
-            System.IO.StreamReader sr = new(fs);
-            con.Text = sr.ReadToEnd();
-            sr.Close();
-            sr.Dispose();
-            fs.Close();
-            utils.Write_Ini(App.dconfig, "config", "EditPage", editpage.ToString());
+            catch(Exception ex)
+            {
+                con.Text = "";
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+            }
+            status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            Update_Animation();
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "EditPage", editpage.ToString());
         }
         public void Load_Color()
         {
@@ -103,9 +139,9 @@ namespace hiro
         }
         public void Load_Position()
         {
-            utils.Set_Control_Location(previous, "edipre", bottom: true);
-            utils.Set_Control_Location(next, "edinext", bottom: true);
-            utils.Set_Control_Location(status, "estatus", bottom: true);
+            Hiro_Utils.Set_Control_Location(previous, "edipre", bottom: true);
+            Hiro_Utils.Set_Control_Location(next, "edinext", bottom: true);
+            Hiro_Utils.Set_Control_Location(status, "estatus", bottom: true);
             slider.Style = new Style();
             //main
             SetValue(LeftProperty, 0.0);
@@ -113,21 +149,22 @@ namespace hiro
             Width = SystemParameters.PrimaryScreenWidth;
             Height = SystemParameters.PrimaryScreenHeight * 6 / 10;
             //status
-            utils.Set_Control_Location(con, "etext");
+            Hiro_Utils.Set_Control_Location(con, "etext");
             //textbox
             con.SetValue(LeftProperty, 0.0);
             con.SetValue(TopProperty, 0.0);
-            con.Width = this.ActualWidth;
-            con.Height = this.Height - previous.Margin.Bottom - previous.Height - 2;
-            status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            con.Width = SystemParameters.PrimaryScreenWidth;
+            con.Height = SystemParameters.PrimaryScreenHeight * 6 / 10 - previous.Margin.Bottom - previous.Height - 2;
+            status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Loadbgi();
         }
         private void Run_In()
         {
-            if (!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
-                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600));
-                dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600));
+                dou.DecelerationRatio = 0.9;
+                dou.FillBehavior = FillBehavior.Stop;
                 dou.Completed += delegate
                 {
                     SetValue(TopProperty, 0.0);
@@ -145,10 +182,11 @@ namespace hiro
             runoutflag = 1;
             Save();
             con.IsEnabled = false;
-            if(!utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0"))
+            if(!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
-                System.Windows.Media.Animation.DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450));
-                dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450));
+                dou.FillBehavior =　FillBehavior.Stop;
+                dou.DecelerationRatio = 0.9;
                 dou.Completed += delegate
                 {
                     SetValue(TopProperty, -ActualHeight);
@@ -236,8 +274,8 @@ namespace hiro
         private void Con_TextChanged(object sender, TextChangedEventArgs e)
         {
             saveflag = 1;
-            savetime = 10;
-            status.Content = utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            savetime = 15;
+            status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
         }
 
         private void Edi_Deactivated(object sender, EventArgs e)
@@ -247,9 +285,9 @@ namespace hiro
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            this.Opacity = (float)slider.Value;
+            Opacity = (float)slider.Value;
             if(allow == 1)
-                utils.Write_Ini(App.dconfig, "config", "EditOpacity", slider.Value.ToString());
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "EditOpacity", slider.Value.ToString());
         }
 
         private void Edi_KeyDown(object sender, KeyEventArgs e)
@@ -295,19 +333,14 @@ namespace hiro
                 e.Handled = true;
             }
         }
-
-        private void Edi_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            
-        }
         public void Loadbgi()
         {
             if (bflag == 1)
                 return;
             bflag = 1;
-            utils.Set_Bgimage(bgimage);
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            utils.Blur_Animation(utils.ConvertInt(utils.Read_Ini(App.dconfig, "config", "blur", "0")), animation, bgimage, this);
+            Hiro_Utils.Set_Bgimage(bgimage);
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            Hiro_Utils.Blur_Animation(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), animation, bgimage, this);
             bflag = 0;
         }
     }

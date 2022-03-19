@@ -1,6 +1,6 @@
 ﻿namespace hiro
 {
-    partial class utils
+    partial class Hiro_Utils
     {
         /// <summary>
         /// 必要なデザイナー変数です。

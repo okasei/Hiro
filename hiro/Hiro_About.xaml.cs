@@ -16,10 +16,10 @@ namespace hiro
     /// </summary>
     public partial class Hiro_About : Page
     {
-        private Mainui? Hiro_Main = null;
+        private Hiro_MainUI? Hiro_Main = null;
         internal System.ComponentModel.BackgroundWorker? upbw = null;
         private string ups = "latest";
-        public Hiro_About(Mainui? Parent)
+        public Hiro_About(Hiro_MainUI? Parent)
         {
             InitializeComponent();
             Hiro_Main = Parent;
@@ -29,7 +29,7 @@ namespace hiro
 
         private void Hiro_About_Loaded(object sender, RoutedEventArgs e)
         {
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             if (animation)
                 BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
         }
@@ -44,17 +44,17 @@ namespace hiro
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppAccent"] = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
         public void Load_Translate()
         {
-            chk_btn.Content = utils.Get_Transalte("checkup");
+            chk_btn.Content = Hiro_Utils.Get_Transalte("checkup");
         }
 
         public void Load_Position()
         {
-            utils.Set_Control_Location(chk_btn, "checkup");
+            Hiro_Utils.Set_Control_Location(chk_btn, "checkup");
         }
 
         private void Avatar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -65,9 +65,9 @@ namespace hiro
 
         private void Chk_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (chk_btn.Content.Equals(utils.Get_Transalte("checkup")))
+            if (chk_btn.Content.Equals(Hiro_Utils.Get_Transalte("checkup")))
             {
-                chk_btn.Content = utils.Get_Transalte("checkcancel");
+                chk_btn.Content = Hiro_Utils.Get_Transalte("checkcancel");
                 if (Hiro_Main != null)
                     Hiro_Main.pb.Visibility = Visibility.Visible;
                 if (upbw != null)
@@ -76,7 +76,7 @@ namespace hiro
                 upbw.WorkerSupportsCancellation = true;
                 upbw.DoWork += delegate
                 {
-                    ups = utils.GetWebContent("https://ftp.rexio.cn/hiro/hiro.php?r=update&v=" + res.ApplicationUpdateVersion + "&lang=" + App.lang);
+                    ups = Hiro_Utils.GetWebContent("https://ftp.rexio.cn/hiro/hiro.php?r=update&v=" + res.ApplicationUpdateVersion + "&lang=" + App.lang);
                 };
                 upbw.RunWorkerCompleted += delegate
                 {
@@ -86,7 +86,7 @@ namespace hiro
             }
             else
             {
-                chk_btn.Content = utils.Get_Transalte("checkup");
+                chk_btn.Content = Hiro_Utils.Get_Transalte("checkup");
                 if (Hiro_Main != null)
                     Hiro_Main.pb.Visibility = Visibility.Hidden;
 
@@ -95,16 +95,16 @@ namespace hiro
 
         public void Check_update()
         {
-            chk_btn.Content = utils.Get_Transalte("checkup");
+            chk_btn.Content = Hiro_Utils.Get_Transalte("checkup");
             if (Hiro_Main != null)
                 Hiro_Main.pb.Visibility = Visibility.Hidden;
             if (ups == "latest")
             {
-                App.Notify(new noticeitem(utils.Get_Transalte("updatelatest"), 2, utils.Get_Transalte("checkup")));
+                App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("updatelatest"), 2, Hiro_Utils.Get_Transalte("checkup")));
             }
             else if (ups == "Error")
             {
-                App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2, utils.Get_Transalte("checkup")));
+                App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
             }
             else
             {
@@ -116,31 +116,31 @@ namespace hiro
                     info = info[..info.IndexOf("]")].Replace("\\n", Environment.NewLine);
                     string url = ups[(ups.IndexOf("url:[") + "url:[".Length)..];
                     url = url[..url.IndexOf("]")];
-                    if (utils.Read_Ini(App.dconfig, "config", "toast", "0").Equals("1"))
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
                     {
                         new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                                .AddText(utils.Get_Transalte("updatetitle"))
-                                .AddText(utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine))
+                                .AddText(Hiro_Utils.Get_Transalte("updatetitle"))
+                                .AddText(Hiro_Utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine))
                                 .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                            .SetContent(utils.Get_Transalte("updateok"))
+                                            .SetContent(Hiro_Utils.Get_Transalte("updateok"))
                                             .AddArgument("action", "uok"))
                                 .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                            .SetContent(utils.Get_Transalte("updateskip"))
+                                            .SetContent(Hiro_Utils.Get_Transalte("updateskip"))
                                             .AddArgument("action", "uskip"))
                                 .AddArgument("url", url)
                             .Show();
                     }
                     else
                     {
-                        Alarm up = new(-415, utils.Get_Transalte("updatetitle"), utils.Path_Prepare_EX(utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine)), 2);
+                        Hiro_Alarm up = new(-415, Hiro_Utils.Get_Transalte("updatetitle"), Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine)), 2);
                         up.url = url;
                         up.Show();
                     }
                 }
                 catch (Exception ex)
                 {
-                    utils.LogtoFile("[ERROR]" + ex.Message);
-                    App.Notify(new noticeitem(utils.Get_Transalte("updateerror"), 2, utils.Get_Transalte("checkup")));
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
                 }
 
 

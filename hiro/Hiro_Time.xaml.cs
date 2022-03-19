@@ -12,24 +12,31 @@ namespace hiro
     /// </summary>
     public partial class Hiro_Time : Page
     {
-        private Mainui? Hiro_Main = null;
+        private Hiro_MainUI? Hiro_Main = null;
         private Hiro_NewSchedule? hns = null;
-        private Hiro_Time? ht = null;
         int MaxDay = 28;
-        public Hiro_Time(Mainui? Parent, Hiro_NewSchedule Schedule)
+        public Hiro_Time(Hiro_MainUI? Parent, Hiro_NewSchedule Schedule)
         {
             InitializeComponent();
             Hiro_Main = Parent;
             hns = Schedule;
             Hiro_Initialize();
-            Loaded += Hiro_Time_Loaded;
+            Loaded += delegate
+            {
+                HiHiro();
+            };
         }
 
-        private void Hiro_Time_Loaded(object sender, RoutedEventArgs e)
+        public void HiHiro()
         {
-            bool animation = !utils.Read_Ini(App.dconfig, "config", "ani", "1").Equals("0");
-            if (animation)
-                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(3, tpbtn1, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, tpbtn2, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(1, tp_title, sb, -50, null);
+                sb.Begin();
+            }
         }
 
         private void Hiro_Initialize()
@@ -42,46 +49,32 @@ namespace hiro
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppAccent"] = new SolidColorBrush(utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
         public void Load_Translate()
         {
-            tp_title.Content = utils.Get_Transalte("time");
-            tpbtn1.Content = utils.Get_Transalte("timeok");
-            tpbtn2.Content = utils.Get_Transalte("timecancel");
+            tp_title.Content = Hiro_Utils.Get_Transalte("Time");
+            tpbtn1.Content = Hiro_Utils.Get_Transalte("timeok");
+            tpbtn2.Content = Hiro_Utils.Get_Transalte("timecancel");
         }
 
         public void Load_Position()
         {
-            utils.Set_Control_Location(tp_title, "timet");
-            utils.Set_Control_Location(year, "timeyear");
-            utils.Set_Control_Location(month, "timemonth");
-            utils.Set_Control_Location(day, "timeday");
-            utils.Set_Control_Location(hour, "timehour");
-            utils.Set_Control_Location(minute, "timemin");
-            utils.Set_Control_Location(second, "timesec");
-            utils.Set_Control_Location(tpbtn1, "timeok", bottom: true, right: true);
-            utils.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(tp_title, "timet");
+            Hiro_Utils.Set_Control_Location(year, "timeyear");
+            Hiro_Utils.Set_Control_Location(month, "timemonth");
+            Hiro_Utils.Set_Control_Location(day, "timeday");
+            Hiro_Utils.Set_Control_Location(hour, "timehour");
+            Hiro_Utils.Set_Control_Location(minute, "timemin");
+            Hiro_Utils.Set_Control_Location(second, "timesec");
+            Hiro_Utils.Set_Control_Location(tpbtn1, "timeok", bottom: true, right: true);
+            Hiro_Utils.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
         }
 
-        private void Timex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (Hiro_Main != null)
-            {
-                Hiro_Main.Set_Label(Hiro_Main.timex);
-                Hiro_Main.Content = ht;
-                Hiro_Main.current = ht;
-            }
-        }
         private void Tp_Cancel(object sender, RoutedEventArgs e)
         {
-            if (Hiro_Main != null)
-            {
-                Hiro_Main.Set_Label(Hiro_Main.newx);
-                Hiro_Main.Content = hns;
-                Hiro_Main.current = hns;
-            }
+            GoBack();
         }
 
         private static String String_deal(String a, int b)
@@ -93,7 +86,7 @@ namespace hiro
             catch (Exception ex)
             {
                 a = "0";
-                utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
             }
             if (a.Length > b)
             {
@@ -111,12 +104,7 @@ namespace hiro
         {
             if (hns != null)
                 hns.tb12.Text = String_deal(year.Text, 4) + "/" + String_deal(month.Text, 2) + "/" + String_deal(day.Text, 2) + " " + String_deal(hour.Text, 2) + ":" + String_deal(minute.Text, 2) + ":" + String_deal(second.Text, 2);
-            if (Hiro_Main != null)
-            {
-                Hiro_Main.Set_Label(Hiro_Main.newx);
-                Hiro_Main.Content = hns;
-                Hiro_Main.current = hns;
-            }
+            GoBack();
         }
 
         private void Year_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -440,6 +428,20 @@ namespace hiro
             catch
             {
                 second.Text = DateTime.Now.Second.ToString();
+            }
+        }
+
+        public void GoBack()
+        {
+            if (Hiro_Main != null)
+            {
+                if (Hiro_Main.hiro_newschedule != null)
+                {
+                    Hiro_Main.current = hns;
+                    Hiro_Main.Set_Label(Hiro_Main.newx);
+                }
+                else
+                    Hiro_Main.Set_Label(Hiro_Main.homex);
             }
         }
     }

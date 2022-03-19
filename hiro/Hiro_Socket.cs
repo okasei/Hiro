@@ -4,11 +4,11 @@ using System.Net.Sockets;
 
 namespace hiro
 {
-    public class HiroSocket
+    public class Hiro_Socket
     {
         public Socket ClientSocket { get; set; }
         public string IP;
-        public HiroSocket(Socket clientSocket)
+        public Hiro_Socket(Socket clientSocket)
         {
             this.ClientSocket = clientSocket;
             this.IP = GetIPStr();
