@@ -16,12 +16,14 @@ namespace hiro
         public Hiro_LockScreen()
         {
             InitializeComponent();
-            this.Title = Hiro_Utils.Get_Transalte("locktitle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Transalte("locktitle") + " - " + App.AppTitle;
             Load_Colors();
             SetValue(Canvas.LeftProperty, 0.0);
             Canvas.SetTop(this, -SystemParameters.PrimaryScreenHeight);
             Width = SystemParameters.PrimaryScreenWidth;
             Height = SystemParameters.PrimaryScreenHeight;
+            Keyboard.Focus(this);
+            Mouse.Capture(this);
             Hiro_Utils.Set_Control_Location(timelabel, "locktime", bottom: true);
             Hiro_Utils.Set_Control_Location(datelabel, "lockdate", bottom: true);
             Hiro_Utils.ShowCursor(0);

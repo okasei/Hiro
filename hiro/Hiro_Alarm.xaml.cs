@@ -51,10 +51,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
-            {
-                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
-            }
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
@@ -65,6 +62,8 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, albtn_3, sb, 50, null);
                 sb.Begin();
             }
+            Keyboard.Focus(this);
+            Mouse.Capture(this);
         }
 
         public void Load_Position(int OneButtonOnly = 0)

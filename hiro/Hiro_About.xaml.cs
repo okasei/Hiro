@@ -24,14 +24,21 @@ namespace hiro
             InitializeComponent();
             Hiro_Main = Parent;
             Hiro_Initialize();
-            Loaded += Hiro_About_Loaded;
+            Loaded += delegate
+            {
+                HiHiro();
+            };
         }
 
-        private void Hiro_About_Loaded(object sender, RoutedEventArgs e)
+        public void HiHiro()
         {
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             if (animation)
-                BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+                sb.Begin();
+            }
         }
 
         private void Hiro_Initialize()

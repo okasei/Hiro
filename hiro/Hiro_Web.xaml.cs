@@ -60,6 +60,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, TitleGrid, sb, -50, null);
                 sb.Begin();
             }
+            System.Windows.Input.Keyboard.Focus(this);
         }
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
@@ -120,9 +121,17 @@ namespace hiro
             PreBtn.Visibility = wv2.CoreWebView2.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
             NextBtn.Visibility = wv2.CoreWebView2.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
             if (PreBtn.Visibility == Visibility.Visible && visual != PreBtn.Visibility && animation)
-                PreBtn.BeginStoryboard(Application.Current.Resources["AppLeftLoad"] as System.Windows.Media.Animation.Storyboard);
+            {
+                System.Windows.Media.Animation.Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(0, PreBtn, sb, -50, null);
+                sb.Begin();
+            }
             if (NextBtn.Visibility == Visibility.Visible && visual2 != NextBtn.Visibility && animation)
-                NextBtn.BeginStoryboard(Application.Current.Resources["AppLeftLoad"] as System.Windows.Media.Animation.Storyboard);
+            {
+                System.Windows.Media.Animation.Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(0, NextBtn, sb, -50, null);
+                sb.Begin();
+            }
         }
 
         public void Load_Color()
@@ -148,7 +157,11 @@ namespace hiro
             var visual = soundbtn.Visibility;
             soundbtn.Visibility = wv2.CoreWebView2.IsDocumentPlayingAudio ? Visibility.Visible : Visibility.Collapsed;
             if (soundbtn.Visibility == Visibility.Visible && visual != soundbtn.Visibility && animation)
-                soundbtn.BeginStoryboard(Application.Current.Resources["AppLoad"] as System.Windows.Media.Animation.Storyboard);
+            {
+                System.Windows.Media.Animation.Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(0, soundbtn, sb, -50, null);
+                sb.Begin();
+            }
             string ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))

@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" Background="White" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" Loaded="Ui_Loaded" StateChanged="Ui_StateChanged"
+        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" Background="White" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" StateChanged="Ui_StateChanged"
  >
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
@@ -20,7 +20,7 @@
         <Label x:Name="bgimage" HorizontalAlignment="Stretch" Background="Coral" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="bglabel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" MouseDown="Bglabel_MouseDown" Height="30" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="{DynamicResource AppFore}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
-        <Grid x:Name="stack" Width="130" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Height="420">
+        <Grid x:Name="stack" Width="130" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Height="420" Visibility="Hidden">
             <Label x:Name="bgx" Style="{DynamicResource HiroLabel}" HorizontalContentAlignment="Center" BorderThickness="2,0,0,0" BorderBrush="{DynamicResource AppAccent}" Background="{DynamicResource AppForeDim}" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Height="32" VerticalAlignment="Top"/>
             <Label x:Name="homex" Style="{DynamicResource HiroLabel}" Content="Home" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" MouseLeftButtonUp="Homex_MouseLeftButtonUp" Height="32" VerticalAlignment="Top"/>
             <Label x:Name="itemx" Style="{DynamicResource HiroLabel}" Content="Items" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" MouseLeftButtonDown="Itemx_MouseLeftButtonDown" Height="32" VerticalAlignment="Top" Margin="0,32,0,0"/>
@@ -32,9 +32,9 @@
             <Label x:Name="colorx" Style="{DynamicResource HiroLabel}" Content="Color" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" MouseLeftButtonDown="Colorx_MouseLeftButtonDown" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,192,0,0"/>
             <Label x:Name="timex" Style="{DynamicResource HiroLabel}" Content="Time" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,224,0,0" MouseLeftButtonDown="Timex_MouseLeftButtonDown"/>
         </Grid>
-        <Label x:Name="titlelabel" Style="{DynamicResource HiroLabel}" Content="Hiro" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontWeight="Bold" MouseDown="Titlelabel_MouseDown" FontSize="14" Height="27" SizeChanged="Titlelabel_SizeChanged"/>
-        <Label x:Name="versionlabel" Style="{DynamicResource HiroLabel}" Content="♥" HorizontalAlignment="Left" Margin="37,5,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontWeight="Bold" FontFamily="Segoe UI" FontSize="10" RenderTransformOrigin="0.543,0.235" VerticalContentAlignment="Bottom" Height="21" MouseDoubleClick="Versionlabel_MouseDoubleClick"/>
-        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" Foreground ="{DynamicResource AppFore}" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
+        <Label x:Name="titlelabel" Style="{DynamicResource HiroLabel}" Content="Hiro" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontWeight="Bold" MouseDown="Titlelabel_MouseDown" FontSize="14" Height="27" SizeChanged="Titlelabel_SizeChanged" Visibility="Hidden"/>
+        <Label x:Name="versionlabel" Style="{DynamicResource HiroLabel}" Content="♥" HorizontalAlignment="Left" Margin="37,5,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontWeight="Bold" FontFamily="Segoe UI" FontSize="10" RenderTransformOrigin="0.543,0.235" VerticalContentAlignment="Bottom" Height="21" MouseDoubleClick="Versionlabel_MouseDoubleClick" Visibility="Hidden"/>
+        <Label x:Name="minbtn" Content="—" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" Foreground ="{DynamicResource AppFore}" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown" Visibility="Hidden">
             <Label.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
@@ -64,7 +64,7 @@
                 <ImageBrush Stretch="UniformToFill" ImageSource="/hiro.png"/>
             </Label.Background>
         </Label>
-        <Label x:Name="closebtn" Grid.Column="2" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000"  Foreground ="{DynamicResource AppFore}" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown" Grid.RowSpan="2">
+        <Label x:Name="closebtn" Grid.Column="2" Content="×" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000"  Foreground ="{DynamicResource AppFore}" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown" Grid.RowSpan="2" Visibility="Hidden">
             <Label.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>

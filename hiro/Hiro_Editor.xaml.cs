@@ -154,7 +154,7 @@ namespace hiro
             con.SetValue(LeftProperty, 0.0);
             con.SetValue(TopProperty, 0.0);
             con.Width = SystemParameters.PrimaryScreenWidth;
-            con.Height = SystemParameters.PrimaryScreenHeight * 6 / 10 - previous.Margin.Bottom - previous.Height - 2;
+            con.Height = SystemParameters.PrimaryScreenHeight * 6 / 10 - previous.Margin.Bottom - previous.Height - 10;
             status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Loadbgi();
         }
@@ -168,11 +168,17 @@ namespace hiro
                 dou.Completed += delegate
                 {
                     SetValue(TopProperty, 0.0);
+                    Keyboard.Focus(con);
+                    Mouse.Capture(con);
                 };
                 BeginAnimation(TopProperty, dou);
             }
             else
+            {
                 SetValue(TopProperty, 0.0);
+                Keyboard.Focus(con);
+                Mouse.Capture(con);
+            }
             
         }
         private void Run_Out()

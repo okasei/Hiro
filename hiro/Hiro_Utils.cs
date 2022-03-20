@@ -318,7 +318,7 @@ namespace hiro
     public partial class Hiro_Utils : Component
     {
 
-        static int keyid = 10;
+        static int keyid = 0;
 
         #region 自动生成
         public Hiro_Utils()
@@ -994,6 +994,11 @@ namespace hiro
                     }
                     if (path.ToLower().StartsWith("hide()"))
                     {
+                        App.mn.titlelabel.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.versionlabel.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.minbtn.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.closebtn.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.stack.Visibility = System.Windows.Visibility.Hidden;
                         App.mn.Visibility = System.Windows.Visibility.Hidden;
                         return;
                     }
@@ -1259,7 +1264,8 @@ namespace hiro
                     if (webpara.IndexOf("t") != -1)
                     {
                         web.Topmost = true;
-                        web.topbtn.ToolTip = Hiro_Utils.Get_Transalte("webbottom");
+                        web.topbtn.Content = "\uE77A";
+                        web.topbtn.ToolTip = Get_Transalte("webbottom");
                     }
                         
                     if (webpara.IndexOf("b") != -1)
@@ -1607,6 +1613,12 @@ namespace hiro
                             App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                     };
                     Register(sc, fa, fa);
+                    return;
+                }
+                if (path.ToLower().StartsWith("hirowego()") || path.ToLower().StartsWith("finder()") || path.ToLower().StartsWith("start()"))
+                {
+                    Hiro_Finder hf = new();
+                    hf.Show();
                     return;
                 }
                 try
@@ -2692,11 +2704,8 @@ namespace hiro
                 RunExe("notify(" + Get_Transalte("regfailed").Replace("%n", sa.ToString()) + ",2)");
                 LogtoFile("[ERROR]Register hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
             }
-            else
-            {
-                App.vs.Add(kid);
-                App.vs.Add(cid);
-            }
+            App.vs.Add(kid);
+            App.vs.Add(cid);
             return kid;
         }
 
@@ -2704,9 +2713,9 @@ namespace hiro
         {
             if (id < 0)
                 return false;
+            bool a = UnregisterHotKey(App.WND_Handle, App.vs[id]);
             App.vs.RemoveAt(id);
             App.vs.RemoveAt(id);
-            bool a = UnregisterHotKey(App.WND_Handle, id);
             if (!a)
             {
                 string msg = "";
@@ -2723,7 +2732,6 @@ namespace hiro
 
         public static int Index_Modifier(bool direction, int val)
         {
-            //direction: true->index to true value
             int[] mo = { 0, 1, 2, 4, 8, 5, 6, 9, 10, 7, 11 };
             if (direction)
             {
@@ -2744,7 +2752,6 @@ namespace hiro
         }
         public static int Index_vKey(bool direction, int val)
         {
-            //direction: true->index to true value
             int[] mo = { 0, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
                                 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
                                 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101,

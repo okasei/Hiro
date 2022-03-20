@@ -1,0 +1,19 @@
+﻿<Window x:Name="window" x:Class="hiro.Hiro_Finder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:hiro"
+        mc:Ignorable="d"
+        Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="None" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" Deactivated="Window_Deactivated" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
+    </Window.Resources>
+    <Grid>
+        <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
+        <Label x:Name="PlaceHolder" Content="Please Input" FontSize="1" Foreground="{DynamicResource AppForeDim}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" Visibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Width="{Binding Width, ElementName=Hiro_Text}" Height="{Binding Height, ElementName=Hiro_Text}"></Label>
+        <TextBox x:Name="Hiro_Text" VerticalAlignment="Center" FontSize="{Binding FontSize, ElementName=PlaceHolder}" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Center" Height="{Binding ActualHeight, ElementName=window, Mode=OneWay}" Width="{Binding ActualWidth, ElementName=window, Mode=OneWay}" Padding="0,0,0,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" TextChanged="Hiro_Text_TextChanged" KeyDown="Hiro_Text_KeyDown" LostFocus="Hiro_Text_LostFocus" LostKeyboardFocus="Hiro_Text_LostKeyboardFocus"/>
+    </Grid>
+</Window>

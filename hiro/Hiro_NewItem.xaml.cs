@@ -27,9 +27,10 @@ namespace hiro
 
         public void HiHiro()
         {
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            Storyboard sb = new();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
-                Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, ntn1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, ntn2, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, ntn3, sb, -50, null);
@@ -42,6 +43,10 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, ntnx1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, ntnx2, sb, -50, null);
+            }
+            if (animation)
+            {
+                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
                 sb.Begin();
             }
         }
@@ -363,7 +368,8 @@ namespace hiro
                 if (!App.cmditems[index].HotKey.Equals(hk))
                 {
                     App.cmditems[index].HotKey = hk;
-                    Hiro_Utils.UnregisterKey(Hiro_Utils.FindHotkeyById(index));
+                    var keyid = Hiro_Utils.FindHotkeyById(index);
+                    Hiro_Utils.UnregisterKey(keyid);
                     if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
                     {
                         try
@@ -380,7 +386,6 @@ namespace hiro
                     }
                 }
             }
-
             tb7.Text = "";
             tb8.Text = "";
             App.Load_Menu();

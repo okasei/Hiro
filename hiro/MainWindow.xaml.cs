@@ -244,30 +244,34 @@ namespace hiro
             }
             foreach (Window win in Application.Current.Windows)
             {
-                    if (win is Hiro_Alarm a)
-                    {
-                        a.Load_Colors();
-                    }
-                    if (win is Hiro_Download b)
-                    {
-                        b.Load_Colors();
-                    }
-                    if (win is Hiro_LockScreen c)
-                    {
-                        c.Load_Colors();
-                    }
-                    if (win is Hiro_Msg f)
-                    {
-                        f.Load_Colors();
-                    }
-                    if (win is Hiro_Sequence d)
-                    {
-                        d.Load_Colors();
-                    }
-                    if (win is Hiro_Web e)
-                    {
-                        e.Load_Color();
-                    }
+                if (win is Hiro_Alarm a)
+                {
+                    a.Load_Colors();
+                }
+                if (win is Hiro_Download b)
+                {
+                    b.Load_Colors();
+                }
+                if (win is Hiro_LockScreen c)
+                {
+                    c.Load_Colors();
+                }
+                if (win is Hiro_Msg f)
+                {
+                    f.Load_Colors();
+                }
+                if (win is Hiro_Sequence d)
+                {
+                    d.Load_Colors();
+                }
+                if (win is Hiro_Web e)
+                {
+                    e.Load_Color();
+                }
+                if (win is Hiro_Finder g)
+                {
+                    g.Load_Color();
+                }
                 System.Windows.Forms.Application.DoEvents();
             }
         }

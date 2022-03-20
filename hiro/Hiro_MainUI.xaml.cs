@@ -64,14 +64,19 @@ namespace hiro
 
         public void HiHiro()
         {
+            Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
-                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                 if (selected == null)
                     Set_Label(homex);
                 else
                     Set_Label(selected);
             }
+            titlelabel.Visibility = Visibility.Visible;
+            versionlabel.Visibility = Visibility.Visible;
+            minbtn.Visibility = Visibility.Visible;
+            closebtn.Visibility = Visibility.Visible;
+            stack.Visibility = Visibility.Visible;
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
@@ -82,6 +87,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(0, stack, sb, -50, null);
                 sb.Begin();
             }
+            Keyboard.Focus(this);
         }
 
         public void InitializeUIWindow()
@@ -442,7 +448,7 @@ namespace hiro
             {
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Min", "1").Equals("1"))
                 {
-                    Visibility = Visibility.Hidden;
+                    Hiro_Utils.RunExe("hide()");
                 }
                 else
                 {
@@ -505,7 +511,11 @@ namespace hiro
             if (selected == label)
             {
                 if (animation && current != null)
-                    current.BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddPowerAnimation(0, current, sb, 50, null);
+                    sb.Begin();
+                }
                 label.IsEnabled = true;
                 return;
             }
@@ -615,8 +625,6 @@ namespace hiro
             }
             selected = label;
             label.IsEnabled = true;
-            if (animation && current != null)
-                current.BeginStoryboard(Application.Current.Resources["AppLoad"] as Storyboard);
         }
 
         private void Timex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -709,6 +717,8 @@ namespace hiro
                     d.Loadbgi(direction);
                 if (win is Hiro_Web f)
                     f.Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
+                if (win is Hiro_Finder g)
+                    g.Loadbgi(direction);
                 System.Windows.Forms.Application.DoEvents();
             }
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
@@ -805,11 +815,6 @@ namespace hiro
             sb.Begin();
         }
 
-        private void Ui_Loaded(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         private void Versionlabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (App.dflag)
@@ -830,6 +835,8 @@ namespace hiro
         {
             if (WindowState == WindowState.Maximized)
                 WindowState = WindowState.Normal;
+            if (WindowState != WindowState.Minimized)
+                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
         }
 
         private void Frame_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
