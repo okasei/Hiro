@@ -11,6 +11,7 @@ namespace hiro
         {
             InitializeComponent();
             Title = App.AppTitle;
+            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void Back_Loaded(object sender, RoutedEventArgs e)

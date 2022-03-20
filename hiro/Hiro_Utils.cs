@@ -712,11 +712,11 @@ namespace hiro
         #endregion
 
         #region 运行文件
-        public static void RunExe(String path, string? source = null)
+        public static void RunExe(String RunPath, string? source = null)
         {
+            var path = Path_Prepare_EX(Path_Prepare(RunPath));
             try
             {
-                path = Path_Prepare_EX(Path_Prepare(path));
                 System.Collections.ObjectModel.ObservableCollection<string> parameter = HiroParse(path);
                 if (System.IO.File.Exists(path) && path.ToLower().EndsWith(".hiro"))
                     path = "seq(" + path + ")";
@@ -958,37 +958,37 @@ namespace hiro
                 {
                     if (path.ToLower().StartsWith("home()"))
                     {
-                        App.mn.Visibility = System.Windows.Visibility.Visible;
+                        RunExe("show()");
                         App.mn.Set_Label(App.mn.homex);
                         return;
                     }
                     if (path.ToLower().StartsWith("item()"))
                     {
-                        App.mn.Visibility = System.Windows.Visibility.Visible;
+                        RunExe("show()");
                         App.mn.Set_Label(App.mn.itemx);
                         return;
                     }
                     if (path.ToLower().StartsWith("schedule()"))
                     {
-                        App.mn.Visibility = System.Windows.Visibility.Visible;
+                        RunExe("show()");
                         App.mn.Set_Label(App.mn.schedulex);
                         return;
                     }
                     if (path.ToLower().StartsWith("config()"))
                     {
-                        App.mn.Visibility = System.Windows.Visibility.Visible;
+                        RunExe("show()");
                         App.mn.Set_Label(App.mn.configx);
                         return;
                     }
                     if (path.ToLower().StartsWith("help()"))
                     {
-                        App.mn.Visibility = System.Windows.Visibility.Visible;
+                        RunExe("show()");
                         App.mn.Set_Label(App.mn.helpx);
                         return;
                     }
                     if (path.ToLower().StartsWith("about()"))
                     {
-                        App.mn.Visibility = System.Windows.Visibility.Visible;
+                        RunExe("show()");
                         App.mn.Set_Label(App.mn.aboutx);
                         return;
                     }
@@ -1017,7 +1017,11 @@ namespace hiro
                         _ => 1
                     };
                     if (situation == 0)
+                    {
                         App.mn.MainUI_Initialize();
+                        App.mn.HiHiro();
+
+                    }
                     if (situation == 1)
                     {
                         App.mn.Close();
@@ -1617,8 +1621,11 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("hirowego()") || path.ToLower().StartsWith("finder()") || path.ToLower().StartsWith("start()"))
                 {
-                    Hiro_Finder hf = new();
-                    hf.Show();
+                    if(App.ls == null)
+                    {
+                        Hiro_Finder hf = new();
+                        hf.Show();
+                    }
                     return;
                 }
                 try
@@ -1666,16 +1673,31 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
+                    foreach (var cmd in App.cmditems)
+                    {
+                        if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(path))
+                        { 
+                            RunExe(cmd.Command);
+                            return;
+                        }
+                    }
                     System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
                     LogtoFile("[ERROR]" + ex.Message);
                 }
-
                 if (App.mn == null)
                     RunExe("exit()");
                 return;
             }
             catch (Exception ex)
             {
+                foreach (var cmd in App.cmditems)
+                {
+                    if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(path))
+                    {
+                        RunExe(cmd.Command);
+                        return;
+                    }
+                }
                 LogtoFile("[ERROR]" + ex.Message);
                 App.Notify(new noticeitem(Get_Transalte("syntax"), 2, source));
                 return;
@@ -2811,6 +2833,41 @@ namespace hiro
             listener.Stop();
             return port;
         }
+
+        #region 保持窗口最前
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern IntPtr SetCapture(IntPtr hWnd);
+
+        public static void SetWindowToForegroundWithAttachThreadInput(System.Windows.Window window)
+        {
+            var interopHelper = new System.Windows.Interop.WindowInteropHelper(window);
+            var thisWindowThreadId = GetWindowThreadProcessId(interopHelper.Handle, IntPtr.Zero);
+            var currentForegroundWindow = GetForegroundWindow();
+            var currentForegroundWindowThreadId = GetWindowThreadProcessId(currentForegroundWindow, IntPtr.Zero);
+            AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, true);
+            window.Show();
+            window.Activate();
+            AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, false);
+            var tm = window.Topmost;
+            window.Topmost = true;
+            window.Topmost = tm;
+        }
+
+        #endregion
+
         #endregion
 
     }

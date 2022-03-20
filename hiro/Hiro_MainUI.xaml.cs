@@ -87,7 +87,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(0, stack, sb, -50, null);
                 sb.Begin();
             }
-            Keyboard.Focus(this);
+            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         public void InitializeUIWindow()

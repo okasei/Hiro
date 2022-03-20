@@ -60,7 +60,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, TitleGrid, sb, -50, null);
                 sb.Begin();
             }
-            System.Windows.Input.Keyboard.Focus(this);
+            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)

@@ -62,8 +62,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, albtn_3, sb, 50, null);
                 sb.Begin();
             }
-            Keyboard.Focus(this);
-            Mouse.Capture(this);
+            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         public void Load_Position(int OneButtonOnly = 0)

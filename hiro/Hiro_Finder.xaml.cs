@@ -35,10 +35,9 @@ namespace hiro
                  }
                  PlaceHolder.FontSize--;
                  HiHiro();
-                 Focus();
+                 Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                 Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                  Keyboard.Focus(Hiro_Text);
-                 Mouse.Capture(Hiro_Text);
-                 Hiro_Text.Focus();
              };
         }
 
@@ -139,13 +138,43 @@ namespace hiro
                 TryClose();
                 e.Handled = true;
             }
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.D9) && Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                Pair_Brackets("()");
+                e.Handled = true;
+            }
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.OemOpenBrackets) && Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                Pair_Brackets("{}");
+                e.Handled = true;
+            }
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.OemOpenBrackets) && Keyboard.Modifiers == ModifierKeys.None)
+            {
+                Pair_Brackets("[]");
+                e.Handled = true;
+            }
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.OemComma) && Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                Pair_Brackets("<>");
+                e.Handled = true;
+            }
         }
         
+        private void Pair_Brackets(string brackets)
+        {
+            var index = Hiro_Text.CaretIndex;
+            var text = Hiro_Text.Text;
+            text = string.Concat(text.AsSpan(0, index), brackets, text.AsSpan(index, text.Length - index));
+            Hiro_Text.Text = text;
+            Hiro_Text.CaretIndex = index + 1;
+        }
+
         private void TryClose()
         {
             if (cflag == 0)
             {
                 cflag = 1;
+                Hiro_Utils.ReleaseCapture();
                 Close();
             }
         }

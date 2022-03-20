@@ -49,6 +49,8 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(3, cancelbtn, sb, -50, null);
                 sb.Begin();
             }
+            if (Visibility == Visibility.Visible)
+                Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void TimerTick()

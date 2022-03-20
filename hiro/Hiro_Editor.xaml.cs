@@ -168,16 +168,18 @@ namespace hiro
                 dou.Completed += delegate
                 {
                     SetValue(TopProperty, 0.0);
+                    Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                    Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                     Keyboard.Focus(con);
-                    Mouse.Capture(con);
                 };
                 BeginAnimation(TopProperty, dou);
             }
             else
             {
                 SetValue(TopProperty, 0.0);
+                Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                 Keyboard.Focus(con);
-                Mouse.Capture(con);
             }
             
         }
@@ -239,9 +241,10 @@ namespace hiro
 
         private void Con_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyStates == Keyboard.GetKeyStates(Key.Return) && Keyboard.Modifiers == ModifierKeys.Control)
+            if ((e.KeyStates == Keyboard.GetKeyStates(Key.Return) && Keyboard.Modifiers == ModifierKeys.Control) || e.KeyStates == Keyboard.GetKeyStates(Key.Escape))
             {
                 Save(true);
+                Run_Out();
                 e.Handled = true;
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.X) && Keyboard.Modifiers == ModifierKeys.Alt)
@@ -348,6 +351,11 @@ namespace hiro
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), animation, bgimage, this);
             bflag = 0;
+        }
+
+        private void Edi_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Hiro_Utils.ReleaseCapture();
         }
     }
 }
