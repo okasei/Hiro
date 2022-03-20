@@ -39,6 +39,8 @@ namespace hiro
                 bw.DoWork += delegate {
                     try
                     {
+                        if (App.hc == null)
+                            return;
                         System.Net.Http.HttpResponseMessage response = App.hc.Send(request);
                         if (response.Content != null)
                         {

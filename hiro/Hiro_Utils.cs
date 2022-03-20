@@ -923,6 +923,8 @@ namespace hiro
                         BackgroundWorker bw = new();
                         bw.DoWork += delegate
                         {
+                            if (App.hc == null)
+                                return;
                             try
                             {
                                 System.Net.Http.HttpResponseMessage response = App.hc.Send(request);
@@ -2312,7 +2314,8 @@ namespace hiro
             System.Net.ServicePointManager.CheckCertificateRevocationList = true;
             System.Net.ServicePointManager.DefaultConnectionLimit = 100;
             System.Net.ServicePointManager.Expect100Continue = false;
-
+            if (App.hc == null)
+                return "error";
             try
             {
                 System.Net.Http.HttpResponseMessage response = App.hc.Send(request);

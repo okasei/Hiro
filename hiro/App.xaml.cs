@@ -41,7 +41,7 @@ namespace hiro
         internal static System.Collections.ObjectModel.ObservableCollection<int> vs = new();
         internal static int page = 0;
         internal static bool dflag = false;
-        internal static System.Net.Http.HttpClient hc = new();
+        internal static System.Net.Http.HttpClient? hc = null;
         internal static int ColorCD = -1;
         internal static IntPtr WND_Handle = IntPtr.Zero;
         #endregion
@@ -353,6 +353,39 @@ namespace hiro
                 AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro");
             if (Hiro_Utils.Read_Ini(dconfig, "Config", "TRBtn", "0").Equals("1"))
                 trval = 0;
+            if (Hiro_Utils.Read_Ini(dconfig, "Network", "Proxy", "1").Equals("1"))//IE Proxy
+            {
+                hc = new();
+            }
+            else if (Hiro_Utils.Read_Ini(dconfig, "Network", "Proxy", "1").Equals("2"))//Proxy
+            {
+                try
+                {
+                    System.Net.Http.HttpClientHandler hch = new();
+                    int ProxyPort = int.Parse(Hiro_Utils.Read_Ini(dconfig, "Network", "Port", String.Empty));
+                    hch.Proxy = new System.Net.WebProxy(Hiro_Utils.Read_Ini(dconfig, "Network", "Server", String.Empty), ProxyPort);
+                    hch.UseProxy = true;
+                    string? ProxyUsername = Hiro_Utils.Read_Ini(dconfig, "Network", "Username", String.Empty);
+                    string? ProxyPwd = Hiro_Utils.Read_Ini(dconfig, "Network", "Password", String.Empty);
+                    ProxyUsername = ProxyUsername.Equals(string.Empty) ? null : ProxyUsername;
+                    ProxyPwd = ProxyPwd.Equals(string.Empty) ? null : ProxyPwd;
+                    hch.PreAuthenticate = true;
+                    hch.UseDefaultCredentials = false;
+                    hch.Credentials = new System.Net.NetworkCredential(ProxyUsername, ProxyPwd);
+                    hc = new(hch);
+                }
+                catch (Exception ex)
+                {
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    hc = new();
+                }
+            }
+            else
+            {
+                System.Net.Http.HttpClientHandler hch = new();
+                hch.UseProxy = false;
+                hc = new(hch);
+            }
         }
 
         private static void InitializeMethod()

@@ -9,10 +9,10 @@
     mc:Ignorable="d" 
     d:DesignHeight="420" d:DesignWidth="420" KeepAlive="False"
     Title="Hiro_NewSchedule">
-    <Page.Resources>
-        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
-        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
-    </Page.Resources>
+<Page.Resources>
+    <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+    <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+</Page.Resources>
     <Grid>
         <Label x:Name="sclabel1" Style="{DynamicResource HiroLabel}" Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
         <TextBox x:Name="tb11" HorizontalAlignment="Left" Margin="0,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" AllowDrop="True" Cursor="IBeam"/>

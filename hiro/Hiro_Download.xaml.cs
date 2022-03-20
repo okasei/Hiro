@@ -171,7 +171,7 @@ namespace hiro
             Hiro_Utils.CreateFolder(mSaveFileName);
             if (mSaveFileName.EndsWith("\\"))
                 mSaveFileName += strFileName;
-            if (System.IO.File.Exists(mSaveFileName))
+            if (System.IO.File.Exists(mSaveFileName) || App.hc == null)
             {
                 Stop_Download(true);
                 return;

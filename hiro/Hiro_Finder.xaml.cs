@@ -77,7 +77,7 @@ namespace hiro
 
         public void Load_Translate()
         {
-            PlaceHolder.Content = Hiro_Utils.Get_Transalte("hirogo");
+            PlaceHolder.Content = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Transalte("hirogo")));
         }
 
         public void Load_Position()

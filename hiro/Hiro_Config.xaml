@@ -61,7 +61,7 @@
     </Page.Resources>
     <Grid>
         <ScrollBar x:Name="configbar" Width="10" Height="418" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Vertical" Margin="397,0,0,0" ValueChanged="Configbar_ValueChanged" ViewportSize="10" Maximum="100" MouseWheel="Configbar_MouseWheel"/>
-        <Grid x:Name="BaseGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Height="900" Width="400" Margin="0,0,0,0">
+        <Grid x:Name="BaseGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Height="900" Width="400" Margin="0,-500,0,0">
             <Grid x:Name="lc_grid" Margin="0,0,0,339" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Label  Style="{DynamicResource HiroLabel}" x:Name="lc_label" Content="When tray is clicked" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Width="377"/>
                 <RadioButton x:Name="rbtn1" Content="Show Main Window" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Checked="Rbtn1_Checked"/>
@@ -121,9 +121,10 @@
             <CheckBox x:Name="win_style" Content="Windows Style" HorizontalAlignment="Left" Margin="173,572,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Checked="Win_style_Checked" Unchecked="Win_style_Unchecked"/>
             <Label Style="{DynamicResource HiroLabel}" x:Name="langlabel" Content="Language" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="13,609,0,0" Height="24" Width="71" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <Label Style="{DynamicResource HiroLabel}" x:Name="langname" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent"/>
-            <ComboBox x:Name="langbox" BorderBrush ="{DynamicResource AppFore}" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="103,609,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}"/>
+            <ComboBox x:Name="langbox" BorderBrush ="{DynamicResource AppFore}" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="103,609,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="24"/>
             <CheckBox x:Name="reverse_style" Content="Reverse Foreground" HorizontalAlignment="Left" Margin="288,572,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Checked="Reverse_style_Checked" Unchecked="Reverse_style_Unchecked"/>
             <CheckBox x:Name="tr_btn" Content="Transparent Button" HorizontalAlignment="Left" Margin="293,549,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Checked="Tr_btn_Checked"  Unchecked="Tr_btn_Unchecked"/>
+            <Button x:Name="btnx1" BorderThickness="1" Content="Proxy" HorizontalAlignment="Left" Margin="245,609,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Btnx1_Click"/>
         </Grid>
     </Grid>
 </Page>

@@ -185,6 +185,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(langname, "langbox");
             Hiro_Utils.Set_Control_Location(moreandsoon, "morecome");
             Hiro_Utils.Set_Control_Location(btn7, "lock");
+            Hiro_Utils.Set_Control_Location(btnx1, "proxybtn");
             Hiro_Utils.Set_Control_Location(tb1, "lefttb");
             Hiro_Utils.Set_Control_Location(tb2, "middletb");
             Hiro_Utils.Set_Control_Location(tb3, "righttb");
@@ -247,16 +248,17 @@ namespace hiro
             tr_btn.Content = Hiro_Utils.Get_Transalte("trbtnbox");
             Verbose.Content = Hiro_Utils.Get_Transalte("verbosebox");
             animation.Content = Hiro_Utils.Get_Transalte("anibox");
-            lc_label.Content = Hiro_Utils.Get_Transalte("LeftClick");
-            mc_label.Content = Hiro_Utils.Get_Transalte("MiddleClick");
-            rc_label.Content = Hiro_Utils.Get_Transalte("RightClick");
+            lc_label.Content = Hiro_Utils.Get_Transalte("leftclick");
+            mc_label.Content = Hiro_Utils.Get_Transalte("middleclick");
+            rc_label.Content = Hiro_Utils.Get_Transalte("rightclick");
             call_label.Content = Hiro_Utils.Get_Transalte("callmethod");
-            ar_label.Content = Hiro_Utils.Get_Transalte("AutoExe");
-            bg_label.Content = Hiro_Utils.Get_Transalte("Background");
+            ar_label.Content = Hiro_Utils.Get_Transalte("autoexe");
+            bg_label.Content = Hiro_Utils.Get_Transalte("background");
             langlabel.Content = Hiro_Utils.Get_Transalte("language");
             name_label.Content = Hiro_Utils.Get_Transalte("namelabel");
             moreandsoon.Content = Hiro_Utils.Get_Transalte("morecome");
-            btn7.Content = Hiro_Utils.Get_Transalte("Lock");
+            btn7.Content = Hiro_Utils.Get_Transalte("lock");
+            btnx1.Content = Hiro_Utils.Get_Transalte("proxybtn");
         }
 
         public void Load_Color()
@@ -684,8 +686,7 @@ namespace hiro
                 if (Hiro_Main != null)
                 {
                     Hiro_Main.Set_Label(Hiro_Main.colorx);
-                }
-                    
+                }   
             }
         }
         private void Tr_btn_Checked(object sender, RoutedEventArgs e)
@@ -707,6 +708,14 @@ namespace hiro
                 App.trval = 160;
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
+            }
+        }
+
+        private void Btnx1_Click(object sender, RoutedEventArgs e)
+        {
+            if (Hiro_Main != null)
+            {
+                Hiro_Main.Set_Label(Hiro_Main.proxyx);
             }
         }
     }

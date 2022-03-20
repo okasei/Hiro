@@ -26,6 +26,7 @@ namespace hiro
         internal Hiro_NewSchedule? hiro_newschedule = null;
         internal Hiro_Time? hiro_time = null;
         internal Hiro_Color? hiro_color = null;
+        internal Hiro_Proxy? hiro_proxy = null;
 
         public Hiro_MainUI()
         {
@@ -141,6 +142,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(newx, "new", location: false);
             Hiro_Utils.Set_Control_Location(colorx, "color", location: false);
             Hiro_Utils.Set_Control_Location(timex, "time", location: false);
+            Hiro_Utils.Set_Control_Location(proxyx, "proxy", location: false);
             Hiro_Utils.Set_Control_Location(colorx, "color", location: false);
             Thickness th2 = extended.Margin;
             th2.Left = Width / 2 - Height / 2;
@@ -319,17 +321,18 @@ namespace hiro
         {
             Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
             titlelabel.Content = App.AppTitle;
-            minbtn.ToolTip = Hiro_Utils.Get_Transalte("Min");
+            minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
             closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
             homex.Content = Hiro_Utils.Get_Transalte("home");
             itemx.Content = Hiro_Utils.Get_Transalte("item");
             schedulex.Content = Hiro_Utils.Get_Transalte("schedule");
-            configx.Content = Hiro_Utils.Get_Transalte("Config");
+            configx.Content = Hiro_Utils.Get_Transalte("config");
             helpx.Content = Hiro_Utils.Get_Transalte("help");
             aboutx.Content = Hiro_Utils.Get_Transalte("about");
             newx.Content = Hiro_Utils.Get_Transalte("new");
             colorx.Content = Hiro_Utils.Get_Transalte("color");
-            timex.Content = Hiro_Utils.Get_Transalte("Time");
+            timex.Content = Hiro_Utils.Get_Transalte("time");
+            proxyx.Content = Hiro_Utils.Get_Transalte("proxy");
             if (hiro_home != null)
                 hiro_home.Update_Labels();
             if (hiro_items != null)
@@ -377,6 +380,11 @@ namespace hiro
                 hiro_color.Load_Translate();
                 hiro_color.Load_Position();
             }
+            if (hiro_proxy != null)
+            {
+                hiro_proxy.Load_Translate();
+                hiro_proxy.Load_Position();
+            }
         }
 
         public void Load_Labels(bool reload = true)
@@ -392,6 +400,7 @@ namespace hiro
                 newx.Background = new SolidColorBrush(Colors.Transparent);
                 colorx.Background = new SolidColorBrush(Colors.Transparent);
                 timex.Background = new SolidColorBrush(Colors.Transparent);
+                proxyx.Background = new SolidColorBrush(Colors.Transparent);
                 homex.IsEnabled = true;
                 itemx.IsEnabled = true;
                 schedulex.IsEnabled = true;
@@ -401,6 +410,7 @@ namespace hiro
                 newx.IsEnabled = true;
                 colorx.IsEnabled = true;
                 timex.IsEnabled = true;
+                proxyx.IsEnabled = true;
 
             }
             homex.Foreground = Foreground;
@@ -412,6 +422,7 @@ namespace hiro
             newx.Foreground = Foreground;
             colorx.Foreground = Foreground;
             timex.Foreground = Foreground;
+            proxyx.Foreground = Foreground;
         }
         #endregion
 
@@ -491,6 +502,10 @@ namespace hiro
             if (label != colorx)
             {
                 colorx.Visibility = Visibility.Hidden;
+            }
+            if (label != proxyx)
+            {
+                proxyx.Visibility = Visibility.Hidden;
             }
             double duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
@@ -617,11 +632,25 @@ namespace hiro
             if (label == colorx)
             {
                 colorx.Visibility = Visibility.Visible;
-                Hiro_Color hc = new(this);
-                hc.color_picker.Color = App.AppAccentColor;
-                hc.Unify_Color(true);
-                current = hc;
-                frame.Content = hc;
+                if (hiro_color == null)
+                {
+                    hiro_color = new(this);
+                }
+                hiro_color.color_picker.Color = App.AppAccentColor;
+                hiro_color.Unify_Color(true);
+                current = hiro_color;
+                frame.Content = hiro_color;
+            }
+            if (label == proxyx)
+            {
+                proxyx.Visibility = Visibility.Visible;
+                if (hiro_proxy == null)
+                {
+                    hiro_proxy = new(this);
+                }
+                Hiro_Proxy hi = new(this);
+                current = hiro_proxy;
+                frame.Content = hiro_proxy;
             }
             selected = label;
             label.IsEnabled = true;
@@ -849,6 +878,11 @@ namespace hiro
                     rb = frame.RemoveBackEntry();
                 }
             }
+        }
+
+        private void Proxyx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Set_Label(proxyx);
         }
     }
 }
