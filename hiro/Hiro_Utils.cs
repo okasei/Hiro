@@ -1628,6 +1628,22 @@ namespace hiro
                     }
                     return;
                 }
+                if (path.ToLower().StartsWith("item(") && !path.ToLower().StartsWith("item()"))
+                {
+                    var RealPath = parameter[0];
+                    for (int i = 1; i < parameter.Count; i++)
+                    {
+                        RealPath += ("," + parameter[i]);
+                    }
+                    foreach (var cmd in App.cmditems)
+                    {
+                        if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(RealPath) || cmd.Name.Equals(path))
+                        {
+                            RunExe(cmd.Command);
+                            return;
+                        }
+                    }
+                }
                 try
                 {
                     ProcessStartInfo pinfo = new();
@@ -1690,14 +1706,6 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                foreach (var cmd in App.cmditems)
-                {
-                    if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(path))
-                    {
-                        RunExe(cmd.Command);
-                        return;
-                    }
-                }
                 LogtoFile("[ERROR]" + ex.Message);
                 App.Notify(new noticeitem(Get_Transalte("syntax"), 2, source));
                 return;

@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:hiro"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
         Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="None" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" Deactivated="Window_Deactivated" WindowStartupLocation="CenterScreen">
     <Window.Resources>
