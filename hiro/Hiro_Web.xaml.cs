@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace hiro
@@ -183,7 +184,12 @@ namespace hiro
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
         {
-            if (wv2.CoreWebView2.ContainsFullScreenElement)
+            Web_FullScreen(wv2.CoreWebView2.ContainsFullScreenElement);
+        }
+
+        private void Web_FullScreen(bool isFullScreen)
+        {
+            if (isFullScreen)
             {
                 TitleGrid.Visibility = Visibility.Collapsed;
                 wt = WindowStyle;
@@ -436,9 +442,9 @@ namespace hiro
             e.Handled = true;
         }
 
-        private void URLBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void URLBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == System.Windows.Input.Key.Enter)
+            if(e.Key == Key.Enter)
             {
                 if (URLBox.Text.ToLower().Equals("topmost:on") || URLBox.Text.ToLower().Equals("topmost:true"))
                     Topmost = true;
@@ -447,6 +453,8 @@ namespace hiro
                 if (URLBox.Text.ToLower().Equals("mute:on") || URLBox.Text.ToLower().Equals("mute:true"))
                     wv2.CoreWebView2.IsMuted = true;
                 if (URLBox.Text.ToLower().Equals("mute:off") || URLBox.Text.ToLower().Equals("mute:false"))
+                    wv2.CoreWebView2.IsMuted = false;
+                if (URLBox.Text.ToLower().Equals("fullscreen"))
                     wv2.CoreWebView2.IsMuted = false;
                 URLBox.Visibility = Visibility.Collapsed;
                 TitleLabel.Visibility = Visibility.Visible;
@@ -469,7 +477,7 @@ namespace hiro
                     
                 e.Handled = true;
             }
-            if (e.Key == System.Windows.Input.Key.Escape)
+            if (e.Key == Key.Escape)
             {
                 URLBox.Visibility = Visibility.Collapsed;
                 TitleLabel.Visibility = Visibility.Visible;
@@ -499,12 +507,34 @@ namespace hiro
             e.Handled = true;
         }
 
-        private void Topbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Topbtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Topmost = !Topmost;
             topbtn.Content = Topmost ? "\uE77A" : "\uE718";
             topbtn.ToolTip = Topmost ? Hiro_Utils.Get_Transalte("webbottom") : Hiro_Utils.Get_Transalte("webtop");
             e.Handled = true;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.W) && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                Close();
+                e.Handled = true;
+            }
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.F11))
+            {
+                Web_FullScreen(TitleGrid.Visibility == Visibility.Visible);
+                e.Handled = true;
+            }
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.Escape))
+            {
+                if (TitleGrid.Visibility != Visibility.Visible)
+                {
+                    Web_FullScreen(false);
+                    e.Handled = true;
+                }
+            }
         }
     }
 }
