@@ -40,12 +40,20 @@ namespace hiro
                 }
                 else
                 {
-                    wv2.Source = new Uri(uri);
+                    try
+                    {
+                        wv2.Source = new Uri(uri);
+                    }
+                    catch
+                    {
+                        wv2.Source = new Uri("http://" + uri);
+                    }
                     Show();
                 }
             }
             fixed_title = title;
             wv2.CoreWebView2InitializationCompleted += Wv2_CoreWebView2InitializationCompleted;
+            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
             Loaded += delegate
             {
                 HiHiro();
@@ -159,7 +167,7 @@ namespace hiro
             if (soundbtn.Visibility == Visibility.Visible && visual != soundbtn.Visibility && animation)
             {
                 System.Windows.Media.Animation.Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, soundbtn, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(2, soundbtn, sb, -50, null);
                 sb.Begin();
             }
             string ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
@@ -360,6 +368,9 @@ namespace hiro
             closebtn.Margin = WindowState == WindowState.Maximized ? new(0, -5, 0, 0) : new(0, -2, 0, 0);
             closebtn.Height = WindowState == WindowState.Maximized ? 30 : 32;
             BaseGrid.Margin = WindowState == WindowState.Maximized ? new(6) : new(0);
+            soundbtn.Margin = WindowState == WindowState.Maximized ? new(0,1, soundbtn.Margin.Right,0) : new(0, 0, soundbtn.Margin.Right, 0);
+            topbtn.Margin = WindowState == WindowState.Maximized ? new(0,1, topbtn.Margin.Right,0) : new(0, 0, topbtn.Margin.Right, 0);
+            soundbtn.Height = WindowState == WindowState.Maximized ? 29 : 30;
             Hiro_Utils.Set_Control_Location(URLBtn, "websecure", location: false);
             Hiro_Utils.Set_Control_Location(URLBox, "weburl", location: false);
             Hiro_Utils.Set_Control_Location(PreBtn, "webpre", location: false);
@@ -440,7 +451,22 @@ namespace hiro
                 URLBox.Visibility = Visibility.Collapsed;
                 TitleLabel.Visibility = Visibility.Visible;
                 if (fixed_title == null)
-                    wv2.CoreWebView2.Navigate(URLBox.Text);
+                    try
+                    {
+                        wv2.CoreWebView2.Navigate(URLBox.Text);
+                    }
+                    catch (Exception ex)
+                    {
+                        try
+                        {
+                            wv2.CoreWebView2.Navigate("http://" + URLBox.Text);
+                        }
+                        catch
+                        {
+                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                        }
+                    }
+                    
                 e.Handled = true;
             }
             if (e.Key == System.Windows.Input.Key.Escape)

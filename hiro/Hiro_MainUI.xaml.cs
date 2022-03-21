@@ -529,6 +529,24 @@ namespace hiro
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddPowerAnimation(0, current, sb, 50, null);
+                    if (current is Hiro_Items his)
+                        his.HiHiro();
+                    if (current is Hiro_Schedule hs)
+                        hs.HiHiro();
+                    if (current is Hiro_Config hc)
+                        hc.HiHiro();
+                    if (current is Hiro_Help hlp)
+                        hlp.HiHiro();
+                    if (current is Hiro_NewItem hni)
+                        hni.HiHiro();
+                    if (current is Hiro_NewSchedule hns)
+                        hns.HiHiro();
+                    if (current is Hiro_Time ht)
+                        ht.HiHiro();
+                    if (current is Hiro_Color hcr)
+                        hcr.HiHiro();
+                    if (current is Hiro_Proxy hpy)
+                        hpy.HiHiro();
                     sb.Begin();
                 }
                 label.IsEnabled = true;

@@ -30,7 +30,7 @@
                 <ProgressBar x:Name="wvpb" Background="Transparent" Foreground="{DynamicResource AppFore}" IsIndeterminate="True" Visibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5" BorderBrush="{x:Null}"/>
                 <DockPanel LastChildFill="True" >
                     <StackPanel x:Name="RightStack" DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Stretch">
-                        <Label x:Name="soundbtn" Content="&#xE995;" FontFamily="Segoe MDL2 Assets" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="35" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Soundbtn_MouseLeftButtonDown">
+                        <Label x:Name="soundbtn" Content="&#xE995;" FontFamily="Segoe MDL2 Assets" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="35" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Soundbtn_MouseLeftButtonDown">
                             <Label.Triggers>
                                 <EventTrigger RoutedEvent="UIElement.MouseEnter">
                                     <BeginStoryboard>
@@ -52,7 +52,7 @@
                                 </EventTrigger>
                             </Label.Triggers>
                         </Label>
-                        <Label x:Name="topbtn" Content="&#xE718;" FontFamily="Segoe MDL2 Assets"  Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="35" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Topbtn_MouseLeftButtonDown">
+                        <Label x:Name="topbtn" Content="&#xE718;" FontFamily="Segoe MDL2 Assets"  Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="35" Height="{Binding Height, ElementName=soundbtn}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Topbtn_MouseLeftButtonDown">
                             <Label.Triggers>
                                 <EventTrigger RoutedEvent="UIElement.MouseEnter">
                                     <BeginStoryboard>

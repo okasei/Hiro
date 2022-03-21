@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
-        Title="notification" Height="32" Width="800" ResizeMode="NoResize" Background="Coral" WindowStyle="None" WindowStartupLocation="Manual" Visibility="Visible" Topmost="True" IsTabStop="False" ShowInTaskbar="False" Loaded="Noti_Loaded" AllowsTransparency="True" Opacity="0.01" Icon="/hiro_circle.ico" MouseDoubleClick="Noti_MouseDoubleClick">
+        Title="notification" Height="32" Width="800" ResizeMode="NoResize" Background="Coral" WindowStyle="None" Visibility="Visible" Topmost="True" IsTabStop="False" ShowInTaskbar="False" Loaded="Noti_Loaded" AllowsTransparency="True" Icon="/hiro_circle.ico" MouseDoubleClick="Noti_MouseDoubleClick" Closing="Noti_Closing" >
     <Grid>
         <Label Style="{DynamicResource HiroLabel}" x:Name="notinfo"  Content="" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseDoubleClick="Notinfo_MouseDoubleClick" Width="100" Height="32"/>
     </Grid>

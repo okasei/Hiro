@@ -279,6 +279,7 @@ namespace hiro
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\editor\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\");
+            Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\app\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\default\\cache\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\system\\lang\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\system\\wallpaper\\");

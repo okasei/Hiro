@@ -43,6 +43,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, ntnx1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, ntnx2, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
             }
             if (animation)
             {

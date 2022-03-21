@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace hiro
@@ -18,18 +19,20 @@ namespace hiro
         internal double i = 0.01;
         internal double ai = 0.01;
         internal bool[] animation = { true, false };
+        internal Storyboard? sb = null;
         public Hiro_Notification()
         {
             InitializeComponent();
             Title = Hiro_Utils.Get_Transalte("notitle") + " - " + App.AppTitle;
             Load_Color();
             Hiro_Utils.Set_Control_Location(notinfo, "notify");
-            Title = App.AppTitle;
             Width = SystemParameters.PrimaryScreenWidth;
             Height = 32;
-            SetValue(Canvas.LeftProperty, 0.0);
-            SetValue(Canvas.TopProperty, 0.0);
-            Opacity = 0.01;
+            SourceInitialized += delegate
+            {
+                Canvas.SetTop(this, -ActualHeight);
+                Canvas.SetLeft(this, 0);
+            };
             msg = "";
             animation[0] = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             timer = new()
@@ -51,20 +54,20 @@ namespace hiro
                     if (animation[0])
                     {
                         timer.Stop();
-                        System.Windows.Media.Animation.Storyboard? sb = new();
-                        sb = Hiro_Utils.AddDoubleAnimaton(1, 300, this, "Opacity", sb);
-                        sb.Completed += delegate
+                        DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(350));
+                        dou.DecelerationRatio = 0.8;
+                        dou.FillBehavior = FillBehavior.Stop;
+                        dou.Completed += delegate
                         {
-                            Opacity = 1;
                             flag[0] = 1;
                             timer.Start();
-                            sb = null;
+                            Canvas.SetTop(this, 0);
                         };
-                        sb.Begin();
+                        BeginAnimation(TopProperty, dou);
                     }
                     else
                     {
-                        Opacity = 1;
+                        Canvas.SetTop(this, 0);
                         flag[0] = 1;
                     }
                     break;
@@ -73,7 +76,10 @@ namespace hiro
                         break;
                     flag[1]--;
                     if (flag[1] <= 0)
+                    {
                         Next_Msg();
+                        Load_Noti_Position();
+                    }
                     if (flag[1] <= 0)
                     {
                         flag[0] = 2;
@@ -86,16 +92,16 @@ namespace hiro
                     timer.Stop();
                     if (animation[0])
                     {
-                        System.Windows.Media.Animation.Storyboard? sb = new();
-                        sb = Hiro_Utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
-                        sb.Completed += delegate
+                        DoubleAnimation dou = new(0, -ActualHeight, TimeSpan.FromMilliseconds(200));
+                        dou.DecelerationRatio = 0.8;
+                        dou.FillBehavior = FillBehavior.Stop;
+                        dou.Completed += delegate
                         {
-                            Opacity = 0;
+                            Canvas.SetTop(this, -ActualHeight);
                             App.noti = null;
                             Close();
-                            sb = null;
                         };
-                        sb.Begin();
+                        BeginAnimation(TopProperty, dou);
                     }
                     else
                     {
@@ -114,17 +120,19 @@ namespace hiro
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
-                System.Windows.Media.Animation.Storyboard? sb = new();
-                Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sb);
-                sb.Completed += delegate
+                Storyboard? sc = new();
+                Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sc);
+                sc.Completed += delegate
                 {
                     Background = new SolidColorBrush(App.AppAccentColor);
-                    sb = null;
+                    sc = null;
                 };
-                sb.Begin();
+                sc.Begin();
             }
             else
+            {
                 Background = new SolidColorBrush(App.AppAccentColor);
+            }
 
         }
 
@@ -184,14 +192,14 @@ namespace hiro
             Hiro_Utils.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
             Thickness th = notinfo.Margin;
             notinfo.Width = msize.Width;
-            th.Left = Width / 2 - msize.Width / 2;
+            th.Left = ActualWidth / 2 - msize.Width / 2;
             if (th.Left < 0)
             {
                 animation[1] = true;
                 th.Left = Width - msize.Width;
                 double time = (notinfo.Content != null) ? ((string)notinfo.Content).Length * 50 : 3000;
-                System.Windows.Media.Animation.Storyboard? sb = new();
-                sb = Hiro_Utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom));
+                sb = new();
+                sb = Hiro_Utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom), 0);
                 sb.Completed += delegate
                 {
                     sb = null;
@@ -201,7 +209,15 @@ namespace hiro
                 sb.Begin();
             }
             else
+            {
+                if (sb != null)
+                {
+                    sb.Stop();
+                    notinfo.Margin = th;
+                    animation[1] = false;
+                }
                 notinfo.Margin = th;
+            } 
         }
         private void Ani()
         {
@@ -223,12 +239,21 @@ namespace hiro
 
         private void Noti_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            flag[1] = 0;
+            timer.Stop();
+            Next_Msg();
+            timer.Start();
         }
 
         private void Notinfo_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            flag[1] = 0;
+            timer.Stop();
+            Next_Msg();
+            timer.Start();
+        }
+
+        private void Noti_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            App.noti = null;
         }
     }
 }

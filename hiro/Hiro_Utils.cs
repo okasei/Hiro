@@ -633,6 +633,7 @@ namespace hiro
 
         public static String Path_Prepare(String path)
         {
+            path = Path_Replace(path, "<hiapp>", AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app");
             path = Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Path_Replace(path, "<system>", Environment.SystemDirectory);
             path = Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86.Path);
@@ -1344,7 +1345,7 @@ namespace hiro
                             blank.Add(inside);
                             titile = lef + "[" + a.ToString() + "]" + titile;
                         }
-                        if (titile.IndexOf(" ") == -1)
+                        if (!titile.Contains(' ', StringComparison.CurrentCulture))
                         {
                             pinfo.FileName = titile;
                         }
@@ -1367,13 +1368,13 @@ namespace hiro
                             a++;
                         }
                         if (mes.StartsWith("\""))
-                            mes = mes.Substring(1);
+                            mes = mes[1..];
                         if (mes.EndsWith("\""))
-                            mes = mes.Substring(0, mes.Length - 1);
+                            mes = mes[0..^1];
                         if (titile.StartsWith("\""))
-                            titile = titile.Substring(1);
+                            titile = titile[1..];
                         if (mes.EndsWith("\""))
-                            titile = titile.Substring(0, titile.Length - 1);
+                            titile = titile[0..^1];
                         mes = mes.ToLower();
                         if (mes.IndexOf("a") != -1)
                             pinfo.Verb = "runas";
@@ -1385,8 +1386,7 @@ namespace hiro
                             pinfo.WindowStyle = ProcessWindowStyle.Maximized;
                         if (mes.IndexOf("n") != -1)
                             pinfo.CreateNoWindow = true;
-                        //启动进程
-                        Process? p = Process.Start(pinfo);
+                        Run_Process(pinfo, path, RunPath);
                     }
                     catch (Exception ex)
                     {
@@ -1664,7 +1664,7 @@ namespace hiro
                         blank.Add(inside);
                         path = lef + "[" + a.ToString() + "]" + path;
                     }
-                    if (path.IndexOf(" ") == -1)
+                    if (!path.Contains(" ", StringComparison.CurrentCulture))
                     {
                         pinfo.FileName = path;
                     }
@@ -1686,19 +1686,10 @@ namespace hiro
                         blank.RemoveAt(0);
                         a++;
                     }
-                    //启动进程
-                    Process? p = Process.Start(pinfo);
+                    Run_Process(pinfo, path, RunPath);
                 }
                 catch (Exception ex)
                 {
-                    foreach (var cmd in App.cmditems)
-                    {
-                        if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(path))
-                        { 
-                            RunExe(cmd.Command);
-                            return;
-                        }
-                    }
                     System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
                     LogtoFile("[ERROR]" + ex.Message);
                 }
@@ -1714,12 +1705,43 @@ namespace hiro
             }
         }
 
+        private static void Run_Process(ProcessStartInfo pinfo, string path, string RunPath)
+        {
+            pinfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            try
+            {
+                _ = Process.Start(pinfo);
+            }
+            catch (Exception ex)
+            {
+                pinfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app";
+                pinfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app\\" + pinfo.FileName;
+                try
+                {
+                    _ = Process.Start(pinfo);
+                }
+                catch
+                {
+                    foreach (var cmd in App.cmditems)
+                    {
+                        if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(path))
+                        {
+                            RunExe(cmd.Command);
+                            return;
+                        }
+                    }
+                    LogtoFile("[ERROR]" + ex.Message);
+                }
+            }
+            
+        }
+
         public static System.Collections.ObjectModel.ObservableCollection<string> HiroParse(string val)
         {
             System.Collections.ObjectModel.ObservableCollection<string> res = new();
             int startIndex = 0, endIndex = val.Length, currentIndex = 0;
             string temp = "";
-            if (val.IndexOf("(") == -1)
+            if (!val.Contains("(", StringComparison.CurrentCulture))
                 return res;
             val = val.Substring(val.IndexOf("(") + 1);
             if (val.EndsWith(")"))
@@ -2153,7 +2175,7 @@ namespace hiro
         #endregion
 
         #region 添加thickness动画
-        public static System.Windows.Media.Animation.Storyboard AddThicknessAnimaton(System.Windows.Thickness? to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Thickness? from = null)
+        public static System.Windows.Media.Animation.Storyboard AddThicknessAnimaton(System.Windows.Thickness? to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Thickness? from = null,double DecelerationRatio = 0.9)
         {
             if (sb == null)
                 sb = new();
@@ -2163,7 +2185,7 @@ namespace hiro
             if (to != null)
                 da.To = to;
                 da.Duration = TimeSpan.FromMilliseconds(mstime);
-            da.DecelerationRatio = 0.9;
+            da.DecelerationRatio = DecelerationRatio;
             System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
             System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
             sb.Children.Add(da);
