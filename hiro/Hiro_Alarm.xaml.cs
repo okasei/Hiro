@@ -57,9 +57,11 @@ namespace hiro
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, content, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, albtn_1, sb, 50, null);
-                Hiro_Utils.AddPowerAnimation(1, albtn_2, sb, 50, null);
-                Hiro_Utils.AddPowerAnimation(1, albtn_3, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(3, albtn_1, sb, -50, null);
+                if (albtn_2.Visibility == Visibility.Visible)
+                    Hiro_Utils.AddPowerAnimation(3, albtn_2, sb, -50, null);
+                if (albtn_3.Visibility == Visibility.Visible)
+                    Hiro_Utils.AddPowerAnimation(3, albtn_3, sb, -50, null);
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);

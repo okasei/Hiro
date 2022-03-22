@@ -572,7 +572,7 @@ namespace hiro
         #region 字符串处理
         public static String Path_Replace(String path, String toReplace, String replaced, bool CaseSensitive = false)
         {
-            var resu = (replaced.EndsWith("\\")) ? replaced.Substring(0, replaced.Length - 1) : replaced;
+            var resu = (replaced.EndsWith("\\")) ? replaced[0..^1] : replaced;
             if (CaseSensitive)
                 resu = path.Replace(toReplace, resu);
             else
@@ -633,7 +633,7 @@ namespace hiro
 
         public static String Path_Prepare(String path)
         {
-            path = Path_Replace(path, "<hiapp>", AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app");
+            path = Path_Replace(path, "<hiapp>", (AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app").Replace("\\\\", "\\"));
             path = Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Path_Replace(path, "<system>", Environment.SystemDirectory);
             path = Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86.Path);
@@ -1724,16 +1724,80 @@ namespace hiro
                 {
                     foreach (var cmd in App.cmditems)
                     {
-                        if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(path))
+                        if (System.Text.RegularExpressions.Regex.IsMatch(cmd.Name, RunPath) || System.Text.RegularExpressions.Regex.IsMatch(cmd.Name, path))
                         {
                             RunExe(cmd.Command);
                             return;
                         }
                     }
+                    string? runstart = FindItemByName(RunPath.Replace("\"", ""), Path_Prepare("<cstart>"));
+                    if (runstart != null)
+                    {
+                        pinfo.FileName = runstart;
+                        pinfo.WorkingDirectory = Path_Prepare("<cstart>");
+                        pinfo.Arguments = "";
+                        try
+                        {
+                            _ = Process.Start(pinfo);
+                            return;
+                        }
+                        catch
+                        {
+                        }
+                        return;
+                    }
+                    runstart = FindItemByName(RunPath.Replace("\"", ""), Path_Prepare("<istart>"));
+                    if (runstart != null)
+                    {
+                        pinfo.FileName = runstart;
+                        pinfo.WorkingDirectory = Path_Prepare("<cstart>");
+                        pinfo.Arguments = "";
+                        try
+                        {
+                            _ = Process.Start(pinfo);
+                            return;
+                        }
+                        catch
+                        {
+                        }
+                    }
                     LogtoFile("[ERROR]" + ex.Message);
                 }
             }
-            
+        }
+
+        public static string? FindItemByName(string Name, string Location)
+        {
+            if (!System.IO.Directory.Exists(Location))
+            {
+                return null;
+            }
+            string[] filenames = System.IO.Directory.GetFileSystemEntries(Location);
+            foreach (string file in filenames)
+            {
+                try
+                {
+                    if (System.IO.Directory.Exists(file))
+                    {
+                        string? filename = FindItemByName(Name, file);
+                        if (filename != null)
+                            return filename;
+                    }
+                    else
+                    {
+                        if (System.IO.Path.GetFileName(file).Equals("desktop.ini"))
+                            continue;
+                        var filename = System.IO.Path.GetFileNameWithoutExtension(file);
+                        if (filename != null && System.Text.RegularExpressions.Regex.IsMatch(file, Name))
+                            return file;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogtoFile("[ERROR]" + ex.Message);
+                }   
+            }
+            return null;
         }
 
         public static System.Collections.ObjectModel.ObservableCollection<string> HiroParse(string val)
