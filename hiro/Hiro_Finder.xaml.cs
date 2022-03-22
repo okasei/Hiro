@@ -14,6 +14,7 @@ namespace hiro
     {
         private int bflag = 0;
         private int cflag = 0;
+        private bool load = false;
         public Hiro_Finder()
         {
             InitializeComponent();
@@ -34,11 +35,15 @@ namespace hiro
                          break;
                  }
                  PlaceHolder.FontSize--;
-                 HiHiro();
-                 Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                 Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
-                 Keyboard.Focus(Hiro_Text);
+                 HiHiro(); 
              };
+            Loaded += delegate
+            {
+                Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
+                Keyboard.Focus(Hiro_Text);
+                Mouse.Capture(Hiro_Text);
+            };
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -96,10 +101,6 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
                 sb.Begin();
             }
-        }
-        private void Window_Deactivated(object sender, EventArgs e)
-        {
-            TryClose();
         }
 
         public void Loadbgi(int direction)
@@ -171,20 +172,27 @@ namespace hiro
 
         private void TryClose()
         {
+            if (!load)
+                return;
             if (cflag == 0)
             {
                 cflag = 1;
-                Hiro_Utils.ReleaseCapture();
                 Close();
             }
         }
 
-        private void Hiro_Text_LostFocus(object sender, RoutedEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            TryClose();
+            Hiro_Utils.CancelWindowToForegroundWithAttachThreadInput(this);
+            Hiro_Utils.ReleaseCapture();
         }
 
-        private void Hiro_Text_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            load = true;
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
         {
             TryClose();
         }

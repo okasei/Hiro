@@ -1657,14 +1657,14 @@ namespace hiro
                         a++;
                         var lef = path[..path.IndexOf("\"")];
                         path = path[(lef.Length + 1)..];
-                        if (path.IndexOf("\"") == -1)
+                        if (!path.Contains("\"", StringComparison.CurrentCulture))
                             break;
                         var inside = path[..path.IndexOf("\"")];
                         path = path[(inside.Length + 1)..];
                         blank.Add(inside);
                         path = lef + "[" + a.ToString() + "]" + path;
                     }
-                    if (!path.Contains(" ", StringComparison.CurrentCulture))
+                    if (!path.Contains(' ', StringComparison.CurrentCulture))
                     {
                         pinfo.FileName = path;
                     }
@@ -1690,7 +1690,6 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
                     LogtoFile("[ERROR]" + ex.Message);
                 }
                 if (App.mn == null)
@@ -1761,6 +1760,7 @@ namespace hiro
                         {
                         }
                     }
+                    App.Notify(new(Get_Transalte("notfound"), 2, Get_Transalte("execute")));
                     LogtoFile("[ERROR]" + ex.Message);
                 }
             }
@@ -2955,12 +2955,16 @@ namespace hiro
             var currentForegroundWindow = GetForegroundWindow();
             var currentForegroundWindowThreadId = GetWindowThreadProcessId(currentForegroundWindow, IntPtr.Zero);
             AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, true);
-            window.Show();
             window.Activate();
+        }
+
+        public static void CancelWindowToForegroundWithAttachThreadInput(System.Windows.Window window)
+        {
+            var interopHelper = new System.Windows.Interop.WindowInteropHelper(window);
+            var thisWindowThreadId = GetWindowThreadProcessId(interopHelper.Handle, IntPtr.Zero);
+            var currentForegroundWindow = GetForegroundWindow();
+            var currentForegroundWindowThreadId = GetWindowThreadProcessId(currentForegroundWindow, IntPtr.Zero);
             AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, false);
-            var tm = window.Topmost;
-            window.Topmost = true;
-            window.Topmost = tm;
         }
 
         #endregion

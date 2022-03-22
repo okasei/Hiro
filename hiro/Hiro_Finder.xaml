@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="None" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" Deactivated="Window_Deactivated" WindowStartupLocation="CenterScreen">
+        Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="None" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" Closing="Window_Closing"  GotKeyboardFocus="Window_GotKeyboardFocus" Deactivated="Window_Deactivated">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
@@ -16,6 +16,6 @@
     <Grid>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="PlaceHolder" Content="Please Input" FontSize="1" Foreground="{DynamicResource AppForeDim}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" Visibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Width="{Binding Width, ElementName=Hiro_Text}" Height="{Binding Height, ElementName=Hiro_Text}"></Label>
-        <TextBox x:Name="Hiro_Text" VerticalAlignment="Center" FontSize="{Binding FontSize, ElementName=PlaceHolder}" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Center" Height="{Binding ActualHeight, ElementName=window, Mode=OneWay}" Width="{Binding ActualWidth, ElementName=window, Mode=OneWay}" Padding="0,0,0,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" TextChanged="Hiro_Text_TextChanged" KeyDown="Hiro_Text_KeyDown" LostFocus="Hiro_Text_LostFocus" LostKeyboardFocus="Hiro_Text_LostKeyboardFocus"/>
+        <TextBox x:Name="Hiro_Text" VerticalAlignment="Center" FontSize="{Binding FontSize, ElementName=PlaceHolder}" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Center" Height="{Binding ActualHeight, ElementName=window, Mode=OneWay}" Width="{Binding ActualWidth, ElementName=window, Mode=OneWay}" Padding="0,0,0,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" TextChanged="Hiro_Text_TextChanged" KeyDown="Hiro_Text_KeyDown"/>
     </Grid>
 </Window>

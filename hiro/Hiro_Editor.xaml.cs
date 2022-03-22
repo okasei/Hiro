@@ -18,6 +18,7 @@ namespace hiro
         public int allow = 0;
         public int bflag = 0;
         internal int editpage = 0;
+        private bool load = false;
         public Hiro_Editor()
         {
             InitializeComponent();
@@ -171,6 +172,7 @@ namespace hiro
                     Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                     Keyboard.Focus(con);
+                    load = true;
                 };
                 BeginAnimation(TopProperty, dou);
             }
@@ -180,12 +182,13 @@ namespace hiro
                 Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                 Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                 Keyboard.Focus(con);
+                load = true;
             }
             
         }
         private void Run_Out()
         {
-            if (runoutflag == 1)
+            if (runoutflag == 1 || !load)
                 return;
             runoutflag = 1;
             Save();
@@ -355,6 +358,7 @@ namespace hiro
 
         private void Edi_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            Hiro_Utils.CancelWindowToForegroundWithAttachThreadInput(this);
             Hiro_Utils.ReleaseCapture();
         }
     }

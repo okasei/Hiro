@@ -8,7 +8,7 @@
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
-        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"  MouseDown="TitleGrid_MouseDown" SizeChanged="Window_SizeChanged" MouseDoubleClick="Window_MouseDoubleClick" KeyDown="Window_KeyDown">
+        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"  MouseDown="TitleGrid_MouseDown" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown">
     <WindowChrome.WindowChrome>
         <WindowChrome x:Name="Chrome"  GlassFrameThickness="0 1 0 0" NonClientFrameEdges="Left,Right,Bottom" CaptionHeight="0" UseAeroCaptionButtons="False"></WindowChrome>
     </WindowChrome.WindowChrome>
@@ -239,7 +239,7 @@
                         </StackPanel>
                         <Grid Width="5"/>
                         <TextBox x:Name="URLBox" VerticalContentAlignment="Center" Margin="0,3,0,0" Visibility="Collapsed" Foreground="{DynamicResource AppFore}" FontStretch="{Binding FontStretch, ElementName=TitleLabel}" FontStyle="{Binding FontStyle, ElementName=TitleLabel}" FontWeight="{Binding FontWeight, ElementName=TitleLabel}" FontSize="{Binding FontSize, ElementName=TitleLabel}" FontFamily="{Binding FontFamily, ElementName=TitleLabel}" Width="{Binding ActualWidth, ElementName=window}" TextWrapping="NoWrap" KeyDown="URLBox_KeyDown"/>
-                        <TextBlock x:Name ="TitleLabel" FontSize="12" Text= "{Binding Title, ElementName=window}" Foreground="{DynamicResource AppFore}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, ElementName=TitleLabel}" HorizontalAlignment="Stretch" />
+                        <TextBlock x:Name ="TitleLabel" FontSize="12" Text= "{Binding Title, ElementName=window}" Foreground="{DynamicResource AppFore}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, ElementName=TitleLabel}" HorizontalAlignment="Stretch"  />
                         <Grid Width="5"/>
                     </DockPanel>
                 </DockPanel>
