@@ -44,6 +44,16 @@ namespace hiro
         internal static System.Net.Http.HttpClient? hc = null;
         internal static int ColorCD = -1;
         internal static IntPtr WND_Handle = IntPtr.Zero;
+        internal static bool FirstUse = false;
+        #endregion
+
+        #region 私有参数
+        private IntPtr? QQMusicPtr = null;
+        private IntPtr? NeteasePtr = null;
+        private IntPtr? KuwoPtr = null;
+        private string QQTitle = string.Empty;
+        private string NeteaseTitle = string.Empty;
+        private string KuwoTitle = string.Empty;
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
@@ -176,6 +186,11 @@ namespace hiro
                     Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
                 else
                     mn.Show();
+                if (FirstUse)
+                {
+                    FirstUse = false;
+                    Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + App.lang + "\\welcome.hws)");
+                }
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
                     Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"));
                 return;
@@ -288,6 +303,7 @@ namespace hiro
             Hiro_Utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
             dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hus";
             sconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hsl";
+            FirstUse = !System.IO.File.Exists(dconfig) && !System.IO.File.Exists(sconfig);
             var str = Hiro_Utils.Read_Ini(dconfig, "Config", "Lang", "");
             if (str.Equals("") || str.Equals("default"))
             {
@@ -363,11 +379,11 @@ namespace hiro
                 try
                 {
                     System.Net.Http.HttpClientHandler hch = new();
-                    int ProxyPort = int.Parse(Hiro_Utils.Read_Ini(dconfig, "Network", "Port", String.Empty));
-                    hch.Proxy = new System.Net.WebProxy(Hiro_Utils.Read_Ini(dconfig, "Network", "Server", String.Empty), ProxyPort);
+                    int ProxyPort = int.Parse(Hiro_Utils.Read_Ini(dconfig, "Network", "Port", string.Empty));
+                    hch.Proxy = new System.Net.WebProxy(Hiro_Utils.Read_Ini(dconfig, "Network", "Server", string.Empty), ProxyPort);
                     hch.UseProxy = true;
-                    string? ProxyUsername = Hiro_Utils.Read_Ini(dconfig, "Network", "Username", String.Empty);
-                    string? ProxyPwd = Hiro_Utils.Read_Ini(dconfig, "Network", "Password", String.Empty);
+                    string? ProxyUsername = Hiro_Utils.Read_Ini(dconfig, "Network", "Username", string.Empty);
+                    string? ProxyPwd = Hiro_Utils.Read_Ini(dconfig, "Network", "Password", string.Empty);
                     ProxyUsername = ProxyUsername.Equals(string.Empty) ? null : ProxyUsername;
                     ProxyPwd = ProxyPwd.Equals(string.Empty) ? null : ProxyPwd;
                     hch.PreAuthenticate = true;
@@ -389,7 +405,7 @@ namespace hiro
             }
         }
 
-        private static void InitializeMethod()
+        private void InitializeMethod()
         {
             timer = new()
             {
@@ -402,7 +418,7 @@ namespace hiro
             timer.Start();
         }
 
-        public static void TimerTick()
+        public void TimerTick()
         {
             var hr = DateTime.Now.Hour;
             var morning = Hiro_Utils.Read_Ini(LangFilePath, "local", "morning", "[6,7,8,9,10]");
@@ -506,6 +522,46 @@ namespace hiro
                 if (ColorCD == 0 && wnd != null)
                     wnd.Load_All_Colors();
                 ColorCD--;
+            }
+            //Music
+            if (Hiro_Utils.Read_Ini(dconfig, "Config", "Verbose", "0").Equals("1"))
+            {
+                Music_Tick();
+            }
+        }
+
+        private void Music_Tick()
+        {
+            if (Initialize_Title(QQMusicPtr, out string? qtitle) == 0)
+            {
+                QQMusicPtr = Initialize_Ptr("QQMusic");
+            }
+            else if (qtitle != QQTitle && qtitle != null && !qtitle.Equals("QQ音乐") && !qtitle.Equals("桌面歌词"))
+            {
+                QQTitle = qtitle;
+                Notify(new(Hiro_Utils.Get_Transalte("qqmusic").Replace("%m", qtitle), 2, AppTitle));
+            }
+            if (Initialize_Title(NeteasePtr, out string? ntitle) == 0)
+                NeteasePtr = Initialize_Ptr("cloudmusic");
+            else if (ntitle != NeteaseTitle && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐") && !ntitle.Equals("桌面歌词"))
+            {
+                NeteaseTitle = ntitle;
+                Notify(new(Hiro_Utils.Get_Transalte("netmusic").Replace("%m", ntitle), 2, AppTitle));
+            }
+            if (Initialize_Title(KuwoPtr, out string? kwtitle) == 0)
+                KuwoPtr = Initialize_Ptr("kwmusic");
+            else if (kwtitle != KuwoTitle && kwtitle != null && !kwtitle.Equals("KwStartPageDlg") && !kwtitle.Equals("酷我音乐") && !kwtitle.Equals("桌面歌词"))
+            {
+                if (KuwoTitle != null && KuwoTitle.Length > 2)
+                {
+                    if (kwtitle.IndexOf(KuwoTitle.Substring(2)) != -1)
+                    {
+                        KuwoTitle = kwtitle;
+                        return;
+                    }
+                }
+                KuwoTitle = kwtitle;
+                Notify(new(Hiro_Utils.Get_Transalte("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, AppTitle));
             }
         }
 
@@ -646,6 +702,33 @@ namespace hiro
                 }
             }
             GC.Collect();
+        }
+
+        private IntPtr Initialize_Ptr(string ProcessName)
+        {
+            var pns = System.Diagnostics.Process.GetProcessesByName(ProcessName);
+            foreach (var pn in pns)
+            {
+                if (pn.MainWindowTitle.IndexOf("桌面歌词") != -1)
+                {
+                    Notify(new(Hiro_Utils.Get_Transalte("delyrics"), 2, AppTitle));
+                }
+                return pn.MainWindowHandle;
+            }
+            return IntPtr.Zero;
+        }
+
+        private int Initialize_Title(IntPtr? intPtr, out string? Title)
+        {
+            if (intPtr == IntPtr.Zero || intPtr == null)
+            {
+                Title = string.Empty;
+                return 0;
+            }
+            System.Text.StringBuilder windowName = new(512);
+            Hiro_Utils.GetWindowText((IntPtr)intPtr, windowName, windowName.Capacity);
+            Title = windowName.ToString().Trim();
+            return Title.Length;
         }
 
     }

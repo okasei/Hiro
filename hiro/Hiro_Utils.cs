@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Security.Credentials;
 using Windows.Security.Credentials.UI;
@@ -420,7 +421,7 @@ namespace hiro
         public static void Set_Bgimage(System.Windows.Controls.Control sender, string? strFileName = null)
         {
             if (strFileName == null)
-                strFileName = Read_Ini(App.dconfig, "Config", "BackImage", "");
+                strFileName = Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
             if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !System.IO.File.Exists(strFileName))
             {
                 if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
@@ -593,7 +594,7 @@ namespace hiro
             if (resu != null)
                 return resu;
             else
-                return String.Empty;
+                return string.Empty;
         }
 
         public static String Anti_Path_Prepare(String path)
@@ -1241,8 +1242,8 @@ namespace hiro
                     if (System.IO.File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb"))
                     {
                         string? title = null;
-                        if (!Read_Ini(parameter[0], "Web", "Title", String.Empty).Equals(String.Empty))
-                            title = Read_Ini(parameter[0], "Web", "Title", String.Empty).Replace("%b", " ");
+                        if (!Read_Ini(parameter[0], "Web", "Title", string.Empty).Equals(string.Empty))
+                            title = Read_Ini(parameter[0], "Web", "Title", string.Empty).Replace("%b", " ");
                         web = new(Read_Ini(parameter[0], "Web", "URI", "about:blank"), title);
                         web.Height = Double.Parse(Read_Ini(parameter[0], "Web", "Height", "450"));
                         web.Width = Double.Parse(Read_Ini(parameter[0], "Web", "Width", "800"));
@@ -1646,6 +1647,49 @@ namespace hiro
                         }
                     }
                 }
+                if (path.ToLower().StartsWith("zip("))
+                {
+                    BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        System.IO.Compression.ZipFile.CreateFromDirectory(parameter[0], parameter[1]);
+                    };
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        if (parameter.Count > 2)
+                        {
+                            LogtoFile(parameter[2]);
+                            var para = parameter[2].ToLower();
+                            if (para.IndexOf("s") != -1)
+                                RunExe(parameter[1]);
+                            if (para.IndexOf("d") != -1)
+                                RunExe("Delete(" + parameter[0] + ")");
+                        }
+                    };
+                    bw.RunWorkerAsync();
+                    return;
+                }
+                if (path.ToLower().StartsWith("unzip("))
+                {
+                    BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        System.IO.Compression.ZipFile.ExtractToDirectory(parameter[0], parameter[1]);
+                    };
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        if (parameter.Count > 2)
+                        {
+                            var para = parameter[2].ToLower();
+                            if (para.IndexOf("s") != -1)
+                                RunExe(parameter[1]);
+                            if (para.IndexOf("d") != -1)
+                                RunExe("Delete(" + parameter[0] + ")");
+                        }
+                    };
+                    bw.RunWorkerAsync();
+                    return;
+                }
                 try
                 {
                     ProcessStartInfo pinfo = new();
@@ -1830,10 +1874,10 @@ namespace hiro
             return res;
         }
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
 
         private async static void SetBthState(bool? bluetoothState)
@@ -2455,22 +2499,22 @@ namespace hiro
         #region API函数声明
 
         #region 读文件
-        [System.Runtime.InteropServices.DllImport("kernel32")]//返回0表示失败，非0为成功
+        [DllImport("kernel32")]//返回0表示失败，非0为成功
         private static extern long WritePrivateProfileString(byte[] section, byte[] key, byte[] val, string filePath);
-        [System.Runtime.InteropServices.DllImport("kernel32")]//返回取得字符串缓冲区的长度
+        [DllImport("kernel32")]//返回取得字符串缓冲区的长度
         private static extern int GetPrivateProfileString(byte[] section, byte[] key, byte[] def, byte[] retVal, int size, string filePath);
         #endregion
 
         #region 窗口拖动
-        [System.Runtime.InteropServices.DllImport("user32.dll")]//拖动无窗体的控件
+        [DllImport("user32.dll")]//拖动无窗体的控件
         public static extern bool ReleaseCapture();
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
         #endregion
 
         #region 设置壁纸
 
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
         public enum Style : int
         {
@@ -2485,14 +2529,14 @@ namespace hiro
 
         #region 获取壁纸
 
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool SystemParametersInfo(uint uAction, uint uParam, StringBuilder lpvParam, uint init);
 
         #endregion
 
         #region 获取用户头像
-        [System.Runtime.InteropServices.DllImport("shell32.dll", EntryPoint = "#261",
-           CharSet = System.Runtime.InteropServices.CharSet.Unicode, PreserveSig = false)]
+        [DllImport("shell32.dll", EntryPoint = "#261",
+           CharSet = CharSet.Unicode, PreserveSig = false)]
         public static extern void GetUserTilePath(
           string username,
           UInt32 whatever, // 0x80000000
@@ -2509,9 +2553,9 @@ namespace hiro
         #region 设置窗口阴影
         private const int CS_DropSHADOW = 0x20000;
         private const int GCL_STYLE = (-26);
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int SetClassLong(IntPtr hwnd, int nIndex, int dwNewLong);
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int GetClassLong(IntPtr hwnd, int nIndex);
 
         public static void SetShadow(IntPtr hwnd)
@@ -2533,12 +2577,12 @@ namespace hiro
             public int BatteryFullLifeTime;
         }
 
-        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll")]
         public static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpSystemPowerStatus);
         #endregion
 
         #region 隐藏鼠标 0/1 隐藏/显示
-        [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "ShowCursor", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("user32.dll", EntryPoint = "ShowCursor", CharSet = CharSet.Auto)]
         public static extern void ShowCursor(int status);
         #endregion
 
@@ -2754,11 +2798,11 @@ namespace hiro
             }
         }
 
-        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#95")]
+        [DllImport("uxtheme.dll", EntryPoint = "#95")]
         public static extern uint GetImmersiveColorFromColorSetEx(uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode);
-        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#96")]
+        [DllImport("uxtheme.dll", EntryPoint = "#96")]
         public static extern uint GetImmersiveColorTypeFromName(IntPtr pName);
-        [System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint = "#98")]
+        [DllImport("uxtheme.dll", EntryPoint = "#98")]
         public static extern int GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
         // Get theme color
         public static System.Windows.Media.Color GetThemeColor()
@@ -2793,11 +2837,11 @@ namespace hiro
 
         #region 热键相关
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
         static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
-        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true)]
         static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         public enum HotkeyModifiers
@@ -2903,7 +2947,7 @@ namespace hiro
             return -1;
         }
 
-        [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
+        [DllImport("Kernel32.dll")]
         public extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
         #endregion
 
@@ -2933,19 +2977,19 @@ namespace hiro
 
         #region 保持窗口最前
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern IntPtr SetCapture(IntPtr hWnd);
 
         public static void SetWindowToForegroundWithAttachThreadInput(System.Windows.Window window)
@@ -2967,6 +3011,11 @@ namespace hiro
             AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, false);
         }
 
+        #endregion
+
+        #region 获取窗口标题
+        [DllImport("user32")]
+        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lptrString, int nMaxCount);
         #endregion
 
         #endregion

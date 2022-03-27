@@ -87,6 +87,7 @@ namespace hiro
                 };
                 upbw.RunWorkerCompleted += delegate
                 {
+                    Hiro_Utils.LogtoFile(ups);
                     Check_update();
                 };
                 upbw.RunWorkerAsync();
@@ -117,6 +118,8 @@ namespace hiro
             {
                 try
                 {
+                    if (System.IO.Directory.Exists(Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX("<current>\\update\\"))))
+                        Hiro_Utils.RunExe("Delete(<current>\\update\\");
                     string version = ups[(ups.IndexOf("version:[") + "version:[".Length)..];
                     version = version[..version.IndexOf("]")];
                     string info = ups[(ups.IndexOf("info:[") + "info:[".Length)..];

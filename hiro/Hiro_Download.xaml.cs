@@ -150,9 +150,9 @@ namespace hiro
             strFileName = strFileName[(strFileName.LastIndexOf("/") + 1)..];
             if (strFileName.LastIndexOf("?") != -1)
                 strFileName = strFileName[..strFileName.LastIndexOf("?")];
-            if (strFileName.Equals(String.Empty))
+            if (strFileName.Equals(string.Empty))
                 strFileName = "index.html";
-            if (SavePath.Text.Equals(String.Empty))
+            if (SavePath.Text.Equals(string.Empty))
             {
                 SavePath.Text = "<idownload>\\HiDownload\\<filename>";
             }

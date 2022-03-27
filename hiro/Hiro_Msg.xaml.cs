@@ -47,7 +47,7 @@ namespace hiro
                 backtitle.Visibility = Visibility.Visible;
                 backcontent.Visibility = Visibility.Visible;
             };
-                Loaded += delegate
+            Loaded += delegate
             {
                 Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                 if (App.dflag)
@@ -55,6 +55,7 @@ namespace hiro
                     Hiro_Utils.LogtoFile("[MESSAGE]Title: " + backtitle.Content);
                     Hiro_Utils.LogtoFile("[MESSAGE]Content: " + backcontent.Content);
                 }
+                Mouse.Capture(acceptbtn);
             };
             ContentRendered += delegate
             {
@@ -81,7 +82,6 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(0, backcontent, sb, 50, null);
                 sb.Begin();
             }
-            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -140,18 +140,8 @@ namespace hiro
 
         public void Load_Colors()
         {
-            borderlabel.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            backtitle.Foreground = new SolidColorBrush(App.AppForeColor);
-            backcontent.Foreground = new SolidColorBrush(App.AppForeColor);
-            acceptbtn.Foreground = new SolidColorBrush(App.AppForeColor);
-            rejectbtn.Foreground = new SolidColorBrush(App.AppForeColor);
-            cancelbtn.Foreground = new SolidColorBrush(App.AppForeColor);
-            acceptbtn.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
-            rejectbtn.Background = acceptbtn.Background;
-            cancelbtn.Background = acceptbtn.Background;
-            acceptbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            rejectbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
-            cancelbtn.BorderBrush = new SolidColorBrush(App.AppForeColor);
+            Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
         public void Loadbgi(int direction)
         {

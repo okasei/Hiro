@@ -8,16 +8,20 @@
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
         Title="message" Height="450" Width="800" WindowStyle="None" ResizeMode="NoResize" Topmost="True" IsTabStop="False" Closing="Msg_Closing" Icon="/hiro_circle.ico" MouseLeftButtonDown="Msg_MouseLeftButtonDown">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+    </Window.Resources>
     <Grid>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
-        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
-        <Label x:Name="backtitle" Style="{DynamicResource HiroLabel}" Content="Title" HorizontalAlignment="Left" Margin="24,56,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Visibility="Hidden"/>
+        <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="{DynamicResource AppFore}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
+        <Label x:Name="backtitle" Style="{DynamicResource HiroLabel}" Foreground="{DynamicResource AppFore}" Content="Title" HorizontalAlignment="Left" Margin="24,56,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Visibility="Hidden"/>
         <Label x:Name="backcontent" Style="{DynamicResource HiroLabel}" FontFamily="Segoe UI" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" Visibility="Hidden">
-            <ScrollViewer x:Name="sv" Height="322" Content="A new version of Hiro has been released!" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
+            <ScrollViewer x:Name="sv" Foreground="{DynamicResource AppFore}" Height="322" Content="A new version of Hiro has been released!" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
         </Label>
-        <Button x:Name="acceptbtn" Content="OK" HorizontalAlignment="Right" Margin="0,0,230,10" VerticalAlignment="Bottom" Click="Acceptbtn_Click" Width="100" Height="32" Cursor="Hand" FontFamily="Segoe UI" Visibility="Hidden"/>
-        <Button x:Name="rejectbtn" Content="Reject" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Rejectbtn_Click" Width="100" Height="32" Margin="0,0,120,10" FontFamily="Segoe UI" Visibility="Hidden"/>
-        <Button x:Name="cancelbtn" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Cancelbtn_Click" Width="100" Height="32" Margin="0,0,10,10" FontFamily="Segoe UI" Visibility="Hidden"/>
+        <Button x:Name="acceptbtn" Content="OK" BorderThickness="1" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" HorizontalAlignment="Right" Margin="0,0,230,10" VerticalAlignment="Bottom" Click="Acceptbtn_Click" Width="100" Height="32" Cursor="Hand" FontFamily="Segoe UI" Visibility="Hidden"/>
+        <Button x:Name="rejectbtn" Content="Reject" BorderThickness="1" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Rejectbtn_Click" Width="100" Height="32" Margin="0,0,120,10" FontFamily="Segoe UI" Visibility="Hidden"/>
+        <Button x:Name="cancelbtn" Content="Cancel" BorderThickness="1" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Cancelbtn_Click" Width="100" Height="32" Margin="0,0,10,10" FontFamily="Segoe UI" Visibility="Hidden"/>
 
     </Grid>
 </Window>

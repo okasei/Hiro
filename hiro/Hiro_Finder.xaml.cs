@@ -93,7 +93,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(String.Empty))
+            if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
                 PlaceHolder.Visibility = Visibility.Visible;
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
@@ -116,7 +116,7 @@ namespace hiro
 
         private void Hiro_Text_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(String.Empty))
+            if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
             {
                 PlaceHolder.Visibility = Visibility.Visible;
             }

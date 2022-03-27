@@ -138,7 +138,7 @@ namespace hiro
 
         private void Next_Msg()
         {
-            if (msg.Equals(String.Empty))
+            if (msg.Equals(string.Empty))
             {
                 if (App.noticeitems.Count != 0)
                 {

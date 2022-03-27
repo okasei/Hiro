@@ -442,7 +442,7 @@ namespace hiro
         private void CoreWebView2_DownloadStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2DownloadStartingEventArgs e)
         {
             Hiro_Utils.RunExe("Download(" + e.DownloadOperation.Uri + ")");
-            if (wv2.CoreWebView2.DocumentTitle.Trim().Equals(String.Empty) || wv2.CoreWebView2.Source.ToLower().StartsWith("about"))
+            if (wv2.CoreWebView2.DocumentTitle.Trim().Equals(string.Empty) || wv2.CoreWebView2.Source.ToLower().StartsWith("about"))
                 Close();
             e.Cancel = true;
             e.Handled = true;

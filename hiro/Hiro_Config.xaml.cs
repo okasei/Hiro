@@ -74,7 +74,7 @@ namespace hiro
                     rbtn1.IsChecked = true;
                     break;
             }
-            switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "MiddleClick", "1"))
+            switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "MiddleClick", "2"))
             {
                 case "2":
                     rbtn5.IsChecked = true;
@@ -131,7 +131,7 @@ namespace hiro
                 "1" => true,
                 _ => false,
             };
-            Verbose.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "1").Equals("1");
+            Verbose.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1");
             animation.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2") switch
             {
                 "2" => null,
@@ -717,6 +717,11 @@ namespace hiro
             {
                 Hiro_Main.Set_Label(Hiro_Main.proxyx);
             }
+        }
+
+        private void BaseGrid_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            configbar.Value += e.Delta * (configbar.Maximum - configbar.ViewportSize) / configbar.ViewportSize;
         }
     }
 }

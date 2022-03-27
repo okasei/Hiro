@@ -43,10 +43,10 @@ namespace hiro
                 "2" => true,
                 _ => false
             };
-            AddressBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Server", String.Empty);
-            PortBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Port", String.Empty);
-            UsernameBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Username", String.Empty);
-            PwdBox.Password = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Password", String.Empty);
+            AddressBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Server", string.Empty);
+            PortBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Port", string.Empty);
+            UsernameBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Username", string.Empty);
+            PwdBox.Password = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Password", string.Empty);
         }
 
         private void Hiro_Initialize()

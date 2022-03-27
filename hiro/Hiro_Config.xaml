@@ -61,7 +61,7 @@
     </Page.Resources>
     <Grid>
         <ScrollBar x:Name="configbar" Width="10" Height="418" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Vertical" Margin="397,0,0,0" ValueChanged="Configbar_ValueChanged" ViewportSize="10" Maximum="100" MouseWheel="Configbar_MouseWheel"/>
-        <Grid x:Name="BaseGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Height="900" Width="400" Margin="0,-500,0,0">
+        <Grid x:Name="BaseGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Height="900" Width="400"  Margin="0,-500,0,0" MouseWheel="BaseGrid_MouseWheel">
             <Grid x:Name="lc_grid" Margin="0,0,0,339" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Label  Style="{DynamicResource HiroLabel}" x:Name="lc_label" Content="When tray is clicked" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Width="377"/>
                 <RadioButton x:Name="rbtn1" Content="Show Main Window" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Checked="Rbtn1_Checked"/>

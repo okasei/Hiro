@@ -17,6 +17,7 @@ namespace hiro
             System.Windows.Controls.Canvas.SetTop(this, -233);
             System.Windows.Controls.Canvas.SetLeft(this, -233);
         }
+
         public void InitializeInnerParameters()
         {
             ti.ToolTipText = App.AppTitle;
@@ -41,7 +42,7 @@ namespace hiro
         private void PowerManager_EnergySaverStatusChanged(object? sender, object e)
         {
             var p = Windows.System.Power.PowerManager.EnergySaverStatus;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "1").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
             {
                 switch (p)
                 {
@@ -60,7 +61,7 @@ namespace hiro
         private void PowerManager_RemainingChargePercentChanged(object? sender, object e)
         {
             int p = Windows.System.Power.PowerManager.RemainingChargePercent;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "1").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
             {
                 if (Windows.System.Power.PowerManager.BatteryStatus != Windows.System.Power.BatteryStatus.Charging)
                 {
@@ -84,7 +85,7 @@ namespace hiro
                     Hiro_Utils.LogtoFile(ni.Description + " - " + ni.NetworkInterfaceType.ToString());
                 }
             }
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "1").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
             {
                 Windows.Networking.Connectivity.ConnectionProfile profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
                 string ext = "";
@@ -166,7 +167,7 @@ namespace hiro
                     handled = true;
                     break;
                 case 0x0218:
-                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "1").Equals("1"))
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
                     {
                         Hiro_Utils.GetSystemPowerStatus(out Hiro_Utils.SYSTEM_POWER_STATUS p);
                         if (p.ACLineStatus == 1 && p.BatteryFlag == 8)
@@ -178,7 +179,7 @@ namespace hiro
                     }
                     break;
                 case 0x0219:
-                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "1").Equals("1"))
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
                     {
                         var mms = Hiro_Utils.Get_Transalte("deinfo") + " - ";
                         switch (wParam.ToInt32())
@@ -279,7 +280,7 @@ namespace hiro
         {
             ti.TrayMiddleMouseDown += delegate
             {
-                var mc = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MiddleClick", "1");
+                var mc = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MiddleClick", "2");
                 switch (mc)
                 {
                     case "2":
@@ -306,7 +307,7 @@ namespace hiro
             };
             ti.TrayRightMouseDown += delegate
             {
-                var rc = Hiro_Utils.Read_Ini(App.dconfig, "Config", "RightClick", "1");
+                var rc = Hiro_Utils.Read_Ini(App.dconfig, "Config", "RightClick", "2");
                 switch (rc)
                 {
                     case "2":
