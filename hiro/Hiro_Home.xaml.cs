@@ -24,12 +24,11 @@ namespace hiro
         public void HiHiro()
         {
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
-            if (animation)
-            {
-                Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
-                sb.Begin();
-            }
+            if (!animation) 
+                return;
+            Storyboard sb = new();
+            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            sb.Begin();
         }
 
         private void Hiro_Initialize()

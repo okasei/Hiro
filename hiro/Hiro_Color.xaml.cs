@@ -36,11 +36,10 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(3, cobtn2, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, cobtn3, sb, -50, null);
             }
-            if (animation)
-            {
-                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
-                sb.Begin();
-            }
+            if (!animation) 
+                return;
+            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            sb.Begin();
         }
 
         private void Hiro_Initialize()
@@ -104,10 +103,7 @@ namespace hiro
 
         private void Cobtn2_Click(object sender, RoutedEventArgs e)
         {
-            if (Hiro_Main != null)
-            {
-                Hiro_Main.Set_Label(Hiro_Main.configx);
-            }
+            Hiro_Main?.Set_Label(Hiro_Main.configx);
         }
 
         private void Color_picker_ColorChanged(object sender, MouseEventArgs e)
@@ -117,33 +113,31 @@ namespace hiro
 
         internal void Unify_Color(bool force = false)
         {
-            if (color_picker.Color != App.AppAccentColor || force)
-            {
-                color_text.Text = string.Format("#{0:X2}{1:X2}{2:X2}", color_picker.Color.R, color_picker.Color.G, color_picker.Color.B);
-                color_ex.Background = new SolidColorBrush(color_picker.Color);
-                color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Utils.Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1")));
-            }
+            if (color_picker.Color == App.AppAccentColor && !force) 
+                return;
+            color_text.Text = $"#{color_picker.Color.R:X2}{color_picker.Color.G:X2}{color_picker.Color.B:X2}";
+            color_ex.Background = new SolidColorBrush(color_picker.Color);
+            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Utils.Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1")));
         }
         private void Color_text_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key != Key.Enter) 
+                return;
+            if (!color_text.Text.StartsWith("#"))
+                color_text.Text = "#" + color_text.Text;
+            if (color_text.Text.Length == 7)
             {
-                if (!color_text.Text.StartsWith("#"))
-                    color_text.Text = "#" + color_text.Text;
-                if (color_text.Text.Length == 7)
+                try
                 {
-                    try
-                    {
-                        color_picker.Color = (Color)ColorConverter.ConvertFromString(color_text.Text);
-                    }
-                    catch (Exception ex)
-                    {
-                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
-                    }
+                    color_picker.Color = (Color)ColorConverter.ConvertFromString(color_text.Text);
                 }
-                Unify_Color();
-                e.Handled = true;
+                catch (Exception ex)
+                {
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                }
             }
+            Unify_Color();
+            e.Handled = true;
         }
     }
 }

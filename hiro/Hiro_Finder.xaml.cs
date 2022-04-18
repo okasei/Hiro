@@ -42,14 +42,13 @@ namespace hiro
                 Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                 Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                 Keyboard.Focus(Hiro_Text);
-                Mouse.Capture(Hiro_Text);
             };
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
-            System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-            source.AddHook(WndProc);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            source?.AddHook(WndProc);
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
 
@@ -95,12 +94,11 @@ namespace hiro
         {
             if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
                 PlaceHolder.Visibility = Visibility.Visible;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
-            {
-                Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
-                sb.Begin();
-            }
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1")) 
+                return;
+            Storyboard sb = new();
+            Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
+            sb.Begin();
         }
 
         public void Loadbgi(int direction)
@@ -172,13 +170,10 @@ namespace hiro
 
         private void TryClose()
         {
-            if (!load)
+            if (!load || cflag != 0)
                 return;
-            if (cflag == 0)
-            {
-                cflag = 1;
-                Close();
-            }
+            cflag = 1;
+            Close();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

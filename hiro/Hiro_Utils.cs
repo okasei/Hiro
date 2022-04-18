@@ -941,7 +941,7 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
+                                RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
                                 LogtoFile("[ERROR]" + ex.Message);
                             }
                         };
@@ -1124,7 +1124,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
+                        RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
                         LogtoFile("[ERROR]" + ex.Message);
                     }
                     return;
@@ -1352,8 +1352,8 @@ namespace hiro
                         }
                         else
                         {
-                            pinfo.FileName = titile.Substring(0, titile.IndexOf(" "));
-                            pinfo.Arguments = titile.Substring(titile.IndexOf(" ") + 1);
+                            pinfo.FileName = titile[..titile.IndexOf(" ")];
+                            pinfo.Arguments = titile[(titile.IndexOf(" ") + 1)..];
                         }
                         a = 1;
                         while (blank.Count > 0 && pinfo.FileName.IndexOf("[" + a.ToString() + "]") != -1)
@@ -1391,7 +1391,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        System.Windows.MessageBox.Show(ex.ToString(), Get_Transalte("error") + " - " + App.AppTitle);
+                        RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
                         LogtoFile("[ERROR]" + ex.Message);
                     }
                     if (App.mn == null)

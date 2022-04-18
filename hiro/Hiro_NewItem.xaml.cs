@@ -27,7 +27,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
@@ -45,11 +45,11 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(3, ntnx2, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
             }
-            if (animation)
-            {
-                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
-                sb.Begin();
-            }
+
+            if (!animation) 
+                return;
+            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            sb.Begin();
         }
 
         private void Hiro_Initialize()
@@ -104,12 +104,12 @@ namespace hiro
             {
                 Content = Hiro_Utils.Get_Transalte("esc")
             });
-            foreach (object obj in modibox.Items)
+            foreach (var obj in modibox.Items)
             {
                 if (obj is ComboBoxItem mi)
                     Hiro_Utils.Set_Control_Location(mi, "moditem", location: false);
             }
-            foreach (object obj in keybox.Items)
+            foreach (var obj in keybox.Items)
             {
                 if (obj is ComboBoxItem mi)
                     Hiro_Utils.Set_Control_Location(mi, "vkeyitem", location: false);
@@ -169,7 +169,7 @@ namespace hiro
 
         private void Ntn1_Click(object sender, RoutedEventArgs e)
         {
-            string val = tb8.Text;
+            var val = tb8.Text;
             if (val.EndsWith(":\\"))
             {
                 val = val[0..^2];
@@ -210,7 +210,7 @@ namespace hiro
 
         private void Ntn3_Click(object sender, RoutedEventArgs e)
         {
-            int val = tb7.SelectionStart;
+            var val = tb7.SelectionStart;
             tb7.Text = string.Concat(tb7.Text.AsSpan(0, val), "[\\\\]", tb7.Text.AsSpan(val));
             tb7.SelectionStart = val + 4;
         }
@@ -241,9 +241,9 @@ namespace hiro
 
         private void Ntn6_Click(object sender, RoutedEventArgs e)
         {
-            int val = tb8.SelectionStart;
-            int val2 = tb8.SelectionLength;
-            string str = tb8.SelectedText;
+            var val = tb8.SelectionStart;
+            var val2 = tb8.SelectionLength;
+            var str = tb8.SelectedText;
             if (val2 > 0)
             {
                 if (str.StartsWith("\"") && str.EndsWith("\""))
@@ -277,7 +277,7 @@ namespace hiro
 
         private void Ntn8_Click(object sender, RoutedEventArgs e)
         {
-            string strFileName = "";
+            var strFileName = "";
             Microsoft.Win32.OpenFileDialog ofd = new();
             ofd.Filter = Hiro_Utils.Get_Transalte("allfiles") + "|*.*";
             ofd.ValidateNames = true; // 验证用户输入是否是一个有效的Windows文件名
@@ -289,24 +289,24 @@ namespace hiro
                 strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
 
             }
-            if (System.IO.File.Exists(strFileName))
+
+            if (!System.IO.File.Exists(strFileName)) 
+                return;
+            if (strFileName.ToLower().EndsWith(".lnk"))
             {
-                if (strFileName.ToLower().EndsWith(".lnk"))
-                {
-                    IWshRuntimeLibrary.WshShell shell = new();
-                    IWshRuntimeLibrary.IWshShortcut lnkPath = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(strFileName);
-                    strFileName = lnkPath.TargetPath.Equals("") ? strFileName : lnkPath.TargetPath;
-                }
-                if (strFileName.IndexOf(" ") != -1)
-                    strFileName = "\"" + strFileName + "\"";
-                strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName);
-                tb8.Text = strFileName;
-                strFileName = strFileName[(strFileName.LastIndexOf("\\") + 1)..];
-                if (strFileName.LastIndexOf(".") != -1)
-                    strFileName = strFileName[..strFileName.LastIndexOf(".")];
-                if (tb7.Text == "")
-                    tb7.Text = strFileName;
+                IWshRuntimeLibrary.WshShell shell = new();
+                var lnkPath = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(strFileName);
+                strFileName = lnkPath.TargetPath.Equals("") ? strFileName : lnkPath.TargetPath;
             }
+            if (strFileName.IndexOf(" ") != -1)
+                strFileName = "\"" + strFileName + "\"";
+            strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName);
+            tb8.Text = strFileName;
+            strFileName = strFileName[(strFileName.LastIndexOf("\\") + 1)..];
+            if (strFileName.LastIndexOf(".") != -1)
+                strFileName = strFileName[..strFileName.LastIndexOf(".")];
+            if (tb7.Text == "")
+                tb7.Text = strFileName;
         }
 
         private void Ntn9_Click(object sender, RoutedEventArgs e)
@@ -397,7 +397,7 @@ namespace hiro
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string path = (string)e.Data.GetData(DataFormats.FileDrop);
+                var path = (string)e.Data.GetData(DataFormats.FileDrop);
                 tb8.Text = path;
                 if (tb7.Text == "")
                     Ntn1_Click(sender, e);
@@ -405,7 +405,7 @@ namespace hiro
             }
             if (e.Data.GetDataPresent(DataFormats.Text))
             {
-                string path = (string)e.Data.GetData(DataFormats.Text);
+                var path = (string)e.Data.GetData(DataFormats.Text);
                 tb8.Text = path;
                 if (tb7.Text == "")
                     Ntn1_Click(sender, e);
@@ -417,7 +417,7 @@ namespace hiro
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string path = (string)e.Data.GetData(DataFormats.FileDrop);
+                var path = (string)e.Data.GetData(DataFormats.FileDrop);
                 var st = tb8.Text;
                 tb8.Text = path;
                 Ntn1_Click(sender, e);
@@ -427,7 +427,7 @@ namespace hiro
             }
             if (e.Data.GetDataPresent(DataFormats.Text))
             {
-                string path = (string)e.Data.GetData(DataFormats.FileDrop);
+                var path = (string)e.Data.GetData(DataFormats.FileDrop);
                 var st = tb8.Text;
                 tb8.Text = path;
                 Ntn1_Click(sender, e);
@@ -493,8 +493,7 @@ namespace hiro
                 modiname.Content = "";
                 return;
             }
-            var cbi = modibox.Items.GetItemAt(modibox.SelectedIndex) as ComboBoxItem;
-            if (cbi != null && cbi.Content != null)
+            if (modibox.Items.GetItemAt(modibox.SelectedIndex) is ComboBoxItem {Content: { }} cbi)
             {
                 modiname.Content = cbi.Content.ToString();
             }
@@ -507,8 +506,7 @@ namespace hiro
                 keylabel.Content = "";
                 return;
             }
-            var cbi = keybox.Items.GetItemAt(keybox.SelectedIndex) as ComboBoxItem;
-            if (cbi != null && cbi.Content != null)
+            if (keybox.Items.GetItemAt(keybox.SelectedIndex) is ComboBoxItem {Content: { }} cbi)
             {
                 keylabel.Content = cbi.Content.ToString();
             }
@@ -516,80 +514,65 @@ namespace hiro
 
         private void Tb8_KeyDown(object sender, KeyEventArgs e)
         {
-            if (tb8.Text.ToLower().StartsWith("key("))
+            InputMethod.SetPreferredImeState(tb8,
+                tb8.Text.ToLower().StartsWith("key(") ? InputMethodState.Off : InputMethodState.On);
+
+            if (!tb8.Text.ToLower().StartsWith("key(") || tb8.Text.EndsWith(")"))
+                return;
+            uint[] modi = { (uint)Key.LeftAlt, (uint)Key.RightAlt, 156, (uint)Key.LeftCtrl, (uint)Key.RightCtrl, (uint)Key.LeftShift, (uint)Key.RightShift, (uint)Key.LWin, (uint)Key.RWin };
+            uint[] modint = { 1, 1, 1, 2, 2, 4, 4, 8, 8 };
+            string[] allowed = { "", ",0,2,4,6,8,10,12,14,", ",0,1,4,8,5,9,12,13,", "", ",0,1,2,8,3,9,10,11,", "", "", "", ",0,1,2,4,3,5,6,7," };
+            var uin = (uint)e.Key;
+            bool ismodi = false;
+            for (var mmi = 0; mmi < modi.Length; mmi++)
             {
-                InputMethod.SetPreferredImeState(tb8, InputMethodState.Off);//禁用输入法
+                if (uin != modi[mmi])
+                    continue;
+                ismodi = true;
+                uin = modint[mmi];
+                break;
+            }
+            if (tb8.Text.IndexOf(",") == -1)
+            {
+                if (ismodi)
+                    tb8.Text = tb8.Text[..4] + uin.ToString() + ",";
+                else
+                    tb8.Text = tb8.Text[..4] + "0," + uin.ToString() + ")";
             }
             else
             {
-                InputMethod.SetPreferredImeState(tb8, InputMethodState.On);//启用用输入法
-            }
-
-            if (tb8.Text.ToLower().StartsWith("key(") && !tb8.Text.EndsWith(")"))
-            {
-                uint[] modi = { (uint)Key.LeftAlt, (uint)Key.RightAlt, 156, (uint)Key.LeftCtrl, (uint)Key.RightCtrl, (uint)Key.LeftShift, (uint)Key.RightShift, (uint)Key.LWin, (uint)Key.RWin };
-                uint[] modint = { 1, 1, 1, 2, 2, 4, 4, 8, 8 };
-                string[] allowed = { "", ",0,2,4,6,8,10,12,14,", ",0,1,4,8,5,9,12,13,", "", ",0,1,2,8,3,9,10,11,", "", "", "", ",0,1,2,4,3,5,6,7," };
-                uint uin = (uint)e.Key;
-                bool ismodi = false;
-                for (int mmi = 0; mmi < modi.Length; mmi++)
-                {
-                    if (uin == modi[mmi])
-                    {
-                        ismodi = true;
-                        uin = modint[mmi];
-                        break;
-                    }
-                }
-                if (tb8.Text.IndexOf(",") == -1)
-                {
-                    if (ismodi)
-                        tb8.Text = tb8.Text[..4] + uin.ToString() + ",";
-                    else
-                        tb8.Text = tb8.Text[..4] + "0," + uin.ToString() + ")";
-                }
+                if (!ismodi)
+                    tb8.Text = tb8.Text[..(tb8.Text.IndexOf(",") + 1)] + uin.ToString() + ")";
                 else
                 {
-                    if (!ismodi)
-                        tb8.Text = tb8.Text[..(tb8.Text.IndexOf(",") + 1)] + uin.ToString() + ")";
-                    else
+                    uint modn = 0;
+                    try
                     {
-                        uint modn = 0;
-                        try
-                        {
-                            var ts = tb8.Text.Trim();
-                            ts = ts.Substring(ts.IndexOf("(") + 1, ts.Length - ts.IndexOf("(") - 1);
-                            ts = ts[0..^1];
-                            modn = uint.Parse(ts);
-                        }
-                        catch (Exception ex)
-                        {
-                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
-                        }
-                        if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
-                        {
-                            modn += uin;
-                            tb8.Text = tb8.Text[..4] + modn.ToString() + ",";
-
-                        }
+                        var ts = tb8.Text.Trim();
+                        ts = ts.Substring(ts.IndexOf("(") + 1, ts.Length - ts.IndexOf("(") - 1);
+                        ts = ts[0..^1];
+                        modn = uint.Parse(ts);
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
+                    if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
+                    {
+                        modn += uin;
+                        tb8.Text = tb8.Text[..4] + modn.ToString() + ",";
 
                     }
+
                 }
-                e.Handled = true;
             }
+            e.Handled = true;
         }
 
         private void Tb8_TextChanged(object sender, TextChangedEventArgs e)
         {
             tb9.Text = Hiro_Utils.Get_CMD_Translation(tb8.Text);
-            if (tb9.Text.Equals(""))
-            {
-                tb9.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                tb9.Visibility = Visibility.Visible;
-            }
+            tb9.Visibility = tb9.Text.Equals("") ? Visibility.Hidden : Visibility.Visible;
         }
     }
 }

@@ -58,8 +58,8 @@ namespace hiro
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
             var hwnd = windowInteropHelper.Handle;
-            System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
-            source.AddHook(WndProc);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
+            source?.AddHook(WndProc);
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
 
@@ -82,10 +82,7 @@ namespace hiro
             Title = Hiro_Utils.Get_Transalte("dltitle") + " - " + App.AppTitle;
             ala_title.Content = Hiro_Utils.Get_Transalte("dltitle");
             albtn_1.Content = Hiro_Utils.Get_Transalte("dlstart");
-            if (mode == 1)
-                urllabel.Content = Hiro_Utils.Get_Transalte("dlupdate").Replace("%u", product);
-            else
-                urllabel.Content = Hiro_Utils.Get_Transalte("dllink");
+            urllabel.Content = mode == 1 ? Hiro_Utils.Get_Transalte("dlupdate").Replace("%u", product) : Hiro_Utils.Get_Transalte("dllink");
             pathlabel.Content = Hiro_Utils.Get_Transalte("dlpath");
             Autorun.Content = Hiro_Utils.Get_Transalte("dlrun");
             minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
@@ -146,7 +143,7 @@ namespace hiro
                     return;
                 }
             }
-            string strFileName = rurl;
+            var strFileName = rurl;
             strFileName = strFileName[(strFileName.LastIndexOf("/") + 1)..];
             if (strFileName.LastIndexOf("?") != -1)
                 strFileName = strFileName[..strFileName.LastIndexOf("?")];
@@ -231,7 +228,7 @@ namespace hiro
                 response = await App.hc.SendAsync(request, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             }
             var contentStream = await response.Content.ReadAsStreamAsync();
-            byte[] buffer = new byte[4 * 1024];//4KB缓存
+            var buffer = new byte[4 * 1024];//4KB缓存
             long readLength = 0L;
             int length;
             successflag = true;
@@ -240,8 +237,7 @@ namespace hiro
                 readLength += length;
                 try
                 {
-                    if (fileStream != null)
-                        fileStream.Write(buffer, 0, length);
+                    fileStream?.Write(buffer, 0, length);
                 }
                 catch (Exception ex)
                 {
@@ -252,7 +248,8 @@ namespace hiro
                 }
                 if (totalLength > 0)
                 {
-                    ala_title.Content = progress + string.Format("{0:F2}", Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2)) + "%" + "(" + FormateSize(readLength + startpos) + "/" + FormateSize(totalLength.Value) + ")";
+                    ala_title.Content = progress +
+                                        $"{Math.Round(((double) readLength + startpos) / totalLength.Value * 100, 2):F2}" + "%" + "(" + FormateSize(readLength + startpos) + "/" + FormateSize(totalLength.Value) + ")";
                     Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.Value = Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2);
                     pb.IsIndeterminate = false;
@@ -274,8 +271,7 @@ namespace hiro
                     break;
                 }
             }
-            if (fileStream != null)
-                fileStream.Close();
+            fileStream?.Close();
             DownloadFinish:
             if (successflag)
             {
@@ -307,7 +303,7 @@ namespace hiro
                 {
                     try
                     {
-                        string[] filec = System.IO.File.ReadAllLines(listfile);
+                        var filec = System.IO.File.ReadAllLines(listfile);
                         if (current < filec.Length)
                         {
                             var str = filec[current];
@@ -372,9 +368,9 @@ namespace hiro
         }
         public static string FormateSize(double size)
         {
-            string[] units = new string[] { "B", "KB", "MB", "GB", "TB", "PB" };
-            double mod = 1024.0;
-            int i = 0;
+            var units = new string[] { "B", "KB", "MB", "GB", "TB", "PB" };
+            var mod = 1024.0;
+            var i = 0;
             while (size >= mod)
             {
                 size /= mod;

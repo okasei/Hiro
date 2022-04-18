@@ -84,10 +84,10 @@ namespace hiro
                 }
                 SocketConnection socketConnection = new(clientSocket);
                 socketConnection.ReceiveData();
-                socketConnection.DataRecevieCompleted += delegate
+                socketConnection.DataReceiveCompleted += delegate
                 {
-                    string recStr = Hiro_Utils.DeleteUnVisibleChar(System.Text.Encoding.ASCII.GetString(socketConnection.msgBuffer));
-                    byte[] outputb = Convert.FromBase64String(recStr);
+                    var recStr = Hiro_Utils.DeleteUnVisibleChar(System.Text.Encoding.ASCII.GetString(socketConnection.msgBuffer));
+                    var outputb = Convert.FromBase64String(recStr);
                     recStr = System.Text.Encoding.Default.GetString(outputb);
                     recStr = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(recStr)).Trim();
                     if (System.IO.File.Exists(recStr))
@@ -144,56 +144,54 @@ namespace hiro
 
         private static void InitializeStartParameters(StartupEventArgs e)
         {
-            if (e.Args.Length >=1 && e.Args[0].ToLower().Equals("autostart_on"))
+            switch (e.Args.Length)
             {
-                Hiro_Utils.Set_Autorun(true);
-                goto Executed;
-            }
-            else if (e.Args.Length >= 1 && e.Args[0].ToLower().Equals("autostart_off"))
-            {
-                Hiro_Utils.Set_Autorun(false);
-                goto Executed;
-            }
-            else
-            {
-                bool silent = false;
-                if (e.Args.Length >= 1)
+                case >= 1 when e.Args[0].ToLower().Equals("autostart_on"):
+                    Hiro_Utils.Set_Autorun(true);
+                    goto Executed;
+                case >= 1 when e.Args[0].ToLower().Equals("autostart_off"):
+                    Hiro_Utils.Set_Autorun(false);
+                    goto Executed;
+                default:
                 {
-                    foreach (string para in e.Args)
+                    bool silent = false;
+                    if (e.Args.Length >= 1)
                     {
-                        if (para.ToLower().Equals("debug"))
+                        foreach (var para in e.Args)
                         {
-                            dflag = true;
-                            continue;
-                        }else if (para.ToLower().Equals("silent"))
-                        {
-                            silent = true;
-                            continue;
-                        }else
-                        {
-                            Hiro_Utils.IntializeColorParameters();
-                            Hiro_Utils.RunExe(para);
-                            return;
+                            switch (para.ToLower())
+                            {
+                                case "debug":
+                                    dflag = true;
+                                    continue;
+                                case "silent":
+                                    silent = true;
+                                    continue;
+                                default:
+                                    Hiro_Utils.IntializeColorParameters();
+                                    Hiro_Utils.RunExe(para);
+                                    return;
+                            }
                         }
                     }
+                    wnd = new MainWindow();
+                    wnd.InitializeInnerParameters();
+                    wnd.Show();
+                    wnd.Hide();
+                    mn = new();
+                    if (silent)
+                        Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
+                    else
+                        mn.Show();
+                    if (FirstUse)
+                    {
+                        FirstUse = false;
+                        Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + App.lang + "\\welcome.hws)");
+                    }
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
+                        Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"));
+                    return;
                 }
-                wnd = new MainWindow();
-                wnd.InitializeInnerParameters();
-                wnd.Show();
-                wnd.Hide();
-                mn = new();
-                if (silent)
-                    Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
-                else
-                    mn.Show();
-                if (FirstUse)
-                {
-                    FirstUse = false;
-                    Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + App.lang + "\\welcome.hws)");
-                }
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
-                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"));
-                return;
             }
         Executed:
             Hiro_Utils.RunExe("exit()");
@@ -239,10 +237,10 @@ namespace hiro
         {
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.OnActivated += toastArgs =>
             {
-                Microsoft.Toolkit.Uwp.Notifications.ToastArguments args = Microsoft.Toolkit.Uwp.Notifications.ToastArguments.Parse(toastArgs.Argument);
-                string action = "null";
-                string url = "nop";
-                int id = -1;
+                var args = Microsoft.Toolkit.Uwp.Notifications.ToastArguments.Parse(toastArgs.Argument);
+                var action = "null";
+                var url = "nop";
+                var id = -1;
                 for (int i = 0; i < args.Count; i++)
                 {
                     if (args.ElementAt(i).Key.Equals("action"))
@@ -334,14 +332,7 @@ namespace hiro
             }   
             Hiro_Utils.LogtoFile("[HIROWEGO]Current language: " + lang);
             LangFilePath = CurrentDirectory + "\\system\\lang\\" + lang + ".hlp";
-            if (Hiro_Utils.Read_Ini(dconfig, "Config", "CustomNick", "1").Equals("2"))
-            {
-                AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro");
-            }
-            else
-            {
-                AppTitle = res.ApplicationName;
-            }
+            AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomNick", "1").Equals("2") ? Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro") : res.ApplicationName;
             System.IO.DirectoryInfo di = new(CurrentDirectory + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
             {
@@ -552,7 +543,7 @@ namespace hiro
                 KuwoPtr = Initialize_Ptr("kwmusic");
             else if (kwtitle != KuwoTitle && kwtitle != null && !kwtitle.Equals("KwStartPageDlg") && !kwtitle.Equals("酷我音乐") && !kwtitle.Equals("桌面歌词"))
             {
-                if (KuwoTitle != null && KuwoTitle.Length > 2)
+                if (KuwoTitle.Length > 2)
                 {
                     if (kwtitle.IndexOf(KuwoTitle.Substring(2)) != -1)
                     {
@@ -569,22 +560,18 @@ namespace hiro
         {
             if (wnd != null)
             {
-                if (wnd.cm != null)
-                    wnd.cm.Items.Clear();
-                if (wnd.cm == null)
+                wnd.cm?.Items.Clear();
+                wnd.cm ??= new()
                 {
-                    wnd.cm = new()
-                    {
-                        CacheMode = null,
-                        Foreground = new SolidColorBrush(AppForeColor),
-                        Background = new SolidColorBrush(AppAccentColor),
-                        BorderBrush = null,
-                        Style = (Style)Current.Resources["HiroContextMenu"],
-                        Padding = new(1, 10, 1, 10)
-                    };
-                }
+                    CacheMode = null,
+                    Foreground = new SolidColorBrush(AppForeColor),
+                    Background = new SolidColorBrush(AppAccentColor),
+                    BorderBrush = null,
+                    Style = (Style) Current.Resources["HiroContextMenu"],
+                    Padding = new(1, 10, 1, 10)
+                };
                 var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;
-                for (int c = 1; c <= 10; c++)
+                for (var c = 1; c <= 10; c++)
                 {
                     if (c + page * 10 > cmditems.Count)
                         break;
@@ -616,7 +603,7 @@ namespace hiro
                     {
                         try
                         {
-                            String? str = mu.Tag.ToString();
+                            string? str = mu.Tag.ToString();
                             if (str != null)
                                 Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command);
 
@@ -695,7 +682,7 @@ namespace hiro
                     Hiro_Utils.RunExe("exit()");
                 };
                 wnd.cm.Items.Add(exit);
-                foreach (object obj in wnd.cm.Items)
+                foreach (var obj in wnd.cm.Items)
                 {
                     if (obj is MenuItem mi)
                         Hiro_Utils.Set_Control_Location(mi, "context", location: false);

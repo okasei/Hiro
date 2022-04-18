@@ -24,7 +24,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
@@ -119,7 +119,7 @@ namespace hiro
 
         private void IBtn_1_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            string proxy = EnableProxy.IsChecked == true ? "2" : EnableProxy.IsChecked == false ? "0" : "1";
+            var proxy = EnableProxy.IsChecked == true ? "2" : EnableProxy.IsChecked == false ? "0" : "1";
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Proxy", proxy);
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Server", AddressBox.Text);
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Port", PortBox.Text);
@@ -127,14 +127,12 @@ namespace hiro
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Username", UsernameBox.Text);
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Password", PwdBox.Password);
             App.Notify(new(Hiro_Utils.Get_Transalte("restart"), 2, Hiro_Utils.Get_Transalte("proxyer")));
-            if (Hiro_Main != null)
-                Hiro_Main.Set_Label(Hiro_Main.configx);
+            Hiro_Main?.Set_Label(Hiro_Main.configx);
         }
 
         private void IBtn_2_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (Hiro_Main != null)
-                Hiro_Main.Set_Label(Hiro_Main.configx);
+            Hiro_Main?.Set_Label(Hiro_Main.configx);
         }
     }
 }

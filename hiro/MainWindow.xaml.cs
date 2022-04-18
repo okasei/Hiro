@@ -25,7 +25,7 @@ namespace hiro
             InitializeMethod();
             SourceInitialized += OnSourceInitialized;
             System.Net.NetworkInformation.NetworkChange.NetworkAddressChanged += new System.Net.NetworkInformation.NetworkAddressChangedEventHandler(NetworkChange_NetworkAddressChanged);
-            Windows.Networking.Connectivity.ConnectionProfile profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+            var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
             if (profile != null)
                 ncl = profile.GetNetworkConnectivityLevel();
             try
@@ -63,15 +63,15 @@ namespace hiro
             int p = Windows.System.Power.PowerManager.RemainingChargePercent;
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
             {
-                if (Windows.System.Power.PowerManager.BatteryStatus != Windows.System.Power.BatteryStatus.Charging)
-                {
-                    var low = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
-                    var notice = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "tippower", "").Replace("[", "[,").Replace("]", ",]").Trim();
-                    if (low.IndexOf(p.ToString()) != -1)
-                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
-                    else if (notice.IndexOf(p.ToString()) != -1)
-                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
-                }
+                if (Windows.System.Power.PowerManager.BatteryStatus ==
+                    Windows.System.Power.BatteryStatus.Charging) 
+                    return;
+                var low = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
+                var notice = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "tippower", "").Replace("[", "[,").Replace("]", ",]").Trim();
+                if (low.IndexOf(p.ToString()) != -1)
+                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
+                else if (notice.IndexOf(p.ToString()) != -1)
+                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
             }
         }
 
@@ -85,73 +85,73 @@ namespace hiro
                     Hiro_Utils.LogtoFile(ni.Description + " - " + ni.NetworkInterfaceType.ToString());
                 }
             }
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
+
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1")) 
+                return;
+            var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+            string ext = "";
+            if (profile != null)
             {
-                Windows.Networking.Connectivity.ConnectionProfile profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
-                string ext = "";
-                if (profile != null)
+                try
                 {
-                    try
+                    if (profile.IsWlanConnectionProfile)
                     {
-                        if (profile.IsWlanConnectionProfile)
-                        {
-                            if (profile.WlanConnectionProfileDetails.GetConnectedSsid().Equals(string.Empty))
-                                return;
-                            ext = Hiro_Utils.Get_Transalte("netwlan").Replace("%s", profile.WlanConnectionProfileDetails.GetConnectedSsid());
-                        }
-                        else if (profile.IsWwanConnectionProfile)
-                        {
-                            if (profile.WwanConnectionProfileDetails.AccessPointName.Equals(string.Empty))
-                                return;
-                            ext = Hiro_Utils.Get_Transalte("netwwan").Replace("%s", profile.WwanConnectionProfileDetails.AccessPointName);
-                        }
-                        else
-                        {
-                            ext = Hiro_Utils.Get_Transalte("neteth");
-                        }
+                        if (profile.WlanConnectionProfileDetails.GetConnectedSsid().Equals(string.Empty))
+                            return;
+                        ext = Hiro_Utils.Get_Transalte("netwlan").Replace("%s", profile.WlanConnectionProfileDetails.GetConnectedSsid());
                     }
-                    catch(Exception ex)
+                    else if (profile.IsWwanConnectionProfile)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                        if (profile.WwanConnectionProfileDetails.AccessPointName.Equals(string.Empty))
+                            return;
+                        ext = Hiro_Utils.Get_Transalte("netwwan").Replace("%s", profile.WwanConnectionProfileDetails.AccessPointName);
                     }
-                    if (ncl == profile.GetNetworkConnectivityLevel() && rec_nc.Equals(ext))
-                        return;
-                    ncl = profile.GetNetworkConnectivityLevel();
-                    rec_nc = ext;
-                }
-                else
-                {
-                    if (ncl == Windows.Networking.Connectivity.NetworkConnectivityLevel.None)
-                        return;
-                    ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
-                }
-                App.Current.Dispatcher.Invoke((Action)(() =>
-                {
-                    switch (ncl)
+                    else
                     {
-                        case Windows.Networking.Connectivity.NetworkConnectivityLevel.InternetAccess:
-                            App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("neton").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
-                            break;
-                        case Windows.Networking.Connectivity.NetworkConnectivityLevel.LocalAccess:
-                            App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("netlan").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
-                            break;
-                        case Windows.Networking.Connectivity.NetworkConnectivityLevel.ConstrainedInternetAccess:
-                            App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("netlimit").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
-                            break;
-                        default:
-                            App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("netoff"), 2, Hiro_Utils.Get_Transalte("net")));
-                            break;
-                    };
-                }));
+                        ext = Hiro_Utils.Get_Transalte("neteth");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+                if (ncl == profile.GetNetworkConnectivityLevel() && rec_nc.Equals(ext))
+                    return;
+                ncl = profile.GetNetworkConnectivityLevel();
+                rec_nc = ext;
             }
+            else
+            {
+                if (ncl == Windows.Networking.Connectivity.NetworkConnectivityLevel.None)
+                    return;
+                ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
+            }
+            Application.Current.Dispatcher.Invoke((Action)(() =>
+            {
+                switch (ncl)
+                {
+                    case Windows.Networking.Connectivity.NetworkConnectivityLevel.InternetAccess:
+                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("neton").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
+                        break;
+                    case Windows.Networking.Connectivity.NetworkConnectivityLevel.LocalAccess:
+                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("netlan").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
+                        break;
+                    case Windows.Networking.Connectivity.NetworkConnectivityLevel.ConstrainedInternetAccess:
+                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("netlimit").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
+                        break;
+                    default:
+                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("netoff"), 2, Hiro_Utils.Get_Transalte("net")));
+                        break;
+                };
+            }));
         }
 
 
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
             App.WND_Handle = new System.Windows.Interop.WindowInteropHelper(this).Handle;
-            System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(App.WND_Handle);
-            source.AddHook(WndProc);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(App.WND_Handle);
+            source?.AddHook(WndProc);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main Window: AddHook WndProc");
         }
 
@@ -230,47 +230,34 @@ namespace hiro
         public void Load_All_Colors()
         {
             Hiro_Utils.IntializeColorParameters();
-            if (App.ed != null)
-            {
-                App.ed.Load_Color();
-            }
-            if (App.noti != null)
-            {
-                App.noti.Load_Color();
-            }
-            if (App.mn != null)
-            {
-                App.mn.Load_Colors();
-            }
+            App.ed?.Load_Color();
+            App.noti?.Load_Color();
+            App.mn?.Load_Colors();
             foreach (Window win in Application.Current.Windows)
             {
-                if (win is Hiro_Alarm a)
+                switch (win)
                 {
-                    a.Load_Colors();
-                }
-                if (win is Hiro_Download b)
-                {
-                    b.Load_Colors();
-                }
-                if (win is Hiro_LockScreen c)
-                {
-                    c.Load_Colors();
-                }
-                if (win is Hiro_Msg f)
-                {
-                    f.Load_Colors();
-                }
-                if (win is Hiro_Sequence d)
-                {
-                    d.Load_Colors();
-                }
-                if (win is Hiro_Web e)
-                {
-                    e.Load_Color();
-                }
-                if (win is Hiro_Finder g)
-                {
-                    g.Load_Color();
+                    case Hiro_Alarm a:
+                        a.Load_Colors();
+                        break;
+                    case Hiro_Download b:
+                        b.Load_Colors();
+                        break;
+                    case Hiro_LockScreen c:
+                        c.Load_Colors();
+                        break;
+                    case Hiro_Msg f:
+                        f.Load_Colors();
+                        break;
+                    case Hiro_Sequence d:
+                        d.Load_Colors();
+                        break;
+                    case Hiro_Web e:
+                        e.Load_Color();
+                        break;
+                    case Hiro_Finder g:
+                        g.Load_Color();
+                        break;
                 }
                 System.Windows.Forms.Application.DoEvents();
             }
@@ -293,10 +280,7 @@ namespace hiro
                     default:
                         if (App.mn != null)
                         {
-                            if (App.mn.Visibility == Visibility.Visible)
-                                Hiro_Utils.RunExe("hide()");
-                            else
-                                Hiro_Utils.RunExe("show()");
+                            Hiro_Utils.RunExe(App.mn.Visibility == Visibility.Visible ? "hide()" : "show()");
                         }
                         else
                         {
@@ -320,10 +304,7 @@ namespace hiro
                     default:
                         if (App.mn != null)
                         {
-                            if (App.mn.Visibility == Visibility.Visible)
-                                Hiro_Utils.RunExe("hide()");
-                            else
-                                Hiro_Utils.RunExe("show()");
+                            Hiro_Utils.RunExe(App.mn.Visibility == Visibility.Visible ? "hide()" : "show()");
                         }
                         else
                         {
@@ -347,10 +328,7 @@ namespace hiro
                     default:
                         if (App.mn != null)
                         {
-                            if (App.mn.Visibility == Visibility.Visible)
-                                Hiro_Utils.RunExe("hide()");
-                            else
-                                Hiro_Utils.RunExe("show()");
+                            Hiro_Utils.RunExe(App.mn.Visibility == Visibility.Visible ? "hide()" : "show()");
                         }
                         else
                         {

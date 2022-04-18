@@ -33,11 +33,10 @@ namespace hiro
             {
                 Hiro_Utils.AddPowerAnimation(0, BaseGrid, sb, -100, null);
             }
-            if (animation)
-            {
-                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
-                sb.Begin();
-            }
+            if (!animation) 
+                return;
+            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            sb.Begin();
         }
 
         private void Hiro_Initialize()
@@ -206,7 +205,7 @@ namespace hiro
             configbar.Maximum = BaseGrid.Height - 420;
             configbar.Value = 0.0;
             configbar.ViewportSize = 420;
-            foreach (object obj in langbox.Items)
+            foreach (var obj in langbox.Items)
             {
                 if (obj is ComboBoxItem mi)
                     Hiro_Utils.Set_Control_Location(mi, "combo", location: false);
@@ -215,7 +214,7 @@ namespace hiro
 
         private void Configbar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Thickness thickness = BaseGrid.Margin;
+            var thickness = BaseGrid.Margin;
             thickness.Top = -configbar.Value;
             BaseGrid.Margin = thickness;
         }
@@ -401,10 +400,8 @@ namespace hiro
                 App.Locked = true;
                 btn7.IsEnabled = true;
                 if (Hiro_Main != null)
-                {
                     Hiro_Main.versionlabel.Content = res.ApplicationVersion + " 🔒";
-                    Hiro_Main.Set_Label(Hiro_Main.homex);
-                }
+                Hiro_Main?.Set_Label(Hiro_Main.homex);
             };
             bw.RunWorkerAsync();
 
@@ -450,11 +447,8 @@ namespace hiro
             App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].Name + ".hlp";
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "Lang", App.lang);
             App.Load_Menu();
-            if (Hiro_Main != null)
-            {
-                Hiro_Main.Load_Translate();
-                Hiro_Main.Load_Position();
-            }
+            Hiro_Main?.Load_Translate();
+            Hiro_Main?.Load_Position();
         }
 
         private void Reverse_style_Checked(object sender, RoutedEventArgs e)

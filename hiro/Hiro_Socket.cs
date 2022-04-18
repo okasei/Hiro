@@ -15,8 +15,8 @@ namespace hiro
         }
         public string GetIPStr()
         {
-            EndPoint? ep = ClientSocket.RemoteEndPoint;
-            string resStr = ep != null ? ((IPEndPoint)ep).Address.ToString() : "";
+            var ep = ClientSocket.RemoteEndPoint;
+            var resStr = ep != null ? ((IPEndPoint)ep).Address.ToString() : "";
             return resStr;
         }
     }
@@ -44,15 +44,14 @@ namespace hiro
         {
             try
             {
-                if (ar.AsyncState != null)
-                {
-                    Socket handler = (Socket)ar.AsyncState;
-                    handler.EndConnect(ar);
-                }
+                if (ar.AsyncState == null)
+                    return;
+                Socket handler = (Socket)ar.AsyncState;
+                handler.EndConnect(ar);
             }
             catch
             {
-
+                // ignored
             }
         }
         #endregion
@@ -65,28 +64,26 @@ namespace hiro
         {
             try
             {
-                if (ClientSocket != null)
-                    ClientSocket.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), ClientSocket);
+                ClientSocket?.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), ClientSocket);
             }
             catch
             {
-
+                // ignored
             }
         }
         private void SendCallback(IAsyncResult ar)
         {
             try
             {
-                if (ar.AsyncState != null)
-                {
-                    Socket handler = (Socket)ar.AsyncState;
-                    handler.EndSend(ar);
-                    OnDataSendCompleted(new());
-                }
+                if (ar.AsyncState == null)
+                    return;
+                var handler = (Socket)ar.AsyncState;
+                handler.EndSend(ar);
+                OnDataSendCompleted(EventArgs.Empty);
             }
             catch
             {
-
+                // ignored
             }
         }
 
@@ -107,12 +104,12 @@ namespace hiro
             {
                 if (ClientSocket != null)
                 {
-                    int REnd = ClientSocket.EndReceive(ar);
+                    var REnd = ClientSocket.EndReceive(ar);
                     if (REnd > 0)
                     {
-                        byte[] data = new byte[REnd];
+                        var data = new byte[REnd];
                         Array.Copy(msgBuffer, 0, data, 0, REnd);
-                        OnDataRecevieCompleted(new());
+                        OnDataReceiveCompleted(new());
                         //ClientSocket.BeginReceive(msgBuffer, 0, msgBuffer.Length, 0, new AsyncCallback(ReceiveCallback), null);
                     }
                     else
@@ -123,15 +120,15 @@ namespace hiro
             }
             catch
             {
-
+                // ignored
             }
         }
-        protected virtual void OnDataRecevieCompleted(EventArgs e)
+        protected virtual void OnDataReceiveCompleted(EventArgs e)
         {
-            DataRecevieCompleted?.Invoke(this, e);
+            DataReceiveCompleted?.Invoke(this, e);
         }
 
-        public event EventHandler<EventArgs>? DataRecevieCompleted;
+        public event EventHandler<EventArgs>? DataReceiveCompleted;
         public event EventHandler<EventArgs>? DataSendCompleted;
         public void Dispose()
         {
@@ -145,7 +142,7 @@ namespace hiro
             }
             catch
             {
-
+                // ignored
             }
         }
         #endregion

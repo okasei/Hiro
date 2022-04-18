@@ -62,7 +62,6 @@ namespace hiro
                         exist = true;
                         return;
                     }
-                    
                     if (App.mn != null)
                     {
                         bgimage.Background = App.mn.bgimage.Background;
@@ -73,23 +72,22 @@ namespace hiro
                 bw.RunWorkerCompleted += delegate
                 {
                     filep = System.IO.File.Exists(filep) ? filep : wp;
-                    if (System.IO.File.Exists(filep))
+                    if (!System.IO.File.Exists(filep)) 
+                        return;
+                    BitmapImage bi = new();
+                    bi.BeginInit();
+                    bi.CacheOption = BitmapCacheOption.OnLoad;
+                    bi.UriSource = new Uri(filep);
+                    ImageBrush ib = new()
                     {
-                        BitmapImage bi = new();
-                        bi.BeginInit();
-                        bi.CacheOption = BitmapCacheOption.OnLoad;
-                        bi.UriSource = new Uri(filep);
-                        ImageBrush ib = new()
-                        {
-                            Stretch = Stretch.UniformToFill,
-                            ImageSource = bi
-                        };
-                        bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
-                        bgimage.Background = ib;
-                        bi.EndInit();
-                        bi.Freeze();
-                        Hiro_Utils.Blur_Animation(0, animation, bgimage, this);
-                    }
+                        Stretch = Stretch.UniformToFill,
+                        ImageSource = bi
+                    };
+                    bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+                    bgimage.Background = ib;
+                    bi.EndInit();
+                    bi.Freeze();
+                    Hiro_Utils.Blur_Animation(0, animation, bgimage, this);
                 };
                 bw.RunWorkerAsync();
             }

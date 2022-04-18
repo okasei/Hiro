@@ -20,7 +20,6 @@ namespace hiro
         private bool secure = false;
         internal int bflag = 0;
         private string FlowTitle = "";
-        private ContextMenu? Web_CM = null;
         public Hiro_Web(string? uri = null, string? title = null)
         {
             InitializeComponent();
@@ -78,13 +77,12 @@ namespace hiro
         {
             string ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
-            {
-                FlowTitle = Title;
-                System.Windows.Media.Animation.Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-                sb.Begin();
-            }
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title)) 
+                return;
+            FlowTitle = Title;
+            System.Windows.Media.Animation.Storyboard sb = new();
+            Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
+            sb.Begin();
         }
 
         private void ClearCache(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
@@ -119,7 +117,10 @@ namespace hiro
             wv2.CoreWebView2.IsDefaultDownloadDialogOpenChanged += CoreWebView2_IsDefaultDownloadDialogOpenChanged;
             wv2.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
             wv2.CoreWebView2.ContextMenuRequested += CoreWebView2_ContextMenuRequested;
-            Load_Menu();
+            //wv2.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+            wv2.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
+            //wv2.CoreWebView2.Settings.IsBuiltInErrorPageEnabled = false;
+            wv2.CoreWebView2.Settings.IsStatusBarEnabled = false;
             if (fixed_title == null) 
                 URLGrid.Visibility = Visibility.Visible;
             if (fixed_title != null && !Topmost)
@@ -128,126 +129,14 @@ namespace hiro
 
         private void CoreWebView2_ContextMenuRequested(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuRequestedEventArgs e)
         {
-            if (Web_CM != null)
-                Web_CM.IsOpen = true;
-            e.Handled = true;
-        }
-
-        public void Load_Menu()
-        {
-            if (Web_CM != null)
-                Web_CM.Items.Clear();
-            if (Web_CM == null)
+            for (var index = 0; index < e.MenuItems.Count; index++)
             {
-                Web_CM = new()
-                {
-                    CacheMode = null,
-                    Foreground = new SolidColorBrush(App.AppForeColor),
-                    Background = new SolidColorBrush(App.AppAccentColor),
-                    BorderBrush = null,
-                    Style = (Style)Application.Current.Resources["HiroContextMenu"],
-                    Padding = new(1, 10, 1, 10)
-                };
+                if (!e.MenuItems[index].Name.Equals("other") &&
+                    !e.MenuItems[index].Name.Equals("createQrCode")) 
+                    continue;
+                e.MenuItems.RemoveAt(index);
+                index--;
             }
-            {
-                MenuItem Previous = new()
-                {
-                    Background = new SolidColorBrush(Colors.Transparent),
-                    Header = Hiro_Utils.Get_Transalte("webcmpre")
-                };
-                wv2.CoreWebView2.NavigationCompleted += delegate
-                {
-                    if (wv2.CoreWebView2.CanGoBack)
-                        Previous.IsEnabled = true;
-                    else
-                        Previous.IsEnabled = false;
-                };
-                Previous.Click += delegate
-                {
-                    wv2.CoreWebView2.GoBack();
-                };
-                Previous.IsEnabled = false;
-                Web_CM.Items.Add(Previous);
-            }
-            {
-                
-                MenuItem Next = new()
-                {
-                    Background = new SolidColorBrush(Colors.Transparent),
-                    Header = Hiro_Utils.Get_Transalte("webcmnext")
-                };
-                wv2.CoreWebView2.NavigationCompleted += delegate
-                {
-                    if (wv2.CoreWebView2.CanGoForward)
-                        Next.IsEnabled = true;
-                    else
-                        Next.IsEnabled = false;
-                };
-                Next.Click += delegate
-                {
-                    wv2.CoreWebView2.GoForward();
-                };
-                Next.IsEnabled = false;
-                Web_CM.Items.Add(Next);
-            }
-            {
-                MenuItem Reload = new()
-                {
-                    Background = new SolidColorBrush(Colors.Transparent),
-                    Header = Hiro_Utils.Get_Transalte("webcmreload")
-                };
-                Reload.Click += delegate
-                {
-                    if (Reload.Header.Equals(Hiro_Utils.Get_Transalte("webcmreload")))
-                    {
-                        Reload.Header = Hiro_Utils.Get_Transalte("webcmstop");
-                        wv2.CoreWebView2.Reload();
-                    }
-                    else
-                    {
-                        Reload.Header = Hiro_Utils.Get_Transalte("webcmreload");
-                        wv2.CoreWebView2.Stop();
-                    }
-
-                };
-                wv2.CoreWebView2.NavigationStarting += delegate
-                {
-                    Reload.Header = Hiro_Utils.Get_Transalte("webcmstop");
-                };
-                wv2.CoreWebView2.FrameNavigationStarting += delegate
-                {
-                    Reload.Header = Hiro_Utils.Get_Transalte("webcmstop");
-                };
-                wv2.CoreWebView2.NavigationCompleted += delegate
-                {
-                    Reload.Header = Hiro_Utils.Get_Transalte("webcmreload");
-                };
-                wv2.CoreWebView2.FrameNavigationCompleted += delegate
-                {
-                    Reload.Header = Hiro_Utils.Get_Transalte("webcmreload");
-                };
-                Web_CM.Items.Add(Reload);
-            }
-            Web_CM.Items.Add(new Separator());
-            {
-                MenuItem Dev = new()
-                {
-                    Background = new SolidColorBrush(Colors.Transparent),
-                    Header = Hiro_Utils.Get_Transalte("webcmdev")
-                };
-                Dev.Click += delegate
-                {
-                    wv2.CoreWebView2.OpenDevToolsWindow();
-                };
-                Web_CM.Items.Add(Dev);
-            }
-
-            foreach (object obj in Web_CM.Items)
-            {
-                if (obj is MenuItem mi)
-                    Hiro_Utils.Set_Control_Location(mi, "context", location: false);
-            }
-            GC.Collect();
         }
 
         private void CoreWebView2_HistoryChanged(object? sender, object e)
@@ -276,11 +165,6 @@ namespace hiro
             Background = new SolidColorBrush(App.AppAccentColor);
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
-            if (Web_CM != null)
-            {
-                Web_CM.Foreground = new SolidColorBrush(App.AppForeColor);
-                Web_CM.Background = new SolidColorBrush(App.AppAccentColor);
-            }   
             Hiro_Utils.Set_Bgimage(bgimage);
         }
 
@@ -295,7 +179,7 @@ namespace hiro
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
             prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? Hiro_Utils.Get_Transalte("webmusic") : "";
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             var visual = soundbtn.Visibility;
             soundbtn.Visibility = wv2.CoreWebView2.IsDocumentPlayingAudio ? Visibility.Visible : Visibility.Collapsed;
             if (soundbtn.Visibility == Visibility.Visible && visual != soundbtn.Visibility && animation)
@@ -304,7 +188,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(2, soundbtn, sb, -50, null);
                 sb.Begin();
             }
-            string ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
+            var ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
             {
@@ -347,7 +231,7 @@ namespace hiro
 
         private void CoreWebView2_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            string ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
+            var ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
             {
@@ -370,7 +254,7 @@ namespace hiro
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
-            string ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
+            var ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", Hiro_Utils.Get_Transalte("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && (!FlowTitle.Equals(Title) || URLBox.Visibility == Visibility.Visible))
             {
@@ -577,44 +461,58 @@ namespace hiro
 
         private void URLBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter)
+            switch (e.Key)
             {
-                if (URLBox.Text.ToLower().Equals("topmost:on") || URLBox.Text.ToLower().Equals("topmost:true"))
-                    Topmost = true;
-                if (URLBox.Text.ToLower().Equals("topmost:off") || URLBox.Text.ToLower().Equals("topmost:false"))
-                    Topmost = false;
-                if (URLBox.Text.ToLower().Equals("mute:on") || URLBox.Text.ToLower().Equals("mute:true"))
-                    wv2.CoreWebView2.IsMuted = true;
-                if (URLBox.Text.ToLower().Equals("mute:off") || URLBox.Text.ToLower().Equals("mute:false"))
-                    wv2.CoreWebView2.IsMuted = false;
-                if (URLBox.Text.ToLower().Equals("fullscreen"))
-                    wv2.CoreWebView2.IsMuted = false;
-                URLBox.Visibility = Visibility.Collapsed;
-                TitleLabel.Visibility = Visibility.Visible;
-                if (fixed_title == null)
-                    try
+                case Key.Enter:
+                {
+                    switch (URLBox.Text.ToLower())
                     {
-                        wv2.CoreWebView2.Navigate(URLBox.Text);
+                        case "topmost:on":
+                        case "topmost:true":
+                            Topmost = true;
+                            break;
+                        case "topmost:off":
+                        case "topmost:false":
+                            Topmost = false;
+                            break;
+                        case "mute:on":
+                        case "mute:true":
+                            wv2.CoreWebView2.IsMuted = true;
+                            break;
+                        case "mute:off":
+                        case "mute:false":
+                        case "fullscreen":
+                            wv2.CoreWebView2.IsMuted = false;
+                            break;
                     }
-                    catch (Exception ex)
-                    {
+
+                    URLBox.Visibility = Visibility.Collapsed;
+                    TitleLabel.Visibility = Visibility.Visible;
+                    if (fixed_title == null)
                         try
                         {
-                            wv2.CoreWebView2.Navigate("http://" + URLBox.Text);
+                            wv2.CoreWebView2.Navigate(URLBox.Text);
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                            try
+                            {
+                                wv2.CoreWebView2.Navigate("http://" + URLBox.Text);
+                            }
+                            catch
+                            {
+                                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                            }
                         }
-                    }
                     
-                e.Handled = true;
-            }
-            if (e.Key == Key.Escape)
-            {
-                URLBox.Visibility = Visibility.Collapsed;
-                TitleLabel.Visibility = Visibility.Visible;
-                e.Handled = true;
+                    e.Handled = true;
+                    break;
+                }
+                case Key.Escape:
+                    URLBox.Visibility = Visibility.Collapsed;
+                    TitleLabel.Visibility = Visibility.Visible;
+                    e.Handled = true;
+                    break;
             }
         }
 

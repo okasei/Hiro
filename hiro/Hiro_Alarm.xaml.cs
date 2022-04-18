@@ -31,22 +31,18 @@ namespace hiro
             {
                 HiHiro();
             };
-            ala_title.Content = CustomedTitle != null ? CustomedTitle : Hiro_Utils.Get_Transalte("alarmtitle");
+            ala_title.Content = CustomedTitle ?? Hiro_Utils.Get_Transalte("alarmtitle");
             Title = ala_title.Content + " - " + App.AppTitle;
             if (CustomedContnet != null)
                 sv.Content = CustomedContnet;
             id = iid;
             Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-            if (App.dflag)
-            {
-                Hiro_Utils.LogtoFile("[ALARM]Title: " + ala_title.Content);
-                if (content.Content != null)
-                {
-                    var con = content.Content.ToString();
-                    if (con != null)
-                        Hiro_Utils.LogtoFile("[ALARM]Content: " + con.Replace(Environment.NewLine, "\\n"));
-                }
-            }
+            if (!App.dflag) 
+                return;
+            Hiro_Utils.LogtoFile("[ALARM]Title: " + ala_title.Content);
+            var con = content.Content?.ToString();
+            if (con != null)
+                Hiro_Utils.LogtoFile("[ALARM]Content: " + con.Replace(Environment.NewLine, "\\n"));
         }
 
         public void HiHiro()
@@ -136,8 +132,8 @@ namespace hiro
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
             var hwnd = windowInteropHelper.Handle;
-            System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
-            source.AddHook(WndProc);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
+            source?.AddHook(WndProc);
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
 
@@ -157,21 +153,26 @@ namespace hiro
 
         private void Albtn_1_Click(object sender, RoutedEventArgs e)
         {
-            if (id == -415)
+            switch (id)
             {
-                if (url != null)
-                    Hiro_Utils.RunExe(url);
-            }
-            else if (id > -1)
-            {
-                Hiro_Utils.OK_Alarm(App.aw[id].id);
-                App.aw.RemoveAt(id);
-                while (id < App.aw.Count)
+                case -415:
                 {
-                    App.aw[id].win.id--;
-                    id++;
+                    if (url != null)
+                        Hiro_Utils.RunExe(url);
+                    break;
                 }
-                id = -1;
+                case > -1:
+                {
+                    Hiro_Utils.OK_Alarm(App.aw[id].id);
+                    App.aw.RemoveAt(id);
+                    while (id < App.aw.Count)
+                    {
+                        App.aw[id].win.id--;
+                        id++;
+                    }
+                    id = -1;
+                    break;
+                }
             }    
             flag = 0;
             Close();

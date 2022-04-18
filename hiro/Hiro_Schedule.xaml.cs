@@ -25,7 +25,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
@@ -33,11 +33,11 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, scbtn_2, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, scbtn_3, sb, 50, null);
             }
-            if (animation)
-            {
-                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
-                sb.Begin();
-            }
+
+            if (!animation)
+                return;
+            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            sb.Begin();
         }
 
         private void Hiro_Initialize()
@@ -81,54 +81,51 @@ namespace hiro
 
         private void Scbtn_1_Click(object sender, RoutedEventArgs e)
         {
-            if (Hiro_Main != null)
-            {
-                if (Hiro_Main.hiro_newschedule == null)
-                    Hiro_Main.hiro_newschedule = new(Hiro_Main);
-                Hiro_Main.hiro_newschedule.scbtn_4.Visibility = Visibility.Hidden;
-                Hiro_Main.hiro_newschedule.tb11.Text = "";
-                Hiro_Main.hiro_newschedule.tb12.Text = "";
-                Hiro_Main.hiro_newschedule.tb13.Text = "";
-                Hiro_Main.hiro_newschedule.tb14.Text = "";
-                Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("new");
-                Hiro_Main.current = Hiro_Main.hiro_newschedule;
-                Hiro_Main.Set_Label(Hiro_Main.newx);
-            }
-            
+            if (Hiro_Main == null) 
+                return;
+            Hiro_Main.hiro_newschedule ??= new(Hiro_Main);
+            Hiro_Main.hiro_newschedule.scbtn_4.Visibility = Visibility.Hidden;
+            Hiro_Main.hiro_newschedule.tb11.Text = "";
+            Hiro_Main.hiro_newschedule.tb12.Text = "";
+            Hiro_Main.hiro_newschedule.tb13.Text = "";
+            Hiro_Main.hiro_newschedule.tb14.Text = "";
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("new");
+            Hiro_Main.current = Hiro_Main.hiro_newschedule;
+            Hiro_Main.Set_Label(Hiro_Main.newx);
+
         }
 
         private void Scbtn_3_Click(object sender, RoutedEventArgs e)
         {
-            if (App.scheduleitems.Count != 0 && dgs.SelectedIndex > -1 && dgs.SelectedIndex < App.scheduleitems.Count && Hiro_Main != null)
-            { 
-                if (Hiro_Main.hiro_newschedule == null)
-                    Hiro_Main.hiro_newschedule = new(Hiro_Main);
-                Hiro_Main.hiro_newschedule.index = dgs.SelectedIndex;
-                Hiro_Main.hiro_newschedule.scbtn_4.Visibility = Visibility.Visible;
-                Hiro_Main.hiro_newschedule.tb11.Text = App.scheduleitems[dgs.SelectedIndex].Name;
-                Hiro_Main.hiro_newschedule.tb12.Text = App.scheduleitems[dgs.SelectedIndex].Time;
-                Hiro_Main.hiro_newschedule.tb13.Text = App.scheduleitems[dgs.SelectedIndex].Command;
-                Hiro_Main.hiro_newschedule.tb14.Text = "";
-                switch (App.scheduleitems[dgs.SelectedIndex].re)
-                {
-                    case -2.0:
-                        Hiro_Main.hiro_newschedule.rbtn18.IsChecked = true;
-                        break;
-                    case -1.0:
-                        Hiro_Main.hiro_newschedule.rbtn19.IsChecked = true;
-                        break;
-                    case 0.0:
-                        Hiro_Main.hiro_newschedule.rbtn20.IsChecked = true;
-                        break;
-                    default:
-                        Hiro_Main.hiro_newschedule.rbtn21.IsChecked = true;
-                        Hiro_Main.hiro_newschedule.tb14.Text = App.scheduleitems[dgs.SelectedIndex].re.ToString();
-                        break;
-                }
-                Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("mod");
-                Hiro_Main.current = Hiro_Main.hiro_newschedule;
-                Hiro_Main.Set_Label(Hiro_Main.newx);
+            if (App.scheduleitems.Count == 0 || dgs.SelectedIndex <= -1 ||
+                dgs.SelectedIndex >= App.scheduleitems.Count || Hiro_Main == null) 
+                return;
+            Hiro_Main.hiro_newschedule ??= new(Hiro_Main);
+            Hiro_Main.hiro_newschedule.index = dgs.SelectedIndex;
+            Hiro_Main.hiro_newschedule.scbtn_4.Visibility = Visibility.Visible;
+            Hiro_Main.hiro_newschedule.tb11.Text = App.scheduleitems[dgs.SelectedIndex].Name;
+            Hiro_Main.hiro_newschedule.tb12.Text = App.scheduleitems[dgs.SelectedIndex].Time;
+            Hiro_Main.hiro_newschedule.tb13.Text = App.scheduleitems[dgs.SelectedIndex].Command;
+            Hiro_Main.hiro_newschedule.tb14.Text = "";
+            switch (App.scheduleitems[dgs.SelectedIndex].re)
+            {
+                case -2.0:
+                    Hiro_Main.hiro_newschedule.rbtn18.IsChecked = true;
+                    break;
+                case -1.0:
+                    Hiro_Main.hiro_newschedule.rbtn19.IsChecked = true;
+                    break;
+                case 0.0:
+                    Hiro_Main.hiro_newschedule.rbtn20.IsChecked = true;
+                    break;
+                default:
+                    Hiro_Main.hiro_newschedule.rbtn21.IsChecked = true;
+                    Hiro_Main.hiro_newschedule.tb14.Text = App.scheduleitems[dgs.SelectedIndex].re.ToString();
+                    break;
             }
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("mod");
+            Hiro_Main.current = Hiro_Main.hiro_newschedule;
+            Hiro_Main.Set_Label(Hiro_Main.newx);
         }
 
         private void Scbtn_2_Click(object sender, RoutedEventArgs e)

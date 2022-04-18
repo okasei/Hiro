@@ -65,8 +65,8 @@ namespace hiro
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
             var hwnd = windowInteropHelper.Handle;
-            System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
-            source.AddHook(WndProc);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
+            source?.AddHook(WndProc);
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
 
@@ -133,7 +133,7 @@ namespace hiro
                 Close();
                 return;
             }
-            string sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
+            var sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
             if (App.dflag)
                 Hiro_Utils.LogtoFile("[SEQUENCE]" + sc);
             skipbtn.Visibility = Visibility.Hidden;
@@ -164,11 +164,10 @@ namespace hiro
                 dt.Tick += delegate
                 {
                     TimerTick();
-                    if (tick < 1)
-                    {
-                        Next_CMD();
-                        dt.Stop();
-                    }
+                    if (tick >= 1)
+                        return;
+                    Next_CMD();
+                    dt.Stop();
                 };
                 dt.Start();
                 Resizel((ci + 1), cmds.Count);
@@ -206,7 +205,7 @@ namespace hiro
                 Close();
                 return;
             }
-            string[] filec = System.IO.File.ReadAllLines(path);
+            var filec = System.IO.File.ReadAllLines(path);
             foreach (var cm in filec)
             {
                 cmds.Add(cm);
@@ -216,11 +215,11 @@ namespace hiro
 
         private void Resizel(int cir, int all)
         {
-            bool changed = false;
+            var changed = false;
             try
             {
                 var next = Hiro_Utils.Get_Transalte("seqnext");
-                string sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
+                var sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
                 var current = Hiro_Utils.Get_Transalte("seqcurrent") + sc;
                 var inde = (ci + 1).ToString() + "/" + cmds.Count.ToString();
                 if (tick > 0)
@@ -232,37 +231,38 @@ namespace hiro
                 changed = textblock.Text == inde + Environment.NewLine + current + Environment.NewLine + next;
                 textblock.Text = inde + Environment.NewLine + current + Environment.NewLine + next;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
+
             Height = con.ActualHeight + 5 + cancelbtn.Height + cancelbtn.Margin.Bottom + 5;
             progress.Value = cir;
             progress.Maximum = all;
             APPBARDATA pdat = new();
             SHAppBarMessage(0x00000005, ref pdat);
-            //左上右下0123
-            if (pdat.uEdge == 3)
+            switch (pdat.uEdge)
             {
-                Canvas.SetTop(this, pdat.rc.top - Height);
-                Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
+                //左上右下0123
+                case 3:
+                    Canvas.SetTop(this, pdat.rc.top - Height);
+                    Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
+                    break;
+                case 2:
+                    Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
+                    Canvas.SetLeft(this, pdat.rc.left - Width);
+                    break;
+                default:
+                    Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
+                    Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
+                    break;
             }
-            else if (pdat.uEdge == 2)
-            {
-                Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
-                Canvas.SetLeft(this, pdat.rc.left - Width);
-            }
-            else
-            {
-                Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
-                Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
-            }
-            if (Visibility == Visibility.Visible && changed)
-            {
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
-                {
-                    Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(0, textblock, sb, 50, null);
-                    sb.Begin();
-                }
-            }
+
+            if (Visibility != Visibility.Visible || !changed || !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                return;
+            Storyboard sb = new();
+            Hiro_Utils.AddPowerAnimation(0, textblock, sb, 50, null);
+            sb.Begin();
         }
 
         private void Con_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -270,21 +270,21 @@ namespace hiro
             Height = con.ActualHeight + 5 + cancelbtn.Height + cancelbtn.Margin.Bottom + 5;
             APPBARDATA pdat = new();
             SHAppBarMessage(0x00000005, ref pdat);
-            //左上右下0123
-            if (pdat.uEdge == 3)
+            switch (pdat.uEdge)
             {
-                Canvas.SetTop(this, pdat.rc.top - Height);
-                Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
-            }
-            else if (pdat.uEdge == 2)
-            {
-                Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
-                Canvas.SetLeft(this, pdat.rc.left - Width);
-            }
-            else
-            {
-                Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
-                Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
+                //左上右下0123
+                case 3:
+                    Canvas.SetTop(this, pdat.rc.top - Height);
+                    Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
+                    break;
+                case 2:
+                    Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
+                    Canvas.SetLeft(this, pdat.rc.left - Width);
+                    break;
+                default:
+                    Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
+                    Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
+                    break;
             }
             Load_Position();
         }
@@ -354,7 +354,7 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage);
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
@@ -368,18 +368,16 @@ namespace hiro
         {
             pausebtn.Content = Hiro_Utils.Get_Transalte("seqconti");
             tick = 0;
-            if (parent != null)
+            if (parent == null)
+                return;
+            try
             {
-                try
-                {
-                    parent.Visibility = Visibility.Visible;
-                    parent.Next_CMD();
-                }
-                catch (Exception ex)
-                {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
-                }
-                
+                parent.Visibility = Visibility.Visible;
+                parent.Next_CMD();
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
             }
         }
     }

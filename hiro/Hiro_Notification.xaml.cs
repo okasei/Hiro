@@ -159,7 +159,7 @@ namespace hiro
             }
             if (msg.IndexOf("\\n") != -1)
             {
-                string newmsg = "";
+                var newmsg = "";
                 while (newmsg.Trim().Equals("") && msg.IndexOf("\\n") != -1)
                 {
                     newmsg = msg[..msg.IndexOf("\\n")];
@@ -190,7 +190,7 @@ namespace hiro
         {
             Size msize = new();
             Hiro_Utils.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
-            Thickness th = notinfo.Margin;
+            var th = notinfo.Margin;
             notinfo.Width = msize.Width;
             th.Left = ActualWidth / 2 - msize.Width / 2;
             if (th.Left < 0)
@@ -226,14 +226,7 @@ namespace hiro
         }
         private void Noti_Loaded(object sender, RoutedEventArgs e)
         {
-            if (App.noticeitems[0].msg.IndexOf("\\n") != -1)
-            {
-                notinfo.Content = App.noticeitems[0].msg[..App.noticeitems[0].msg.IndexOf("\\n")];
-            }
-            else
-            {
-                notinfo.Content = App.noticeitems[0].msg;
-            }
+            notinfo.Content = App.noticeitems[0].msg.IndexOf("\\n") != -1 ? App.noticeitems[0].msg[..App.noticeitems[0].msg.IndexOf("\\n")] : App.noticeitems[0].msg;
             Load_Noti_Position();
         }
 

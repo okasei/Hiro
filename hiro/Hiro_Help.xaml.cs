@@ -82,7 +82,7 @@ namespace hiro
                 return;
             }
             whatsbw = new();
-            string wps = "";
+            var wps = "";
             whatsbw.DoWork += delegate
             {
                 wps = Hiro_Utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + res.ApplicationVersion + "&lang=" + App.lang);
@@ -91,7 +91,7 @@ namespace hiro
             {
                 try
                 {
-                    string ti = wps[(wps.IndexOf("<title>") + "<title>".Length)..];
+                    var ti = wps[(wps.IndexOf("<title>") + "<title>".Length)..];
                     ti = ti[..ti.IndexOf("<")];
                     wps = wps[(wps.IndexOf("</head>") + "</head>".Length)..];
                     Hiro_Utils.RunExe("alarm(" + ti + "," + wps.Replace("<br>", "\\n") + ")");

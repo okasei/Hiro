@@ -7,9 +7,6 @@ using System.Windows.Media.Animation;
 
 namespace hiro
 {
-    /// <summary>
-    /// editor.xaml の相互作用ロジック
-    /// </summary>
     public partial class Hiro_Editor : Window
     {
         public int saveflag = 0;
@@ -59,24 +56,22 @@ namespace hiro
                     }
                 }
                 var StatusText = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
-                if (saveflag == 0 && !status.Content.Equals(StatusText))
-                {
-                    status.Content = StatusText;
-                    Hiro_Utils.LogtoFile("2");
-                    Update_Animation();
-                }
+                if (saveflag != 0 || status.Content.Equals(StatusText)) 
+                    return;
+                status.Content = StatusText;
+                Hiro_Utils.LogtoFile("2");
+                Update_Animation();
             };
             timer.Start();
         }
 
         private void Update_Animation()
         {
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
-            {
-                Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(3, status, sb, -50, null);
-                sb.Begin();
-            }
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1")) 
+                return;
+            Storyboard sb = new();
+            Hiro_Utils.AddPowerAnimation(3, status, sb, -50, null);
+            sb.Begin();
         }
 
         public void Save(bool show = false)
@@ -117,7 +112,7 @@ namespace hiro
         }
         public void Load()
         {
-            string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
+            var path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
             try
             {
                 con.Text = System.IO.File.ReadAllText(path);

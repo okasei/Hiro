@@ -68,10 +68,7 @@ namespace hiro
             Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
-                if (selected == null)
-                    Set_Label(homex);
-                else
-                    Set_Label(selected);
+                Set_Label(selected ?? homex);
             }
             titlelabel.Visibility = Visibility.Visible;
             versionlabel.Visibility = Visibility.Visible;
@@ -104,8 +101,8 @@ namespace hiro
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
             var hwnd = windowInteropHelper.Handle;
-            System.Windows.Interop.HwndSource source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
-            source.AddHook(WndProc);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
+            source?.AddHook(WndProc);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: AddHook WndProc");
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
@@ -156,14 +153,9 @@ namespace hiro
         {
             Hiro_Utils.IntializeColorParameters();
             Hiro_Utils.Set_Bgimage(bgimage);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1"))
-            {
-                Blurbgi(0);
-            }
-            else
-            {
-                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
-            }
+            Blurbgi(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1")
+                ? 0
+                : Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             Foreground = new SolidColorBrush(App.AppForeColor);
             #region 颜色
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
@@ -178,26 +170,16 @@ namespace hiro
                 App.wnd.cm.Background = new SolidColorBrush(App.AppAccentColor);
             }
             Load_Labels(false);
-            if (hiro_home != null)
-                hiro_home.Load_Color();
-            if (hiro_items != null)
-                hiro_items.Load_Color();
-            if (hiro_schedule != null)
-                hiro_schedule.Load_Color();
-            if (hiro_config != null)
-                hiro_config.Load_Color();
-            if (hiro_help != null)
-                hiro_help.Load_Color();
-            if (hiro_about != null)
-                hiro_about.Load_Color();
-            if (hiro_newitem != null)
-                hiro_newitem.Load_Color();
-            if (hiro_newschedule != null)
-                hiro_newschedule.Load_Color();
-            if (hiro_time != null)
-                hiro_time.Load_Color();
-            if (hiro_color != null)
-                hiro_color.Load_Color();
+            hiro_home?.Load_Color();
+            hiro_items?.Load_Color();
+            hiro_schedule?.Load_Color();
+            hiro_config?.Load_Color();
+            hiro_help?.Load_Color();
+            hiro_about?.Load_Color();
+            hiro_newitem?.Load_Color();
+            hiro_newschedule?.Load_Color();
+            hiro_time?.Load_Color();
+            hiro_color?.Load_Color();
         }
 
         public void Load_Data()
@@ -208,9 +190,7 @@ namespace hiro
             var inipath = App.dconfig;
             var ti = Hiro_Utils.Read_Ini(inipath, i.ToString(), "Title", "");
             var co = Hiro_Utils.Read_Ini(inipath, i.ToString(), "Command", "");
-            bool reged = false;
-            if (App.vs.Count > 0)
-                reged = true;
+            bool reged = App.vs.Count > 0;
             while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
             {
                 var key = Hiro_Utils.Read_Ini(App.dconfig, i.ToString(), "HotKey", "").Trim();
@@ -262,48 +242,52 @@ namespace hiro
                 {
                     ShortDatePattern = "yyyy/MM/dd HH:mm:ss"
                 };
-                if (double.Parse(re) == -1.0)
+                switch (double.Parse(re))
                 {
-                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                    DateTime now = DateTime.Now;
-                    TimeSpan ts = dt - now;
-                    while (ts.TotalMinutes < 0)
+                    case -1.0:
                     {
-                        dt = dt.AddDays(1.0);
-                        ts = dt - now;
+                        DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                        DateTime now = DateTime.Now;
+                        TimeSpan ts = dt - now;
+                        while (ts.TotalMinutes < 0)
+                        {
+                            dt = dt.AddDays(1.0);
+                            ts = dt - now;
+                        }
+                        ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                        Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
+                        break;
                     }
-                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
-                }
-                else if (double.Parse(re) == 0.0)
-                {
-                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                    DateTime now = DateTime.Now;
-                    TimeSpan ts = dt - now;
-                    while (ts.TotalMinutes < 0)
+                    case 0.0:
                     {
-                        dt = dt.AddDays(7.0);
-                        ts = dt - now;
+                        DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                        DateTime now = DateTime.Now;
+                        TimeSpan ts = dt - now;
+                        while (ts.TotalMinutes < 0)
+                        {
+                            dt = dt.AddDays(7.0);
+                            ts = dt - now;
+                        }
+                        ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                        Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
+                        break;
                     }
-                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
-                }
-                else if (double.Parse(re) == -2.0)
-                {
-
-                }
-                else
-                {
-                    DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                    DateTime now = DateTime.Now;
-                    TimeSpan ts = dt - now;
-                    while (ts.TotalMinutes < 0)
+                    case -2.0:
+                        break;
+                    default:
                     {
-                        dt = dt.AddDays(double.Parse(re));
-                        ts = dt - now;
+                        DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                        DateTime now = DateTime.Now;
+                        TimeSpan ts = dt - now;
+                        while (ts.TotalMinutes < 0)
+                        {
+                            dt = dt.AddDays(double.Parse(re));
+                            ts = dt - now;
+                        }
+                        ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                        Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
+                        break;
                     }
-                    ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
                 }
                 App.scheduleitems.Add(new Scheduleitem(i, na, ti, co, double.Parse(re)));
                 i++;
@@ -333,58 +317,27 @@ namespace hiro
             colorx.Content = Hiro_Utils.Get_Transalte("color");
             timex.Content = Hiro_Utils.Get_Transalte("time");
             proxyx.Content = Hiro_Utils.Get_Transalte("proxy");
-            if (hiro_home != null)
-                hiro_home.Update_Labels();
-            if (hiro_items != null)
-            {
-                hiro_items.Load_Translate();
-                hiro_items.Load_Position();
-            }
-            if (hiro_schedule != null)
-            {
-                hiro_schedule.Load_Translate();
-                hiro_schedule.Load_Position();
-            }
-            if (hiro_config != null)
-            {
-                hiro_config.Load_Translate();
-                hiro_config.Load_Position();
-            }
-            if (hiro_help != null)
-            {
-                hiro_help.Load_Translate();
-                hiro_help.Load_Position();
-            }
-            if (hiro_about != null)
-            {
-                hiro_about.Load_Translate();
-                hiro_about.Load_Position();
-            }
-            if (hiro_newitem != null)
-            {
-                hiro_newitem.Load_Translate();
-                hiro_newitem.Load_Position();
-            }
-            if (hiro_newschedule != null)
-            {
-                hiro_newschedule.Load_Translate();
-                hiro_newschedule.Load_Position();
-            }
-            if (hiro_time != null)
-            {
-                hiro_time.Load_Translate();
-                hiro_time.Load_Position();
-            }
-            if (hiro_color != null)
-            {
-                hiro_color.Load_Translate();
-                hiro_color.Load_Position();
-            }
-            if (hiro_proxy != null)
-            {
-                hiro_proxy.Load_Translate();
-                hiro_proxy.Load_Position();
-            }
+            hiro_home?.Update_Labels();
+            hiro_items?.Load_Translate();
+            hiro_items?.Load_Position();
+            hiro_schedule?.Load_Translate();
+            hiro_schedule?.Load_Position();
+            hiro_config?.Load_Translate();
+            hiro_config?.Load_Position();
+            hiro_help?.Load_Translate();
+            hiro_help?.Load_Position();
+            hiro_about?.Load_Translate();
+            hiro_about?.Load_Position();
+            hiro_newitem?.Load_Translate();
+            hiro_newitem?.Load_Position();
+            hiro_newschedule?.Load_Translate();
+            hiro_newschedule?.Load_Position();
+            hiro_time?.Load_Translate();
+            hiro_time?.Load_Position();
+            hiro_color?.Load_Translate();
+            hiro_color?.Load_Position();
+            hiro_proxy?.Load_Translate();
+            hiro_proxy?.Load_Position();
         }
 
         public void Load_Labels(bool reload = true)
@@ -457,14 +410,9 @@ namespace hiro
             }
             else
             {
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Min", "1").Equals("1"))
-                {
-                    Hiro_Utils.RunExe("hide()");
-                }
-                else
-                {
-                    Hiro_Utils.RunExe("exit()");
-                }
+                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Min", "1").Equals("1")
+                    ? "hide()"
+                    : "exit()");
             }
         }
 
@@ -476,19 +424,18 @@ namespace hiro
         public void Set_Home_Labels(string val)
         {
             val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Transalte(val).Replace("%u", App.EnvironmentUsername) : Hiro_Utils.Get_Transalte(val + "cus").Replace("%u", App.Username);
-            if (current is Hiro_Home hh)
-            {
-                if (!hh.Hello.Text.Equals(val))
-                    hh.Hello.Text = val;
-                val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Transalte("copyright")));
-                if (!hh.Copyright.Text.Equals(val))
-                    hh.Copyright.Text = val;
-            }
+            if (current is not Hiro_Home hh)
+                return;
+            if (!hh.Hello.Text.Equals(val))
+                hh.Hello.Text = val;
+            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Transalte("copyright")));
+            if (!hh.Copyright.Text.Equals(val))
+                hh.Copyright.Text = val;
         }
 
         public void Set_Label(Label label)
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Load_Labels();
             label.IsEnabled = false;
             if (label != newx && label != timex)
@@ -507,7 +454,7 @@ namespace hiro
             {
                 proxyx.Visibility = Visibility.Hidden;
             }
-            double duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
+            var duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 duration = duration > label.Height * 2 ? 2 * duration : 6 * duration;
@@ -529,24 +476,37 @@ namespace hiro
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddPowerAnimation(0, current, sb, 50, null);
-                    if (current is Hiro_Items his)
-                        his.HiHiro();
-                    if (current is Hiro_Schedule hs)
-                        hs.HiHiro();
-                    if (current is Hiro_Config hc)
-                        hc.HiHiro();
-                    if (current is Hiro_Help hlp)
-                        hlp.HiHiro();
-                    if (current is Hiro_NewItem hni)
-                        hni.HiHiro();
-                    if (current is Hiro_NewSchedule hns)
-                        hns.HiHiro();
-                    if (current is Hiro_Time ht)
-                        ht.HiHiro();
-                    if (current is Hiro_Color hcr)
-                        hcr.HiHiro();
-                    if (current is Hiro_Proxy hpy)
-                        hpy.HiHiro();
+                    switch (current)
+                    {
+                        case Hiro_Items his:
+                            his.HiHiro();
+                            break;
+                        case Hiro_Schedule hs:
+                            hs.HiHiro();
+                            break;
+                        case Hiro_Config hc:
+                            hc.HiHiro();
+                            break;
+                        case Hiro_Help hlp:
+                            hlp.HiHiro();
+                            break;
+                        case Hiro_NewItem hni:
+                            hni.HiHiro();
+                            break;
+                        case Hiro_NewSchedule hns:
+                            hns.HiHiro();
+                            break;
+                        case Hiro_Time ht:
+                            ht.HiHiro();
+                            break;
+                        case Hiro_Color hcr:
+                            hcr.HiHiro();
+                            break;
+                        case Hiro_Proxy hpy:
+                            hpy.HiHiro();
+                            break;
+                    }
+
                     sb.Begin();
                 }
                 label.IsEnabled = true;
@@ -554,8 +514,7 @@ namespace hiro
             }
             if (label == homex)
             {
-                if (hiro_home == null)
-                    hiro_home = new();
+                hiro_home ??= new();
                 current = hiro_home;
                 frame.Content = current;
             }
@@ -569,59 +528,51 @@ namespace hiro
                     {
                         App.Locked = false;
                         if (App.mn != null)
-                        {
-                            App.mn.versionlabel.Content = res.ApplicationVersion;
-                            App.mn.Set_Label(label);
-                        }
+                            App.mn.versionlabel.Content ??= res.ApplicationVersion;
+                        App.mn?.Set_Label(label);
                     };
                     fa.RunWorkerCompleted += delegate
                     {
-                        if (App.mn != null)
-                        {
-                            if (App.Locked)
-                                App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
-                            else
-                                App.mn.versionlabel.Content = res.ApplicationVersion;
-                            if (selected != null)
-                                App.mn.Set_Label(selected);
-                        }
+                        if (App.mn == null) 
+                            return;
+                        if (App.Locked)
+                            App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
+                        else
+                            App.mn.versionlabel.Content = res.ApplicationVersion;
+                        if (selected != null)
+                            App.mn.Set_Label(selected);
                     };
                     Hiro_Utils.Register(sc, fa, fa);
                     return;
                 }
                 if (label == itemx)
                 {
-                    if (hiro_items == null)
-                        hiro_items = new(this);
+                    hiro_items ??= new(this);
                     current = hiro_items;
                     frame.Content = current;
                 }
                 if (label == schedulex)
                 {
-                    if (hiro_schedule == null)
-                        hiro_schedule = new(this);
+                    hiro_schedule ??= new(this);
                     current = hiro_schedule;
                     frame.Content = current;
                 }
                 if (label == configx)
                 {
-                    if (hiro_config == null)
-                        hiro_config = new(this);
+                    hiro_config ??= new(this);
                     current = hiro_config;
                     frame.Content = current;
                 }
             }
             if (label == helpx)
             {
-                if (hiro_help == null)
-                    hiro_help = new();
+                hiro_help ??= new();
                 current = hiro_help;
                 frame.Content = current;
             }
             if (label == aboutx)
             {
-                if (hiro_about == null)
-                    hiro_about = new(this);
+                hiro_about ??= new(this);
                 current = hiro_about;
                 frame.Content = current;
             }
@@ -650,10 +601,7 @@ namespace hiro
             if (label == colorx)
             {
                 colorx.Visibility = Visibility.Visible;
-                if (hiro_color == null)
-                {
-                    hiro_color = new(this);
-                }
+                hiro_color ??= new(this);
                 hiro_color.color_picker.Color = App.AppAccentColor;
                 hiro_color.Unify_Color(true);
                 current = hiro_color;
@@ -662,10 +610,7 @@ namespace hiro
             if (label == proxyx)
             {
                 proxyx.Visibility = Visibility.Visible;
-                if (hiro_proxy == null)
-                {
-                    hiro_proxy = new(this);
-                }
+                hiro_proxy ??= new(this);
                 Hiro_Proxy hi = new(this);
                 current = hiro_proxy;
                 frame.Content = hiro_proxy;
@@ -730,7 +675,7 @@ namespace hiro
 
         private void Titlelabel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Thickness thickness = versionlabel.Margin;
+            var thickness = versionlabel.Margin;
             thickness.Left = titlelabel.Margin.Left + titlelabel.ActualWidth + 5;
             versionlabel.Margin = thickness;
         }
@@ -754,33 +699,42 @@ namespace hiro
             }   
             foreach (Window win in Application.Current.Windows)
             {
-                if (win is Hiro_Alarm a)
-                    a.Loadbgi(direction);
-                if (win is Hiro_Msg e)
-                    e.Loadbgi(direction);
-                if (win is Hiro_Sequence c)
-                    c.Loadbgi(direction);
-                if (win is Hiro_Download d)
-                    d.Loadbgi(direction);
-                if (win is Hiro_Web f)
-                    f.Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
-                if (win is Hiro_Finder g)
-                    g.Loadbgi(direction);
+                switch (win)
+                {
+                    case Hiro_Alarm a:
+                        a.Loadbgi(direction);
+                        break;
+                    case Hiro_Msg e:
+                        e.Loadbgi(direction);
+                        break;
+                    case Hiro_Sequence c:
+                        c.Loadbgi(direction);
+                        break;
+                    case Hiro_Download d:
+                        d.Loadbgi(direction);
+                        break;
+                    case Hiro_Web f:
+                        f.Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
+                        break;
+                    case Hiro_Finder g:
+                        g.Loadbgi(direction);
+                        break;
+                }
+
                 System.Windows.Forms.Application.DoEvents();
             }
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             System.ComponentModel.BackgroundWorker bw = new();
             bw.RunWorkerCompleted += delegate
             {
-                if (current is Hiro_Config hc)
-                {
+                if (current is not Hiro_Config hc) 
+                    return;
+                hc.blureff.IsEnabled = true;
+                hc.rbtn14.IsEnabled = true;
+                hc.rbtn15.IsEnabled = true;
+                hc.btn10.IsEnabled = true;
+                if (hc.rbtn15.IsChecked == true)
                     hc.blureff.IsEnabled = true;
-                    hc.rbtn14.IsEnabled = true;
-                    hc.rbtn15.IsEnabled = true;
-                    hc.btn10.IsEnabled = true;
-                    if (hc.rbtn15.IsChecked == true)
-                        hc.blureff.IsEnabled = true;
-                }
             };
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
             bflag = 0;
@@ -788,15 +742,14 @@ namespace hiro
 
         private void Schedulex_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (App.dflag)
+            if (!App.dflag) 
+                return;
+            DateTime dt = DateTime.Now.AddSeconds(5);
+            for (int i = 0; i < 1; i++)
             {
-                DateTime dt = DateTime.Now.AddSeconds(5);
-                for (int i = 0; i < 1; i++)
-                {
-                    dt = dt.AddSeconds(2);
-                    App.scheduleitems.Add(new Scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
+                dt = dt.AddSeconds(2);
+                App.scheduleitems.Add(new Scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
 
-                }
             }
 
         }
@@ -839,7 +792,7 @@ namespace hiro
 
         internal void Hiro_We_Extend()
         {
-            Thickness th = extend_background.Margin;
+            var th = extend_background.Margin;
             th.Left = 0;
             th.Top = 0;
             extend_background.Margin = th;
@@ -871,10 +824,7 @@ namespace hiro
             }
             else
             {
-                if (App.Locked)
-                    Hiro_Utils.RunExe("auth()");
-                else
-                    Hiro_Utils.RunExe("lock()");
+                Hiro_Utils.RunExe(App.Locked ? "auth()" : "lock()");
             }
         }
 
@@ -888,13 +838,12 @@ namespace hiro
 
         private void Frame_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            if (frame.CanGoBack)
+            if (!frame.CanGoBack) 
+                return;
+            var rb = frame.RemoveBackEntry();
+            while (rb != null)
             {
-                var rb = frame.RemoveBackEntry();
-                while (rb != null)
-                {
-                    rb = frame.RemoveBackEntry();
-                }
+                rb = frame.RemoveBackEntry();
             }
         }
 

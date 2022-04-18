@@ -37,11 +37,11 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, btn5, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn6, sb, 50, null);
             }
-            if (animation)
-            {
-                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
-                sb.Begin();
-            }
+
+            if (!animation) 
+                return;
+            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            sb.Begin();
         }
 
         private void Hiro_Initialize()
@@ -91,21 +91,19 @@ namespace hiro
 
         private void Btn1_Click(object sender, RoutedEventArgs e)
         {
-            if (Hiro_Main != null)
-            {
-                if (Hiro_Main.hiro_newitem == null)
-                    Hiro_Main.hiro_newitem = new(Hiro_Main);
-                Hiro_Main.hiro_newitem.Load_ComboBox();
-                Hiro_Main.hiro_newitem.ntn9.Visibility = Visibility.Hidden;
-                Hiro_Main.hiro_newitem.tb7.Text = "";
-                Hiro_Main.hiro_newitem.tb8.Text = "";
-                Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
-                Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
-                Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("new");
-                Hiro_Main.current = Hiro_Main.hiro_newitem;
-                Hiro_Main.Set_Label(Hiro_Main.newx);
-            }
-            
+            if (Hiro_Main == null) 
+                return;
+            Hiro_Main.hiro_newitem ??= new(Hiro_Main);
+            Hiro_Main.hiro_newitem.Load_ComboBox();
+            Hiro_Main.hiro_newitem.ntn9.Visibility = Visibility.Hidden;
+            Hiro_Main.hiro_newitem.tb7.Text = "";
+            Hiro_Main.hiro_newitem.tb8.Text = "";
+            Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
+            Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("new");
+            Hiro_Main.current = Hiro_Main.hiro_newitem;
+            Hiro_Main.Set_Label(Hiro_Main.newx);
+
         }
 
         private void Btn2_Click(object sender, RoutedEventArgs e)
@@ -212,41 +210,40 @@ namespace hiro
 
         private void Btn6_Click(object sender, RoutedEventArgs e)
         {
-            if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count && Hiro_Main != null)
+            if (App.cmditems.Count == 0 || dgi.SelectedIndex <= -1 || dgi.SelectedIndex >= App.cmditems.Count ||
+                Hiro_Main == null) 
+                return;
+            Hiro_Main.hiro_newitem ??= new(Hiro_Main);
+            Hiro_Main.hiro_newitem.index = dgi.SelectedIndex;
+            Hiro_Main.hiro_newitem.Load_ComboBox();
+            Hiro_Main.hiro_newitem.ntn9.Visibility = Visibility.Visible;
+            Hiro_Main.hiro_newitem.tb7.Text = App.cmditems[dgi.SelectedIndex].Name;
+            Hiro_Main.hiro_newitem.tb8.Text = App.cmditems[dgi.SelectedIndex].Command;
+            var key = App.cmditems[dgi.SelectedIndex].HotKey;
+            try
             {
-                if (Hiro_Main.hiro_newitem == null)
-                    Hiro_Main.hiro_newitem = new(Hiro_Main);
-                Hiro_Main.hiro_newitem.index = dgi.SelectedIndex;
-                Hiro_Main.hiro_newitem.Load_ComboBox();
-                Hiro_Main.hiro_newitem.ntn9.Visibility = Visibility.Visible;
-                Hiro_Main.hiro_newitem.tb7.Text = App.cmditems[dgi.SelectedIndex].Name;
-                Hiro_Main.hiro_newitem.tb8.Text = App.cmditems[dgi.SelectedIndex].Command;
-                var key = App.cmditems[dgi.SelectedIndex].HotKey;
-                try
+                if (key.IndexOf(",") != -1)
                 {
-                    if (key.IndexOf(",") != -1)
-                    {
-                        var mo = int.Parse(key[..key.IndexOf(",")]);
-                        var vkey = int.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
-                        Hiro_Main.hiro_newitem.modibox.SelectedIndex = Hiro_Utils.Index_Modifier(false, mo);
-                        Hiro_Main.hiro_newitem.keybox.SelectedIndex = Hiro_Utils.Index_vKey(false, vkey);
-                    }
-                    else
-                    {
-                        Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
-                        Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
-                    }
+                    var mo = int.Parse(key[..key.IndexOf(",")]);
+                    var vkey = int.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
+                    Hiro_Main.hiro_newitem.modibox.SelectedIndex = Hiro_Utils.Index_Modifier(false, mo);
+                    Hiro_Main.hiro_newitem.keybox.SelectedIndex = Hiro_Utils.Index_vKey(false, vkey);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                     Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
                     Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
                 }
-                Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("mod");
-                Hiro_Main.current = Hiro_Main.hiro_newitem;
-                Hiro_Main.Set_Label(Hiro_Main.newx);                
             }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
+                Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
+            }
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("mod");
+            Hiro_Main.current = Hiro_Main.hiro_newitem;
+            Hiro_Main.Set_Label(Hiro_Main.newx);
         }
 
         private void Btn4_Click(object sender, RoutedEventArgs e)
