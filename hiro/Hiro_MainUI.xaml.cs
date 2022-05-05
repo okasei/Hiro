@@ -528,19 +528,15 @@ namespace hiro
                     {
                         App.Locked = false;
                         if (App.mn != null)
-                            App.mn.versionlabel.Content ??= res.ApplicationVersion;
+                            App.mn.versionlabel.Content = res.ApplicationVersion;
                         App.mn?.Set_Label(label);
                     };
                     fa.RunWorkerCompleted += delegate
                     {
                         if (App.mn == null) 
                             return;
-                        if (App.Locked)
-                            App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
-                        else
-                            App.mn.versionlabel.Content = res.ApplicationVersion;
-                        if (selected != null)
-                            App.mn.Set_Label(selected);
+                        App.mn.versionlabel.Content = res.ApplicationVersion + (App.Locked ? " 🔒" : "");
+                        App.mn.Set_Label(selected ?? homex);
                     };
                     Hiro_Utils.Register(sc, fa, fa);
                     return;

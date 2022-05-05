@@ -65,7 +65,7 @@ namespace hiro
                 return;
             }
             InitializeInnerParameters();
-            Initialize_Notiy_Recall();
+            Initialize_Notify_Recall();
             InitializeMethod();
             InitializeStartParameters(e);
             Build_Socket();
@@ -233,7 +233,7 @@ namespace hiro
             Hiro_Utils.LogtoFile("[NOTIFICATION]" + i.msg);
         }
 
-        private static void Initialize_Notiy_Recall()
+        private static void Initialize_Notify_Recall()
         {
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.OnActivated += toastArgs =>
             {

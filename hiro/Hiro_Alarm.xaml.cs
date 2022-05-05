@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -31,15 +32,69 @@ namespace hiro
             {
                 HiHiro();
             };
-            ala_title.Content = CustomedTitle ?? Hiro_Utils.Get_Transalte("alarmtitle");
+            if (CustomedTitle != null)
+            {
+                if (CustomedTitle.ToLower().StartsWith("http://") || CustomedTitle.ToLower().StartsWith("https://"))
+                {
+                    ala_title.Content = Hiro_Utils.Get_Transalte("msgload");
+                    BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        CustomedTitle = Hiro_Utils.GetWebContent(CustomedTitle);
+                    };
+                    bw.RunWorkerAsync();
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        ala_title.Content = CustomedTitle;
+                        Title = ala_title.Content + " - " + App.AppTitle;
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        {
+                            Storyboard sb = new();
+                            Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
+                            sb.Begin();
+                        }
+                    };
+                }
+                else
+                    ala_title.Content = CustomedTitle;
+            }
+            else
+                ala_title.Content = Hiro_Utils.Get_Transalte("alarmtitle");
             Title = ala_title.Content + " - " + App.AppTitle;
             if (CustomedContnet != null)
-                sv.Content = CustomedContnet;
+            {
+                if (CustomedContnet.ToLower().StartsWith("http://") || CustomedContnet.ToLower().StartsWith("https://"))
+                {
+                    sv.Content = Hiro_Utils.Get_Transalte("msgload");
+                    BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        CustomedContnet = Hiro_Utils.GetWebContent(CustomedContnet);
+                    };
+                    bw.RunWorkerAsync();
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        CustomedContnet = CustomedContnet.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+                        sv.Content = CustomedContnet;
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        {
+                            Storyboard sb = new();
+                            Hiro_Utils.AddPowerAnimation(1, content, sb, -50, null);
+                            sb.Begin();
+                        }
+                    };
+                }
+                else
+                {
+                    CustomedContnet = CustomedContnet.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+                    sv.Content = CustomedContnet;
+                }
+            }
             id = iid;
             Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
             if (!App.dflag) 
                 return;
-            Hiro_Utils.LogtoFile("[ALARM]Title: " + ala_title.Content);
+            Hiro_Utils.LogtoFile("[ALARM]Title: " + sv.Content);
             var con = content.Content?.ToString();
             if (con != null)
                 Hiro_Utils.LogtoFile("[ALARM]Content: " + con.Replace(Environment.NewLine, "\\n"));

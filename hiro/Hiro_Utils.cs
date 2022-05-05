@@ -161,34 +161,6 @@ namespace hiro
             ti = c;
             co = d;
         }
-        public Scheduleitem(Scheduleitem c)
-        {
-            if (c == null)
-            {
-                Time = "19000101000000";
-                Id = -1;
-                Name = string.Empty;
-                Command = string.Empty;
-                re = -2.0;
-                ti = "19000101000000";
-                i = -1;
-                na = string.Empty;
-                co = string.Empty;
-            }
-            else
-            {
-                Time = c.Time;
-                Id = c.Id;
-                Name = c.Name;
-                Command = c.Command;
-                re = c.re;
-                ti = c.Time;
-                i = c.Id;
-                na = c.Name;
-                co = c.Command;
-            }
-        }
-
     }
     #endregion
 
@@ -302,13 +274,13 @@ namespace hiro
         public override string ToString()
         {
             var ret = "ID: ";
-            var re = appID == null ? "null" : appID;
+            var re = appID ?? "null";
             ret = ret + re + ", Package: ";
-            re = appPackage == null ? "null" : appPackage;
+            re = appPackage ?? "null";
             ret = ret + re + ", Name: ";
-            re = appName == null ? "null" : appName;
+            re = appName != null ? appName : "null";
             ret = ret + re + ", Msg: ";
-            re = msg == null ? "null" : msg;
+            re = msg ?? "null";
             ret += re;
             return ret;
         }
@@ -344,7 +316,7 @@ namespace hiro
             {
                 byte[] buffer = new byte[1024];
                 int ret = GetPrivateProfileString(Encoding.GetEncoding("utf-8").GetBytes(Section), Encoding.GetEncoding("utf-8").GetBytes(Key), Encoding.GetEncoding("utf-8").GetBytes(defaultText), buffer, 1024, iniFilePath);
-                return Encoding.GetEncoding("utf-8").GetString(buffer, 0, ret).Trim();
+                return DeleteUnVisibleChar(Encoding.GetEncoding("utf-8").GetString(buffer, 0, ret)).Trim();
             }
             else
             {
@@ -420,8 +392,7 @@ namespace hiro
         }
         public static void Set_Bgimage(System.Windows.Controls.Control sender, string? strFileName = null)
         {
-            if (strFileName == null)
-                strFileName = Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
+            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
             if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !System.IO.File.Exists(strFileName))
             {
                 if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
@@ -719,7 +690,7 @@ namespace hiro
             var path = Path_Prepare_EX(Path_Prepare(RunPath));
             try
             {
-                System.Collections.ObjectModel.ObservableCollection<string> parameter = HiroParse(path);
+                var parameter = HiroParse(path);
                 if (System.IO.File.Exists(path) && path.ToLower().EndsWith(".hiro"))
                     path = "seq(" + path + ")";
                 if (path.ToLower().StartsWith("hiroad("))
@@ -787,19 +758,19 @@ namespace hiro
                 if (path.ToLower().StartsWith("debug("))
                 {
                     source = Get_Transalte("debug");
-                    Hiro_Utils.LogtoFile(parameter.Count.ToString());
-                    if (parameter.Count > 0)
+                    if (!path.ToLower().StartsWith("debug()"))
                     {
-                        path = "notify(" + parameter[0] + ")";
+                        RunExe("notify(" + parameter[0] + ")", source);
                     }
                     else
                     {
                         App.dflag = !App.dflag;
                         if (App.dflag)
-                            path = "notify(" + Get_Transalte("debugon") + ",2)";
+                            RunExe("notify(" + Get_Transalte("debugon") + ",2)", source);
                         else
-                            path = "notify(" + Get_Transalte("debugoff") + ",2)";
+                            RunExe("notify(" + Get_Transalte("debugoff") + ",2)", source);
                     }
+                    return;
                 }
                 //alarm(title,url/text) - Reverse
                 if (path.ToLower().StartsWith("alarm("))
@@ -808,38 +779,38 @@ namespace hiro
                     path = path[0..^1];
                     if (path.IndexOf(",") != -1)
                     {
-                        var pa = path.Substring(0, path.IndexOf(","));
-                        path = path.Substring(pa.Length + 1);
-                        if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
-                        {
-                            BackgroundWorker bw = new();
-                            bw.DoWork += delegate
-                            {
-                                pa = GetWebContent(pa);
-                            };
-                            bw.RunWorkerCompleted += delegate
-                            {
-                                RunExe("alarm(" + pa + "," + path + ")");
-                            };
-                            bw.RunWorkerAsync();
-                            return;
-                        }
-                        if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
-                        {
-                            BackgroundWorker bw = new();
-                            bw.DoWork += delegate
-                            {
-                                path = GetWebContent(path);
-                            };
-                            bw.RunWorkerCompleted += delegate
-                            {
-                                RunExe("alarm(" + pa + "," + path.Replace("<br>", "\\n") + ")");
-                            };
-                            bw.RunWorkerAsync();
-                            return;
-                        }
+                        var pa = path[..path.IndexOf(",")];
+                        path = path[(pa.Length + 1)..];
                         if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
                         {
+                            if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
+                            {
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    pa = GetWebContent(pa);
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    RunExe("alarm(" + pa + "," + path + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
+                            }
+                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
+                            {
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    path = GetWebContent(path);
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    RunExe("alarm(" + pa + "," + path.Replace("<br>", "\\n") + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
+                            }
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                                 .AddArgument("Launch", App.AppTitle)
                                 .AddText(pa)
@@ -850,28 +821,28 @@ namespace hiro
                         }
                         else
                         {
-                            Hiro_Alarm ala = new(-1, CustomedTitle: pa, CustomedContnet: Hiro_Utils.Path_Prepare_EX(path.Replace("\\n", Environment.NewLine)), OneButtonOnly: 1);
+                            Hiro_Alarm ala = new(-1, CustomedTitle: pa, CustomedContnet: path, OneButtonOnly: 1);
                             ala.Show();
                         }
                     }
                     else
                     {
-                        if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
-                        {
-                            BackgroundWorker bw = new();
-                            bw.DoWork += delegate
-                            {
-                                path = GetWebContent(path);
-                            };
-                            bw.RunWorkerCompleted += delegate
-                            {
-                                RunExe("alarm(" + path.Replace("<br>", "\\n") + ")");
-                            };
-                            bw.RunWorkerAsync();
-                            return;
-                        }
                         if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
                         {
+                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
+                            {
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    path = GetWebContent(path);
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    RunExe("alarm(" + path.Replace("<br>", "\\n") + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
+                            }
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                                 .AddText(Get_Transalte("alarmtitle"))
                                 .AddText(path.Replace("\\n", Environment.NewLine))
@@ -881,8 +852,8 @@ namespace hiro
                         }
                         else
                         {
-                            Hiro_Alarm ala = new(-1, CustomedContnet: Hiro_Utils.Path_Prepare_EX(path.Replace("\\n", Environment.NewLine)), OneButtonOnly: 1);
-                            ala.Show();
+                                Hiro_Alarm ala = new(-1, CustomedContnet: path, OneButtonOnly: 1);
+                                ala.Show(); 
                         }
 
                     }
@@ -919,7 +890,7 @@ namespace hiro
                     if (!System.IO.File.Exists(parameter[0]))
                     {
                         System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
-                        request.Headers.Add("UserAgent", "Rex/2.1.0 (Hiro Inside)");
+                        request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/" + res.ApplicationVersion);
                         request.Content = new System.Net.Http.StringContent("");
                         request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
                         BackgroundWorker bw = new();
@@ -1157,7 +1128,7 @@ namespace hiro
                                 LogtoFile("[ERROR]" + ex.Message);
                             }
                         else
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
+                            LogtoFile("[WARNING]" + Get_Transalte("filenotexist"));
                         return;
                     }
                     try
@@ -1173,7 +1144,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("key("))
                 {
-                    System.Collections.ObjectModel.ObservableCollection<byte> modi = new();
+                    List<byte> modi = new();
                     int pathi = int.Parse(parameter[0]);
                     if (pathi >= 8)
                     {
@@ -1501,15 +1472,13 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("editor()"))
                 {
-                    if (App.ed == null)
-                        App.ed = new Hiro_Editor();
+                    App.ed ??= new Hiro_Editor();
                     App.ed.Show();
                     return;
                 }
                 if (path.ToLower().StartsWith("lockscr()"))
                 {
-                    if (App.ls == null)
-                        App.ls = new();
+                    App.ls ??= new();
                     App.ls.Show();
                     return;
                 }
@@ -1844,34 +1813,14 @@ namespace hiro
             return null;
         }
 
-        public static System.Collections.ObjectModel.ObservableCollection<string> HiroParse(string val)
+        public static List<string> HiroParse(string val)
         {
-            System.Collections.ObjectModel.ObservableCollection<string> res = new();
-            int startIndex = 0, endIndex = val.Length, currentIndex = 0;
-            string temp = "";
-            if (!val.Contains("(", StringComparison.CurrentCulture))
-                return res;
-            val = val.Substring(val.IndexOf("(") + 1);
+            if (!val.Contains('(', StringComparison.CurrentCulture))
+                return new List<string>();
+            val = val.Substring(startIndex: val.IndexOf("(") + 1);
             if (val.EndsWith(")"))
-                val = val.Substring(0, val.Length - 1);
-            while(startIndex < endIndex)
-            {
-                currentIndex = val.IndexOf(",", startIndex, StringComparison.Ordinal);
-                if (currentIndex == -1)
-                {
-                    temp = val.Substring(startIndex);
-                    startIndex = endIndex;
-                }
-                else
-                {
-                    temp = val.Substring(startIndex, currentIndex - startIndex);
-                    startIndex = currentIndex + 1;
-                }
-                if (temp.Length == 0)
-                    return res;
-                res.Add(temp);
-            }
-            return res;
+                val = val[0..^1];
+            return new List<string>(val.Split(','));
         }
 
         [DllImport("user32.dll")]
@@ -2261,8 +2210,7 @@ namespace hiro
         #region 添加double动画
         public static System.Windows.Media.Animation.Storyboard AddDoubleAnimaton(double? to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, double? from = null)
         {
-            if (sb == null)
-                sb = new();
+            sb ??= new();
             System.Windows.Media.Animation.DoubleAnimation da = new();
             if (from != null)
                 da.From = from;
@@ -2285,8 +2233,7 @@ namespace hiro
         #region 添加thickness动画
         public static System.Windows.Media.Animation.Storyboard AddThicknessAnimaton(System.Windows.Thickness? to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Thickness? from = null,double DecelerationRatio = 0.9)
         {
-            if (sb == null)
-                sb = new();
+            sb ??= new();
             System.Windows.Media.Animation.ThicknessAnimation da = new();
             if (from != null)
                 da.From = from;
@@ -2309,8 +2256,7 @@ namespace hiro
         #region 添加Color动画
         public static System.Windows.Media.Animation.Storyboard AddColorAnimaton(System.Windows.Media.Color to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Media.Color? from = null)
         {
-            if (sb == null)
-                sb = new();
+            sb ??= new();
             System.Windows.Media.Animation.ColorAnimation da;
             if (from != null)
                 da = new((System.Windows.Media.Color)from, to, TimeSpan.FromMilliseconds(mstime));
@@ -2332,10 +2278,9 @@ namespace hiro
         #region 增强动效
         public static System.Windows.Media.Animation.Storyboard AddPowerAnimation(int Direction, System.Windows.FrameworkElement value, System.Windows.Media.Animation.Storyboard? sb, double? from = null, double? to = null)
         {
-            if (sb == null)
-                sb = new();
-            System.Windows.Thickness th1 = value.Margin;
-            System.Windows.Thickness th2 = value.Margin;
+            sb ??= new();
+            var th1 = value.Margin;
+            var th2 = value.Margin;
             if (to != null && from != null)
             {
                 if (Direction == 0)
@@ -2698,8 +2643,7 @@ namespace hiro
                         if (!System.IO.File.Exists(strName))//判断要自动运行的应用程序文件是否存在
                             return;
                         Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//检索指定的子项
-                        if (registry == null)//若指定的子项不存在
-                            registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
+                        registry ??= Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                         registry.SetValue("Hiro_Autostart", strName + " silent");//设置该子项的新的“键值对”
                         Write_Ini(App.dconfig, "Config", "AutoRun", "1");
                         LogtoFile("[HIROWEGO]Enable Autorun");
@@ -2720,9 +2664,7 @@ namespace hiro
                         return;
                     Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//读取指定的子项
                     if (registry == null)//若指定的子项不存在
-                    {
                         return;
-                    }
                     registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                     registry.DeleteValue("Hiro_Autostart", false);//删除指定“键名称”的键/值对
                     Write_Ini(App.dconfig, "Config", "AutoRun", "0");
