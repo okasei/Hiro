@@ -10,9 +10,9 @@
     <Copyright>Copyright© 2022 N+ Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.2.2</FileVersion>
-    <AssemblyVersion>2.2.2</AssemblyVersion>
-    <Version>2.2.2</Version>
+    <FileVersion>2.2.4</FileVersion>
+    <AssemblyVersion>2.2.4</AssemblyVersion>
+    <Version>2.2.4</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>

@@ -27,6 +27,7 @@ namespace hiro
         internal Hiro_Time? hiro_time = null;
         internal Hiro_Color? hiro_color = null;
         internal Hiro_Proxy? hiro_proxy = null;
+        internal Hiro_Chat? hiro_chat = null;
 
         public Hiro_MainUI()
         {
@@ -140,7 +141,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(colorx, "color", location: false);
             Hiro_Utils.Set_Control_Location(timex, "time", location: false);
             Hiro_Utils.Set_Control_Location(proxyx, "proxy", location: false);
-            Hiro_Utils.Set_Control_Location(colorx, "color", location: false);
+            Hiro_Utils.Set_Control_Location(chatx, "chat", location: false);
             Thickness th2 = extended.Margin;
             th2.Left = Width / 2 - Height / 2;
             th2.Top = 0;
@@ -317,6 +318,7 @@ namespace hiro
             colorx.Content = Hiro_Utils.Get_Transalte("color");
             timex.Content = Hiro_Utils.Get_Transalte("time");
             proxyx.Content = Hiro_Utils.Get_Transalte("proxy");
+            chatx.Content = Hiro_Utils.Get_Transalte("chat");
             hiro_home?.Update_Labels();
             hiro_items?.Load_Translate();
             hiro_items?.Load_Position();
@@ -338,6 +340,8 @@ namespace hiro
             hiro_color?.Load_Position();
             hiro_proxy?.Load_Translate();
             hiro_proxy?.Load_Position();
+            hiro_chat?.Load_Translate();
+            hiro_chat?.Load_Position();
         }
 
         public void Load_Labels(bool reload = true)
@@ -354,6 +358,7 @@ namespace hiro
                 colorx.Background = new SolidColorBrush(Colors.Transparent);
                 timex.Background = new SolidColorBrush(Colors.Transparent);
                 proxyx.Background = new SolidColorBrush(Colors.Transparent);
+                chatx.Background = new SolidColorBrush(Colors.Transparent);
                 homex.IsEnabled = true;
                 itemx.IsEnabled = true;
                 schedulex.IsEnabled = true;
@@ -364,6 +369,7 @@ namespace hiro
                 colorx.IsEnabled = true;
                 timex.IsEnabled = true;
                 proxyx.IsEnabled = true;
+                chatx.IsEnabled = true;
 
             }
             homex.Foreground = Foreground;
@@ -376,6 +382,7 @@ namespace hiro
             colorx.Foreground = Foreground;
             timex.Foreground = Foreground;
             proxyx.Foreground = Foreground;
+            chatx.Foreground = Foreground;
         }
         #endregion
 
@@ -454,6 +461,10 @@ namespace hiro
             {
                 proxyx.Visibility = Visibility.Hidden;
             }
+            if (label != chatx)
+            {
+                chatx.Visibility = Visibility.Hidden;
+            }
             var duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
@@ -505,6 +516,9 @@ namespace hiro
                         case Hiro_Proxy hpy:
                             hpy.HiHiro();
                             break;
+                        case Hiro_Chat hct:
+                            hct.HiHiro();
+                            break;
                     }
 
                     sb.Begin();
@@ -518,7 +532,7 @@ namespace hiro
                 current = hiro_home;
                 frame.Content = current;
             }
-            if (label == itemx || label == schedulex || label == configx)
+            if (label == itemx || label == schedulex || label == configx || label == chatx)
             {
                 if (App.Locked)
                 {
@@ -562,7 +576,7 @@ namespace hiro
             }
             if (label == helpx)
             {
-                hiro_help ??= new();
+                hiro_help ??= new(this);
                 current = hiro_help;
                 frame.Content = current;
             }
@@ -607,9 +621,15 @@ namespace hiro
             {
                 proxyx.Visibility = Visibility.Visible;
                 hiro_proxy ??= new(this);
-                Hiro_Proxy hi = new(this);
                 current = hiro_proxy;
                 frame.Content = hiro_proxy;
+            }
+            if (label == chatx)
+            {
+                chatx.Visibility = Visibility.Visible;
+                hiro_chat ??= new(this);
+                current = hiro_chat;
+                frame.Content = hiro_chat;
             }
             selected = label;
             label.IsEnabled = true;
@@ -846,6 +866,11 @@ namespace hiro
         private void Proxyx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(proxyx);
+        }
+
+        private void chatx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Set_Label(chatx);
         }
     }
 }

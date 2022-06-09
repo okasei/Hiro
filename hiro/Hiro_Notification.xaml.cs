@@ -186,7 +186,7 @@ namespace hiro
                 flag[1] = flag[2];
             }
         }
-        private void Load_Noti_Position()
+        private void Load_Noti_Position(bool first = false)
         {
             Size msize = new();
             Hiro_Utils.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
@@ -194,19 +194,26 @@ namespace hiro
             notinfo.Width = msize.Width;
             th.Left = ActualWidth / 2 - msize.Width / 2;
             if (th.Left < 0)
-            {
-                animation[1] = true;
-                th.Left = Width - msize.Width;
-                double time = (notinfo.Content != null) ? ((string)notinfo.Content).Length * 50 : 3000;
-                sb = new();
-                sb = Hiro_Utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom), 0);
-                sb.Completed += delegate
+            {  
+                if (!first)
                 {
-                    sb = null;
-                    notinfo.Margin = th;
-                    animation[1] = false;
-                };
-                sb.Begin();
+                    th.Left = Width - msize.Width;
+                    animation[1] = true;
+                    double time = (notinfo.Content != null) ? ((string)notinfo.Content).Length * 50 : 3000;
+                    sb = new();
+                    sb = Hiro_Utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom), 0);
+                    sb.Completed += delegate
+                    {
+                        sb = null;
+                        notinfo.Margin = th;
+                        animation[1] = false;
+                    };
+                    sb.Begin();
+                }
+                else
+                {
+                    notinfo.Margin = new(Width, th.Top, th.Right, th.Bottom);
+                }
             }
             else
             {
@@ -227,7 +234,7 @@ namespace hiro
         private void Noti_Loaded(object sender, RoutedEventArgs e)
         {
             notinfo.Content = App.noticeitems[0].msg.IndexOf("\\n") != -1 ? App.noticeitems[0].msg[..App.noticeitems[0].msg.IndexOf("\\n")] : App.noticeitems[0].msg;
-            Load_Noti_Position();
+            Load_Noti_Position(true);
         }
 
         private void Noti_MouseDoubleClick(object sender, MouseButtonEventArgs e)

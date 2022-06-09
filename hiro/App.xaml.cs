@@ -329,7 +329,8 @@ namespace hiro
                         lang = "zh-CN";
                     }
                 }
-            }   
+            }
+            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(lang);
             Hiro_Utils.LogtoFile("[HIROWEGO]Current language: " + lang);
             LangFilePath = CurrentDirectory + "\\system\\lang\\" + lang + ".hlp";
             AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomNick", "1").Equals("2") ? Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro") : res.ApplicationName;

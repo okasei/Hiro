@@ -59,7 +59,6 @@ namespace hiro
                 if (saveflag != 0 || status.Content.Equals(StatusText)) 
                     return;
                 status.Content = StatusText;
-                Hiro_Utils.LogtoFile("2");
                 Update_Animation();
             };
             timer.Start();

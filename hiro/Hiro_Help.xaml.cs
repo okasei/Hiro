@@ -12,9 +12,11 @@ namespace hiro
     public partial class Hiro_Help : Page
     {
         internal System.ComponentModel.BackgroundWorker? whatsbw = null;
-        public Hiro_Help()
+        private Hiro_MainUI? Hiro_Main = null;
+        public Hiro_Help(Hiro_MainUI? Parent)
         {
             InitializeComponent();
+            Hiro_Main = Parent;
             Hiro_Initialize();
             Loaded += delegate
             {
@@ -69,8 +71,7 @@ namespace hiro
         private void Btn8_Click(object sender, RoutedEventArgs e)
         {
             btn8.IsEnabled = false;
-            Hiro_Utils.RunExe("mailto:xboriver@live.cn");
-            Hiro_Utils.Delay(200);
+            Hiro_Main?.Set_Label(Hiro_Main.chatx);
             btn8.IsEnabled = true;
         }
 

@@ -760,7 +760,7 @@ namespace hiro
                     source = Get_Transalte("debug");
                     if (!path.ToLower().StartsWith("debug()"))
                     {
-                        RunExe("notify(" + parameter[0] + ")", source);
+                        RunExe("notify(" + path + ",2)", source);
                     }
                     else
                     {
@@ -913,7 +913,7 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                                LogtoFile("[ERROR]" + ex.Message);
+                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                             }
                         };
                         bw.RunWorkerCompleted += delegate
@@ -1096,7 +1096,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                        LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -1125,10 +1125,10 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]" + ex.Message);
+                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                             }
                         else
-                            LogtoFile("[WARNING]" + Get_Transalte("filenotexist"));
+                            LogtoFile("[WARNING]Warning at " + path + " | Details: " + Get_Transalte("filenotexist"));
                         return;
                     }
                     try
@@ -1138,7 +1138,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -1363,7 +1363,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                        LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     if (App.mn == null)
                         RunExe("exit()");
@@ -1380,7 +1380,7 @@ namespace hiro
                         catch (Exception ex)
                         {
                             App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                            LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                         }
                         return;
                     }
@@ -1392,7 +1392,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -1408,10 +1408,13 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]" + ex.Message);
+                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                             }
                         else
+                        {
                             App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
+                            LogtoFile("[ERROR]Error at " + path + " | Details: " + Get_Transalte("filenotexist"));
+                        }
                         return;
                     }
                     try
@@ -1422,7 +1425,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -1546,7 +1549,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -1627,7 +1630,6 @@ namespace hiro
                     {
                         if (parameter.Count > 2)
                         {
-                            LogtoFile(parameter[2]);
                             var para = parameter[2].ToLower();
                             if (para.IndexOf("s") != -1)
                                 RunExe(parameter[1]);
@@ -1703,7 +1705,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]" + ex.Message);
+                    LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                 }
                 if (App.mn == null)
                     RunExe("exit()");
@@ -1711,7 +1713,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]" + ex.Message);
+                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                 App.Notify(new noticeitem(Get_Transalte("syntax"), 2, source));
                 return;
             }
@@ -1985,7 +1987,7 @@ namespace hiro
         private static void CopyDirectory(string srcdir, string desdir)
         {
             if (srcdir.EndsWith("\\"))
-                srcdir = srcdir.Substring(0, srcdir.Length - 1);
+                srcdir = srcdir[0..^1];
             if (desdir.ToLower().StartsWith(srcdir.ToLower()))
             {
                 App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
@@ -1994,7 +1996,7 @@ namespace hiro
             string desfolderdir = desdir;
             if (!desfolderdir.EndsWith("\\"))
             {
-                desfolderdir = desfolderdir + "\\";
+                desfolderdir += "\\";
             }
             CreateFolder(desfolderdir);
             string[] filenames = System.IO.Directory.GetFileSystemEntries(srcdir);

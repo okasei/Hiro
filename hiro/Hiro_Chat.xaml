@@ -1,0 +1,22 @@
+﻿<Page x:Class="hiro.Hiro_Chat"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:hiro"
+      mc:Ignorable="d" 
+      d:DesignHeight="420" d:DesignWidth="420"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      materialDesign:ShadowAssist.CacheMode="{x:Null}"
+      Title="Chat">
+    <Page.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+    </Page.Resources>
+    <Grid>
+        <TextBox x:Name="ChatContent" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" ></TextBox>
+        <Label x:Name="ScrollViewer1" Margin="5,305,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{DynamicResource AppFore}" Height="1" Width="410"></Label>
+        <TextBox x:Name="SendContent" Margin="5,305,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="80" Foreground="{DynamicResource AppFore}" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"></TextBox>
+        <Button x:Name="SendButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="Send" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="SendButton_Click" KeyDown="SendButton_KeyDown" Cursor="Hand"></Button>
+    </Grid>
+</Page>
