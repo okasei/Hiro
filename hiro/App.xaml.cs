@@ -43,6 +43,7 @@ namespace hiro
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient? hc = null;
         internal static int ColorCD = -1;
+        internal static int ChatCD = 23;
         internal static IntPtr WND_Handle = IntPtr.Zero;
         internal static bool FirstUse = false;
         #endregion
@@ -99,7 +100,7 @@ namespace hiro
                         ha.appPackage = Hiro_Utils.Read_Ini(recStr, "App", "Package", "null");
                         Dispatcher.Invoke(delegate
                         {
-                            Hiro_Utils.RunExe(ha.msg);
+                            Hiro_Utils.RunExe(ha.msg, ha.appName);
                         });
                         Hiro_Utils.LogtoFile("[SERVER]" + ha.ToString());
                     }
@@ -169,7 +170,7 @@ namespace hiro
                                     continue;
                                 default:
                                     Hiro_Utils.IntializeColorParameters();
-                                    Hiro_Utils.RunExe(para);
+                                        Hiro_Utils.RunExe(para, "Windows");
                                     return;
                             }
                         }
@@ -186,10 +187,10 @@ namespace hiro
                     if (FirstUse)
                     {
                         FirstUse = false;
-                        Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + App.lang + "\\welcome.hws)");
+                        Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + App.lang + "\\welcome.hws)", Hiro_Utils.Get_Transalte("infofirst").Replace("%h", AppTitle));
                     }
                     if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
-                        Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"));
+                        Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Transalte("autoexe"));
                     return;
                 }
             }
@@ -204,31 +205,42 @@ namespace hiro
             i.msg = Hiro_Utils.Path_Prepare_EX(i.msg);
             if (i.title != null)
                 title = Hiro_Utils.Path_Prepare_EX(i.title);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+            int disturb = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Disturb", "2"));
+            if ((disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0))
             {
-                new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-            .AddText(title)
-            .AddText(i.msg.Replace("\\n", Environment.NewLine))
-            .Show();
-            }
-            else
-            {
-                noticeitems.Add(i);
-                if (noti == null)
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
                 {
-                    noti = new();
-                    noti.Show();
+                    new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                .AddText(title)
+                .AddText(i.msg.Replace("\\n", Environment.NewLine))
+                .Show();
                 }
                 else
                 {
-                    if(noti.flag[0] == 2)
+                    noticeitems.Add(i);
+                    if (noti == null)
                     {
-                        noti.flag[0] = 0;
-                        noti.timer.Interval = new TimeSpan(10000000);
-                        noti.timer.Start();
+                        noti = new();
+                        noti.Show();
                     }
-                    
+                    else
+                    {
+                        if (noti.flag[0] == 2)
+                        {
+                            noti.flag[0] = 0;
+                            noti.timer.Interval = new TimeSpan(10000000);
+                            noti.timer.Start();
+                        }
+
+                    }
                 }
+            }
+            else
+            {
+                mn?.AddToInfoCenter(
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
+                        + "\t" + Hiro_Utils.Get_Transalte("infocmd") + ":" + "\tnotify(" + i.msg + ")" + Environment.NewLine
+                        + "\t" + Hiro_Utils.Get_Transalte("infosource") + ":" + "\t" + i.title + Environment.NewLine);
             }
             Hiro_Utils.LogtoFile("[NOTIFICATION]" + i.msg);
         }
@@ -275,7 +287,7 @@ namespace hiro
                     switch (action)
                     {
                         case "uok":
-                            Hiro_Utils.RunExe(url);
+                            Hiro_Utils.RunExe(url, Hiro_Utils.Get_Transalte("alarm"));
                             break;
                         case "uskip":
                             break;
@@ -445,6 +457,15 @@ namespace hiro
                 {
                     mn.Set_Home_Labels("night");
                 }
+                if (mn.hiro_chat != null)
+                {
+                    ChatCD--;
+                    if (ChatCD == 0)
+                    {
+                        mn.hiro_chat?.Hiro_Get_Chat();
+                        ChatCD = 5;
+                    }
+                }
             }
             var tim = Hiro_Utils.Read_Ini(LangFilePath, "local", "locktime", "HH:mm");
             var dat = Hiro_Utils.Read_Ini(LangFilePath, "local", "lockdate", "MM/dd (ddd)");
@@ -459,7 +480,10 @@ namespace hiro
                 System.Windows.Forms.Application.DoEvents();
                 if (scheduleitems[i - 1].Time.Equals(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")))
                 {
-                    if (scheduleitems[i - 1].Command.ToLower().Equals("alarm") || scheduleitems[i - 1].Command.ToLower().Equals("alarm()"))
+                    int disturb = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Disturb", "2"));
+                    var a = scheduleitems[i - 1].Command.ToLower().Equals("alarm") || scheduleitems[i - 1].Command.ToLower().Equals("alarm()");
+                    var b = (disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0);
+                    if (a && b)
                     {
                         if (Hiro_Utils.Read_Ini(dconfig, "Config", "Toast", "0").Equals("1"))
                         {
@@ -482,11 +506,16 @@ namespace hiro
                             aw.Add(new alarmwin(ala, i - 1));
                             ala.Show();
                         }
-
-                        return;
                     }
                     else
                     {
+                        if (!b)
+                        {
+                            mn?.AddToInfoCenter(
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
+                            + "\t" + Hiro_Utils.Get_Transalte("infocmd") + ":" + "\t" + Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))) + Environment.NewLine
+                            + "\t" + Hiro_Utils.Get_Transalte("infosource") + ":" + "\t" + Hiro_Utils.Get_Transalte("alarm") + Environment.NewLine);
+                        }
                         switch (scheduleitems[i - 1].re)
                         {
                             case -2.0:
@@ -504,15 +533,15 @@ namespace hiro
                                 Hiro_Utils.Write_Ini(sconfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                         }
-                        Hiro_Utils.RunExe(scheduleitems[i - 1].Command);
+                        Hiro_Utils.RunExe(scheduleitems[i - 1].Command, Hiro_Utils.Get_Transalte("alarm"));
                     }
                 }
                 i++;
             }
             if (ColorCD > -1)
             {
-                if (ColorCD == 0 && wnd != null)
-                    wnd.Load_All_Colors();
+                if (ColorCD == 0)
+                    wnd?.Load_All_Colors();
                 ColorCD--;
             }
             //Music
@@ -606,7 +635,7 @@ namespace hiro
                         {
                             string? str = mu.Tag.ToString();
                             if (str != null)
-                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command);
+                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Utils.Get_Transalte("menu"));
 
                         }
                         catch (Exception ex)
@@ -670,7 +699,7 @@ namespace hiro
                 show.Header = Hiro_Utils.Get_Transalte("menushow");
                 show.Click += delegate
                 {
-                    Hiro_Utils.RunExe("show()");
+                    Hiro_Utils.RunExe("show()", Hiro_Utils.Get_Transalte("menu"));
                 };
                 wnd.cm.Items.Add(show);
                 MenuItem exit = new()
@@ -680,7 +709,7 @@ namespace hiro
                 exit.Header = Hiro_Utils.Get_Transalte("menuexit");
                 exit.Click += delegate
                 {
-                    Hiro_Utils.RunExe("exit()");
+                    Hiro_Utils.RunExe("exit()", Hiro_Utils.Get_Transalte("menu"));
                 };
                 wnd.cm.Items.Add(exit);
                 foreach (var obj in wnd.cm.Items)

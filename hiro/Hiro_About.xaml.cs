@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,9 +7,6 @@ using System.Windows.Media.Animation;
 
 namespace hiro
 {
-    /// <summary>
-    /// Hiro_About.xaml の相互作用ロジック
-    /// </summary>
     public partial class Hiro_About : Page
     {
         private Hiro_MainUI? Hiro_Main = null;
@@ -65,8 +58,7 @@ namespace hiro
 
         private void Avatar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Hiro_Main != null)
-                Hiro_Main.Hiro_We_Extend();
+                Hiro_Main?.Hiro_We_Extend();
         }
 
         private void Chk_btn_Click(object sender, RoutedEventArgs e)

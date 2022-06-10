@@ -68,7 +68,6 @@ namespace hiro
                         exist = true;
                     }
                 };
-
                 bw.RunWorkerCompleted += delegate
                 {
                     filep = System.IO.File.Exists(filep) ? filep : wp;

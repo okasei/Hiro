@@ -39,6 +39,11 @@ namespace hiro
             Loaded += delegate
             {
                 HiHiro();
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "0").Equals("1"))
+                {
+                    hiro_chat ??= new(this);
+                    hiro_chat.Hiro_Chat_Initialize();
+                }
             };
         }
 
@@ -84,9 +89,23 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(2, closebtn, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(0, stack, sb, -50, null);
+                if (infolabel.Visibility == Visibility.Visible)
+                    Hiro_Utils.AddPowerAnimation(0, infolabel, sb, -50, null);
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
+        }
+
+        public void AddToInfoCenter(string text)
+        {
+            infotext.AppendText(text);
+            infolabel.Visibility = Visibility.Visible;
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(0, infolabel, sb, -50, null);
+                sb.Begin();
+            }
         }
 
         public void InitializeUIWindow()
@@ -131,6 +150,8 @@ namespace hiro
         {
             Hiro_Utils.Set_Control_Location(titlelabel, "title");
             Hiro_Utils.Set_Control_Location(versionlabel, "version");
+            Hiro_Utils.Set_Control_Location(infotitle, "infotitle");
+            Hiro_Utils.Set_Control_Location(infotext, "infotext");
             Hiro_Utils.Set_Control_Location(homex, "home", location: false);
             Hiro_Utils.Set_Control_Location(itemx, "item", location: false);
             Hiro_Utils.Set_Control_Location(schedulex, "schedule", location: false);
@@ -163,6 +184,7 @@ namespace hiro
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
             Resources["AppForeDimColor"] =Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["InfoAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 160));
             #endregion
             minbtn.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 0));
             if (App.wnd != null && App.wnd.cm != null)
@@ -306,6 +328,7 @@ namespace hiro
         {
             Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
             titlelabel.Content = App.AppTitle;
+            infotitle.Content = Hiro_Utils.Get_Transalte("infotitle");
             minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
             closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
             homex.Content = Hiro_Utils.Get_Transalte("home");
@@ -402,18 +425,65 @@ namespace hiro
             {
                 extended.IsEnabled = false;
                 extend_background.IsEnabled = false;
-                Storyboard? sb = new();
-                sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extended, "Opacity", sb);
-                sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
-                sb.Completed += delegate
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                {
+                    Storyboard? sb = new();
+                    sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extended, "Opacity", sb);
+                    sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
+                    sb.Completed += delegate
+                    {
+                        extended.Opacity = 0;
+                        extend_background.Opacity = 0;
+                        extended.Visibility = Visibility.Hidden;
+                        extend_background.Visibility = Visibility.Hidden;
+                        sb = null;
+                    };
+                    sb.Begin();
+                }
+                else
                 {
                     extended.Opacity = 0;
                     extend_background.Opacity = 0;
                     extended.Visibility = Visibility.Hidden;
                     extend_background.Visibility = Visibility.Hidden;
-                    sb = null;
-                };
-                sb.Begin();
+                }
+                
+            }
+            else if(infocenter.Visibility == Visibility.Visible)
+            {
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                {
+                    Storyboard? sb = new();
+                    sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, infocenter, "Opacity", sb);
+                    sb.Completed += delegate
+                    {
+                        infocenter.Opacity = 0;
+                        infocenter.Visibility = Visibility.Hidden;
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        {
+                            infocenter.IsEnabled = false;
+                            Storyboard? sbe = new();
+                            Hiro_Utils.AddPowerAnimation(1, infolabel, sbe, null, -50);
+                            sbe.Completed += delegate
+                            {
+                                infolabel.Visibility = Visibility.Hidden;
+                            };
+                            sbe.Begin();
+                        }
+                        else
+                        {
+                            infolabel.Visibility = Visibility.Hidden;
+                        }
+                        sb = null;
+                    };
+                    sb.Begin();
+                }
+                else
+                {
+                    infocenter.Opacity = 0;
+                    infocenter.Visibility = Visibility.Hidden;
+                    infolabel.Visibility = Visibility.Hidden;
+                }
             }
             else
             {
@@ -692,8 +762,11 @@ namespace hiro
         private void Titlelabel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var thickness = versionlabel.Margin;
-            thickness.Left = titlelabel.Margin.Left + titlelabel.ActualWidth + 5;
+            thickness.Left = titlelabel.Margin.Left + titlelabel.ActualWidth + 2;
             versionlabel.Margin = thickness;
+            thickness = infolabel.Margin;
+            thickness.Left = versionlabel.Margin.Left + versionlabel.ActualWidth + 2;
+            infolabel.Margin = thickness;
         }
 
         private void Schedulex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -817,20 +890,57 @@ namespace hiro
             extend_background.Background = new SolidColorBrush(Colors.Coral);
             extended.Visibility = Visibility.Visible;
             extend_background.Visibility = Visibility.Visible;
-            Storyboard? sb = new();
-            sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, extended, "Opacity", sb, 0);
-            sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, extend_background, "Opacity", sb, 0);
-            sb.Completed += delegate
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            {
+                Storyboard? sb = new();
+                sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, extended, "Opacity", sb, 0);
+                sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, extend_background, "Opacity", sb, 0);
+                sb.Completed += delegate
+                {
+                    extended.Opacity = 1;
+                    extend_background.Opacity = 1;
+                    extended.IsEnabled = true;
+                    extend_background.IsEnabled = true;
+                    sb = null;
+                };
+                sb.Begin();
+            }
+            else
             {
                 extended.Opacity = 1;
                 extend_background.Opacity = 1;
                 extended.IsEnabled = true;
                 extend_background.IsEnabled = true;
-                sb = null;
-            };
-            sb.Begin();
+            }
+                
         }
-
+        internal void Hiro_We_Info()
+        {
+            var th = infoimage.Margin;
+            th.Left = 0;
+            th.Top = 0;
+            infocenter.Margin = th;
+            infocenter.Width = Width;
+            infocenter.Height = Height;
+            infocenter.Visibility = Visibility.Visible;
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            {
+                Storyboard? sb = new();
+                sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, infocenter, "Opacity", sb, 0);
+                sb.Completed += delegate
+                {
+                    infocenter.Opacity = 1;
+                    infocenter.IsEnabled = true;
+                    sb = null;
+                };
+                sb.Begin();
+            }
+            else
+            {
+                infocenter.Opacity = 1;
+                infocenter.IsEnabled = true;
+            }  
+        }
         private void Versionlabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (App.dflag)
@@ -871,6 +981,23 @@ namespace hiro
         private void chatx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(chatx);
+        }
+
+        private void infotitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
+
+        private void infolabel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_We_Info();
+        }
+
+        private void Versionlabel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var thickness = infolabel.Margin;
+            thickness.Left = versionlabel.Margin.Left + versionlabel.ActualWidth + 2;
+            infolabel.Margin = thickness;
         }
     }
 }

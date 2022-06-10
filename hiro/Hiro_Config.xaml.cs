@@ -110,7 +110,7 @@ namespace hiro
                     App.Username = App.EnvironmentUsername;
                     break;
             }
-            rbtn13.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2");
+            rbtn13.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Autoexe", "1").Equals("2");
             rbtn12.IsChecked = !rbtn13.IsChecked;
             cb_box.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Min", "1").Equals("1");
             rbtn15.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2");
@@ -123,6 +123,8 @@ namespace hiro
                 if (App.wnd != null)
                     App.wnd.ti.ToolTipText = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
             }
+            msg_audio.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1");
+            msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "0").Equals("1");
             Autorun.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoRun", "0").Equals("1");
             blureff.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0") switch
             {
@@ -164,6 +166,14 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(rbtn15, "imagetheme");
             Hiro_Utils.Set_Control_Location(rbtn16, "namehiro");
             Hiro_Utils.Set_Control_Location(rbtn17, "namecus");
+            Hiro_Utils.Set_Control_Location(msg_label, "msglabel");
+            Hiro_Utils.Set_Control_Location(msg_level, "msgslider");
+            Hiro_Utils.Set_Control_Location(msg_status, "msgstatus");
+            Hiro_Utils.Set_Control_Location(msg_audio, "msgaudio");
+            Hiro_Utils.Set_Control_Location(msg_auto, "msgauto");
+            Hiro_Utils.Set_Control_Location(disturb_label, "disturblabel");
+            Hiro_Utils.Set_Control_Location(disturb_level, "disturbslider");
+            Hiro_Utils.Set_Control_Location(disturb_status, "disturbstatus");
             Hiro_Utils.Set_Control_Location(cb_box, "minclose");
             Hiro_Utils.Set_Control_Location(Autorun, "autorun");
             Hiro_Utils.Set_Control_Location(blureff, "blurbox");
@@ -199,6 +209,8 @@ namespace hiro
             Hiro_Utils.Set_Grid_Location(cm_grid, "callg");
             Hiro_Utils.Set_Grid_Location(bg_grid, "backg");
             Hiro_Utils.Set_Grid_Location(name_grid, "nameg");
+            Hiro_Utils.Set_Grid_Location(msg_grid, "msgg");
+            Hiro_Utils.Set_Grid_Location(disturb_grid, "disturbg");
             Thickness thickness = BaseGrid.Margin;
             thickness.Top = 0.0;
             BaseGrid.Margin = thickness;
@@ -239,8 +251,27 @@ namespace hiro
             rbtn15.Content = Hiro_Utils.Get_Transalte("imagetheme");
             rbtn16.Content = Hiro_Utils.Get_Transalte("namehiro");
             rbtn17.Content = Hiro_Utils.Get_Transalte("namecus");
+            msg_label.Content = Hiro_Utils.Get_Transalte("msglabel");
+            msg_audio.Content = Hiro_Utils.Get_Transalte("msgaudio");
+            msg_auto.Content = Hiro_Utils.Get_Transalte("msgauto");
+            msg_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Message", "3")));
+            msg_status.Content = Convert.ToInt32(msg_level.Value) switch
+            {
+                1 => Hiro_Utils.Get_Transalte("msghide"),
+                2 => Hiro_Utils.Get_Transalte("msglock"),
+                3 => Hiro_Utils.Get_Transalte("msgalways"),
+                _ => Hiro_Utils.Get_Transalte("msgnever")
+            };
+            disturb_label.Content = Hiro_Utils.Get_Transalte("disturblabel");
+            disturb_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Disturb", "2")));
+            disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
+            {
+                1 => Hiro_Utils.Get_Transalte("disturbfs"),
+                2 => Hiro_Utils.Get_Transalte("disturbok"),
+                _ => Hiro_Utils.Get_Transalte("disturbno")
+            };
             cb_box.Content = Hiro_Utils.Get_Transalte("minclose");
-            Autorun.Content = Hiro_Utils.Get_Transalte("AutoRun");
+            Autorun.Content = Hiro_Utils.Get_Transalte("autorun");
             blureff.Content = Hiro_Utils.Get_Transalte("blurbox");
             win_style.Content = Hiro_Utils.Get_Transalte("winbox");
             reverse_style.Content = Hiro_Utils.Get_Transalte("reversebox");
@@ -394,17 +425,11 @@ namespace hiro
         private void Btn7_Click(object sender, RoutedEventArgs e)
         {
             btn7.IsEnabled = false;
-            System.ComponentModel.BackgroundWorker bw = new();
-            bw.RunWorkerCompleted += delegate
-            {
-                App.Locked = true;
-                btn7.IsEnabled = true;
-                if (Hiro_Main != null)
-                    Hiro_Main.versionlabel.Content = res.ApplicationVersion + " 🔒";
-                Hiro_Main?.Set_Label(Hiro_Main.homex);
-            };
-            bw.RunWorkerAsync();
-
+            App.Locked = true;
+            btn7.IsEnabled = true;
+            if (Hiro_Main != null)
+                Hiro_Main.versionlabel.Content = res.ApplicationVersion + " 🔒";
+            Hiro_Main?.Set_Label(Hiro_Main.homex);
         }
 
         private void Verbose_Unchecked(object sender, RoutedEventArgs e)
@@ -716,6 +741,70 @@ namespace hiro
         private void BaseGrid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             configbar.Value += e.Delta * (configbar.Maximum - configbar.ViewportSize) / configbar.ViewportSize;
+        }
+
+        private void Msg_level_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Load)
+            {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Message", (Convert.ToInt32(msg_level.Value)).ToString());
+                msg_status.Content = Convert.ToInt32(msg_level.Value) switch
+                {
+                    1 => Hiro_Utils.Get_Transalte("msghide"),
+                    2 => Hiro_Utils.Get_Transalte("msglock"),
+                    3 => Hiro_Utils.Get_Transalte("msgalways"),
+                    _ => Hiro_Utils.Get_Transalte("msgnever")
+                };
+            }
+            
+        }
+
+        private void Disturb_level_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Load)
+            {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Disturb", (Convert.ToInt32(disturb_level.Value)).ToString());
+                disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
+                {
+                    1 => Hiro_Utils.Get_Transalte("disturbfs"),
+                    2 => Hiro_Utils.Get_Transalte("disturbok"),
+                    _ => Hiro_Utils.Get_Transalte("disturbno")
+                };
+            }
+        }
+
+        private void Msg_audio_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "MessageAudio", "1");
+            }
+        }
+
+        private void Msg_audio_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "MessageAudio", "0");
+            }
+        }
+
+        private void Msg_auto_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoChat", "1");
+                if (Hiro_Main != null)
+                    Hiro_Main.hiro_chat ??= new(Hiro_Main);
+            }
+        }
+
+        private void Msg_auto_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoChat", "0");
+            }
         }
     }
 }

@@ -691,68 +691,13 @@ namespace hiro
             try
             {
                 var parameter = HiroParse(path);
+                int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
                 if (System.IO.File.Exists(path) && path.ToLower().EndsWith(".hiro"))
                     path = "seq(" + path + ")";
-                if (path.ToLower().StartsWith("hiroad("))
-                {
-                    source = Hiro_Utils.Get_Transalte("update");
-                    Hiro_Download dl = new(1, parameter[2]);
-                    dl.textBoxHttpUrl.Text = parameter[0];
-                    dl.SavePath.Text = parameter[1];
-                    dl.Autorun.IsChecked = true;
-                    dl.Autorun.IsEnabled = false;
-                    dl.rurl = parameter[0];
-                    dl.rpath = parameter[1];
-                    dl.Show();
-                    dl.StartDownload();
-                    return;
-                }
-                if (path.ToLower().StartsWith("download("))
-                {
-                    source = Hiro_Utils.Get_Transalte("download");
-                    Hiro_Download dl = new(0, "");
-                    if (parameter.Count > 0)
-                        dl.textBoxHttpUrl.Text = parameter[0];
-                    if (parameter.Count > 1)
-                        dl.SavePath.Text = parameter[1];
-                    dl.Show();
-                    return;
-                }
-                if (path.ToLower().StartsWith("save("))
-                {
-                    source = Hiro_Utils.Get_Transalte("download");
-                    BackgroundWorker bw = new();
-                    string result = "";
-                    CreateFolder(parameter[1]);
-                    bw.DoWork += delegate
-                    {
-                        result = GetWebContent(parameter[0], true, parameter[1]);
-                    };
-                    bw.RunWorkerCompleted += delegate
-                    {
-                        if (result.ToLower().Equals("error"))
-                            App.Notify(new noticeitem(Get_Transalte("error"), 2, source));
-                        else
-                            App.Notify(new noticeitem(Get_Transalte("success"), 2, source));
-                    };
-                    bw.RunWorkerAsync();
-                    return;
-                }
+                #region 不会造成打扰的命令
                 if (path.ToLower().Equals("memory()"))
                 {
                     GC.Collect();
-                    return;
-                }
-                if (path.ToLower().StartsWith("weather("))
-                {
-                    source = Get_Transalte("weather");
-                    path = path.ToLower() switch
-                    {
-                        "weather(0)" => "alarm(" + Get_Transalte("weather") + ",https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang +  ")",
-                        "weather(1)" => "notify(https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ",2)",
-                        _ => "notify(" + Get_Transalte("syntax") + ",2)"
-                    };
-                    RunExe(path, source);
                     return;
                 }
                 if (path.ToLower().StartsWith("debug("))
@@ -772,117 +717,24 @@ namespace hiro
                     }
                     return;
                 }
-                //alarm(title,url/text) - Reverse
-                if (path.ToLower().StartsWith("alarm("))
+                if (path.ToLower().StartsWith("save("))
                 {
-                    path = path[6..];
-                    path = path[0..^1];
-                    if (path.IndexOf(",") != -1)
+                    source = Get_Transalte("download");
+                    BackgroundWorker bw = new();
+                    string result = "";
+                    CreateFolder(parameter[1]);
+                    bw.DoWork += delegate
                     {
-                        var pa = path[..path.IndexOf(",")];
-                        path = path[(pa.Length + 1)..];
-                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
-                        {
-                            if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
-                            {
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    pa = GetWebContent(pa);
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    RunExe("alarm(" + pa + "," + path + ")", source);
-                                };
-                                bw.RunWorkerAsync();
-                                return;
-                            }
-                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
-                            {
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    path = GetWebContent(path);
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    RunExe("alarm(" + pa + "," + path.Replace("<br>", "\\n") + ")", source);
-                                };
-                                bw.RunWorkerAsync();
-                                return;
-                            }
-                            new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                                .AddArgument("Launch", App.AppTitle)
-                                .AddText(pa)
-                                .AddText(path.Replace("\\n", Environment.NewLine))
-                                .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                            .SetContent(Get_Transalte("alarmone")))
-                                .Show();
-                        }
+                        result = GetWebContent(parameter[0], true, parameter[1]);
+                    };
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        if (result.ToLower().Equals("error"))
+                            App.Notify(new noticeitem(Get_Transalte("error"), 2, source));
                         else
-                        {
-                            Hiro_Alarm ala = new(-1, CustomedTitle: pa, CustomedContnet: path, OneButtonOnly: 1);
-                            ala.Show();
-                        }
-                    }
-                    else
-                    {
-                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
-                        {
-                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
-                            {
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    path = GetWebContent(path);
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    RunExe("alarm(" + path.Replace("<br>", "\\n") + ")", source);
-                                };
-                                bw.RunWorkerAsync();
-                                return;
-                            }
-                            new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                                .AddText(Get_Transalte("alarmtitle"))
-                                .AddText(path.Replace("\\n", Environment.NewLine))
-                                .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                            .SetContent(Get_Transalte("alarmone")))
-                                .Show();
-                        }
-                        else
-                        {
-                                Hiro_Alarm ala = new(-1, CustomedContnet: path, OneButtonOnly: 1);
-                                ala.Show(); 
-                        }
-
-                    }
-                    return;
-                }
-                if (path.ToLower().StartsWith("wallpaper("))
-                {
-                    source = Get_Transalte("wallpaper");
-                    if (System.IO.File.Exists(parameter[0]))
-                    {
-                        using (Microsoft.Win32.RegistryKey? key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
-                        {
-                            int[] para = new int[] { 10, 6, 22, 2, 0, 0 };
-                            int[] par = new int[] { 0, 0, 0, 0, 1, 0 };
-                            var v = Convert.ToInt32(parameter[1]);
-                            v = v < 0 ? 0 : v > 5 ? 5 : v;
-                            if (key != null)
-                            {
-                                key.SetValue(@"WallpaperStyle", para[v].ToString());
-                                key.SetValue(@"TileWallpaper", par[v].ToString());
-                            }
-                        }
-                        SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
-                        App.Notify(new noticeitem(Get_Transalte("wpchanged"), 2, source));
-                    }
-                    else
-                    {
-                        RunExe("notify(" + Get_Transalte("wpnexist") + ",2)", source);
-                    }
+                            App.Notify(new noticeitem(Get_Transalte("success"), 2, source));
+                    };
+                    bw.RunWorkerAsync();
                     return;
                 }
                 if (path.ToLower().StartsWith("bingw("))
@@ -929,6 +781,648 @@ namespace hiro
                         App.Notify(new noticeitem(Get_Transalte("wpexist"), 2, Get_Transalte("wallpaper")));
                     return;
                 }
+                if (path.ToLower().StartsWith("wallpaper("))
+                {
+                    source = Get_Transalte("wallpaper");
+                    if (System.IO.File.Exists(parameter[0]))
+                    {
+                        using (Microsoft.Win32.RegistryKey? key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
+                        {
+                            int[] para = new int[] { 10, 6, 22, 2, 0, 0 };
+                            int[] par = new int[] { 0, 0, 0, 0, 1, 0 };
+                            var v = Convert.ToInt32(parameter[1]);
+                            v = v < 0 ? 0 : v > 5 ? 5 : v;
+                            if (key != null)
+                            {
+                                key.SetValue(@"WallpaperStyle", para[v].ToString());
+                                key.SetValue(@"TileWallpaper", par[v].ToString());
+                            }
+                        }
+                        SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
+                        App.Notify(new noticeitem(Get_Transalte("wpchanged"), 2, source));
+                    }
+                    else
+                    {
+                        RunExe("notify(" + Get_Transalte("wpnexist") + ",2)", source);
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("delete("))
+                {
+                    if (parameter[0].StartsWith("\""))
+                        parameter[0] = parameter[0].Substring(1);
+                    if (parameter[0].EndsWith("\""))
+                        parameter[0] = parameter[0].Substring(0, parameter[0].Length - 1);
+                    if (!System.IO.File.Exists(parameter[0]))
+                    {
+                        if (System.IO.Directory.Exists(parameter[0]))
+                            try
+                            {
+                                System.IO.Directory.Delete(parameter[0], true);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                            }
+                        else
+                            LogtoFile("[WARNING]Warning at " + path + " | Details: " + Get_Transalte("filenotexist"));
+                        return;
+                    }
+                    try
+                    {
+                        System.IO.File.Delete(parameter[0]);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("move("))
+                {
+                    if (!System.IO.File.Exists(parameter[0]))
+                    {
+                        try
+                        {
+                            System.IO.Directory.Move(parameter[0], parameter[1]);
+                        }
+                        catch (Exception ex)
+                        {
+                            App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                            LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                        }
+                        return;
+                    }
+                    try
+                    {
+                        CreateFolder(parameter[1]);
+                        System.IO.File.Move(parameter[0], parameter[1]);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        Hiro_Utils.LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("copy("))
+                {
+                    if (!System.IO.File.Exists(parameter[0]))
+                    {
+                        if (System.IO.Directory.Exists(parameter[0]))
+                            try
+                            {
+                                CopyDirectory(parameter[0], parameter[1]);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                            }
+                        else
+                        {
+                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
+                            LogtoFile("[ERROR]Error at " + path + " | Details: " + Get_Transalte("filenotexist"));
+                        }
+                        return;
+                    }
+                    try
+                    {
+                        CreateFolder(parameter[1]);
+                        System.IO.File.Copy(parameter[0], parameter[1]);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("key("))
+                {
+                    List<byte> modi = new();
+                    int pathi = int.Parse(parameter[0]);
+                    if (pathi >= 8)
+                    {
+                        while (pathi >= 8)
+                        {
+                            pathi -= 8;
+                        }
+                        modi.Add(0x5B);//Windows
+                    }
+                    if (pathi >= 4)
+                    {
+                        while (pathi >= 4)
+                        {
+                            pathi -= 4;
+                        }
+                        modi.Add(0x10);
+                    }
+                    if (pathi >= 2)
+                    {
+                        while (pathi >= 2)
+                        {
+                            pathi -= 2;
+                        }
+                        modi.Add(0x11);
+                    }
+                    if (pathi >= 1)
+                        modi.Add(0x12);
+                    byte parai = (byte)System.Windows.Input.KeyInterop.VirtualKeyFromKey((System.Windows.Input.Key)int.Parse(parameter[1]));
+                    for (int i = 0; i < modi.Count; i++)
+                    {
+                        keybd_event(modi[i], MapVirtualKey(modi[i], 0), 0x0001, 0);
+                    }
+                    keybd_event(parai, MapVirtualKey(parai, 0), 0x0001, 0);
+                    keybd_event(parai, MapVirtualKey(parai, 0), 0x0001 | 0x0002, 0);
+                    for (int i = modi.Count - 1; i >= 0; i--)
+                    {
+                        keybd_event(modi[i], MapVirtualKey(modi[i], 0), 0x0001 | 0x0002, 0);
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("vol("))
+                {
+                    switch (path.ToLower())
+                    {
+                        case "vol(up)":
+                            keybd_event(0xAF, MapVirtualKey(0xAF, 0), 0x0001, 0);
+                            keybd_event(0xAF, MapVirtualKey(0xAF, 0), 0x0001 | 0x0002, 0);
+                            break;
+                        case "vol(down)":
+                            keybd_event(0xAE, MapVirtualKey(0xAE, 0), 0x0001, 0);
+                            keybd_event(0xAE, MapVirtualKey(0xAE, 0), 0x0001 | 0x0002, 0);
+                            break;
+                        case "vol(mute)":
+                            keybd_event(0xAD, MapVirtualKey(0xAD, 0), 0x0001, 0);
+                            keybd_event(0xAD, MapVirtualKey(0xAD, 0), 0x0001 | 0x0002, 0);
+                            break;
+                        default:
+                            break;
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("bluetooth("))
+                {
+                    bool? situation = path.ToLower() switch
+                    {
+                        "bluetooth(0)" => false,
+                        "bluetooth(off)" => false,
+                        "bluetooth(1)" => true,
+                        "bluetooth(on)" => true,
+                        _ => null,
+                    };
+                    SetBthState(situation);
+                    return;
+                }
+                if (path.ToLower().StartsWith("wifi("))
+                {
+                    int situation = path.ToLower() switch
+                    {
+                        "wifi(0)" => 0,
+                        "wifi(off)" => 0,
+                        "wifi(1)" => 1,
+                        "wifi(on)" => 1,
+                        "wifi(2)" => 2,
+                        "wifi(dis)" => 2,
+                        "wifi(disconnect)" => 2,
+                        "wifi(3)" => 3,
+                        "wifi(con)" => 3,
+                        "wifi(connect)" => 3,
+                        _ => -1,
+                    };
+                    if (situation == -1)
+                    {
+                        if (parameter.Count > 1 && parameter[1].ToLower().IndexOf("o") != -1)
+                        {
+                            SetWiFiState(3, parameter[0], true);
+                        }
+                        else
+                            SetWiFiState(3, parameter[0]);
+
+                    }
+                    else
+                        SetWiFiState(situation);
+                    return;
+                }
+                if (path.ToLower().StartsWith("ini("))
+                {
+                    Write_Ini(parameter[0], parameter[1], parameter[2], parameter[3]);
+                    return;
+                }
+                if (path.ToLower().StartsWith("zip("))
+                {
+                    BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        System.IO.Compression.ZipFile.CreateFromDirectory(parameter[0], parameter[1]);
+                    };
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        if (parameter.Count > 2)
+                        {
+                            var para = parameter[2].ToLower();
+                            if (para.IndexOf("s") != -1)
+                                RunExe(parameter[1]);
+                            if (para.IndexOf("d") != -1)
+                                RunExe("Delete(" + parameter[0] + ")");
+                        }
+                    };
+                    bw.RunWorkerAsync();
+                    return;
+                }
+                if (path.ToLower().StartsWith("unzip("))
+                {
+                    BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        System.IO.Compression.ZipFile.ExtractToDirectory(parameter[0], parameter[1]);
+                    };
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        if (parameter.Count > 2)
+                        {
+                            var para = parameter[2].ToLower();
+                            if (para.IndexOf("s") != -1)
+                                RunExe(parameter[1]);
+                            if (para.IndexOf("d") != -1)
+                                RunExe("Delete(" + parameter[0] + ")");
+                        }
+                    };
+                    bw.RunWorkerAsync();
+                    return;
+                }
+                if (path.ToLower().StartsWith("exit()"))
+                {
+                    try
+                    {
+                        Environment.Exit(Environment.ExitCode);
+                        System.Windows.Application.Current.Shutdown();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("hide()"))
+                {
+                    if (App.mn != null)
+                    {
+                        App.mn.titlelabel.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.versionlabel.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.minbtn.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.closebtn.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.stack.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.Visibility = System.Windows.Visibility.Hidden;
+                        return;
+                    }
+                }
+                if (path.ToLower().StartsWith("menu()"))
+                {
+                    if (App.wnd != null && App.wnd.cm != null)
+                    {
+                        App.Load_Menu();
+                        App.wnd.cm.IsOpen = true;
+                    }
+                    return;
+                }
+                if (path.ToLower().StartsWith("show()"))
+                {
+                    App.mn ??= new();
+                    App.mn.Show();
+                    App.mn.Visibility = System.Windows.Visibility.Visible;
+                    App.mn.HiHiro();
+                    return;
+                }
+                if (path.ToLower() == "hello" || path.ToLower() == "hello()")
+                {
+                    var hr = DateTime.Now.Hour;
+                    var morning = Read_Ini(App.LangFilePath, "local", "morning", "[6,7,8,9,10]");
+                    var noon = Read_Ini(App.LangFilePath, "local", "noon", "[11,12,13]");
+                    var afternoon = Read_Ini(App.LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
+                    var evening = Read_Ini(App.LangFilePath, "local", "evening", "[19,20,21,22]");
+                    var night = Read_Ini(App.LangFilePath, "local", "night", "[23,0,1,2,3,4,5]");
+                    morning = "," + morning.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
+                    noon = "," + noon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
+                    afternoon = "," + afternoon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
+                    evening = "," + evening.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
+                    night = "," + night.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
+                    if (morning.IndexOf("," + hr + ",") != -1)
+                    {
+                        if (App.CustomUsernameFlag == 0)
+                            App.Notify(new noticeitem(Get_Transalte("morning").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                        else
+                            App.Notify(new noticeitem(Get_Transalte("morningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+
+                    }
+                    else if (noon.IndexOf("," + hr + ",") != -1)
+                    {
+                        if (App.CustomUsernameFlag == 0)
+                            App.Notify(new noticeitem(Get_Transalte("noon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                        else
+                            App.Notify(new noticeitem(Get_Transalte("nooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+
+                    }
+                    else if (afternoon.IndexOf("," + hr + ",") != -1)
+                    {
+                        if (App.CustomUsernameFlag == 0)
+                            App.Notify(new noticeitem(Get_Transalte("afternoon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                        else
+                            App.Notify(new noticeitem(Get_Transalte("afternooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+
+                    }
+                    else if (evening.IndexOf("," + hr + ",") != -1)
+                    {
+                        if (App.CustomUsernameFlag == 0)
+                            App.Notify(new noticeitem(Get_Transalte("evening").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                        else
+                            App.Notify(new noticeitem(Get_Transalte("eveningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                    }
+                    else
+                    {
+                        if (App.CustomUsernameFlag == 0)
+                            App.Notify(new noticeitem(Get_Transalte("night").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                        else
+                            App.Notify(new noticeitem(Get_Transalte("nightcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                    }
+                    return;
+                }
+                //sequence(uri)
+                if (path.ToLower().StartsWith("seq("))
+                {
+                    Hiro_Sequence sq = new();
+                    var ca = parameter.Count < 2 || (!parameter[1].ToLower().Equals("hide") && !parameter[1].ToLower().Equals("h"));
+                    var cb = (disturb == 1 && IsForegroundFullScreen()) || disturb == 0;
+                    if (ca && !cb)
+                        sq.Show();
+                    sq.SeqExe(parameter[0]);
+                    return;
+                }
+                if (path.ToLower().StartsWith("item(") && !path.ToLower().StartsWith("item()"))
+                {
+                    var RealPath = parameter[0];
+                    for (int i = 1; i < parameter.Count; i++)
+                    {
+                        RealPath += ("," + parameter[i]);
+                    }
+                    foreach (var cmd in App.cmditems)
+                    {
+                        if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(RealPath) || cmd.Name.Equals(path))
+                        {
+                            RunExe(cmd.Command);
+                            return;
+                        }
+                    }
+                }
+                //run - Reverse
+                if (path.ToLower().StartsWith("run("))
+                {
+                    String titile, mes, toolstr;
+                    if (path.LastIndexOf(")") != -1)
+                    {
+                        toolstr = path[4..path.LastIndexOf(")")];
+                        if (toolstr.LastIndexOf(",") != -1)
+                        {
+                            titile = toolstr[..toolstr.LastIndexOf(",")];
+                            if (titile.Length < toolstr.Length - 1)
+                            {
+                                mes = toolstr[(titile.Length + 1)..];
+                            }
+                            else
+                            {
+                                App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                                return;
+                            }
+
+                        }
+
+                        else
+                        {
+                            App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                        return;
+                    }
+                    try
+                    {
+                        ProcessStartInfo pinfo = new();
+                        pinfo.UseShellExecute = true;
+                        List<string> blank = new();
+                        var a = 0;
+                        while (titile.IndexOf("\"") != -1)
+                        {
+                            a++;
+                            var lef = titile[..titile.IndexOf("\"")];
+                            titile = titile[(lef.Length + 1)..];
+                            if (titile.IndexOf("\"") == -1)
+                                break;
+                            var inside = titile[..titile.IndexOf("\"")];
+                            titile = titile[(inside.Length + 1)..];
+                            blank.Add(inside);
+                            titile = lef + "[" + a.ToString() + "]" + titile;
+                        }
+                        if (!titile.Contains(' ', StringComparison.CurrentCulture))
+                        {
+                            pinfo.FileName = titile;
+                        }
+                        else
+                        {
+                            pinfo.FileName = titile[..titile.IndexOf(" ")];
+                            pinfo.Arguments = titile[(titile.IndexOf(" ") + 1)..];
+                        }
+                        a = 1;
+                        while (blank.Count > 0 && pinfo.FileName.IndexOf("[" + a.ToString() + "]") != -1)
+                        {
+                            pinfo.FileName = pinfo.FileName.Replace("[" + a.ToString() + "]", blank[0]);
+                            blank.RemoveAt(0);
+                            a++;
+                        }
+                        while (blank.Count > 0 && pinfo.Arguments.IndexOf("[" + a.ToString() + "]") != -1)
+                        {
+                            pinfo.Arguments = pinfo.Arguments.Replace("[" + a.ToString() + "]", "\"" + blank[0]) + "\"";
+                            blank.RemoveAt(0);
+                            a++;
+                        }
+                        if (mes.StartsWith("\""))
+                            mes = mes[1..];
+                        if (mes.EndsWith("\""))
+                            mes = mes[0..^1];
+                        if (titile.StartsWith("\""))
+                            titile = titile[1..];
+                        if (mes.EndsWith("\""))
+                            titile = titile[0..^1];
+                        mes = mes.ToLower();
+                        if (mes.IndexOf("a") != -1)
+                            pinfo.Verb = "runas";
+                        if (mes.IndexOf("h") != -1)
+                            pinfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        if (mes.IndexOf("i") != -1)
+                            pinfo.WindowStyle = ProcessWindowStyle.Minimized;
+                        if (mes.IndexOf("x") != -1)
+                            pinfo.WindowStyle = ProcessWindowStyle.Maximized;
+                        if (mes.IndexOf("n") != -1)
+                            pinfo.CreateNoWindow = true;
+                        Run_Process(pinfo, path, RunPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                    }
+                    if (App.mn == null)
+                        RunExe("exit()");
+                    return;
+                }
+                if (path.ToLower().StartsWith("lock()"))
+                {
+                    App.Locked = true;
+                    if (App.mn == null)
+                        return;
+                    App.mn.Set_Label(App.mn.homex);
+                    App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
+                    return;
+                }
+                if (path.ToLower().StartsWith("weather("))
+                {
+                    source = Get_Transalte("weather");
+                    path = path.ToLower() switch
+                    {
+                        "weather(0)" => "alarm(" + Get_Transalte("weather") + ",https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ")",
+                        "weather(1)" => "notify(https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ",2)",
+                        _ => "notify(" + Get_Transalte("syntax") + ",2)"
+                    };
+                    RunExe(path, source);
+                    return;
+                }
+                if (path.ToLower() == "nop" || path.ToLower() == "nop()")   return;
+                #endregion
+                if ((disturb == 1 && IsForegroundFullScreen()) || disturb == 0)
+                {
+                    App.mn?.AddToInfoCenter(
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
+                    + "\t" + Get_Transalte("infocmd") + ":" + "\t" + RunPath + Environment.NewLine
+                    + "\t" + Get_Transalte("infosource") + ":" + "\t" + source + Environment.NewLine);
+                    return;
+                }
+                #region 可能造成打扰的命令
+                if (path.ToLower().StartsWith("hiroad("))
+                {
+                    source = Hiro_Utils.Get_Transalte("update");
+                    Hiro_Download dl = new(1, parameter[2]);
+                    dl.textBoxHttpUrl.Text = parameter[0];
+                    dl.SavePath.Text = parameter[1];
+                    dl.Autorun.IsChecked = true;
+                    dl.Autorun.IsEnabled = false;
+                    dl.rurl = parameter[0];
+                    dl.rpath = parameter[1];
+                    dl.Show();
+                    dl.StartDownload();
+                    return;
+                }
+                if (path.ToLower().StartsWith("download("))
+                {
+                    source = Hiro_Utils.Get_Transalte("download");
+                    Hiro_Download dl = new(0, "");
+                    if (parameter.Count > 0)
+                        dl.textBoxHttpUrl.Text = parameter[0];
+                    if (parameter.Count > 1)
+                        dl.SavePath.Text = parameter[1];
+                    dl.Show();
+                    return;
+                }
+                //alarm(title,url/text) - Reverse
+                if (path.ToLower().StartsWith("alarm("))
+                {
+                    path = path[6..];
+                    path = path[0..^1];
+                    if (path.IndexOf(",") != -1)
+                    {
+                        var pa = path[..path.IndexOf(",")];
+                        path = path[(pa.Length + 1)..];
+                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                        {
+                            if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
+                            {
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    pa = GetWebContent(pa);
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    RunExe("alarm(" + pa + "," + path + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
+                            }
+                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
+                            {
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    path = GetWebContent(path);
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    RunExe("alarm(" + pa + "," + path.Replace("<br>", "\\n") + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
+                            }
+                            new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                            .AddArgument("Launch", App.AppTitle)
+                            .AddText(pa)
+                            .AddText(path.Replace("\\n", Environment.NewLine))
+                            .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
+                                        .SetContent(Get_Transalte("alarmone")))
+                            .Show();
+                        }
+                        else
+                        {
+                            new Hiro_Alarm(-1, CustomedTitle: pa, CustomedContnet: path, OneButtonOnly: 1).Show();
+                        }
+                    }
+                    else
+                    {
+                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                        {
+                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
+                            {
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    path = GetWebContent(path);
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    RunExe("alarm(" + path.Replace("<br>", "\\n") + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
+                            }
+                            new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                                                            .AddText(Get_Transalte("alarmtitle"))
+                                                            .AddText(path.Replace("\\n", Environment.NewLine))
+                                                            .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
+                                                                        .SetContent(Get_Transalte("alarmone")))
+                                                            .Show();
+                            
+                        }
+                        else
+                        {
+                            new Hiro_Alarm(-1, CustomedContnet: path, OneButtonOnly: 1).Show();
+                        }
+
+                    }
+                    return;
+                }
                 if (App.mn != null)
                 {
                     if (path.ToLower().StartsWith("home()"))
@@ -965,16 +1459,6 @@ namespace hiro
                     {
                         RunExe("show()");
                         App.mn.Set_Label(App.mn.aboutx);
-                        return;
-                    }
-                    if (path.ToLower().StartsWith("hide()"))
-                    {
-                        App.mn.titlelabel.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.versionlabel.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.minbtn.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.closebtn.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.stack.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.Visibility = System.Windows.Visibility.Hidden;
                         return;
                     }
                 }
@@ -1100,112 +1584,6 @@ namespace hiro
                     }
                     return;
                 }
-                //sequence(uri)
-                if (path.ToLower().StartsWith("seq("))
-                {
-                    Hiro_Sequence sq = new();
-                    if (parameter.Count < 2 || (!parameter[1].ToLower().Equals("hide") && !parameter[1].ToLower().Equals("h")))
-                        sq.Show();
-                    sq.SeqExe(parameter[0]);
-                    return;
-                }
-                if (path.ToLower().StartsWith("delete("))
-                {
-                    if (parameter[0].StartsWith("\""))
-                        parameter[0] = parameter[0].Substring(1);
-                    if (parameter[0].EndsWith("\""))
-                        parameter[0] = parameter[0].Substring(0, parameter[0].Length - 1);
-                    if (!System.IO.File.Exists(parameter[0]))
-                    {
-                        if (System.IO.Directory.Exists(parameter[0]))
-                            try
-                            {
-                                System.IO.Directory.Delete(parameter[0], true);
-                            }
-                            catch (Exception ex)
-                            {
-                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                            }
-                        else
-                            LogtoFile("[WARNING]Warning at " + path + " | Details: " + Get_Transalte("filenotexist"));
-                        return;
-                    }
-                    try
-                    {
-                        System.IO.File.Delete(parameter[0]);
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                    }
-                    return;
-                }
-                if (path.ToLower().StartsWith("key("))
-                {
-                    List<byte> modi = new();
-                    int pathi = int.Parse(parameter[0]);
-                    if (pathi >= 8)
-                    {
-                        while (pathi >= 8)
-                        {
-                            pathi -= 8;
-                        }
-                        modi.Add(0x5B);//Windows
-                    }
-                    if (pathi >= 4)
-                    {
-                        while (pathi >= 4)
-                        {
-                            pathi -= 4;
-                        }
-                        modi.Add(0x10);
-                    }
-                    if (pathi >= 2)
-                    {
-                        while (pathi >= 2)
-                        {
-                            pathi -= 2;
-                        }
-                        modi.Add(0x11);
-                    }
-                    if (pathi >= 1)
-                        modi.Add(0x12);
-                    byte parai = (byte)System.Windows.Input.KeyInterop.VirtualKeyFromKey((System.Windows.Input.Key)int.Parse(parameter[1]));
-                    for (int i = 0; i < modi.Count; i++)
-                    {
-                        keybd_event(modi[i], MapVirtualKey(modi[i], 0), 0x0001, 0);
-                    }
-                    keybd_event(parai, MapVirtualKey(parai, 0), 0x0001, 0);
-                    keybd_event(parai, MapVirtualKey(parai, 0), 0x0001 | 0x0002, 0);
-                    for (int i = modi.Count - 1; i >= 0; i--)
-                    {
-                        keybd_event(modi[i], MapVirtualKey(modi[i], 0), 0x0001 | 0x0002, 0);
-                    }
-                    return;
-                }
-                if (path.ToLower().StartsWith("vol("))
-                {
-                    switch (path.ToLower())
-                    {
-                        case "vol(up)":
-                            keybd_event(0xAF, MapVirtualKey(0xAF, 0), 0x0001, 0);
-                            keybd_event(0xAF, MapVirtualKey(0xAF, 0), 0x0001 | 0x0002, 0);
-                            break;
-                        case "vol(down)":
-                            keybd_event(0xAE, MapVirtualKey(0xAE, 0), 0x0001, 0);
-                            keybd_event(0xAE, MapVirtualKey(0xAE, 0), 0x0001 | 0x0002, 0);
-                            break;
-                        case "vol(mute)":
-                            keybd_event(0xAD, MapVirtualKey(0xAD, 0), 0x0001, 0);
-                            keybd_event(0xAD, MapVirtualKey(0xAD, 0), 0x0001 | 0x0002, 0);
-                            break;
-                        default:
-                            break;
-                    }
-                    return;
-                }
                 if (path.ToLower().StartsWith("web("))
                 {
                     Hiro_Web web;
@@ -1253,226 +1631,6 @@ namespace hiro
                     web.Refreash_Layout();
                     return;
                 }
-                if (path.ToLower().StartsWith("bluetooth("))
-                {
-                    bool? situation = path.ToLower() switch
-                    {
-                        "bluetooth(0)" => false,
-                        "bluetooth(off)" => false,
-                        "bluetooth(1)" => true,
-                        "bluetooth(on)" => true,
-                        _ => null,
-                    };
-                    SetBthState(situation);
-                    return;
-                }
-                //run - Reverse
-                if (path.ToLower().StartsWith("run("))
-                {
-                    String titile, mes, toolstr;
-                    if (path.LastIndexOf(")") != -1)
-                    {
-                        toolstr = path[4..path.LastIndexOf(")")];
-                        if (toolstr.LastIndexOf(",") != -1)
-                        {
-                            titile = toolstr[..toolstr.LastIndexOf(",")];
-                            if (titile.Length < toolstr.Length - 1)
-                            {
-                                mes = toolstr[(titile.Length + 1)..];
-                            }
-                            else
-                            {
-                                App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
-                                return;
-                            }
-
-                        }
-
-                        else
-                        {
-                            App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
-                        return;
-                    }
-                    try
-                    {
-                        ProcessStartInfo pinfo = new();
-                        pinfo.UseShellExecute = true;
-                        List<string> blank = new();
-                        var a = 0;
-                        while (titile.IndexOf("\"") != -1)
-                        {
-                            a++;
-                            var lef = titile[..titile.IndexOf("\"")];
-                            titile = titile[(lef.Length + 1)..];
-                            if (titile.IndexOf("\"") == -1)
-                                break;
-                            var inside = titile[..titile.IndexOf("\"")];
-                            titile = titile[(inside.Length + 1)..];
-                            blank.Add(inside);
-                            titile = lef + "[" + a.ToString() + "]" + titile;
-                        }
-                        if (!titile.Contains(' ', StringComparison.CurrentCulture))
-                        {
-                            pinfo.FileName = titile;
-                        }
-                        else
-                        {
-                            pinfo.FileName = titile[..titile.IndexOf(" ")];
-                            pinfo.Arguments = titile[(titile.IndexOf(" ") + 1)..];
-                        }
-                        a = 1;
-                        while (blank.Count > 0 && pinfo.FileName.IndexOf("[" + a.ToString() + "]") != -1)
-                        {
-                            pinfo.FileName = pinfo.FileName.Replace("[" + a.ToString() + "]", blank[0]);
-                            blank.RemoveAt(0);
-                            a++;
-                        }
-                        while (blank.Count > 0 && pinfo.Arguments.IndexOf("[" + a.ToString() + "]") != -1)
-                        {
-                            pinfo.Arguments = pinfo.Arguments.Replace("[" + a.ToString() + "]", "\"" + blank[0]) + "\"";
-                            blank.RemoveAt(0);
-                            a++;
-                        }
-                        if (mes.StartsWith("\""))
-                            mes = mes[1..];
-                        if (mes.EndsWith("\""))
-                            mes = mes[0..^1];
-                        if (titile.StartsWith("\""))
-                            titile = titile[1..];
-                        if (mes.EndsWith("\""))
-                            titile = titile[0..^1];
-                        mes = mes.ToLower();
-                        if (mes.IndexOf("a") != -1)
-                            pinfo.Verb = "runas";
-                        if (mes.IndexOf("h") != -1)
-                            pinfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        if (mes.IndexOf("i") != -1)
-                            pinfo.WindowStyle = ProcessWindowStyle.Minimized;
-                        if (mes.IndexOf("x") != -1)
-                            pinfo.WindowStyle = ProcessWindowStyle.Maximized;
-                        if (mes.IndexOf("n") != -1)
-                            pinfo.CreateNoWindow = true;
-                        Run_Process(pinfo, path, RunPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                    }
-                    if (App.mn == null)
-                        RunExe("exit()");
-                    return;
-                }
-                if (path.ToLower().StartsWith("move("))
-                {
-                    if (!System.IO.File.Exists(parameter[0]))
-                    {
-                        try
-                        {
-                            System.IO.Directory.Move(parameter[0], parameter[1]);
-                        }
-                        catch (Exception ex)
-                        {
-                            App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                            LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                        }
-                        return;
-                    }
-                    try
-                    {
-                        CreateFolder(parameter[1]);
-                        System.IO.File.Move(parameter[0], parameter[1]);
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        Hiro_Utils.LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                    }
-                    return;
-                }
-                if (path.ToLower().StartsWith("copy("))
-                {
-                    if (!System.IO.File.Exists(parameter[0]))
-                    {
-                        if (System.IO.Directory.Exists(parameter[0]))
-                            try
-                            {
-                                CopyDirectory(parameter[0], parameter[1]);
-                            }
-                            catch (Exception ex)
-                            {
-                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                            }
-                        else
-                        {
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
-                            LogtoFile("[ERROR]Error at " + path + " | Details: " + Get_Transalte("filenotexist"));
-                        }
-                        return;
-                    }
-                    try
-                    {
-                        CreateFolder(parameter[1]);
-                        System.IO.File.Copy(parameter[0], parameter[1]);
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                    }
-                    return;
-                }
-                if (path.ToLower().StartsWith("wifi("))
-                {
-                    int situation = path.ToLower() switch
-                    {
-                        "wifi(0)" => 0,
-                        "wifi(off)" => 0,
-                        "wifi(1)" => 1,
-                        "wifi(on)" => 1,
-                        "wifi(2)" => 2,
-                        "wifi(dis)" => 2,
-                        "wifi(disconnect)" => 2,
-                        "wifi(3)" => 3,
-                        "wifi(con)" => 3,
-                        "wifi(connect)" => 3,
-                        _ => -1,
-                    };
-                    if (situation == -1)
-                    {
-                        if (parameter.Count > 1 && parameter[1].ToLower().IndexOf("o") != -1)
-                        {
-                            SetWiFiState(3, parameter[0], true);
-                        }
-                        else
-                            SetWiFiState(3, parameter[0]);
-
-                    }
-                    else
-                        SetWiFiState(situation);
-                    return;
-                }
-                if (path.ToLower().StartsWith("ini("))
-                {
-                    Write_Ini(parameter[0], parameter[1], parameter[2], parameter[3]);
-                    return;
-                }
-                if (path.ToLower().StartsWith("menu()"))
-                {
-                    if (App.wnd != null && App.wnd.cm != null)
-                    {
-                        App.Load_Menu();
-                        App.wnd.cm.IsOpen = true;
-                    }
-                    return;
-                }
                 if (path.ToLower().StartsWith("editor()"))
                 {
                     App.ed ??= new Hiro_Editor();
@@ -1483,95 +1641,6 @@ namespace hiro
                 {
                     App.ls ??= new();
                     App.ls.Show();
-                    return;
-                }
-                if (path.ToLower() == "hello" || path.ToLower() == "hello()")
-                {
-                    var hr = DateTime.Now.Hour;
-                    var morning = Read_Ini(App.LangFilePath, "local", "morning", "[6,7,8,9,10]");
-                    var noon = Read_Ini(App.LangFilePath, "local", "noon", "[11,12,13]");
-                    var afternoon = Read_Ini(App.LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
-                    var evening = Read_Ini(App.LangFilePath, "local", "evening", "[19,20,21,22]");
-                    var night = Read_Ini(App.LangFilePath, "local", "night", "[23,0,1,2,3,4,5]");
-                    morning = "," + morning.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    noon = "," + noon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    afternoon = "," + afternoon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    evening = "," + evening.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    night = "," + night.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    if (morning.IndexOf("," + hr + ",") != -1)
-                    {
-                        if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("morning").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
-                        else
-                            App.Notify(new noticeitem(Get_Transalte("morningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
-
-                    }
-                    else if (noon.IndexOf("," + hr + ",") != -1)
-                    {
-                        if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("noon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
-                        else
-                            App.Notify(new noticeitem(Get_Transalte("nooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
-
-                    }
-                    else if (afternoon.IndexOf("," + hr + ",") != -1)
-                    {
-                        if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("afternoon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
-                        else
-                            App.Notify(new noticeitem(Get_Transalte("afternooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
-
-                    }
-                    else if (evening.IndexOf("," + hr + ",") != -1)
-                    {
-                        if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("evening").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
-                        else
-                            App.Notify(new noticeitem(Get_Transalte("eveningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
-                    }
-                    else
-                    {
-                        if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("night").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
-                        else
-                            App.Notify(new noticeitem(Get_Transalte("nightcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
-                    }
-                    return;
-                }
-                if (path.ToLower() == "nop" || path.ToLower() == "nop()")
-                    return;
-                if (path.ToLower().StartsWith("exit()"))
-                {
-                    try
-                    {
-                        Environment.Exit(Environment.ExitCode);
-                        System.Windows.Application.Current.Shutdown();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                    }
-                    return;
-                }
-                if (path.ToLower().StartsWith("show()"))
-                {
-                    if (App.mn == null)
-                    {
-                        App.mn = new();
-                        App.mn.Show();
-                        return;
-                    }
-                    App.mn.Visibility = System.Windows.Visibility.Visible;
-                    App.mn.HiHiro();
-                    return;
-                }
-                if (path.ToLower().StartsWith("lock()"))
-                {
-                    App.Locked = true;
-                    if (App.mn == null)
-                        return;
-                    App.mn.Set_Label(App.mn.homex);
-                    App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
                     return;
                 }
                 if (path.ToLower().StartsWith("auth()"))
@@ -1601,64 +1670,6 @@ namespace hiro
                         Hiro_Finder hf = new();
                         hf.Show();
                     }
-                    return;
-                }
-                if (path.ToLower().StartsWith("item(") && !path.ToLower().StartsWith("item()"))
-                {
-                    var RealPath = parameter[0];
-                    for (int i = 1; i < parameter.Count; i++)
-                    {
-                        RealPath += ("," + parameter[i]);
-                    }
-                    foreach (var cmd in App.cmditems)
-                    {
-                        if (cmd.Name.Equals(RunPath) || cmd.Name.Equals(RealPath) || cmd.Name.Equals(path))
-                        {
-                            RunExe(cmd.Command);
-                            return;
-                        }
-                    }
-                }
-                if (path.ToLower().StartsWith("zip("))
-                {
-                    BackgroundWorker bw = new();
-                    bw.DoWork += delegate
-                    {
-                        System.IO.Compression.ZipFile.CreateFromDirectory(parameter[0], parameter[1]);
-                    };
-                    bw.RunWorkerCompleted += delegate
-                    {
-                        if (parameter.Count > 2)
-                        {
-                            var para = parameter[2].ToLower();
-                            if (para.IndexOf("s") != -1)
-                                RunExe(parameter[1]);
-                            if (para.IndexOf("d") != -1)
-                                RunExe("Delete(" + parameter[0] + ")");
-                        }
-                    };
-                    bw.RunWorkerAsync();
-                    return;
-                }
-                if (path.ToLower().StartsWith("unzip("))
-                {
-                    BackgroundWorker bw = new();
-                    bw.DoWork += delegate
-                    {
-                        System.IO.Compression.ZipFile.ExtractToDirectory(parameter[0], parameter[1]);
-                    };
-                    bw.RunWorkerCompleted += delegate
-                    {
-                        if (parameter.Count > 2)
-                        {
-                            var para = parameter[2].ToLower();
-                            if (para.IndexOf("s") != -1)
-                                RunExe(parameter[1]);
-                            if (para.IndexOf("d") != -1)
-                                RunExe("Delete(" + parameter[0] + ")");
-                        }
-                    };
-                    bw.RunWorkerAsync();
                     return;
                 }
                 try
@@ -1707,6 +1718,7 @@ namespace hiro
                 {
                     LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                 }
+                #endregion
                 if (App.mn == null)
                     RunExe("exit()");
                 return;
@@ -2893,6 +2905,37 @@ namespace hiro
 
         [DllImport("Kernel32.dll")]
         public extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
+        #endregion
+
+        #region 检测全屏程序
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetWindowRect(HandleRef hWnd, [In, Out] ref RECT rect);
+
+        public static bool IsForegroundFullScreen()
+        {
+            return IsForegroundFullScreen(null);
+        }
+
+        public static bool IsForegroundFullScreen(System.Windows.Forms.Screen? screen)
+        {
+            screen ??= System.Windows.Forms.Screen.PrimaryScreen;
+            RECT rect = new RECT();
+            IntPtr hWnd = (IntPtr)GetForegroundWindow();
+            GetWindowRect(new HandleRef(null, hWnd), ref rect);
+            return screen.Bounds.Width == (rect.right - rect.left) && screen.Bounds.Height == (rect.bottom - rect.top);
+        }
         #endregion
 
         #region 杂项功能

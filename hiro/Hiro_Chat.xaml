@@ -14,9 +14,10 @@
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
     </Page.Resources>
     <Grid>
-        <TextBox x:Name="ChatContent" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" ></TextBox>
+        <TextBox x:Name="ChatContent" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" ></TextBox>
+        <TextBox x:Name="ChatContentBak" Visibility="Hidden" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" ></TextBox>
         <Label x:Name="ScrollViewer1" Margin="5,305,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{DynamicResource AppFore}" Height="1" Width="410"></Label>
-        <TextBox x:Name="SendContent" Margin="5,305,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="80" Foreground="{DynamicResource AppFore}" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"></TextBox>
-        <Button x:Name="SendButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="Send" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="SendButton_Click" KeyDown="SendButton_KeyDown" Cursor="Hand"></Button>
+        <TextBox x:Name="SendContent" Margin="5,310,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="75" Foreground="{DynamicResource AppFore}" VerticalScrollBarVisibility="Auto" KeyDown="SendContent_KeyDown"/>
+        <Button x:Name="SendButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="Send" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="SendButton_Click" Cursor="Hand"></Button>
     </Grid>
 </Page>

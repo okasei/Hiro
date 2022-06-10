@@ -84,54 +84,114 @@ namespace hiro
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
-        private void Hiro_Chat_Initialize()
+        public void Hiro_Chat_Initialize()
         {
             var folder = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\");
             Hiro_Utils.CreateFolder(folder);
-            System.Threading.Thread th = new(() =>
-            {
-                Hiro_Get_Chat();
-            });
-            th.Start();
+            var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf");
+            ChatContentBak.Text = System.IO.File.Exists(file) ? System.IO.File.ReadAllText(file) : "";
+            Load_Chat();
         }
 
-        private void Hiro_Get_Chat()
+        public void Hiro_Get_Chat()
         {
-            Aite = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + MacAddress + "&mode=query");
-            var content = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/log.php?from=" + LocalMacAddress + "&to=" + MacAddress,
-                true, Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + MacAddress + ".hcf"));
-            Dispatcher.Invoke(() =>
+            try
             {
-                Load_Chat();
-            });
+                Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\"));
+                Aite = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + MacAddress + "&mode=query");
+                var content = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/log.php?from=" + LocalMacAddress + "&to=" + MacAddress,
+                    true, Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf"));
+                Dispatcher.Invoke(() =>
+                {
+                    Load_Chat();
+                });
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]Cannot fetch chatting data." + ex.Message);
+            }
+            finally
+            {
+                
+            }
+            
         }
 
         private void Load_Chat()
         {
-            var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\") + MacAddress + ".hcf";
-            ChatContent.Clear();
-            var con = System.IO.File.ReadAllLines(file);
-            foreach (var item in con)
+            try
             {
-                var icon = item.Split(',');
-                if (icon.Length < 3)
-                    continue;
-                Dispatcher.Invoke(() =>
+                var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf");
+                ChatContent.Clear();
+                var con = System.IO.File.ReadAllLines(file);
+                foreach (var item in con)
                 {
+                    var icon = item.Split(',');
+                    if (icon.Length < 3)
+                        continue;
                     ChatContent.AppendText(icon[0].Replace(LocalMacAddress, App.Username).Replace(MacAddress, Aite) + " " + icon[1] + Environment.NewLine);
                     ChatContent.AppendText(icon[2].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\"));
-                });
-                for (int i = 3; i < icon.Length; i++)
-                {
-                    Dispatcher.Invoke(() =>
+                    for (int i = 3; i < icon.Length; i++)
                     {
                         ChatContent.AppendText("," + icon[i].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\"));
-                    });
-                }
-                Dispatcher.Invoke(() =>
-                {
+                    }
                     ChatContent.AppendText(Environment.NewLine);
-                });
+                }
+                ChatContent.ScrollToEnd();
+                Differ_Chat(System.IO.File.ReadAllText(file));
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+            }
+        }
+
+        private void Differ_Chat(string con)
+        {
+            if (con.Equals(ChatContentBak.Text))
+                return;
+            var differ = con.StartsWith(ChatContentBak.Text) ? con[ChatContentBak.Text.Length..] : con;
+            ChatContentBak.Text = con;
+            var all = differ.Split(new string[] { "\r\n", "\r", "\n" },StringSplitOptions.None);
+            foreach (var item in all)
+            {
+                var index = item.IndexOf(",");
+                if (index < 0)
+                    continue;
+                var user = item[..index];
+                if (user.Equals(LocalMacAddress))
+                    continue;
+                user = user.Replace(LocalMacAddress, App.Username).Replace(MacAddress, Aite);
+                index = item.IndexOf(",", index + 1);
+                var content = item[(index + 1)..];
+                content.Replace(Environment.NewLine, "");
+                var i = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Message", "3"));
+                switch (i)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        content = Hiro_Utils.Get_Transalte("msgnew").Replace("%u", user);
+                        break;
+                    case 2:
+                        if(App.Locked)
+                            content = Hiro_Utils.Get_Transalte("msgnew").Replace("%u", user);
+                        break;
+                    default:
+                        break;
+                }
+                if (i != 0)
+                    Hiro_Utils.RunExe("notify(" + user + ": " + content + ",2)", user);
+                if(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
+                    try
+                    {
+                        System.Media.SoundPlayer sndPlayer = new(Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav"));
+                        sndPlayer.Play();
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    }
             }
         }
 
@@ -182,8 +242,11 @@ namespace hiro
             }
             if (SendContent.Text.ToLower().StartsWith("talkto:"))
             {
-                MacAddress = SendContent.Text.Substring(7);
-                Hiro_Utils.LogtoFile(MacAddress);
+                MacAddress = SendContent.Text[7..];
+                Hiro_Utils.LogtoFile("[INFO]Talk to " + MacAddress);
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "ChatMAC", MacAddress);
+                var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf");
+                ChatContentBak.Text = System.IO.File.Exists(file) ? System.IO.File.ReadAllText(file) : "";
                 SendContent.Clear();
                 Hiro_Get_Chat();
                 return;
@@ -202,9 +265,19 @@ namespace hiro
                 SendButton.IsEnabled = true;
             }
         }
-        private void SendButton_KeyDown(object sender, KeyEventArgs e)
+
+        private void SendContent_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyStates == Keyboard.GetKeyStates(Key.R) && Keyboard.Modifiers == ModifierKeys.Control)
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.Return) && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                var i = SendContent.SelectionStart;
+                var fore = i > 0 ? SendContent.Text[..i] : "";
+                var back = i == SendContent.Text.Length ? "" : SendContent.Text[i..];
+                SendContent.Text = fore + Environment.NewLine + back;
+                SendContent.SelectionStart = i + Environment.NewLine.Length;
+                e.Handled = true;
+            }
+            else if(e.KeyStates == Keyboard.GetKeyStates(Key.Return))
             {
                 Send();
                 e.Handled = true;

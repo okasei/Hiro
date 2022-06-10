@@ -195,7 +195,7 @@ namespace hiro
                 Next_CMD();
                 return;
             }
-            Hiro_Utils.RunExe(sc);
+            Hiro_Utils.RunExe(sc, Hiro_Utils.Get_Transalte("seqtitle"));
             Next_CMD();
         }
         public void ThreadSeq(String path)

@@ -200,8 +200,7 @@ namespace hiro
                     }
                     break;
                 case 0x0312:
-                    System.ComponentModel.BackgroundWorker bw = new();
-                    bw.DoWork += delegate
+                    new System.Threading.Thread(() =>
                     {
                         var indexid = wParam.ToInt32();
                         for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
@@ -215,8 +214,7 @@ namespace hiro
                                 break;
                             }
                         }
-                    };
-                    bw.RunWorkerAsync();
+                    }).Start();
                     break;
                 default:
                     if (App.dflag)
