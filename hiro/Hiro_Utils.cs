@@ -2651,18 +2651,12 @@ namespace hiro
             {
                 try
                 {
-                    if (Environment.ProcessPath != null)
-                    {
-                        string strName = "\"" + Environment.ProcessPath + "\"";//获取要自动运行的应用程序名
-                        if (!System.IO.File.Exists(strName))//判断要自动运行的应用程序文件是否存在
-                            return;
-                        Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//检索指定的子项
-                        registry ??= Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
-                        registry.SetValue("Hiro_Autostart", strName + " silent");//设置该子项的新的“键值对”
-                        Write_Ini(App.dconfig, "Config", "AutoRun", "1");
-                        LogtoFile("[HIROWEGO]Enable Autorun");
-                    }
-
+                    string strName = "\"" + Path_Prepare(res.ApplicationPath) + "\"";//获取要自动运行的应用程序名
+                    Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//检索指定的子项
+                    registry ??= Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
+                    registry.SetValue("Hiro_Autostart", strName + " silent");//设置该子项的新的“键值对”
+                    Write_Ini(App.dconfig, "Config", "AutoRun", "1");
+                    LogtoFile("[HIROWEGO]Enable Autorun");
                 }
                 catch (Exception ex)
                 {
@@ -2671,19 +2665,13 @@ namespace hiro
             }
             else
             {
-                if (Environment.ProcessPath != null)
-                {
-                    string strName = "\"" + Environment.ProcessPath + "\"";//获取要自动运行的应用程序名
-                    if (!System.IO.File.Exists(strName))//判断要取消的应用程序文件是否存在
-                        return;
-                    Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//读取指定的子项
-                    if (registry == null)//若指定的子项不存在
-                        return;
-                    registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
-                    registry.DeleteValue("Hiro_Autostart", false);//删除指定“键名称”的键/值对
-                    Write_Ini(App.dconfig, "Config", "AutoRun", "0");
-                    LogtoFile("[HIROWEGO]Disable Autorun");
-                }
+                Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//读取指定的子项
+                if (registry == null)//若指定的子项不存在
+                    return;
+                registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
+                registry.DeleteValue("Hiro_Autostart", false);//删除指定“键名称”的键/值对
+                Write_Ini(App.dconfig, "Config", "AutoRun", "0");
+                LogtoFile("[HIROWEGO]Disable Autorun");
             }
         }
         #endregion

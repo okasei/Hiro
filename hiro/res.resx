@@ -120,6 +120,9 @@
   <data name="ApplicationName" xml:space="preserve">
     <value>Hiro</value>
   </data>
+  <data name="ApplicationPath" xml:space="preserve">
+    <value>&lt;current&gt;\Hiro.exe</value>
+  </data>
   <data name="ApplicationUpdateVersion" xml:space="preserve">
     <value>2020401</value>
   </data>

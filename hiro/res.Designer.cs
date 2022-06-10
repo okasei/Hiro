@@ -70,6 +70,15 @@ namespace hiro {
         }
         
         /// <summary>
+        ///   查找类似 &lt;current&gt;\Hiro.exe 的本地化字符串。
+        /// </summary>
+        internal static string ApplicationPath {
+            get {
+                return ResourceManager.GetString("ApplicationPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 2020401 的本地化字符串。
         /// </summary>
         internal static string ApplicationUpdateVersion {

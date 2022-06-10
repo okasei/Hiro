@@ -573,7 +573,7 @@ namespace hiro
                     {
                         System.Diagnostics.ProcessStartInfo pinfo = new();
                         pinfo.UseShellExecute = true;
-                        pinfo.FileName = Environment.ProcessPath;
+                        pinfo.FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath);
                         pinfo.Arguments = "autostart_on";
                         pinfo.Verb = "runas";
                         System.Diagnostics.Process.Start(pinfo);
@@ -599,7 +599,7 @@ namespace hiro
                     {
                         System.Diagnostics.ProcessStartInfo pinfo = new();
                         pinfo.UseShellExecute = true;
-                        pinfo.FileName = Environment.ProcessPath;
+                        pinfo.FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath);
                         pinfo.Arguments = "autostart_off";
                         pinfo.Verb = "runas";
                         System.Diagnostics.Process.Start(pinfo);
