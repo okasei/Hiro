@@ -173,19 +173,21 @@ namespace hiro
                 Resizel((ci + 1), cmds.Count);
                 return;
             }
-            if (sc.Length > 4 && sc.Substring(0, 4).ToLower() == "seq(")
+            if (sc.Length > 4 && sc[..4].ToLower() == "seq(")
             {
                 if (sc.LastIndexOf(")") != -1)
                 {
-                    var toolstr = sc.Substring(4, sc.LastIndexOf(")") - 4);
+                    var toolstr = sc[4..sc.LastIndexOf(")")];
                     if (toolstr.StartsWith("\""))
-                        toolstr = toolstr.Substring(1);
+                        toolstr = toolstr[1..];
                     if (toolstr.EndsWith("\""))
                         toolstr = toolstr.Substring(0, toolstr.Length - 1);
                     if (System.IO.File.Exists(toolstr))
                     {
-                        Hiro_Sequence sq = new();
-                        sq.parent = this;
+                        Hiro_Sequence sq = new()
+                        {
+                            parent = this
+                        };
                         sq.Show();
                         sq.ThreadSeq(toolstr);
                         Visibility = Visibility.Hidden;
@@ -196,6 +198,8 @@ namespace hiro
                 return;
             }
             Hiro_Utils.RunExe(sc, Hiro_Utils.Get_Transalte("seqtitle"));
+            if (App.dflag)
+                Hiro_Utils.LogtoFile(sc);
             Next_CMD();
         }
         public void ThreadSeq(String path)
@@ -353,7 +357,7 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage);
+            Hiro_Utils.Set_Bgimage(bgimage, this);
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;

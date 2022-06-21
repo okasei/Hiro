@@ -25,7 +25,7 @@ namespace hiro
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
             Hiro_Utils.Set_Control_Location(timelabel, "locktime", bottom: true);
             Hiro_Utils.Set_Control_Location(datelabel, "lockdate", bottom: true);
-            Hiro_Utils.ShowCursor(0);
+            Hiro_Utils.SetCursor(0);
             var filep = App.CurrentDirectory + "\\system\\wallpaper\\" + DateTime.Now.ToString("yyyyMMdd") + ".jpg";
             string wp = "";
             if (!System.IO.File.Exists(filep))
@@ -55,7 +55,7 @@ namespace hiro
                         Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
                     }
                     StringBuilder wallPaperPath = new(200);
-                    if (Hiro_Utils.SystemParametersInfo(0x0073, 200, wallPaperPath, 0))
+                    if (Hiro_Utils.GetSystemParametersInfo(0x0073, 200, wallPaperPath, 0))
                     {
                         Hiro_Utils.LogtoFile(wallPaperPath.ToString());
                         wp = wallPaperPath.ToString();
@@ -133,7 +133,7 @@ namespace hiro
         }
         private void Run_Out()
         {
-            Hiro_Utils.ShowCursor(1);
+            Hiro_Utils.SetCursor(1);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, TimeSpan.FromMilliseconds(600));

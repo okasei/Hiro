@@ -1,11 +1,25 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Diagnostics;
+using System.Globalization;
+using System.Windows.Media;
+using System.Windows.Controls;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Windows.Media.Animation;
+using Windows.Devices.WiFi;
+using Windows.Devices.Radios;
 using Windows.Security.Credentials;
 using Windows.Security.Credentials.UI;
+using System.Windows.Media.Imaging;
+using Microsoft.VisualBasic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 
 namespace hiro
 {
@@ -165,16 +179,16 @@ namespace hiro
     #endregion
 
     #region 通知窗口项目定义
-    public class alarmwin
+    public class Hiro_AlarmWin
     {
         public Hiro_Alarm win;
         public int id;
-        public alarmwin(Hiro_Alarm a, int b)
+        public Hiro_AlarmWin(Hiro_Alarm a, int b)
         {
             win = a;
             id = b;
         }
-        public alarmwin(int a, Hiro_Alarm b)
+        public Hiro_AlarmWin(int a, Hiro_Alarm b)
         {
             win = b;
             id = a;
@@ -183,12 +197,12 @@ namespace hiro
     #endregion
 
     #region 通知项目定义
-    public class noticeitem
+    public class Hiro_Notice
     {
         public string? title;
         public string msg;
         public int time;
-        public noticeitem(string ms = "NULL", int ti = 1,string? tit = null)
+        public Hiro_Notice(string ms = "NULL", int ti = 1,string? tit = null)
         {
             msg = ms;
             time = ti;
@@ -278,7 +292,7 @@ namespace hiro
             ret = ret + re + ", Package: ";
             re = appPackage ?? "null";
             ret = ret + re + ", Name: ";
-            re = appName != null ? appName : "null";
+            re = appName ?? "null";
             ret = ret + re + ", Msg: ";
             re = msg ?? "null";
             ret += re;
@@ -312,7 +326,7 @@ namespace hiro
         #region 读Ini文件
         public static string Read_Ini(string iniFilePath, string Section, string Key, string defaultText)
         {
-            if (System.IO.File.Exists(iniFilePath))
+            if (File.Exists(iniFilePath))
             {
                 byte[] buffer = new byte[1024];
                 int ret = GetPrivateProfileString(Encoding.GetEncoding("utf-8").GetBytes(Section), Encoding.GetEncoding("utf-8").GetBytes(Key), Encoding.GetEncoding("utf-8").GetBytes(defaultText), buffer, 1024, iniFilePath);
@@ -330,8 +344,8 @@ namespace hiro
         {
             try
             {
-                if (!System.IO.File.Exists(iniFilePath))
-                    System.IO.File.Create(iniFilePath).Close();
+                if (!File.Exists(iniFilePath))
+                    File.Create(iniFilePath).Close();
                 long OpStation = WritePrivateProfileString(Encoding.GetEncoding("utf-8").GetBytes(Section), Encoding.GetEncoding("utf-8").GetBytes(Key), Encoding.GetEncoding("utf-8").GetBytes(Value), iniFilePath);
                 if (OpStation == 0)
                     return false;
@@ -352,12 +366,12 @@ namespace hiro
         {
             try
             {
-                if (!System.IO.File.Exists(App.LogFilePath))
-                    System.IO.File.Create(App.LogFilePath).Close();
-                System.IO.FileStream fs = new(App.LogFilePath, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite);
-                System.IO.StreamReader sr = new(fs);
+                if (!File.Exists(App.LogFilePath))
+                    File.Create(App.LogFilePath).Close();
+                FileStream fs = new(App.LogFilePath, FileMode.Open, FileAccess.ReadWrite);
+                StreamReader sr = new(fs);
                 var str = sr.ReadToEnd();
-                System.IO.StreamWriter sw = new(fs);
+                StreamWriter sw = new(fs);
                 sw.Write(DateTime.Now.ToString("[HH:mm:ss]") + val + Environment.NewLine);
                 sw.Flush();
                 sw.Close();
@@ -382,50 +396,52 @@ namespace hiro
         #endregion
 
         #region UI 相关
-        public static void Get_Text_Visual_Width(System.Windows.Controls.ContentControl sender, double pixelPerDip, out System.Windows.Size size)
+        public static void Get_Text_Visual_Width(ContentControl sender, double pixelPerDip, out Size size)
         {
-            var formattedText = new System.Windows.Media.FormattedText(
-                sender.Content.ToString(), System.Globalization.CultureInfo.CurrentUICulture, System.Windows.FlowDirection.LeftToRight, new System.Windows.Media.Typeface(sender.FontFamily, sender.FontStyle, sender.FontWeight, sender.FontStretch),
-                sender.FontSize, System.Windows.Media.Brushes.Black, pixelPerDip);
+            var formattedText = new FormattedText(
+                sender.Content.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, new Typeface(sender.FontFamily, sender.FontStyle, sender.FontWeight, sender.FontStretch),
+                sender.FontSize, Brushes.Black, pixelPerDip);
             size.Width = formattedText.Width + sender.Padding.Left + sender.Padding.Right;
             size.Height = formattedText.Height + sender.Padding.Top + sender.Padding.Bottom;
         }
-        public static void Set_Bgimage(System.Windows.Controls.Control sender, string? strFileName = null)
+        public static void Set_Bgimage(Control sender, Control win, string? strFileName = null)
         {
+            Set_Opacity(sender, win);
+            //Bgimage
             strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
-            if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !System.IO.File.Exists(strFileName))
+            if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
             {
                 if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
                 {
-                    System.Windows.Media.Animation.Storyboard? sb = new();
+                    Storyboard? sb = new();
                     try
                     {
                         sb = AddColorAnimaton(App.AppAccentColor, 150, sender, "Background.Color", sb);
                         sb.Completed += delegate
                         {
-                            sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
+                            sender.Background = new SolidColorBrush(App.AppAccentColor);
                             sb = null;
                         };
                         sb.Begin();
                     }catch (Exception ex)
                     {
                         LogtoFile("[ERROR]" + ex.Message);
-                        sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
+                        sender.Background = new SolidColorBrush(App.AppAccentColor);
                     }
                     
                 }
                 else
-                    sender.Background = new System.Windows.Media.SolidColorBrush(App.AppAccentColor);
+                    sender.Background = new SolidColorBrush(App.AppAccentColor);
             }
             else
             {
-                System.Windows.Media.Imaging.BitmapImage bi = new();
+                BitmapImage bi = new();
                 bi.BeginInit();
-                bi.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bi.CacheOption = BitmapCacheOption.OnLoad;
                 bi.UriSource = new Uri(strFileName);
-                System.Windows.Media.ImageBrush ib = new()
+                ImageBrush ib = new()
                 {
-                    Stretch = System.Windows.Media.Stretch.UniformToFill,
+                    Stretch = Stretch.UniformToFill,
                     ImageSource = bi
                 };
                 sender.Background = ib;
@@ -433,64 +449,89 @@ namespace hiro
                 bi.Freeze();
             }
         }
-        public static void Set_Control_Location(System.Windows.Controls.Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false,bool location = true)
+
+        public static void Set_Opacity(Control sender, Control win)
         {
-            if (extra == false || path == null || !System.IO.File.Exists(path))
+            if (!double.TryParse(Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
+                to = 255;
+            Color bg = Colors.Coral;
+            switch (to)
+            {
+                case > 255:
+                    to = 510 - to;
+                    bg = Colors.White;
+                    break;
+                case < 255:
+                    bg = Colors.Black;
+                    break;
+                default:
+                    break;
+            }
+            Color dest = (to >= 0 && to <= 255) ?
+                Color.FromArgb(Convert.ToByte(to), 0, 0, 0) : Color.FromArgb(255, 0, 0, 0);
+            win.Background = new SolidColorBrush(bg);
+            sender.OpacityMask = new SolidColorBrush(dest);
+        }
+        public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false,bool location = true)
+        {
+            if (extra == false || path == null || !File.Exists(path))
                 path = App.LangFilePath;
             try
             {
                 if (sender != null)
                 {
                     if (right == true)
-                        sender.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                        sender.HorizontalAlignment = HorizontalAlignment.Right;
                     if (bottom == true)
-                        sender.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
+                        sender.VerticalAlignment = VerticalAlignment.Bottom;
                     var result = HiroParse(Read_Ini(path, "location", val, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
                     if (!result[0].Equals("-1"))
-                        sender.FontFamily = new System.Windows.Media.FontFamily(result[0]);
+                        sender.FontFamily = new FontFamily(result[0]);
                     if (!result[1].Equals("-1"))
                         sender.FontSize = double.Parse(result[1]);
                     sender.FontStretch = result[2] switch
                     {
-                        "1" => System.Windows.FontStretches.UltraCondensed,
-                        "2" => System.Windows.FontStretches.ExtraCondensed,
-                        "3" => System.Windows.FontStretches.Condensed,
-                        "4" => System.Windows.FontStretches.SemiCondensed,
-                        "5" => System.Windows.FontStretches.Medium,
-                        "6" => System.Windows.FontStretches.SemiExpanded,
-                        "7" => System.Windows.FontStretches.Expanded,
-                        "8" => System.Windows.FontStretches.ExtraExpanded,
-                        "9" => System.Windows.FontStretches.UltraExpanded,
-                        _ => System.Windows.FontStretches.Normal
+                        "1" => FontStretches.UltraCondensed,
+                        "2" => FontStretches.ExtraCondensed,
+                        "3" => FontStretches.Condensed,
+                        "4" => FontStretches.SemiCondensed,
+                        "5" => FontStretches.Medium,
+                        "6" => FontStretches.SemiExpanded,
+                        "7" => FontStretches.Expanded,
+                        "8" => FontStretches.ExtraExpanded,
+                        "9" => FontStretches.UltraExpanded,
+                        _ => FontStretches.Normal
                     };
                     sender.FontWeight = result[3] switch
                     {
-                        "1" => System.Windows.FontWeights.Thin,
-                        "2" => System.Windows.FontWeights.UltraLight,
-                        "3" => System.Windows.FontWeights.Light,
-                        "4" => System.Windows.FontWeights.Medium,
-                        "5" => System.Windows.FontWeights.SemiBold,
-                        "6" => System.Windows.FontWeights.Bold,
-                        "7" => System.Windows.FontWeights.UltraBold,
-                        "8" => System.Windows.FontWeights.Black,
-                        "9" => System.Windows.FontWeights.UltraBlack,
-                        _ => System.Windows.FontWeights.Normal
+                        "1" => FontWeights.Thin,
+                        "2" => FontWeights.UltraLight,
+                        "3" => FontWeights.Light,
+                        "4" => FontWeights.Medium,
+                        "5" => FontWeights.SemiBold,
+                        "6" => FontWeights.Bold,
+                        "7" => FontWeights.UltraBold,
+                        "8" => FontWeights.Black,
+                        "9" => FontWeights.UltraBlack,
+                        _ => FontWeights.Normal
                     };
                     sender.FontStyle = result[4] switch
                     {
-                        "1" => System.Windows.FontStyles.Italic,
-                        "2" => System.Windows.FontStyles.Oblique,
-                        _ => System.Windows.FontStyles.Normal
+                        "1" => FontStyles.Italic,
+                        "2" => FontStyles.Oblique,
+                        _ => FontStyles.Normal
                     };
                     if (location)
                     {
                         sender.Width = (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
                         sender.Height = (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
-                        System.Windows.Thickness thickness = new();
-                        thickness.Left = (!result[5].Equals("-1")) ? right ? 0.0 : double.Parse(result[5]) : sender.Margin.Left;
-                        thickness.Right = (!result[5].Equals("-1")) ? !right ? sender.Margin.Right : double.Parse(result[5]) : sender.Margin.Right;
-                        thickness.Top = (!result[6].Equals("-1")) ? bottom ? 0.0 : double.Parse(result[6]) : sender.Margin.Top;
-                        thickness.Bottom = (!result[6].Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(result[6]) : sender.Margin.Bottom;
+                        Thickness thickness = new()
+                        {
+                            Left = (!result[5].Equals("-1")) ? right ? 0.0 : double.Parse(result[5]) : sender.Margin.Left,
+                            Right = (!result[5].Equals("-1")) ? !right ? sender.Margin.Right : double.Parse(result[5]) : sender.Margin.Right,
+                            Top = (!result[6].Equals("-1")) ? bottom ? 0.0 : double.Parse(result[6]) : sender.Margin.Top,
+                            Bottom = (!result[6].Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(result[6]) : sender.Margin.Bottom
+                        };
                         sender.Margin = thickness;
                     }
                 }
@@ -501,7 +542,7 @@ namespace hiro
             }
 
         }
-        public static void Set_Grid_Location(System.Windows.Controls.Grid sender, string val)
+        public static void Set_Grid_Location(Grid sender, string val)
         {
             try
             {
@@ -509,20 +550,20 @@ namespace hiro
                 {
                     var loc = Read_Ini(App.LangFilePath, "location", val, string.Empty);
                     loc = loc.Replace(" ", "").Replace("%b", " ");
-                    loc = loc.Substring(loc.IndexOf("{") + 1);
-                    loc = loc.Substring(0, loc.LastIndexOf("}"));
-                    var left = loc.Substring(0, loc.IndexOf(","));
-                    loc = loc.Substring(left.Length + 1);
-                    var top = loc.Substring(0, loc.IndexOf(","));
-                    loc = loc.Substring(top.Length + 1);
-                    var width = loc.Substring(0, loc.IndexOf(","));
-                    loc = loc.Substring(width.Length + 1);
+                    loc = loc[(loc.IndexOf("{") + 1)..];
+                    loc = loc[..loc.LastIndexOf("}")];
+                    var left = loc[..loc.IndexOf(",")];
+                    loc = loc[(left.Length + 1)..];
+                    var top = loc[..loc.IndexOf(",")];
+                    loc = loc[(top.Length + 1)..];
+                    var width = loc[..loc.IndexOf(",")];
+                    loc = loc[(width.Length + 1)..];
                     var height = loc;
                     if (!width.Equals("-1"))
                         sender.Width = double.Parse(width);
                     if (!height.Equals("-1"))
                         sender.Height = double.Parse(height);
-                    System.Windows.Thickness thickness = sender.Margin;
+                    Thickness thickness = sender.Margin;
                     if (!left.Equals("-1"))
                         thickness.Left = double.Parse(left);
                     if (!top.Equals("-1"))
@@ -531,7 +572,7 @@ namespace hiro
 
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 LogtoFile("[ERROR]" + "sender " + val + "|" + ex.Message);
             }
@@ -548,7 +589,7 @@ namespace hiro
             if (CaseSensitive)
                 resu = path.Replace(toReplace, resu);
             else
-                resu = Microsoft.VisualBasic.Strings.Replace(path, toReplace, resu, 1, -1, Microsoft.VisualBasic.CompareMethod.Text);
+                resu = Strings.Replace(path, toReplace, resu, 1, -1, CompareMethod.Text);
             if (resu != null)
                 return resu;
             else
@@ -557,11 +598,11 @@ namespace hiro
 
         private static String Anti_Path_Replace(String path, String replaced, String toReplace, bool CaseSensitive = false)
         {
-            var resu = (toReplace.EndsWith("\\")) ? toReplace.Substring(0, toReplace.Length - 1) : toReplace;
+            var resu = (toReplace.EndsWith("\\")) ? toReplace[..^1] : toReplace;
             if (CaseSensitive)
                 resu = path.Replace(resu, replaced);
             else
-                resu = Microsoft.VisualBasic.Strings.Replace(path, resu, replaced, 1, -1, Microsoft.VisualBasic.CompareMethod.Text);
+                resu = Strings.Replace(path, resu, replaced, 1, -1, CompareMethod.Text);
             if (resu != null)
                 return resu;
             else
@@ -692,7 +733,7 @@ namespace hiro
             {
                 var parameter = HiroParse(path);
                 int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
-                if (System.IO.File.Exists(path) && path.ToLower().EndsWith(".hiro"))
+                if (File.Exists(path) && path.ToLower().EndsWith(".hiro"))
                     path = "seq(" + path + ")";
                 #region 不会造成打扰的命令
                 if (path.ToLower().Equals("memory()"))
@@ -730,21 +771,21 @@ namespace hiro
                     bw.RunWorkerCompleted += delegate
                     {
                         if (result.ToLower().Equals("error"))
-                            App.Notify(new noticeitem(Get_Transalte("error"), 2, source));
+                            App.Notify(new Hiro_Notice(Get_Transalte("error"), 2, source));
                         else
-                            App.Notify(new noticeitem(Get_Transalte("success"), 2, source));
+                            App.Notify(new Hiro_Notice(Get_Transalte("success"), 2, source));
                     };
                     bw.RunWorkerAsync();
                     return;
                 }
                 if (path.ToLower().StartsWith("bingw("))
                 {
-                    if (!System.IO.File.Exists(parameter[0]))
+                    if (!File.Exists(parameter[0]))
                     {
-                        System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
+                        HttpRequestMessage request = new(HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
                         request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/" + res.ApplicationVersion);
-                        request.Content = new System.Net.Http.StringContent("");
-                        request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                        request.Content = new StringContent("");
+                        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
                         BackgroundWorker bw = new();
                         bw.DoWork += delegate
                         {
@@ -752,11 +793,11 @@ namespace hiro
                                 return;
                             try
                             {
-                                System.Net.Http.HttpResponseMessage response = App.hc.Send(request);
+                                HttpResponseMessage response = App.hc.Send(request);
 
                                 if (response.Content != null)
                                 {
-                                    System.IO.Stream stream = response.Content.ReadAsStream();
+                                    Stream stream = response.Content.ReadAsStream();
                                     System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
                                     CreateFolder(parameter[0]);
                                     image.Save(parameter[0]);
@@ -770,21 +811,21 @@ namespace hiro
                         };
                         bw.RunWorkerCompleted += delegate
                         {
-                            if (!System.IO.File.Exists(parameter[0]))
-                                App.Notify(new noticeitem(Get_Transalte("unknown"), 2, Get_Transalte("wallpaper")));
+                            if (!File.Exists(parameter[0]))
+                                App.Notify(new Hiro_Notice(Get_Transalte("unknown"), 2, Get_Transalte("wallpaper")));
                             else
-                                App.Notify(new noticeitem(Get_Transalte("wpsaved"), 2, Get_Transalte("wallpaper")));
+                                App.Notify(new Hiro_Notice(Get_Transalte("wpsaved"), 2, Get_Transalte("wallpaper")));
                         };
                         bw.RunWorkerAsync();
                     }
                     else
-                        App.Notify(new noticeitem(Get_Transalte("wpexist"), 2, Get_Transalte("wallpaper")));
+                        App.Notify(new Hiro_Notice(Get_Transalte("wpexist"), 2, Get_Transalte("wallpaper")));
                     return;
                 }
                 if (path.ToLower().StartsWith("wallpaper("))
                 {
                     source = Get_Transalte("wallpaper");
-                    if (System.IO.File.Exists(parameter[0]))
+                    if (File.Exists(parameter[0]))
                     {
                         using (Microsoft.Win32.RegistryKey? key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
                         {
@@ -798,8 +839,8 @@ namespace hiro
                                 key.SetValue(@"TileWallpaper", par[v].ToString());
                             }
                         }
-                        SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
-                        App.Notify(new noticeitem(Get_Transalte("wpchanged"), 2, source));
+                        _ = SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
+                        App.Notify(new Hiro_Notice(Get_Transalte("wpchanged"), 2, source));
                     }
                     else
                     {
@@ -810,19 +851,19 @@ namespace hiro
                 if (path.ToLower().StartsWith("delete("))
                 {
                     if (parameter[0].StartsWith("\""))
-                        parameter[0] = parameter[0].Substring(1);
+                        parameter[0] = parameter[0][1..];
                     if (parameter[0].EndsWith("\""))
-                        parameter[0] = parameter[0].Substring(0, parameter[0].Length - 1);
-                    if (!System.IO.File.Exists(parameter[0]))
+                        parameter[0] = parameter[0][..^1];
+                    if (!File.Exists(parameter[0]))
                     {
-                        if (System.IO.Directory.Exists(parameter[0]))
+                        if (Directory.Exists(parameter[0]))
                             try
                             {
-                                System.IO.Directory.Delete(parameter[0], true);
+                                Directory.Delete(parameter[0], true);
                             }
                             catch (Exception ex)
                             {
-                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                                App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
                                 LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                             }
                         else
@@ -831,26 +872,27 @@ namespace hiro
                     }
                     try
                     {
-                        System.IO.File.Delete(parameter[0]);
+                        File.Delete(parameter[0]);
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
                         LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
                 if (path.ToLower().StartsWith("move("))
                 {
-                    if (!System.IO.File.Exists(parameter[0]))
+                    if (!File.Exists(parameter[0]))
                     {
                         try
                         {
-                            System.IO.Directory.Move(parameter[0], parameter[1]);
+                            CreateFolder(parameter[1]);
+                            Directory.Move(parameter[0], parameter[1]);
                         }
                         catch (Exception ex)
                         {
-                            App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
                             LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                         }
                         return;
@@ -858,32 +900,32 @@ namespace hiro
                     try
                     {
                         CreateFolder(parameter[1]);
-                        System.IO.File.Move(parameter[0], parameter[1]);
+                        File.Move(parameter[0], parameter[1]);
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        Hiro_Utils.LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                        App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
                 if (path.ToLower().StartsWith("copy("))
                 {
-                    if (!System.IO.File.Exists(parameter[0]))
+                    if (!File.Exists(parameter[0]))
                     {
-                        if (System.IO.Directory.Exists(parameter[0]))
+                        if (Directory.Exists(parameter[0]))
                             try
                             {
                                 CopyDirectory(parameter[0], parameter[1]);
                             }
                             catch (Exception ex)
                             {
-                                App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                                App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
                                 LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                             }
                         else
                         {
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                             LogtoFile("[ERROR]Error at " + path + " | Details: " + Get_Transalte("filenotexist"));
                         }
                         return;
@@ -891,11 +933,11 @@ namespace hiro
                     try
                     {
                         CreateFolder(parameter[1]);
-                        System.IO.File.Copy(parameter[0], parameter[1]);
+                        File.Copy(parameter[0], parameter[1]);
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new noticeitem(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
                         LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
@@ -1059,7 +1101,7 @@ namespace hiro
                     try
                     {
                         Environment.Exit(Environment.ExitCode);
-                        System.Windows.Application.Current.Shutdown();
+                        Application.Current.Shutdown();
                     }
                     catch (Exception ex)
                     {
@@ -1071,12 +1113,12 @@ namespace hiro
                 {
                     if (App.mn != null)
                     {
-                        App.mn.titlelabel.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.versionlabel.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.minbtn.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.closebtn.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.stack.Visibility = System.Windows.Visibility.Hidden;
-                        App.mn.Visibility = System.Windows.Visibility.Hidden;
+                        App.mn.titlelabel.Visibility = Visibility.Hidden;
+                        App.mn.versionlabel.Visibility = Visibility.Hidden;
+                        App.mn.minbtn.Visibility = Visibility.Hidden;
+                        App.mn.closebtn.Visibility = Visibility.Hidden;
+                        App.mn.stack.Visibility = Visibility.Hidden;
+                        App.mn.Visibility = Visibility.Hidden;
                         return;
                     }
                 }
@@ -1093,7 +1135,7 @@ namespace hiro
                 {
                     App.mn ??= new();
                     App.mn.Show();
-                    App.mn.Visibility = System.Windows.Visibility.Visible;
+                    App.mn.Visibility = Visibility.Visible;
                     App.mn.HiHiro();
                     return;
                 }
@@ -1113,40 +1155,40 @@ namespace hiro
                     if (morning.IndexOf("," + hr + ",") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("morning").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("morning").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
                         else
-                            App.Notify(new noticeitem(Get_Transalte("morningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("morningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
 
                     }
                     else if (noon.IndexOf("," + hr + ",") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("noon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("noon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
                         else
-                            App.Notify(new noticeitem(Get_Transalte("nooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("nooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
 
                     }
                     else if (afternoon.IndexOf("," + hr + ",") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("afternoon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("afternoon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
                         else
-                            App.Notify(new noticeitem(Get_Transalte("afternooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("afternooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
 
                     }
                     else if (evening.IndexOf("," + hr + ",") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("evening").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("evening").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
                         else
-                            App.Notify(new noticeitem(Get_Transalte("eveningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("eveningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
                     }
                     else
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new noticeitem(Get_Transalte("night").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("night").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
                         else
-                            App.Notify(new noticeitem(Get_Transalte("nightcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("nightcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
                     }
                     return;
                 }
@@ -1193,7 +1235,7 @@ namespace hiro
                             }
                             else
                             {
-                                App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                                App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                                 return;
                             }
 
@@ -1212,16 +1254,18 @@ namespace hiro
                     }
                     try
                     {
-                        ProcessStartInfo pinfo = new();
-                        pinfo.UseShellExecute = true;
+                        ProcessStartInfo pinfo = new()
+                        {
+                            UseShellExecute = true
+                        };
                         List<string> blank = new();
                         var a = 0;
-                        while (titile.IndexOf("\"") != -1)
+                        while (titile.IndexOf('\"') != -1)
                         {
                             a++;
                             var lef = titile[..titile.IndexOf("\"")];
                             titile = titile[(lef.Length + 1)..];
-                            if (titile.IndexOf("\"") == -1)
+                            if (!titile.Contains('\"', StringComparison.CurrentCulture))
                                 break;
                             var inside = titile[..titile.IndexOf("\"")];
                             titile = titile[(inside.Length + 1)..];
@@ -1314,7 +1358,7 @@ namespace hiro
                 #region 可能造成打扰的命令
                 if (path.ToLower().StartsWith("hiroad("))
                 {
-                    source = Hiro_Utils.Get_Transalte("update");
+                    source = Get_Transalte("update");
                     Hiro_Download dl = new(1, parameter[2]);
                     dl.textBoxHttpUrl.Text = parameter[0];
                     dl.SavePath.Text = parameter[1];
@@ -1328,7 +1372,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("download("))
                 {
-                    source = Hiro_Utils.Get_Transalte("download");
+                    source = Get_Transalte("download");
                     Hiro_Download dl = new(0, "");
                     if (parameter.Count > 0)
                         dl.textBoxHttpUrl.Text = parameter[0];
@@ -1494,9 +1538,11 @@ namespace hiro
                     Hiro_Background? bg = null;
                     if (Read_Ini(parameter[0], "Action", "Background", "true").ToLower().Equals("true"))
                         bg = new();
-                    Hiro_Msg msg = new(parameter[0]);
-                    msg.bg = bg;
-                    msg.Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Transalte("syntax")))) + " - " + App.AppTitle;
+                    Hiro_Msg msg = new(parameter[0])
+                    {
+                        bg = bg,
+                        Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Transalte("syntax")))) + " - " + App.AppTitle
+                    };
                     msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Transalte("syntax")))));
                     msg.acceptbtn.Content = Read_Ini(parameter[0], "Message", "accept", Get_Transalte("msgaccept"));
                     msg.rejectbtn.Content = Read_Ini(parameter[0], "Message", "reject", Get_Transalte("msgreject"));
@@ -1516,8 +1562,8 @@ namespace hiro
                         };
                         bw.RunWorkerAsync();
                     }
-                    else if (System.IO.File.Exists(parameter[0]))
-                        msg.sv.Content = Path_Prepare(Path_Prepare_EX(System.IO.File.ReadAllText(parameter[0]))).Replace("\\n", Environment.NewLine);
+                    else if (File.Exists(parameter[0]))
+                        msg.sv.Content = Path_Prepare(Path_Prepare_EX(File.ReadAllText(parameter[0]))).Replace("\\n", Environment.NewLine);
                     else
                         msg.sv.Content = parameter[0].Replace("\\n", Environment.NewLine);
                     msg.Load_Position();
@@ -1573,8 +1619,8 @@ namespace hiro
                             bw.RunWorkerAsync();
                             return;
                         }
-                        if (System.IO.File.Exists(titile))
-                            titile = System.IO.File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
+                        if (File.Exists(titile))
+                            titile = File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
                         App.Notify(new(titile, duration));
                     }
                     catch (Exception ex)
@@ -1587,15 +1633,17 @@ namespace hiro
                 if (path.ToLower().StartsWith("web("))
                 {
                     Hiro_Web web;
-                    string webpara = System.IO.File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb") ? Read_Ini(parameter[0], "Web", "Parameters", "") : parameter.Count > 1 ? parameter[1] : "";
-                    if (System.IO.File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb"))
+                    string webpara = File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb") ? Read_Ini(parameter[0], "Web", "Parameters", "") : parameter.Count > 1 ? parameter[1] : "";
+                    if (File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb"))
                     {
                         string? title = null;
                         if (!Read_Ini(parameter[0], "Web", "Title", string.Empty).Equals(string.Empty))
                             title = Read_Ini(parameter[0], "Web", "Title", string.Empty).Replace("%b", " ");
-                        web = new(Read_Ini(parameter[0], "Web", "URI", "about:blank"), title);
-                        web.Height = Double.Parse(Read_Ini(parameter[0], "Web", "Height", "450"));
-                        web.Width = Double.Parse(Read_Ini(parameter[0], "Web", "Width", "800"));
+                        web = new(Read_Ini(parameter[0], "Web", "URI", "about:blank"), title)
+                        {
+                            Height = Double.Parse(Read_Ini(parameter[0], "Web", "Height", "450")),
+                            Width = Double.Parse(Read_Ini(parameter[0], "Web", "Width", "800"))
+                        };
                     }
                     else
                         web = new(parameter[0]);
@@ -1603,21 +1651,21 @@ namespace hiro
                         web.self = true;
                     if (webpara.IndexOf("-m") != -1)
                     {
-                        web.maxbtn.Visibility = System.Windows.Visibility.Collapsed;
-                        web.ResizeMode = System.Windows.ResizeMode.CanMinimize;
+                        web.maxbtn.Visibility = Visibility.Collapsed;
+                        web.ResizeMode = ResizeMode.CanMinimize;
                     }
                     if (webpara.IndexOf("-r") != -1)
                     {
-                        web.maxbtn.Visibility = System.Windows.Visibility.Collapsed;
-                        web.minbtn.Visibility = System.Windows.Visibility.Collapsed;
-                        web.ResizeMode = System.Windows.ResizeMode.NoResize;
+                        web.maxbtn.Visibility = Visibility.Collapsed;
+                        web.minbtn.Visibility = Visibility.Collapsed;
+                        web.ResizeMode = ResizeMode.NoResize;
                     }
                     if (webpara.IndexOf("i") != -1)
-                        web.WindowState = System.Windows.WindowState.Minimized;
+                        web.WindowState = WindowState.Minimized;
                     else if (webpara.IndexOf("x") != -1)
-                        web.WindowState = System.Windows.WindowState.Maximized;
+                        web.WindowState = WindowState.Maximized;
                     if (webpara.IndexOf("-c") != -1)
-                        web.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+                        web.WindowStartupLocation = WindowStartupLocation.Manual;
                     if (webpara.IndexOf("t") != -1)
                     {
                         web.Topmost = true;
@@ -1626,7 +1674,7 @@ namespace hiro
                     }
                         
                     if (webpara.IndexOf("b") != -1)
-                        web.URLGrid.Visibility = System.Windows.Visibility.Visible;
+                        web.URLGrid.Visibility = Visibility.Visible;
                     web.Show();
                     web.Refreash_Layout();
                     return;
@@ -1674,16 +1722,18 @@ namespace hiro
                 }
                 try
                 {
-                    ProcessStartInfo pinfo = new();
-                    pinfo.UseShellExecute = true;
+                    ProcessStartInfo pinfo = new()
+                    {
+                        UseShellExecute = true
+                    };
                     List<string> blank = new();
                     var a = 0;
-                    while (path.IndexOf("\"") != -1)
+                    while (path.IndexOf('\"') != -1)
                     {
                         a++;
                         var lef = path[..path.IndexOf("\"")];
                         path = path[(lef.Length + 1)..];
-                        if (!path.Contains("\"", StringComparison.CurrentCulture))
+                        if (!path.Contains('\"', StringComparison.CurrentCulture))
                             break;
                         var inside = path[..path.IndexOf("\"")];
                         path = path[(inside.Length + 1)..];
@@ -1726,7 +1776,7 @@ namespace hiro
             catch (Exception ex)
             {
                 LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                App.Notify(new noticeitem(Get_Transalte("syntax"), 2, source));
+                App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, source));
                 return;
             }
         }
@@ -1750,7 +1800,7 @@ namespace hiro
                 {
                     foreach (var cmd in App.cmditems)
                     {
-                        if (System.Text.RegularExpressions.Regex.IsMatch(cmd.Name, RunPath) || System.Text.RegularExpressions.Regex.IsMatch(cmd.Name, path))
+                        if (Regex.IsMatch(cmd.Name, RunPath) || Regex.IsMatch(cmd.Name, path))
                         {
                             RunExe(cmd.Command);
                             return;
@@ -1795,16 +1845,16 @@ namespace hiro
 
         public static string? FindItemByName(string Name, string Location)
         {
-            if (!System.IO.Directory.Exists(Location))
+            if (!Directory.Exists(Location))
             {
                 return null;
             }
-            string[] filenames = System.IO.Directory.GetFileSystemEntries(Location);
+            string[] filenames = Directory.GetFileSystemEntries(Location);
             foreach (string file in filenames)
             {
                 try
                 {
-                    if (System.IO.Directory.Exists(file))
+                    if (Directory.Exists(file))
                     {
                         string? filename = FindItemByName(Name, file);
                         if (filename != null)
@@ -1812,10 +1862,10 @@ namespace hiro
                     }
                     else
                     {
-                        if (System.IO.Path.GetFileName(file).Equals("desktop.ini"))
+                        if (Path.GetFileName(file).Equals("desktop.ini"))
                             continue;
-                        var filename = System.IO.Path.GetFileNameWithoutExtension(file);
-                        if (filename != null && System.Text.RegularExpressions.Regex.IsMatch(file, Name))
+                        var filename = Path.GetFileNameWithoutExtension(file);
+                        if (filename != null && Regex.IsMatch(file, Name))
                             return file;
                     }
                 }
@@ -1831,7 +1881,7 @@ namespace hiro
         {
             if (!val.Contains('(', StringComparison.CurrentCulture))
                 return new List<string>();
-            val = val.Substring(startIndex: val.IndexOf("(") + 1);
+            val = val[(val.IndexOf("(") + 1)..];
             if (val.EndsWith(")"))
                 val = val[0..^1];
             return new List<string>(val.Split(','));
@@ -1847,10 +1897,10 @@ namespace hiro
         {
             try
             {
-                var access = await Windows.Devices.Radios.Radio.RequestAccessAsync();
-                if (access != Windows.Devices.Radios.RadioAccessStatus.Allowed)
+                var access = await Radio.RequestAccessAsync();
+                if (access != RadioAccessStatus.Allowed)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcreject"), 2, Get_Transalte("bth")));
+                    App.Notify(new Hiro_Notice(Get_Transalte("bth") + Get_Transalte("dcreject"), 2, Get_Transalte("bth")));
                     return;
                 }
                 Windows.Devices.Bluetooth.BluetoothAdapter adapter = await Windows.Devices.Bluetooth.BluetoothAdapter.GetDefaultAsync();
@@ -1860,27 +1910,27 @@ namespace hiro
                     switch (bluetoothState)
                     {
                         case true:
-                            await btRadio.SetStateAsync(Windows.Devices.Radios.RadioState.On);
-                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcon"), 2, Get_Transalte("bth")));
+                            await btRadio.SetStateAsync(RadioState.On);
+                            App.Notify(new Hiro_Notice(Get_Transalte("bth") + Get_Transalte("dcon"), 2, Get_Transalte("bth")));
                             break;
                         case false:
-                            await btRadio.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
-                            App.Notify(new noticeitem(Get_Transalte("bth") + Get_Transalte("dcoff"), 2, Get_Transalte("bth")));
+                            await btRadio.SetStateAsync(RadioState.Off);
+                            App.Notify(new Hiro_Notice(Get_Transalte("bth") + Get_Transalte("dcoff"), 2, Get_Transalte("bth")));
                             break;
                         default:
-                            App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("bth")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("bth")));
                             break;
                     }
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Get_Transalte(Get_Transalte("bth") + Get_Transalte("dcnull")), 2, Get_Transalte("bth")));
+                    App.Notify(new Hiro_Notice(Get_Transalte(Get_Transalte("bth") + Get_Transalte("dcnull")), 2, Get_Transalte("bth")));
                 }
 
             }
             catch (Exception ex)
             {
-                App.Notify(new noticeitem(Get_Transalte("error"), 2));
+                App.Notify(new Hiro_Notice(Get_Transalte("error"), 2));
                 LogtoFile("[ERROR]" + ex.Message);
             }
         }
@@ -1889,27 +1939,27 @@ namespace hiro
         {
             try
             {
-                if (await Windows.Devices.WiFi.WiFiAdapter.RequestAccessAsync() != Windows.Devices.WiFi.WiFiAccessStatus.Allowed)
+                if (await WiFiAdapter.RequestAccessAsync() != WiFiAccessStatus.Allowed)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcreject"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcreject"), 2, Get_Transalte("wifi")));
                     return;
                 }
-                var adapters = await Windows.Devices.WiFi.WiFiAdapter.FindAllAdaptersAsync();
+                var adapters = await WiFiAdapter.FindAllAdaptersAsync();
                 if (adapters.Count <= 0)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
                     return;
                 }
                 var adapter = adapters[0];
                 if (null == adapter)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
                     return;
                 }
-                Windows.Devices.Radios.Radio? ra = null;
-                foreach (var radio in await Windows.Devices.Radios.Radio.GetRadiosAsync())
+                Radio? ra = null;
+                foreach (var radio in await Radio.GetRadiosAsync())
                 {
-                    if (radio.Kind == Windows.Devices.Radios.RadioKind.WiFi)
+                    if (radio.Kind == RadioKind.WiFi)
                     {
                         ra = radio;
                         break;
@@ -1917,30 +1967,30 @@ namespace hiro
                 }
                 if(null == ra)
                 {
-                    App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
                     return;
                 }
                 switch (WiFiState)
                 {
                     case 0:
-                        await ra.SetStateAsync(Windows.Devices.Radios.RadioState.Off);
-                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2, Get_Transalte("wifi")));
+                        await ra.SetStateAsync(RadioState.Off);
+                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2, Get_Transalte("wifi")));
                         break;
                     case 1:
-                        await ra.SetStateAsync(Windows.Devices.Radios.RadioState.On);
-                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcon"), 2, Get_Transalte("wifi")));
+                        await ra.SetStateAsync(RadioState.On);
+                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcon"), 2, Get_Transalte("wifi")));
                         await adapter.ScanAsync();
                         break;
                     case 2:
                         adapter.Disconnect();
-                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2, Get_Transalte("wifi")));
+                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2, Get_Transalte("wifi")));
                         break;
                     case 3:
                         await adapter.ScanAsync();
                         if (adapter.NetworkReport.AvailableNetworks.Count > 0)
                         {
                             var connect = true;
-                            Windows.Devices.WiFi.WiFiAvailableNetwork? savedan = null;
+                            WiFiAvailableNetwork? savedan = null;
                             foreach (var an in adapter.NetworkReport.AvailableNetworks)
                             {
                                 if (Ssid != null && an.Ssid.ToLower().Equals(Ssid.ToLower()))
@@ -1966,32 +2016,32 @@ namespace hiro
                                 }
                             }
                             if (!connect)
-                                App.Notify(new noticeitem(Get_Transalte("wifimis").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
+                                App.Notify(new Hiro_Notice(Get_Transalte("wifimis").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
                             else
                             {
                                 if (savedan == null)
-                                    App.Notify(new noticeitem(Get_Transalte("wifina").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
+                                    App.Notify(new Hiro_Notice(Get_Transalte("wifina").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
                                 else
                                 {
                                     await adapter.ConnectAsync(savedan, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
                                     if (Ssid != null && !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
-                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2, Get_Transalte("wifi")));
+                                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2, Get_Transalte("wifi")));
                                     else
-                                        App.Notify(new noticeitem(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2, Get_Transalte("wifi")));
+                                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2, Get_Transalte("wifi")));
                                 }
                             }
                         }
                         else
-                            App.Notify(new noticeitem(Get_Transalte("wifina"), 2, Get_Transalte("wifi")));
+                            App.Notify(new Hiro_Notice(Get_Transalte("wifina"), 2, Get_Transalte("wifi")));
                         break;
                     default:
-                        App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("wifi")));
+                        App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("wifi")));
                         break;
                 }
             }
             catch (Exception ex)
             {
-                App.Notify(new noticeitem(Get_Transalte("error"), 2, Get_Transalte("wifi")));
+                App.Notify(new Hiro_Notice(Get_Transalte("error"), 2, Get_Transalte("wifi")));
                 LogtoFile("[ERROR]" + ex.Message);
             }
         }
@@ -2002,7 +2052,7 @@ namespace hiro
                 srcdir = srcdir[0..^1];
             if (desdir.ToLower().StartsWith(srcdir.ToLower()))
             {
-                App.Notify(new noticeitem(Get_Transalte("syntax"), 2, Get_Transalte("file")));
+                App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("file")));
                 return;
             }
             string desfolderdir = desdir;
@@ -2011,15 +2061,15 @@ namespace hiro
                 desfolderdir += "\\";
             }
             CreateFolder(desfolderdir);
-            string[] filenames = System.IO.Directory.GetFileSystemEntries(srcdir);
+            string[] filenames = Directory.GetFileSystemEntries(srcdir);
             foreach (string file in filenames)
             {
                 string newdest = desfolderdir + file.Replace(srcdir, "");
                 CreateFolder(newdest);
-                if (System.IO.Directory.Exists(file))
+                if (Directory.Exists(file))
                     CopyDirectory(file, newdest);
                 else
-                    System.IO.File.Copy(file, newdest);
+                    File.Copy(file, newdest);
             }
         }
 
@@ -2028,7 +2078,7 @@ namespace hiro
         #region Windows Hello
         private async static void NewUser(String AccountId, BackgroundWorker success, BackgroundWorker falied, BackgroundWorker cancel)
         {
-            var keyCreationResult = await Windows.Security.Credentials.KeyCredentialManager.RequestCreateAsync(AccountId, Windows.Security.Credentials.KeyCredentialCreationOption.FailIfExists);
+            var keyCreationResult = await KeyCredentialManager.RequestCreateAsync(AccountId, KeyCredentialCreationOption.FailIfExists);
             if (keyCreationResult.Status == KeyCredentialStatus.CredentialAlreadyExists)
             {
                 //label5.Text = "User Already Created.";
@@ -2069,7 +2119,7 @@ namespace hiro
                 cancel.RunWorkerAsync();
             }
         }
-        private async void DeleteUser(String AccountId)
+        private async void DeleteUser(string AccountId)
         {
             var openKeyResult = await KeyCredentialManager.OpenAsync(AccountId);
             if (openKeyResult.Status == KeyCredentialStatus.Success)
@@ -2097,21 +2147,32 @@ namespace hiro
         }
         public async static void Register(BackgroundWorker success, BackgroundWorker falied, BackgroundWorker cancel)
         {
-            var keyCredentialAvailable = await KeyCredentialManager.IsSupportedAsync();
-            if (!keyCredentialAvailable)
+            var os = Get_OSVersion();
+            if (os.IndexOf(".") != -1)
+                os = os[..os.IndexOf(".")];
+            if (int.TryParse(os, out int a) && a >= 10)
+            {
+                var keyCredentialAvailable = await KeyCredentialManager.IsSupportedAsync();
+                if (!keyCredentialAvailable)
+                {
+                    success.RunWorkerAsync();
+                    return;
+                }
+                NewUser("N+@" + App.EnvironmentUsername, success, falied, cancel);
+                //Auth(null, "aki-helper@" + textBox1.Text);
+            }
+            else
             {
                 success.RunWorkerAsync();
                 return;
             }
-            NewUser("N+@" + App.EnvironmentUsername, success, falied, cancel);
-            //Auth(null, "aki-helper@" + textBox1.Text);
         }
         #endregion
 
         #region 动画相关
 
         #region 模糊动画
-        public static void Blur_Animation(int direction, bool animation, System.Windows.Controls.Label label, System.Windows.Window win, System.ComponentModel.BackgroundWorker? bw = null)
+        public static void Blur_Animation(int direction, bool animation, Label label, Window win, BackgroundWorker? bw = null)
         {
             //0: 25->0 12s  1:0->50 25s 2:0->25 12s 3:50->25 12s
             double start = direction switch
@@ -2148,7 +2209,7 @@ namespace hiro
                 double desl = !comp ? -end : -end * win.Width / win.Height;
                 double stal = !comp ? -start : -start * win.Width / win.Height;
                 Set_Animation_Label(start, label, win);
-                System.Windows.Media.Animation.Storyboard? sb = new();
+                Storyboard? sb = new();
                 sb = AddDoubleAnimaton(end, time, label, "Effect.Radius", sb, start);
                 sb = AddDoubleAnimaton(win.Height - dest * 2, time, label, "Height", sb, win.Height - stat * 2);
                 sb = AddDoubleAnimaton(win.Width - desl * 2, time, label, "Width", sb, win.Width - stal * 2);
@@ -2163,7 +2224,7 @@ namespace hiro
                 sb.Begin();
             }
         }
-        public static void Blur_Out(System.Windows.Controls.Control ct, BackgroundWorker? bw = null)
+        public static void Blur_Out(Control ct, BackgroundWorker? bw = null)
         {
             if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
@@ -2172,13 +2233,15 @@ namespace hiro
                     Radius = App.blurradius,
                     RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
                 };
-                System.Windows.Media.Animation.Storyboard? sb = new ();
-                System.Windows.Media.Animation.DoubleAnimation da = new ();
-                da.From = App.blurradius;
-                da.To = 0.0;
-                da.Duration = TimeSpan.FromMilliseconds(App.blursec);
-                System.Windows.Media.Animation.Storyboard.SetTarget(da, ct);
-                System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath("Effect.Radius"));
+                Storyboard? sb = new ();
+                DoubleAnimation da = new()
+                {
+                    From = App.blurradius,
+                    To = 0.0,
+                    Duration = TimeSpan.FromMilliseconds(App.blursec)
+                };
+                Storyboard.SetTarget(da, ct);
+                Storyboard.SetTargetProperty(da, new PropertyPath("Effect.Radius"));
                 sb.Children.Add(da);
                 sb.Completed += delegate
                 {
@@ -2195,16 +2258,16 @@ namespace hiro
                     bw.RunWorkerAsync();
             }    
         }
-        private static void Set_Animation_Label(double rd, System.Windows.Controls.Label label, System.Windows.Window win)
+        private static void Set_Animation_Label(double rd, Label label, Window win)
         {
             label.Effect = new System.Windows.Media.Effects.BlurEffect()
             {
                 Radius = rd,
                 RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
             };
-            System.Windows.Thickness tn = label.Margin;
-            var WinWidth = win.WindowState == System.Windows.WindowState.Maximized ? win.ActualWidth : win.Width;
-            var WinHeight = win.WindowState == System.Windows.WindowState.Maximized ? win.ActualHeight : win.Height;
+            Thickness tn = label.Margin;
+            var WinWidth = win.WindowState == WindowState.Maximized ? win.ActualWidth : win.Width;
+            var WinHeight = win.WindowState == WindowState.Maximized ? win.ActualHeight : win.Height;
             if (WinWidth > WinHeight)
             {
                 tn.Top = -rd;
@@ -2222,20 +2285,20 @@ namespace hiro
         #endregion
 
         #region 添加double动画
-        public static System.Windows.Media.Animation.Storyboard AddDoubleAnimaton(double? to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, double? from = null)
+        public static Storyboard AddDoubleAnimaton(double? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, double? from = null)
         {
             sb ??= new();
-            System.Windows.Media.Animation.DoubleAnimation da = new();
+            DoubleAnimation da = new();
             if (from != null)
                 da.From = from;
             if (to != null)
                 da.To = to;
             da.Duration = TimeSpan.FromMilliseconds(mstime);
             da.DecelerationRatio = 0.9;
-            System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
-            System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
+            Storyboard.SetTarget(da, value);
+            Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
-            sb.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+            sb.FillBehavior = FillBehavior.Stop;
             sb.Completed += delegate
             {
                 sb = null;
@@ -2245,20 +2308,20 @@ namespace hiro
         #endregion
 
         #region 添加thickness动画
-        public static System.Windows.Media.Animation.Storyboard AddThicknessAnimaton(System.Windows.Thickness? to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Thickness? from = null,double DecelerationRatio = 0.9)
+        public static Storyboard AddThicknessAnimaton(Thickness? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Thickness? from = null,double DecelerationRatio = 0.9)
         {
             sb ??= new();
-            System.Windows.Media.Animation.ThicknessAnimation da = new();
+            ThicknessAnimation da = new();
             if (from != null)
                 da.From = from;
             if (to != null)
                 da.To = to;
                 da.Duration = TimeSpan.FromMilliseconds(mstime);
             da.DecelerationRatio = DecelerationRatio;
-            System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
-            System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
+            Storyboard.SetTarget(da, value);
+            Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
-            sb.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+            sb.FillBehavior = FillBehavior.Stop;
             sb.Completed += delegate
             {
                 sb = null;
@@ -2268,19 +2331,19 @@ namespace hiro
         #endregion 
 
         #region 添加Color动画
-        public static System.Windows.Media.Animation.Storyboard AddColorAnimaton(System.Windows.Media.Color to, double mstime, System.Windows.DependencyObject value, string PropertyPath, System.Windows.Media.Animation.Storyboard? sb, System.Windows.Media.Color? from = null)
+        public static Storyboard AddColorAnimaton(Color to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Color? from = null)
         {
             sb ??= new();
-            System.Windows.Media.Animation.ColorAnimation da;
+            ColorAnimation da;
             if (from != null)
-                da = new((System.Windows.Media.Color)from, to, TimeSpan.FromMilliseconds(mstime));
+                da = new((Color)from, to, TimeSpan.FromMilliseconds(mstime));
             else
                 da = new(to, TimeSpan.FromMilliseconds(mstime));
             da.DecelerationRatio = 0.9;
-            System.Windows.Media.Animation.Storyboard.SetTarget(da, value);
-            System.Windows.Media.Animation.Storyboard.SetTargetProperty(da, new System.Windows.PropertyPath(PropertyPath));
+            Storyboard.SetTarget(da, value);
+            Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
-            sb.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+            sb.FillBehavior = FillBehavior.Stop;
             sb.Completed += delegate
             {
                 sb = null;
@@ -2290,7 +2353,7 @@ namespace hiro
         #endregion
 
         #region 增强动效
-        public static System.Windows.Media.Animation.Storyboard AddPowerAnimation(int Direction, System.Windows.FrameworkElement value, System.Windows.Media.Animation.Storyboard? sb, double? from = null, double? to = null)
+        public static Storyboard AddPowerAnimation(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null)
         {
             sb ??= new();
             var th1 = value.Margin;
@@ -2404,7 +2467,7 @@ namespace hiro
             System.Net.ServicePointManager.DefaultConnectionLimit = 100;
             System.Net.ServicePointManager.Expect100Continue = false;
             if (App.hc == null)
-                return "error";
+                throw new Exception(Get_Transalte("webnotinitial"));
             try
             {
                 System.Net.Http.HttpResponseMessage response = App.hc.Send(request);
@@ -2416,7 +2479,7 @@ namespace hiro
                     {
                         try
                         {
-                            using (var fileStream = System.IO.File.Create(savepath))
+                            using (var fileStream = File.Create(savepath))
                             {
                                 stream.CopyTo(fileStream);
                             }
@@ -2425,7 +2488,7 @@ namespace hiro
                         catch (Exception ex)
                         {
                             LogtoFile("[ERROR]" + ex.Message);
-                            return "error";
+                            throw new Exception(ex.Message);
                         }
                     }
                     else
@@ -2444,14 +2507,10 @@ namespace hiro
             catch (Exception ex)
             {
                 LogtoFile("[ERROR]" + ex.Message);
-                return Get_Transalte("error");
+                throw new Exception(ex.Message);
             }
 
 
-        }
-        private static bool CheckValidationResult()
-        {
-            return true;
         }
         #endregion
 
@@ -2466,14 +2525,18 @@ namespace hiro
 
         #region 窗口拖动
         [DllImport("user32.dll")]//拖动无窗体的控件
-        public static extern bool ReleaseCapture();
+        static extern bool ReleaseCapture();
+        public static bool ReleaseCaptureImpl()
+        {
+            return ReleaseCapture();
+        }
         [DllImport("user32.dll")]
-        public static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
+        static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
         #endregion
 
         #region 设置壁纸
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
         public enum Style : int
         {
@@ -2488,15 +2551,18 @@ namespace hiro
 
         #region 获取壁纸
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern bool SystemParametersInfo(uint uAction, uint uParam, StringBuilder lpvParam, uint init);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool SystemParametersInfo(uint uAction, uint uParam, StringBuilder lpvParam, uint init);
+        public static bool GetSystemParametersInfo(uint uAction, uint uParam, StringBuilder lpvParam, uint init)
+        {
+            return SystemParametersInfo(uAction, uParam, lpvParam, init);
+        }
 
         #endregion
 
         #region 获取用户头像
-        [DllImport("shell32.dll", EntryPoint = "#261",
-           CharSet = CharSet.Unicode, PreserveSig = false)]
-        public static extern void GetUserTilePath(
+        [DllImport("shell32.dll", EntryPoint = "#261", CharSet = CharSet.Unicode, PreserveSig = false)]
+        static extern void GetUserTilePath(
           string username,
           UInt32 whatever, // 0x80000000
           StringBuilder picpath, int maxLength);
@@ -2513,13 +2579,13 @@ namespace hiro
         private const int CS_DropSHADOW = 0x20000;
         private const int GCL_STYLE = (-26);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int SetClassLong(IntPtr hwnd, int nIndex, int dwNewLong);
+        static extern int SetClassLong(IntPtr hwnd, int nIndex, int dwNewLong);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetClassLong(IntPtr hwnd, int nIndex);
+        static extern int GetClassLong(IntPtr hwnd, int nIndex);
 
         public static void SetShadow(IntPtr hwnd)
         {
-            SetClassLong(hwnd, GCL_STYLE, GetClassLong(hwnd, GCL_STYLE) | CS_DropSHADOW);
+            _ = SetClassLong(hwnd, GCL_STYLE, GetClassLong(hwnd, GCL_STYLE) | CS_DropSHADOW);
         }
 
         #endregion
@@ -2537,12 +2603,21 @@ namespace hiro
         }
 
         [DllImport("kernel32.dll")]
-        public static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpSystemPowerStatus);
+        static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpSystemPowerStatus);
+        public static bool GetSystemPowerStatusImpl(out SYSTEM_POWER_STATUS lpSystemPowerStatus)
+        {
+            return GetSystemPowerStatusImpl(out lpSystemPowerStatus);
+        }
         #endregion
 
         #region 隐藏鼠标 0/1 隐藏/显示
         [DllImport("user32.dll", EntryPoint = "ShowCursor", CharSet = CharSet.Auto)]
-        public static extern void ShowCursor(int status);
+        static extern void ShowCursor(int status);
+
+        public static void SetCursor(int status)
+        {
+            ShowCursor(status);
+        }
         #endregion
 
         #endregion
@@ -2564,8 +2639,10 @@ namespace hiro
                 LogtoFile("[DEBUG]Alarm ID " + id.ToString());
             if (id > -1)
             {
-                System.Globalization.DateTimeFormatInfo dtFormat = new();
-                dtFormat.ShortDatePattern = "yyyy/MM/dd HH:mm:ss";
+                DateTimeFormatInfo dtFormat = new()
+                {
+                    ShortDatePattern = "yyyy/MM/dd HH:mm:ss"
+                };
                 try
                 {
                     DateTime dt = Convert.ToDateTime(App.scheduleitems[id].Time, dtFormat);
@@ -2617,7 +2694,7 @@ namespace hiro
                 App.scheduleitems.RemoveAt(id);
             }
             else
-                App.Notify(new noticeitem(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
+                App.Notify(new Hiro_Notice(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
 
         }
 
@@ -2626,7 +2703,7 @@ namespace hiro
             if (id > -1)
                 App.scheduleitems[id].Time = DateTime.Now.AddMinutes(5.0).ToString("yyyy/MM/dd HH:mm:ss");
             else
-                App.Notify(new noticeitem(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
+                App.Notify(new Hiro_Notice(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
         }
         #endregion
 
@@ -2681,25 +2758,85 @@ namespace hiro
         {
             int pos = path.IndexOf("\\") + 1;
             string vpath;
-            System.IO.DirectoryInfo? di;
+            DirectoryInfo? di;
             try
             {
                 while (pos > 0)
                 {
-                    vpath = path.Substring(0, pos);
+                    vpath = path[..pos];
                     pos = path.IndexOf("\\", pos) + 1;
-                    di = new System.IO.DirectoryInfo(vpath);
+                    di = new DirectoryInfo(vpath);
                     if (!di.Exists)
                         di.Create();
                 }
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                LogtoFile("[ERROR]" + ex.Message);
                 return false;
             }
             return true;
             
+        }
+        #endregion
+
+        #region 获取Windows版本
+        public static string Get_OSVersion()
+        {
+            return new Microsoft.VisualBasic.Devices.ComputerInfo().OSVersion.Trim();
+        }
+
+        #endregion
+
+        #region 获取MAC地址
+        public static string? GetMacByIpConfig()
+        {
+            List<string> macs = new();
+            var runCmd = ExecuteInCmd("chcp 437&&ipconfig/all");
+            foreach (var line in runCmd.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(l => l.Trim()))
+            {
+                if (!string.IsNullOrEmpty(line))
+                {
+                    if (line.StartsWith("Physical Address"))
+                    {
+                        macs.Add(line[36..].Replace("-", ""));
+                    }
+                    else if (line.StartsWith("DNS Servers") && line.Length > 36 && line[36..].Contains("::"))
+                    {
+                        macs.Clear();
+                    }
+                    else if (macs.Count > 0 && line.StartsWith("NetBIOS") && line.Contains("Enabled"))
+                    {
+                        return macs.Last();
+                    }
+                }
+            }
+            return macs.FirstOrDefault();
+        }
+
+        public static string ExecuteInCmd(string cmdline)
+        {
+            using (var process = new Process())
+            {
+                process.StartInfo.FileName = "cmd.exe";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.CreateNoWindow = true;
+
+                process.Start();
+                process.StandardInput.AutoFlush = true;
+                process.StandardInput.WriteLine(cmdline + "&exit");
+
+                //获取cmd窗口的输出信息  
+                string output = process.StandardOutput.ReadToEnd();
+
+                process.WaitForExit();
+                process.Close();
+
+                return output;
+            }
         }
         #endregion
 
@@ -2711,13 +2848,13 @@ namespace hiro
             {
                 try
                 {
-                    App.AppAccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(Read_Ini(App.dconfig, "Config", "LockColor", "#00C4FF"));
+                    App.AppAccentColor = (Color)ColorConverter.ConvertFromString(Read_Ini(App.dconfig, "Config", "LockColor", "#00C4FF"));
 
                 }
                 catch (Exception ex)
                 {
                     LogtoFile("[ERROR]" + ex.Message);
-                    App.AppAccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#00C4FF");
+                    App.AppAccentColor = (Color)ColorConverter.ConvertFromString("#00C4FF");
                 }
             }
             else
@@ -2729,34 +2866,34 @@ namespace hiro
             LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
         }
 
-        public static System.Windows.Media.Color Get_ForeColor(System.Windows.Media.Color AccentColor, bool Reverse = false)
+        public static Color Get_ForeColor(Color AccentColor, bool Reverse = false)
         {
             double luminance = (0.299 * AccentColor.R + 0.587 * AccentColor.G + 0.114 * AccentColor.B) / 255;
             if (luminance > 0.5)
             {
-                return Reverse ? System.Windows.Media.Colors.White : System.Windows.Media.Colors.Black;
+                return Reverse ? Colors.White : Colors.Black;
             }
             else
             {
-                return Reverse ? System.Windows.Media.Colors.Black : System.Windows.Media.Colors.White;
+                return Reverse ? Colors.Black : Colors.White;
             }
         }
 
         [DllImport("uxtheme.dll", EntryPoint = "#95")]
-        public static extern uint GetImmersiveColorFromColorSetEx(uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode);
+        static extern uint GetImmersiveColorFromColorSetEx(uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode);
         [DllImport("uxtheme.dll", EntryPoint = "#96")]
-        public static extern uint GetImmersiveColorTypeFromName(IntPtr pName);
+        static extern uint GetImmersiveColorTypeFromName(IntPtr pName);
         [DllImport("uxtheme.dll", EntryPoint = "#98")]
-        public static extern int GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
+        static extern int GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
         // Get theme color
-        public static System.Windows.Media.Color GetThemeColor()
+        public static Color GetThemeColor()
         {
             var colorSetEx = GetImmersiveColorFromColorSetEx(
                 (uint)GetImmersiveUserColorSetPreference(false, false),
-                GetImmersiveColorTypeFromName(System.Runtime.InteropServices.Marshal.StringToHGlobalUni("ImmersiveStartSelectionBackground")),
+                GetImmersiveColorTypeFromName(Marshal.StringToHGlobalUni("ImmersiveStartSelectionBackground")),
                 false, 0);
 
-            var colour = System.Windows.Media.Color.FromArgb((byte)((0xFF000000 & colorSetEx) >> 24), (byte)(0x000000FF & colorSetEx),
+            var colour = Color.FromArgb((byte)((0xFF000000 & colorSetEx) >> 24), (byte)(0x000000FF & colorSetEx),
                 (byte)((0x0000FF00 & colorSetEx) >> 8), (byte)((0x00FF0000 & colorSetEx) >> 16));
 
             return colour;
@@ -2764,25 +2901,25 @@ namespace hiro
         #endregion
 
         #region 颜色处理
-        public static System.Windows.Media.Color Color_Multiple(System.Windows.Media.Color origin, int Multiple)
+        public static Color Color_Multiple(Color origin, int Multiple)
         {
             Multiple = (Multiple > 255) ? 255 : (Multiple < 0) ? 0 : Multiple;
             double new_R = origin.R * Multiple / 255;
             double new_B = origin.B * Multiple / 255;
             double new_G = origin.G * Multiple / 255;
-            return System.Windows.Media.Color.FromRgb((byte)new_R, (byte)new_G, (byte)new_B);
+            return Color.FromRgb((byte)new_R, (byte)new_G, (byte)new_B);
         }
 
-        public static System.Windows.Media.Color Color_Transparent(System.Windows.Media.Color origin, int val)
+        public static Color Color_Transparent(Color origin, int val)
         {
-            return System.Windows.Media.Color.FromArgb((byte)val, origin.R, origin.G, origin.B);
+            return Color.FromArgb((byte)val, origin.R, origin.G, origin.B);
         }
         #endregion
 
         #region 热键相关
 
         [DllImport("user32.dll")]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -2806,8 +2943,8 @@ namespace hiro
             {
                 string msg = "";
                 IntPtr tempptr = IntPtr.Zero;
-                int sa = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
-                FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
+                int sa = Marshal.GetLastWin32Error();
+                _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
                 RunExe("notify(" + Get_Transalte("regfailed").Replace("%n", sa.ToString()) + ",2)");
                 LogtoFile("[ERROR]Register hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
             }
@@ -2827,8 +2964,8 @@ namespace hiro
             {
                 string msg = "";
                 IntPtr tempptr = IntPtr.Zero;
-                int sa = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
-                FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
+                int sa = Marshal.GetLastWin32Error();
+                _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
                 RunExe("notify(" + Get_Transalte("unregfailed").Replace("%n", sa.ToString()) + ",2)");
                 LogtoFile("[ERROR]Unregister hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
             }
@@ -2891,8 +3028,8 @@ namespace hiro
             return -1;
         }
 
-        [DllImport("Kernel32.dll")]
-        public extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
+        [DllImport("Kernel32.dll", CharSet = CharSet.Unicode)]
+        extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
         #endregion
 
         #region 检测全屏程序
@@ -2906,10 +3043,10 @@ namespace hiro
         }
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
         [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(HandleRef hWnd, [In, Out] ref RECT rect);
+        static extern bool GetWindowRect(HandleRef hWnd, [In, Out] ref RECT rect);
 
         public static bool IsForegroundFullScreen()
         {
@@ -2919,7 +3056,7 @@ namespace hiro
         public static bool IsForegroundFullScreen(System.Windows.Forms.Screen? screen)
         {
             screen ??= System.Windows.Forms.Screen.PrimaryScreen;
-            RECT rect = new RECT();
+            RECT rect = new();
             IntPtr hWnd = (IntPtr)GetForegroundWindow();
             GetWindowRect(new HandleRef(null, hWnd), ref rect);
             return screen.Bounds.Width == (rect.right - rect.left) && screen.Bounds.Height == (rect.bottom - rect.top);
@@ -2929,7 +3066,7 @@ namespace hiro
         #region 杂项功能
         public static string DeleteUnVisibleChar(string sourceString)
         {
-            System.Text.StringBuilder sBuilder = new System.Text.StringBuilder(131);
+            StringBuilder sBuilder = new(131);
             for (int i = 0; i < sourceString.Length; i++)
             {
                 int Unicode = sourceString[i];
@@ -2953,21 +3090,25 @@ namespace hiro
         #region 保持窗口最前
 
         [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
+        static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll")]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
 
         [DllImport("user32.dll")]
-        private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+        static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
 
         [DllImport("user32.dll")]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SetCapture(IntPtr hWnd);
+        static extern IntPtr SetCapture(IntPtr hWnd);
+        public static IntPtr SetCaptureImpl(IntPtr hWnd)
+        {
+            return SetCapture(hWnd);
+        }
 
-        public static void SetWindowToForegroundWithAttachThreadInput(System.Windows.Window window)
+        public static void SetWindowToForegroundWithAttachThreadInput(Window window)
         {
             var interopHelper = new System.Windows.Interop.WindowInteropHelper(window);
             var thisWindowThreadId = GetWindowThreadProcessId(interopHelper.Handle, IntPtr.Zero);
@@ -2977,7 +3118,7 @@ namespace hiro
             window.Activate();
         }
 
-        public static void CancelWindowToForegroundWithAttachThreadInput(System.Windows.Window window)
+        public static void CancelWindowToForegroundWithAttachThreadInput(Window window)
         {
             var interopHelper = new System.Windows.Interop.WindowInteropHelper(window);
             var thisWindowThreadId = GetWindowThreadProcessId(interopHelper.Handle, IntPtr.Zero);
@@ -2986,11 +3127,6 @@ namespace hiro
             AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, false);
         }
 
-        #endregion
-
-        #region 获取窗口标题
-        [DllImport("user32")]
-        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lptrString, int nMaxCount);
         #endregion
 
         #endregion

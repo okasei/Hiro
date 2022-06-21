@@ -99,10 +99,10 @@ namespace hiro
             switch (ups)
             {
                 case "latest":
-                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("updatelatest"), 2, Hiro_Utils.Get_Transalte("checkup")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("updatelatest"), 2, Hiro_Utils.Get_Transalte("checkup")));
                     break;
                 case "Error":
-                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
                     break;
                 default:
                     try
@@ -139,7 +139,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
-                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
                     }
 
                     break;

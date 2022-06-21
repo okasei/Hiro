@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -15,15 +18,20 @@ namespace hiro
         private Hiro_MainUI? Hiro_Main = null;
         private string MacAddress = "D03C1F3C2094";
         private string LocalMacAddress = "unknown";
-        private string Aite = "unknown-D03C1F3C2094";
+        private string Aite = "unknown-user";
+        private bool load = false;
+        private bool eload = false;
         public Hiro_Chat(Hiro_MainUI? Parent)
         {
             InitializeComponent();
             Hiro_Main = Parent;
             Hiro_Initialize();
-            LocalMacAddress = GetMacAddress();
+            new System.Threading.Thread(() =>
+            {
+                LocalMacAddress = GetMacAddress();
+                Hiro_Utils.LogtoFile("[INFO]Current Mac Address : " + LocalMacAddress);
+            }).Start();
             MacAddress = Hiro_Utils.Read_Ini(App.dconfig, "Config", "ChatMAC", "D03C1F3C2094");
-            Hiro_Utils.LogtoFile("[INFO]Current Mac Address : " + LocalMacAddress);
             Loaded += delegate
             {
                 HiHiro();
@@ -32,21 +40,11 @@ namespace hiro
 
         public string GetMacAddress()
         {
-            try
-            {
-                var res = (from nic in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
-                        where nic.OperationalStatus == System.Net.NetworkInformation.OperationalStatus.Up
-                        select nic.GetPhysicalAddress().ToString()
-                        ).FirstOrDefault();
-                return res == null ? "unknown" : res;
-            }
-            catch
-            {
-                return "unknown";
-            }
+            return Hiro_Utils.GetMacByIpConfig() ?? "unknown";
         }
 
-        public void HiHiro()
+
+            public void HiHiro()
         {
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
@@ -81,7 +79,11 @@ namespace hiro
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 180));
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 180));
+            if (load)
+                Load_Chat();
         }
 
         public void Hiro_Chat_Initialize()
@@ -91,51 +93,106 @@ namespace hiro
             var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf");
             ChatContentBak.Text = System.IO.File.Exists(file) ? System.IO.File.ReadAllText(file) : "";
             Load_Chat();
+            load = true;
         }
 
         public void Hiro_Get_Chat()
         {
-            try
+            new System.Threading.Thread(() =>
             {
-                Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\"));
-                Aite = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + MacAddress + "&mode=query");
-                var content = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/log.php?from=" + LocalMacAddress + "&to=" + MacAddress,
-                    true, Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf"));
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    Load_Chat();
-                });
-            }
-            catch (Exception ex)
+                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\"));
+                    var aitea = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + MacAddress + "&mode=query");
+                    if (!aitea.Equals(Aite))
+                    {
+                        Aite = aitea;
+                        eload = false;
+                    }
+                    var content = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/log.php?from=" + LocalMacAddress + "&to=" + MacAddress,
+                        true, Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf"));
+                    Dispatcher.Invoke(() =>
+                    {
+                        Load_Chat();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Hiro_Utils.LogtoFile("[ERROR]Cannot fetch chatting data." + ex.Message);
+                    Dispatcher.Invoke(() =>
+                    {
+                        AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnofetch"));
+                    });
+                }
+            }).Start();
+        }
+
+        private void AddErrorMsg(string user, string msg)
+        {
+            Paragraph nick = new();
+            Run nrun = new()
             {
-                Hiro_Utils.LogtoFile("[ERROR]Cannot fetch chatting data." + ex.Message);
-            }
-            finally
+                Text = user + " " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + Environment.NewLine
+            };
+            Run wrun = new()
             {
-                
-            }
-            
+                Text = msg.Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\")
+            };
+            nrun.FontWeight = FontWeights.Bold;
+            nrun.Foreground = new SolidColorBrush(Colors.Red);
+            wrun.FontWeight = FontWeights.Normal;
+            wrun.Foreground = nrun.Foreground;
+            nick.Inlines.Add(nrun);
+            nick.Inlines.Add(wrun);
+            ChatContent.Document.Blocks.Add(nick);
+            ChatContent.ScrollToEnd();
         }
 
         private void Load_Chat()
         {
             try
             {
+                String differ = String.Empty;
                 var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf");
-                ChatContent.Clear();
-                var con = System.IO.File.ReadAllLines(file);
+                var pcon = System.IO.File.ReadAllText(file);
+                if (eload)
+                {
+                    if (pcon.Equals(ChatContentBak.Text))
+                        return;
+                    differ = pcon.StartsWith(ChatContentBak.Text) ? pcon[ChatContentBak.Text.Length..] : pcon;
+                }
+                else
+                {
+                    ChatContent.Document.Blocks.Clear();
+                    differ = pcon;
+                    eload = true;
+                }
+                var con = differ.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 foreach (var item in con)
                 {
                     var icon = item.Split(',');
                     if (icon.Length < 3)
                         continue;
-                    ChatContent.AppendText(icon[0].Replace(LocalMacAddress, App.Username).Replace(MacAddress, Aite) + " " + icon[1] + Environment.NewLine);
-                    ChatContent.AppendText(icon[2].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\"));
+                    Paragraph nick = new();
+                    Run nrun = new()
+                    {
+                        Text = icon[0].Replace(LocalMacAddress, App.Username).Replace(MacAddress, Aite) + " " + icon[1] + Environment.NewLine
+                    };
+                    Run wrun = new()
+                    {
+                        Text = icon[2].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\")
+                    };
                     for (int i = 3; i < icon.Length; i++)
                     {
-                        ChatContent.AppendText("," + icon[i].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\"));
+                        wrun.Text += "," + icon[i].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\");
                     }
-                    ChatContent.AppendText(Environment.NewLine);
+                    nrun.FontWeight = FontWeights.Bold;
+                    nrun.Foreground = icon[0].StartsWith(LocalMacAddress) ? (Brush)Resources["AppForeDim"] : (Brush)Resources["AppFore"];
+                    wrun.FontWeight = FontWeights.Normal;
+                    wrun.Foreground = nrun.Foreground;
+                    nick.Inlines.Add(nrun);
+                    nick.Inlines.Add(wrun);
+                    ChatContent.Document.Blocks.Add(nick);
                 }
                 ChatContent.ScrollToEnd();
                 Differ_Chat(System.IO.File.ReadAllText(file));
@@ -143,6 +200,7 @@ namespace hiro
             catch (Exception ex)
             {
                 Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), ex.Message);
             }
         }
 
@@ -197,23 +255,33 @@ namespace hiro
 
         private void Hiro_Send_Chat(string msg)
         {
-            var content = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/send.php?from=" + LocalMacAddress
+            try
+            {
+                var content = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/send.php?from=" + LocalMacAddress
                 + "&to=" + MacAddress
                 + "&content=" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 + "," + msg);
-            if(!content.Equals("success"))
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("chatsenderror") + ",2)", Hiro_Utils.Get_Transalte("chat"));
-                });
             }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatsenderror"));
+            }
+            
         }
         private void Hiro_Update_Name()
         {
-            Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + LocalMacAddress
-                    + "&mode=update"
-                    + "&name=" + App.Username); ;
+            try
+            {
+                Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + LocalMacAddress
+                        + "&mode=update"
+                        + "&name=" + App.Username);
+            }
+            catch(Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnonick"));
+            }
         }
         public void Load_Translate()
         {
@@ -227,7 +295,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(SendButton, "chatsend", right: true, bottom: true);
         }
 
-        private void SendButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             Send();
         }
@@ -237,6 +305,7 @@ namespace hiro
             if (SendContent.Text.ToLower().Equals("refreash"))
             {
                 SendContent.Clear();
+                eload = false;
                 Hiro_Get_Chat();
                 return;
             }
@@ -282,6 +351,11 @@ namespace hiro
                 Send();
                 e.Handled = true;
             }
+        }
+
+        private void EMojiButton_Click(object sender, RoutedEventArgs e)
+        {
+            ChatContent.Paste();
         }
     }
 }

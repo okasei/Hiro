@@ -11,13 +11,16 @@
       Title="Chat">
     <Page.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccentDim" Color="Coral"></SolidColorBrush>
     </Page.Resources>
-    <Grid>
-        <TextBox x:Name="ChatContent" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" ></TextBox>
+    <Grid Cursor="Arrow">
+        <RichTextBox x:Name="ChatContent" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionTextBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" IsUndoEnabled="False" IsDocumentEnabled="True" ></RichTextBox>
         <TextBox x:Name="ChatContentBak" Visibility="Hidden" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" ></TextBox>
         <Label x:Name="ScrollViewer1" Margin="5,305,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{DynamicResource AppFore}" Height="1" Width="410"></Label>
         <TextBox x:Name="SendContent" Margin="5,310,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="75" Foreground="{DynamicResource AppFore}" VerticalScrollBarVisibility="Auto" KeyDown="SendContent_KeyDown"/>
-        <Button x:Name="SendButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="Send" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="SendButton_Click" Cursor="Hand"></Button>
+        <Button x:Name="EMojiButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="emoji" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="EMojiButton_Click"  Cursor="Hand" Visibility="Hidden"></Button>
+        <Button x:Name="SendButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="Send" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="SendButton_Click" Cursor="Hand"></Button>
     </Grid>
 </Page>

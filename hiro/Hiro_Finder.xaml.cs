@@ -39,7 +39,7 @@ namespace hiro
              };
             Loaded += delegate
             {
-                Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                Hiro_Utils.SetCaptureImpl(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                 Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                 Keyboard.Focus(Hiro_Text);
             };
@@ -106,7 +106,7 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage);
+            Hiro_Utils.Set_Bgimage(bgimage, this);
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
@@ -179,7 +179,7 @@ namespace hiro
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Hiro_Utils.CancelWindowToForegroundWithAttachThreadInput(this);
-            Hiro_Utils.ReleaseCapture();
+            Hiro_Utils.ReleaseCaptureImpl();
         }
 
         private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

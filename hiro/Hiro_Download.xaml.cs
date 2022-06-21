@@ -137,7 +137,7 @@ namespace hiro
                 }
                 else
                 {
-                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("syntax"), 2, Hiro_Utils.Get_Transalte("download")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("syntax"), 2, Hiro_Utils.Get_Transalte("download")));
                     textBoxHttpUrl.Focus();//url地址栏获取焦点
                     Stop_Download(false);
                     return;
@@ -175,7 +175,7 @@ namespace hiro
             }
             var response = await App.hc.GetAsync(rurl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
             var totalLength = response.Content.Headers.ContentLength;
-            System.IO.FileStream? fileStream = null;
+            System.IO.FileStream? fileStream;
             try
             {
                 fileStream = System.IO.File.OpenWrite(mSaveFileName + ".hdp");
@@ -183,7 +183,7 @@ namespace hiro
             catch (Exception ex)
             {
                 Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
-                App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
+                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
                 Stop_Download(false);
                 return;
             }
@@ -242,7 +242,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
-                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
                     successflag = false;
                     break;
                 }
@@ -349,7 +349,7 @@ namespace hiro
             stopflag = 1;
             if (success)
             {
-                App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("dlsuccess"), 2, Hiro_Utils.Get_Transalte("download")));
+                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlsuccess"), 2, Hiro_Utils.Get_Transalte("download")));
                 current = -1;
                 listfile = "";
             }
@@ -429,7 +429,7 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage);
+            Hiro_Utils.Set_Bgimage(bgimage, this);
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;

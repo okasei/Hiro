@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -20,7 +22,7 @@ namespace hiro
         internal static Color AppAccentColor = Colors.Coral;
         internal static Color AppForeColor = Colors.White;
         internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
-        internal static System.Collections.ObjectModel.ObservableCollection<alarmwin> aw = new();
+        internal static System.Collections.ObjectModel.ObservableCollection<Hiro_AlarmWin> aw = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Language> la = new();
         internal static string LogFilePath = "C:\\1.log";
         internal static string LangFilePath = "C:\\1.hlp";
@@ -32,7 +34,7 @@ namespace hiro
         internal static Hiro_Notification? noti = null;
         internal static Hiro_Editor? ed = null;
         internal static Hiro_LockScreen? ls = null;
-        internal static List<noticeitem> noticeitems = new();
+        internal static List<Hiro_Notice> noticeitems = new();
         internal static double blurradius = 50.0;
         internal static double blursec = 500.0;
         internal static byte trval = 160;
@@ -184,10 +186,16 @@ namespace hiro
                         Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
                     else
                         mn.Show();
-                    if (FirstUse)
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "0").Equals("1"))
+                    {
+                        Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
+                        mn.hiro_chat ??= new(mn);
+                        mn.hiro_chat.Hiro_Chat_Initialize();
+                    }
+                        if (FirstUse)
                     {
                         FirstUse = false;
-                        Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + App.lang + "\\welcome.hws)", Hiro_Utils.Get_Transalte("infofirst").Replace("%h", AppTitle));
+                        Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + lang + "\\welcome.hws)", Hiro_Utils.Get_Transalte("infofirst").Replace("%h", AppTitle));
                     }
                     if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
                         Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Transalte("autoexe"));
@@ -199,7 +207,7 @@ namespace hiro
             return;
         }
 
-        public static void Notify(noticeitem i)
+        public static void Notify(Hiro_Notice i)
         {
             string title = AppTitle;
             i.msg = Hiro_Utils.Path_Prepare_EX(i.msg);
@@ -313,6 +321,8 @@ namespace hiro
             Hiro_Utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
             dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hus";
             sconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hsl";
+            Hiro_Utils.LogtoFile("[HIROWEGO]DConfig at " + dconfig);
+            Hiro_Utils.LogtoFile("[HIROWEGO]SConfig at " + sconfig);
             FirstUse = !System.IO.File.Exists(dconfig) && !System.IO.File.Exists(sconfig);
             var str = Hiro_Utils.Read_Ini(dconfig, "Config", "Lang", "");
             if (str.Equals("") || str.Equals("default"))
@@ -407,6 +417,7 @@ namespace hiro
                 hch.UseProxy = false;
                 hc = new(hch);
             }
+            Hiro_Utils.LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
         }
 
         private void InitializeMethod()
@@ -503,7 +514,7 @@ namespace hiro
                         else
                         {
                             Hiro_Alarm ala = new(aw.Count, CustomedContnet: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))));
-                            aw.Add(new alarmwin(ala, i - 1));
+                            aw.Add(new Hiro_AlarmWin(ala, i - 1));
                             ala.Show();
                         }
                     }
@@ -742,11 +753,15 @@ namespace hiro
                 Title = string.Empty;
                 return 0;
             }
-            System.Text.StringBuilder windowName = new(512);
-            Hiro_Utils.GetWindowText((IntPtr)intPtr, windowName, windowName.Capacity);
+            StringBuilder windowName = new(512);
+            GetWindowText((IntPtr)intPtr, windowName, windowName.Capacity);
             Title = windowName.ToString().Trim();
             return Title.Length;
         }
 
+        #region 获取窗口标题
+        [DllImport("user32")]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder lptrString, int nMaxCount);
+        #endregion
     }
 }

@@ -96,7 +96,7 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage);
+            Hiro_Utils.Set_Bgimage(bgimage, this);
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
@@ -165,7 +165,7 @@ namespace hiro
             Background = new SolidColorBrush(App.AppAccentColor);
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
-            Hiro_Utils.Set_Bgimage(bgimage);
+            Hiro_Utils.Set_Bgimage(bgimage, this);
         }
 
         private void CoreWebView2_IsDefaultDownloadDialogOpenChanged(object? sender, object e)

@@ -28,8 +28,10 @@ namespace hiro
             allow = 1;
             slider.IsEnabled = true;
             Opacity = (float)slider.Value;
-            System.Windows.Threading.DispatcherTimer timer = new();
-            timer.Interval = new TimeSpan(10000000);
+            System.Windows.Threading.DispatcherTimer timer = new()
+            {
+                Interval = new TimeSpan(10000000)
+            };
             timer.Tick += delegate
             {
                 Hiro_Utils.Delay(1);
@@ -157,13 +159,15 @@ namespace hiro
         {
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
-                DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600));
-                dou.DecelerationRatio = 0.9;
-                dou.FillBehavior = FillBehavior.Stop;
+                DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600))
+                {
+                    DecelerationRatio = 0.9,
+                    FillBehavior = FillBehavior.Stop
+                };
                 dou.Completed += delegate
                 {
                     SetValue(TopProperty, 0.0);
-                    Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                    Hiro_Utils.SetCaptureImpl(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                     Keyboard.Focus(con);
                     load = true;
@@ -173,7 +177,7 @@ namespace hiro
             else
             {
                 SetValue(TopProperty, 0.0);
-                Hiro_Utils.SetCapture(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                Hiro_Utils.SetCaptureImpl(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                 Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                 Keyboard.Focus(con);
                 load = true;
@@ -189,9 +193,11 @@ namespace hiro
             con.IsEnabled = false;
             if(!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
-                DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450));
-                dou.FillBehavior =　FillBehavior.Stop;
-                dou.DecelerationRatio = 0.9;
+                DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450))
+                {
+                    FillBehavior = FillBehavior.Stop,
+                    DecelerationRatio = 0.9
+                };
                 dou.Completed += delegate
                 {
                     SetValue(TopProperty, -ActualHeight);
@@ -344,7 +350,7 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage);
+            Hiro_Utils.Set_Bgimage(bgimage, this);
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), animation, bgimage, this);
             bflag = 0;
@@ -353,7 +359,7 @@ namespace hiro
         private void Edi_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Hiro_Utils.CancelWindowToForegroundWithAttachThreadInput(this);
-            Hiro_Utils.ReleaseCapture();
+            Hiro_Utils.ReleaseCaptureImpl();
         }
     }
 }

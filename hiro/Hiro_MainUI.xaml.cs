@@ -39,11 +39,6 @@ namespace hiro
             Loaded += delegate
             {
                 HiHiro();
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "0").Equals("1"))
-                {
-                    hiro_chat ??= new(this);
-                    hiro_chat.Hiro_Chat_Initialize();
-                }
             };
         }
 
@@ -126,10 +121,7 @@ namespace hiro
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: AddHook WndProc");
             WindowStyle = WindowStyle.SingleBorderWindow;
         }
-        [System.Runtime.InteropServices.DllImport("User32.dll")]
-        private static extern IntPtr GetWindowDC(IntPtr hwnd);
-        [System.Runtime.InteropServices.DllImport("User32.dll")]
-        private static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
+
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
@@ -174,7 +166,7 @@ namespace hiro
         public void Load_Colors()
         {
             Hiro_Utils.IntializeColorParameters();
-            Hiro_Utils.Set_Bgimage(bgimage);
+            Hiro_Utils.Set_Bgimage(bgimage, this);
             Blurbgi(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1")
                 ? 0
                 : Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
@@ -184,7 +176,7 @@ namespace hiro
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
             Resources["AppForeDimColor"] =Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
-            Resources["InfoAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 160));
+            Resources["InfoAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 200));
             #endregion
             minbtn.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 0));
             if (App.wnd != null && App.wnd.cm != null)
@@ -203,9 +195,10 @@ namespace hiro
             hiro_newschedule?.Load_Color();
             hiro_time?.Load_Color();
             hiro_color?.Load_Color();
+            hiro_chat?.Load_Color();
         }
 
-        public void Load_Data()
+        public static void Load_Data()
         {
             App.cmditems.Clear();
             var i = 1;
@@ -331,6 +324,7 @@ namespace hiro
             infotitle.Content = Hiro_Utils.Get_Transalte("infotitle");
             minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
             closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
+            infolabel.ToolTip = Hiro_Utils.Get_Transalte("info");
             homex.Content = Hiro_Utils.Get_Transalte("home");
             itemx.Content = Hiro_Utils.Get_Transalte("item");
             schedulex.Content = Hiro_Utils.Get_Transalte("schedule");
@@ -531,10 +525,6 @@ namespace hiro
             {
                 proxyx.Visibility = Visibility.Hidden;
             }
-            if (label != chatx)
-            {
-                chatx.Visibility = Visibility.Hidden;
-            }
             var duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
@@ -696,7 +686,6 @@ namespace hiro
             }
             if (label == chatx)
             {
-                chatx.Visibility = Visibility.Visible;
                 hiro_chat ??= new(this);
                 current = hiro_chat;
                 frame.Content = hiro_chat;
@@ -827,6 +816,37 @@ namespace hiro
             };
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
             bflag = 0;
+        }
+
+        internal void OpacityBgi()
+        {
+            Hiro_Utils.Set_Opacity(bgimage, this);
+            foreach (Window win in Application.Current.Windows)
+            {
+                switch (win)
+                {
+                    case Hiro_Alarm a:
+                        Hiro_Utils.Set_Opacity(a.bgimage, a);
+                        break;
+                    case Hiro_Msg e:
+                        Hiro_Utils.Set_Opacity(e.bgimage, e);
+                        break;
+                    case Hiro_Sequence c:
+                        Hiro_Utils.Set_Opacity(c.bgimage, c);
+                        break;
+                    case Hiro_Download d:
+                        Hiro_Utils.Set_Opacity(d.bgimage, d);
+                        break;
+                    case Hiro_Web f:
+                        Hiro_Utils.Set_Opacity(f.bgimage, f);
+                        break;
+                    case Hiro_Finder g:
+                        Hiro_Utils.Set_Opacity(g.bgimage, g);
+                        break;
+                }
+
+                System.Windows.Forms.Application.DoEvents();
+            }
         }
 
         private void Schedulex_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -978,17 +998,17 @@ namespace hiro
             Set_Label(proxyx);
         }
 
-        private void chatx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Chatx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(chatx);
         }
 
-        private void infotitle_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Infotitle_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
         }
 
-        private void infolabel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Infolabel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Hiro_We_Info();
         }

@@ -189,6 +189,9 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(name_label, "namelabel");
             Hiro_Utils.Set_Control_Location(ar_label, "autoExe");
             Hiro_Utils.Set_Control_Location(bg_label, "background");
+            Hiro_Utils.Set_Control_Location(bg_darker, "bgdarker");
+            Hiro_Utils.Set_Control_Location(bg_brighter, "bgbrighter");
+            Hiro_Utils.Set_Control_Location(bg_slider, "bgslider");
             Hiro_Utils.Set_Control_Location(langlabel, "language");
             Hiro_Utils.Set_Control_Location(langbox, "langbox");
             Hiro_Utils.Set_Control_Location(langname, "langbox");
@@ -284,6 +287,8 @@ namespace hiro
             call_label.Content = Hiro_Utils.Get_Transalte("callmethod");
             ar_label.Content = Hiro_Utils.Get_Transalte("autoexe");
             bg_label.Content = Hiro_Utils.Get_Transalte("background");
+            bg_darker.Content = Hiro_Utils.Get_Transalte("bgdarker");
+            bg_brighter.Content = Hiro_Utils.Get_Transalte("bgbrighter");
             langlabel.Content = Hiro_Utils.Get_Transalte("language");
             name_label.Content = Hiro_Utils.Get_Transalte("namelabel");
             moreandsoon.Content = Hiro_Utils.Get_Transalte("morecome");
@@ -571,11 +576,13 @@ namespace hiro
                 {
                     if (Environment.ProcessPath != null)
                     {
-                        System.Diagnostics.ProcessStartInfo pinfo = new();
-                        pinfo.UseShellExecute = true;
-                        pinfo.FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath);
-                        pinfo.Arguments = "autostart_on";
-                        pinfo.Verb = "runas";
+                        System.Diagnostics.ProcessStartInfo pinfo = new()
+                        {
+                            UseShellExecute = true,
+                            FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath),
+                            Arguments = "autostart_on",
+                            Verb = "runas"
+                        };
                         System.Diagnostics.Process.Start(pinfo);
                     }
                 }
@@ -597,11 +604,13 @@ namespace hiro
                 {
                     if (Environment.ProcessPath != null)
                     {
-                        System.Diagnostics.ProcessStartInfo pinfo = new();
-                        pinfo.UseShellExecute = true;
-                        pinfo.FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath);
-                        pinfo.Arguments = "autostart_off";
-                        pinfo.Verb = "runas";
+                        System.Diagnostics.ProcessStartInfo pinfo = new()
+                        {
+                            UseShellExecute = true,
+                            FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath),
+                            Arguments = "autostart_off",
+                            Verb = "runas"
+                        };
                         System.Diagnostics.Process.Start(pinfo);
                     }
                 }
@@ -647,7 +656,7 @@ namespace hiro
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Background", "2");
                 if (Hiro_Main != null)
                 {
-                    Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage);
+                    Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
                     Hiro_Main.Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                 }
                 rbtn15.IsEnabled = true;
@@ -695,7 +704,7 @@ namespace hiro
                     Hiro_Utils.Write_Ini(App.dconfig, "Config", "BackImage", strFileName);
                     if (Hiro_Main != null)
                     {
-                        Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage);
+                        Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
                         Hiro_Main.Blurbgi(Convert.ToInt16(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                     }
                 }
@@ -804,6 +813,15 @@ namespace hiro
             if (Load)
             {
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoChat", "0");
+            }
+        }
+
+        private void Bg_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "OpacityMask", Convert.ToInt32(bg_slider.Value).ToString());
+            if (Load)
+            {
+                Hiro_Main?.OpacityBgi();
             }
         }
     }

@@ -182,7 +182,7 @@ namespace hiro
                 tb12.Text = "";
                 tb13.Text = "";
                 if (Hiro_Main != null)
-                    App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
                 Hiro_Main?.Set_Label(Hiro_Main.schedulex);
             }
             else
@@ -197,15 +197,15 @@ namespace hiro
                 {
                     if (day > 0)
                     {
-                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else if (hour > 0)
                     {
-                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else
                     {
-                        App.Notify(new noticeitem(Hiro_Utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                 }
                 Hiro_Main?.Set_Label(Hiro_Main.schedulex);

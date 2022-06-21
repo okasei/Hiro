@@ -124,9 +124,9 @@
     <value>&lt;current&gt;\Hiro.exe</value>
   </data>
   <data name="ApplicationUpdateVersion" xml:space="preserve">
-    <value>2020401</value>
+    <value>2020502</value>
   </data>
   <data name="ApplicationVersion" xml:space="preserve">
-    <value>2.2.4</value>
+    <value>2.2.5</value>
   </data>
 </root>

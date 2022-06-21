@@ -143,9 +143,9 @@ namespace hiro
                 return;
             bflag = 1;
             if (toolstr != null && System.IO.File.Exists(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", "")))))
-                Hiro_Utils.Set_Bgimage(bgimage, Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", ""))));
+                Hiro_Utils.Set_Bgimage(bgimage, this, Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", ""))));
             else
-                Hiro_Utils.Set_Bgimage(bgimage);
+                Hiro_Utils.Set_Bgimage(bgimage, this);
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
