@@ -37,7 +37,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
                 sb.Begin();
             }
-            EnableProxy.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Proxy", "1") switch
+            EnableProxy.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Proxy", "0") switch
             {
                 "1" => null,
                 "2" => true,

@@ -450,7 +450,7 @@ namespace hiro
             }
         }
 
-        public static void Set_Opacity(Control sender, Control win)
+        public static void Set_Opacity(FrameworkElement sender, Control win)
         {
             if (!double.TryParse(Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
@@ -1056,6 +1056,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("zip("))
                 {
+                    CreateFolder(parameter[1]);
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
@@ -1077,6 +1078,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("unzip("))
                 {
+                    CreateFolder(parameter[1]);
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
@@ -1119,6 +1121,7 @@ namespace hiro
                         App.mn.closebtn.Visibility = Visibility.Hidden;
                         App.mn.stack.Visibility = Visibility.Hidden;
                         App.mn.Visibility = Visibility.Hidden;
+                        App.mn.Update_VlcPlayer_Status();
                         return;
                     }
                 }
@@ -1390,7 +1393,10 @@ namespace hiro
                     {
                         var pa = path[..path.IndexOf(",")];
                         path = path[(pa.Length + 1)..];
-                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                        var os = Get_OSVersion();
+                        if (os.IndexOf(".") != -1)
+                            os = os[..os.IndexOf(".")];
+                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
                             if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
                             {
@@ -1435,7 +1441,10 @@ namespace hiro
                     }
                     else
                     {
-                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                        var os = Get_OSVersion();
+                        if (os.IndexOf(".") != -1)
+                            os = os[..os.IndexOf(".")];
+                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
                             if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
                             {
@@ -1452,11 +1461,11 @@ namespace hiro
                                 return;
                             }
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                                                            .AddText(Get_Transalte("alarmtitle"))
-                                                            .AddText(path.Replace("\\n", Environment.NewLine))
-                                                            .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                                                        .SetContent(Get_Transalte("alarmone")))
-                                                            .Show();
+                            .AddText(Get_Transalte("alarmtitle"))
+                            .AddText(path.Replace("\\n", Environment.NewLine))
+                            .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
+                                        .SetContent(Get_Transalte("alarmone")))
+                            .Show();
                             
                         }
                         else
@@ -1573,7 +1582,7 @@ namespace hiro
                 //notify(uri) - Reverse
                 if (path.Length > 7 && path.ToLower().StartsWith("notify("))
                 {
-                    String titile, mes, toolstr;
+                    string titile, mes, toolstr;
                     if (path.LastIndexOf(")") != -1)
                     {
                         toolstr = path[7..path.LastIndexOf(")")];
@@ -2172,7 +2181,7 @@ namespace hiro
         #region 动画相关
 
         #region 模糊动画
-        public static void Blur_Animation(int direction, bool animation, Label label, Window win, BackgroundWorker? bw = null)
+        public static void Blur_Animation(int direction, bool animation, Control label, Window win, BackgroundWorker? bw = null)
         {
             //0: 25->0 12s  1:0->50 25s 2:0->25 12s 3:50->25 12s
             double start = direction switch
@@ -2258,7 +2267,7 @@ namespace hiro
                     bw.RunWorkerAsync();
             }    
         }
-        private static void Set_Animation_Label(double rd, Label label, Window win)
+        private static void Set_Animation_Label(double rd, Control label, Window win)
         {
             label.Effect = new System.Windows.Media.Effects.BlurEffect()
             {

@@ -115,19 +115,22 @@ namespace hiro
                         info = info[..info.IndexOf("]")].Replace("\\n", Environment.NewLine);
                         string url = ups[(ups.IndexOf("url:[") + "url:[".Length)..];
                         url = url[..url.IndexOf("]")];
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                        var os = Hiro_Utils.Get_OSVersion();
+                        if (os.IndexOf(".") != -1)
+                            os = os[..os.IndexOf(".")];
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                                .AddText(Hiro_Utils.Get_Transalte("updatetitle"))
-                                .AddText(Hiro_Utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine))
-                                .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                    .SetContent(Hiro_Utils.Get_Transalte("updateok"))
-                                    .AddArgument("action", "uok"))
-                                .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                    .SetContent(Hiro_Utils.Get_Transalte("updateskip"))
-                                    .AddArgument("action", "uskip"))
-                                .AddArgument("url", url)
-                                .Show();
+                            .AddText(Hiro_Utils.Get_Transalte("updatetitle"))
+                            .AddText(Hiro_Utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine))
+                            .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
+                                .SetContent(Hiro_Utils.Get_Transalte("updateok"))
+                                .AddArgument("action", "uok"))
+                            .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
+                                .SetContent(Hiro_Utils.Get_Transalte("updateskip"))
+                                .AddArgument("action", "uskip"))
+                            .AddArgument("url", url)
+                            .Show();
                         }
                         else
                         {

@@ -186,7 +186,7 @@ namespace hiro
                         Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
                     else
                         mn.Show();
-                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "0").Equals("1"))
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1"))
                     {
                         Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
                         mn.hiro_chat ??= new(mn);
@@ -216,7 +216,10 @@ namespace hiro
             int disturb = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Disturb", "2"));
             if ((disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0))
             {
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                var os = Hiro_Utils.Get_OSVersion();
+                if (os.IndexOf(".") != -1)
+                    os = os[..os.IndexOf(".")];
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                 {
                     new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                 .AddText(title)
@@ -321,6 +324,8 @@ namespace hiro
             Hiro_Utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
             dconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hus";
             sconfig = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\" + EnvironmentUsername + ".hsl";
+            dconfig = dconfig.Replace("\\\\", "\\");
+            sconfig = sconfig.Replace("\\\\", "\\");
             Hiro_Utils.LogtoFile("[HIROWEGO]DConfig at " + dconfig);
             Hiro_Utils.LogtoFile("[HIROWEGO]SConfig at " + sconfig);
             FirstUse = !System.IO.File.Exists(dconfig) && !System.IO.File.Exists(sconfig);
@@ -384,11 +389,11 @@ namespace hiro
                 AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro");
             if (Hiro_Utils.Read_Ini(dconfig, "Config", "TRBtn", "0").Equals("1"))
                 trval = 0;
-            if (Hiro_Utils.Read_Ini(dconfig, "Network", "Proxy", "1").Equals("1"))//IE Proxy
+            if (Hiro_Utils.Read_Ini(dconfig, "Network", "Proxy", "0").Equals("1"))//IE Proxy
             {
                 hc = new();
             }
-            else if (Hiro_Utils.Read_Ini(dconfig, "Network", "Proxy", "1").Equals("2"))//Proxy
+            else if (Hiro_Utils.Read_Ini(dconfig, "Network", "Proxy", "0").Equals("2"))//Proxy
             {
                 try
                 {
@@ -496,7 +501,10 @@ namespace hiro
                     var b = (disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0);
                     if (a && b)
                     {
-                        if (Hiro_Utils.Read_Ini(dconfig, "Config", "Toast", "0").Equals("1"))
+                        var os = Hiro_Utils.Get_OSVersion();
+                        if (os.IndexOf(".") != -1)
+                            os = os[..os.IndexOf(".")];
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int r) && r >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)

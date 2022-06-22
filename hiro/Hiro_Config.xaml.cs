@@ -114,7 +114,8 @@ namespace hiro
             rbtn12.IsChecked = !rbtn13.IsChecked;
             cb_box.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Min", "1").Equals("1");
             rbtn15.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2");
-            rbtn14.IsChecked = !rbtn15.IsChecked;
+            rbtn14.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1");
+            video_btn.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("3");
             rbtn17.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomNick", "1").Equals("2");
             rbtn16.IsChecked = !rbtn17.IsChecked;
             if (rbtn17.IsChecked == true)
@@ -124,7 +125,7 @@ namespace hiro
                     App.wnd.ti.ToolTipText = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
             }
             msg_audio.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1");
-            msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "0").Equals("1");
+            msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1");
             Autorun.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoRun", "0").Equals("1");
             blureff.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0") switch
             {
@@ -164,6 +165,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(rbtn13, "runcmd4");
             Hiro_Utils.Set_Control_Location(rbtn14, "colortheme");
             Hiro_Utils.Set_Control_Location(rbtn15, "imagetheme");
+            Hiro_Utils.Set_Control_Location(video_btn, "videotheme");
             Hiro_Utils.Set_Control_Location(rbtn16, "namehiro");
             Hiro_Utils.Set_Control_Location(rbtn17, "namecus");
             Hiro_Utils.Set_Control_Location(msg_label, "msglabel");
@@ -252,6 +254,7 @@ namespace hiro
             rbtn13.Content = Hiro_Utils.Get_Transalte("runcmd");
             rbtn14.Content = Hiro_Utils.Get_Transalte("colortheme");
             rbtn15.Content = Hiro_Utils.Get_Transalte("imagetheme");
+            video_btn.Content = Hiro_Utils.Get_Transalte("videotheme");
             rbtn16.Content = Hiro_Utils.Get_Transalte("namehiro");
             rbtn17.Content = Hiro_Utils.Get_Transalte("namecus");
             msg_label.Content = Hiro_Utils.Get_Transalte("msglabel");
@@ -273,6 +276,9 @@ namespace hiro
                 2 => Hiro_Utils.Get_Transalte("disturbok"),
                 _ => Hiro_Utils.Get_Transalte("disturbno")
             };
+            if (!double.TryParse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
+                to = 255;
+            bg_slider.Value = to;
             cb_box.Content = Hiro_Utils.Get_Transalte("minclose");
             Autorun.Content = Hiro_Utils.Get_Transalte("autorun");
             blureff.Content = Hiro_Utils.Get_Transalte("blurbox");
@@ -652,6 +658,7 @@ namespace hiro
             {
                 rbtn15.IsEnabled = false;
                 rbtn14.IsEnabled = false;
+                video_btn.IsEnabled = false;
                 btn10.IsEnabled = true;
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Background", "2");
                 if (Hiro_Main != null)
@@ -661,6 +668,7 @@ namespace hiro
                 }
                 rbtn15.IsEnabled = true;
                 rbtn14.IsEnabled = true;
+                video_btn.IsEnabled = true;
             }
         }
 
@@ -670,6 +678,7 @@ namespace hiro
             {
                 rbtn15.IsEnabled = false;
                 rbtn14.IsEnabled = false;
+                video_btn.IsEnabled = false;
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Background", "1");
                 if (Hiro_Main != null)
                 {
@@ -678,6 +687,7 @@ namespace hiro
                 }
                 rbtn15.IsEnabled = true;
                 rbtn14.IsEnabled = true;
+                video_btn.IsEnabled = true;
             }
         }
 
@@ -707,6 +717,32 @@ namespace hiro
                         Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
                         Hiro_Main.Blurbgi(Convert.ToInt16(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                     }
+                }
+            }
+            else if (video_btn.IsChecked == true)
+            {
+                string strFileName = "";
+                Microsoft.Win32.OpenFileDialog ofd = new()
+                {
+                    Filter = Hiro_Utils.Get_Transalte("vidfiles") + 
+                    "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;*.m4v;*.mkv;*.mov;"+
+                    "*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;*.rec;*.rm;*.rmvb;"+
+                    "*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
+                    + Hiro_Utils.Get_Transalte("allfiles") + "|*.*",
+                    ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
+                    CheckFileExists = true, //验证路径的有效性
+                    CheckPathExists = true,//验证路径的有效性
+                    Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                };
+                if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
+                {
+                    strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
+
+                }
+                if (System.IO.File.Exists(strFileName))
+                {
+                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "BackVideo", strFileName);
+                    Hiro_Main?.BlurVideo();
                 }
             }
             else
@@ -818,10 +854,27 @@ namespace hiro
 
         private void Bg_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "OpacityMask", Convert.ToInt32(bg_slider.Value).ToString());
             if (Load)
             {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "OpacityMask", Convert.ToInt32(bg_slider.Value).ToString());
                 Hiro_Main?.OpacityBgi();
+            }
+        }
+
+        private void Video_btn_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                rbtn15.IsEnabled = false;
+                rbtn14.IsEnabled = false;
+                video_btn.IsEnabled = false;
+                btn10.IsEnabled = true;
+                blureff.IsEnabled = false;
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Background", "3");
+                Hiro_Main?.BlurVideo();
+                rbtn15.IsEnabled = true;
+                rbtn14.IsEnabled = true;
+                video_btn.IsEnabled = true;
             }
         }
     }

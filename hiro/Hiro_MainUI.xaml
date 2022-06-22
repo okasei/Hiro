@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:hiro"
-         x:Name="ui"
+        x:Name="ui"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:wpf="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
         Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" Background="Black" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" StateChanged="Ui_StateChanged">
@@ -18,6 +18,10 @@
     </Window.Resources>
     <Grid>
         <Label x:Name="bgimage" HorizontalAlignment="Stretch" Background="Coral" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
+        <Grid x:Name="vlcGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Width="550" Height="450" Visibility="Hidden">
+            <Label x:Name="vlimage" HorizontalAlignment="Stretch" Background="{Binding Background, ElementName=bgimage}" VerticalAlignment="Stretch" Margin="0,0,0,0" OpacityMask="{Binding OpacityMask, ElementName=bgimage}"/>
+            <Image x:Name="vlcPlayer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        </Grid>
         <Label x:Name="bglabel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" MouseDown="Bglabel_MouseDown" Height="30" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="{DynamicResource AppFore}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <Grid x:Name="stack" Width="130" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Height="420" Visibility="Hidden">

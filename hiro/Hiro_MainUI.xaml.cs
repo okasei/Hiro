@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Vlc.DotNet.Wpf;
+using Vlc.DotNet.Core.Interops;
 
 namespace hiro
 {
@@ -28,6 +31,7 @@ namespace hiro
         internal Hiro_Color? hiro_color = null;
         internal Hiro_Proxy? hiro_proxy = null;
         internal Hiro_Chat? hiro_chat = null;
+        internal VlcVideoSourceProvider? hiro_provider = null;
 
         public Hiro_MainUI()
         {
@@ -42,6 +46,55 @@ namespace hiro
             };
         }
 
+        private void Reset_Vlc()
+        {
+            var videoPath = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackVideo", "");
+            videoPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(videoPath));
+            if (!System.IO.File.Exists(videoPath))
+                return;
+            System.Threading.Thread.Sleep(100);
+            if (hiro_provider != null)
+            {
+                hiro_provider.MediaPlayer.Stop();
+                hiro_provider.MediaPlayer.Position = 0;
+                hiro_provider.MediaPlayer.Play(new Uri(videoPath));
+            }
+        }
+
+        private void Create_Vlc()
+        {
+            var videoPath = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackVideo", "");
+            videoPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(videoPath));
+            if (!System.IO.File.Exists(videoPath))
+                return;
+            hiro_provider ??= new(Dispatcher);
+            if (vlcPlayer.Tag == null)
+            {
+                hiro_provider.CreatePlayer(new(System.IO.Directory.GetCurrentDirectory() + "\\runtimes\\win-vlc"), new[] { "--input-repeat=65535" });
+                vlcPlayer.Dispatcher.Invoke(() => {
+                    vlcPlayer.SetBinding(Image.SourceProperty,
+                    new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
+                });
+            }
+            hiro_provider.MediaPlayer.Play(new Uri(videoPath));
+            //vlcPlayer.SourceProvider.MediaPlayer.Play(new Uri(@"C:\\Users\\Rex\\Videos\\2022-06-17_16-30-24.mp4"));
+            hiro_provider.MediaPlayer.Audio.IsMute = true;
+            hiro_provider.MediaPlayer.EndReached += delegate
+            {
+                new System.Threading.Thread(() =>
+                {
+                    Reset_Vlc();
+                }).Start();
+            };
+            hiro_provider.MediaPlayer.LengthChanged += delegate
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    vlcPlayer.Tag = "Playing";
+                    Load_VlcPlayer();
+                });
+            };
+        }
         public void MainUI_Initialize()
         {
             InitializeUIWindow();
@@ -52,6 +105,8 @@ namespace hiro
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Load Colors");
             Load_Colors();
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Load Position");
+            OpacityBgi();
+            Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Load OpacityMask");
             Load_Position();
         }
 
@@ -66,7 +121,10 @@ namespace hiro
 
         public void HiHiro()
         {
-            Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("3"))
+                Update_VlcPlayer_Status();
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
+                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 Set_Label(selected ?? homex);
@@ -89,6 +147,9 @@ namespace hiro
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("3"))
+                BlurVideo();
+            Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Hi!Hiro!");
         }
 
         public void AddToInfoCenter(string text)
@@ -167,9 +228,15 @@ namespace hiro
         {
             Hiro_Utils.IntializeColorParameters();
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            Blurbgi(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1")
-                ? 0
-                : Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            switch(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1"))
+            {
+                case "1":
+                    Blurbgi(0);
+                    break;
+                case "2":
+                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+                    break;
+            };
             Foreground = new SolidColorBrush(App.AppForeColor);
             #region 颜色
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
@@ -430,6 +497,7 @@ namespace hiro
                         extend_background.Opacity = 0;
                         extended.Visibility = Visibility.Hidden;
                         extend_background.Visibility = Visibility.Hidden;
+                        Update_VlcPlayer_Status();
                         sb = null;
                     };
                     sb.Begin();
@@ -440,6 +508,7 @@ namespace hiro
                     extend_background.Opacity = 0;
                     extended.Visibility = Visibility.Hidden;
                     extend_background.Visibility = Visibility.Hidden;
+                    Update_VlcPlayer_Status();
                 }
                 
             }
@@ -739,6 +808,7 @@ namespace hiro
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Min", "1").Equals("1"))
             {
                 Visibility = Visibility.Hidden;
+                Update_VlcPlayer_Status();
             }
             else
             {
@@ -814,13 +884,32 @@ namespace hiro
                 if (hc.rbtn15.IsChecked == true)
                     hc.blureff.IsEnabled = true;
             };
-            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
+            vlcGrid.Visibility = Visibility.Hidden;
+            bgimage.Visibility = Visibility.Visible;
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
+                Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
+            if (vlcPlayer.Tag != null && ((String)vlcPlayer.Tag).Equals("Playing"))
+            {
+                hiro_provider?.Dispose();
+                hiro_provider = null;
+                vlcPlayer.Tag = null;
+            }
             bflag = 0;
+        }
+
+        internal void BlurVideo()
+        {
+            vlcGrid.Visibility = Visibility.Visible;
+            bgimage.Visibility = Visibility.Hidden;
+            bgimage.Background = new SolidColorBrush(App.AppAccentColor);
+            Create_Vlc();
+            Load_VlcPlayer();
         }
 
         internal void OpacityBgi()
         {
             Hiro_Utils.Set_Opacity(bgimage, this);
+            Hiro_Utils.Set_Opacity(vlcPlayer, this);
             foreach (Window win in Application.Current.Windows)
             {
                 switch (win)
@@ -932,7 +1021,7 @@ namespace hiro
                 extended.IsEnabled = true;
                 extend_background.IsEnabled = true;
             }
-                
+            Update_VlcPlayer_Status();
         }
         internal void Hiro_We_Info()
         {
@@ -974,12 +1063,73 @@ namespace hiro
             }
         }
 
+        private void Load_VlcPlayer()
+        {
+            if (WindowState == WindowState.Normal && Visibility == Visibility.Visible)
+            {
+                vlcGrid.Width = Width;
+                vlcGrid.Height = Height;
+                try
+                {
+                    var track = hiro_provider?.MediaPlayer.GetMedia().Tracks[0].TrackInfo as VideoTrack;
+                    if (track != null)
+                    {
+                        var w = track.Width;
+                        var h = track.Height;
+                        var ww = Width;
+                        var hh = Height;
+                        var www = h * ww / hh;
+                        var hhh = w * hh / ww;
+                        if (www > vlcGrid.Width)
+                        {
+                            vlcGrid.Width = www;
+                            vlcGrid.Height = hh;
+                        }
+                        else
+                        {
+                            vlcGrid.Width = ww;
+                            vlcGrid.Height = hhh;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+            }
+        }
+
         private void Ui_StateChanged(object sender, EventArgs e)
         {
             if (WindowState == WindowState.Maximized)
                 WindowState = WindowState.Normal;
             if (WindowState != WindowState.Minimized)
-                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            {
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
+                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            }
+                
+            Update_VlcPlayer_Status();
+        }
+
+        public void Update_VlcPlayer_Status()
+        {
+            if (WindowState == WindowState.Minimized || Visibility != Visibility.Visible || extended.Visibility == Visibility.Visible || vlcGrid.Visibility != Visibility.Visible)
+            {
+                if (vlcPlayer.Tag != null && ((String)vlcPlayer.Tag).Equals("Playing"))
+                {
+                    hiro_provider?.MediaPlayer.Pause();
+                    vlcPlayer.Tag = "Paused";
+                }
+            }
+            else
+            {
+                if (vlcPlayer.Tag != null && ((String)vlcPlayer.Tag).Equals("Paused"))
+                {
+                    hiro_provider?.MediaPlayer.Play();
+                    vlcPlayer.Tag = "Playing";
+                }
+            }
         }
 
         private void Frame_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
