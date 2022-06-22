@@ -1072,6 +1072,15 @@ namespace hiro
                             if (para.IndexOf("d") != -1)
                                 RunExe("Delete(" + parameter[0] + ")");
                         }
+                        if (parameter.Count > 3)
+                        {
+                            string cmd = parameter[3];
+                            for (var i = 4; i < parameter.Count; i++)
+                            {
+                                cmd += "," + parameter[i];
+                            }
+                            RunExe(cmd, source);
+                        }
                     };
                     bw.RunWorkerAsync();
                     return;
@@ -1093,6 +1102,15 @@ namespace hiro
                                 RunExe(parameter[1]);
                             if (para.IndexOf("d") != -1)
                                 RunExe("Delete(" + parameter[0] + ")");
+                        }
+                        if (parameter.Count > 3)
+                        {
+                            string cmd = parameter[3];
+                            for (var i = 4; i < parameter.Count; i++)
+                            {
+                                cmd += "," + parameter[i];
+                            }
+                            RunExe(cmd, source);
                         }
                     };
                     bw.RunWorkerAsync();

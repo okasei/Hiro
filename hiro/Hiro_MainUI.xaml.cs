@@ -65,8 +65,10 @@ namespace hiro
         {
             var videoPath = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackVideo", "");
             videoPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(videoPath));
+            vlimage.Visibility = Visibility.Visible;
             if (!System.IO.File.Exists(videoPath))
                 return;
+            vlimage.Visibility = Visibility.Hidden;
             hiro_provider ??= new(Dispatcher);
             if (vlcPlayer.Tag == null)
             {
