@@ -731,7 +731,7 @@ namespace hiro
             var path = Path_Prepare_EX(Path_Prepare(RunPath));
             try
             {
-                var parameter = HiroParse(path);
+                var parameter = HiroCmdParse(path);
                 int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
                 if (File.Exists(path) && path.ToLower().EndsWith(".hiro"))
                     path = "seq(" + path + ")";
@@ -850,10 +850,6 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("delete("))
                 {
-                    if (parameter[0].StartsWith("\""))
-                        parameter[0] = parameter[0][1..];
-                    if (parameter[0].EndsWith("\""))
-                        parameter[0] = parameter[0][..^1];
                     if (!File.Exists(parameter[0]))
                     {
                         if (Directory.Exists(parameter[0]))
@@ -1240,100 +1236,55 @@ namespace hiro
                         }
                     }
                 }
-                //run - Reverse
                 if (path.ToLower().StartsWith("run("))
                 {
-                    String titile, mes, toolstr;
-                    if (path.LastIndexOf(")") != -1)
+                    if (parameter.Count == 0)
                     {
-                        toolstr = path[4..path.LastIndexOf(")")];
-                        if (toolstr.LastIndexOf(",") != -1)
-                        {
-                            titile = toolstr[..toolstr.LastIndexOf(",")];
-                            if (titile.Length < toolstr.Length - 1)
-                            {
-                                mes = toolstr[(titile.Length + 1)..];
-                            }
-                            else
-                            {
-                                App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
-                                return;
-                            }
-
-                        }
-
-                        else
-                        {
-                            App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
-                            return;
-                        }
+                        App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                        return;
+                    }
+                    string? FileName = null;
+                    string? Arguments = null;
+                    string? HiroArguments = null;
+                    if (!parameter[0].Contains(' ', StringComparison.CurrentCulture))
+                    {
+                        FileName = parameter[0];
                     }
                     else
                     {
-                        App.Notify(new(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                        FileName = parameter[0][..parameter[0].IndexOf(" ")];
+                        Arguments = parameter[0][(parameter[0].IndexOf(" ") + 1)..];
+                    }
+                    if (parameter.Count > 1)
+                    {
+                        HiroArguments = parameter[1].ToLower();
+                    }
+                    if (FileName == null)
+                    {
+                        App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                         return;
                     }
                     try
                     {
                         ProcessStartInfo pinfo = new()
                         {
-                            UseShellExecute = true
+                            UseShellExecute = true,
+                            FileName = FileName,
+                            Arguments = Arguments
                         };
-                        List<string> blank = new();
-                        var a = 0;
-                        while (titile.IndexOf('\"') != -1)
+                        if (HiroArguments != null)
                         {
-                            a++;
-                            var lef = titile[..titile.IndexOf("\"")];
-                            titile = titile[(lef.Length + 1)..];
-                            if (!titile.Contains('\"', StringComparison.CurrentCulture))
-                                break;
-                            var inside = titile[..titile.IndexOf("\"")];
-                            titile = titile[(inside.Length + 1)..];
-                            blank.Add(inside);
-                            titile = lef + "[" + a.ToString() + "]" + titile;
+                            if (HiroArguments.IndexOf("a") != -1)
+                                pinfo.Verb = "runas";
+                            if (HiroArguments.IndexOf("h") != -1)
+                                pinfo.WindowStyle = ProcessWindowStyle.Hidden;
+                            if (HiroArguments.IndexOf("i") != -1)
+                                pinfo.WindowStyle = ProcessWindowStyle.Minimized;
+                            if (HiroArguments.IndexOf("x") != -1)
+                                pinfo.WindowStyle = ProcessWindowStyle.Maximized;
+                            if (HiroArguments.IndexOf("n") != -1)
+                                pinfo.CreateNoWindow = true;
                         }
-                        if (!titile.Contains(' ', StringComparison.CurrentCulture))
-                        {
-                            pinfo.FileName = titile;
-                        }
-                        else
-                        {
-                            pinfo.FileName = titile[..titile.IndexOf(" ")];
-                            pinfo.Arguments = titile[(titile.IndexOf(" ") + 1)..];
-                        }
-                        a = 1;
-                        while (blank.Count > 0 && pinfo.FileName.IndexOf("[" + a.ToString() + "]") != -1)
-                        {
-                            pinfo.FileName = pinfo.FileName.Replace("[" + a.ToString() + "]", blank[0]);
-                            blank.RemoveAt(0);
-                            a++;
-                        }
-                        while (blank.Count > 0 && pinfo.Arguments.IndexOf("[" + a.ToString() + "]") != -1)
-                        {
-                            pinfo.Arguments = pinfo.Arguments.Replace("[" + a.ToString() + "]", "\"" + blank[0]) + "\"";
-                            blank.RemoveAt(0);
-                            a++;
-                        }
-                        if (mes.StartsWith("\""))
-                            mes = mes[1..];
-                        if (mes.EndsWith("\""))
-                            mes = mes[0..^1];
-                        if (titile.StartsWith("\""))
-                            titile = titile[1..];
-                        if (mes.EndsWith("\""))
-                            titile = titile[0..^1];
-                        mes = mes.ToLower();
-                        if (mes.IndexOf("a") != -1)
-                            pinfo.Verb = "runas";
-                        if (mes.IndexOf("h") != -1)
-                            pinfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        if (mes.IndexOf("i") != -1)
-                            pinfo.WindowStyle = ProcessWindowStyle.Minimized;
-                        if (mes.IndexOf("x") != -1)
-                            pinfo.WindowStyle = ProcessWindowStyle.Maximized;
-                        if (mes.IndexOf("n") != -1)
-                            pinfo.CreateNoWindow = true;
                         Run_Process(pinfo, path, RunPath);
                     }
                     catch (Exception ex)
@@ -1402,59 +1353,63 @@ namespace hiro
                     dl.Show();
                     return;
                 }
-                //alarm(title,url/text) - Reverse
                 if (path.ToLower().StartsWith("alarm("))
                 {
+                    var pa = parameter[0].ToLower();
+                    if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
+                    {
+                        BackgroundWorker bw = new();
+                        bw.DoWork += delegate
+                        {
+                            pa = GetWebContent(pa);
+                        };
+                        bw.RunWorkerCompleted += delegate
+                        {
+                            var val = parameter.Count == 1 ? "\"" + pa + "\"" : "\"" + pa + "\"" + "," + "\"" + parameter[1] + "\"";
+                            RunExe("alarm(" + val + ")", source);
+                        };
+                        bw.RunWorkerAsync();
+                        return;
+                    }
+                    if (parameter.Count > 1)
+                    {
+                        var par = parameter[1].ToLower();
+                        if (par.ToLower().StartsWith("http://") || par.ToLower().StartsWith("https://"))
+                        {
+                            BackgroundWorker bw = new();
+                            bw.DoWork += delegate
+                            {
+                                par = GetWebContent(par);
+                            };
+                            bw.RunWorkerCompleted += delegate
+                            {
+                                var val = "\"" + parameter[0] + "\",\"" + par + "\"";
+                                RunExe("alarm(" + val + ")", source);
+                            };
+                            bw.RunWorkerAsync();
+                            return;
+                        }
+                    }
                     path = path[6..];
                     path = path[0..^1];
-                    if (path.IndexOf(",") != -1)
+                    if (parameter.Count > 1)
                     {
-                        var pa = path[..path.IndexOf(",")];
-                        path = path[(pa.Length + 1)..];
                         var os = Get_OSVersion();
                         if (os.IndexOf(".") != -1)
                             os = os[..os.IndexOf(".")];
                         if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
-                            if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
-                            {
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    pa = GetWebContent(pa);
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    RunExe("alarm(" + pa + "," + path + ")", source);
-                                };
-                                bw.RunWorkerAsync();
-                                return;
-                            }
-                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
-                            {
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    path = GetWebContent(path);
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    RunExe("alarm(" + pa + "," + path.Replace("<br>", "\\n") + ")", source);
-                                };
-                                bw.RunWorkerAsync();
-                                return;
-                            }
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddArgument("Launch", App.AppTitle)
-                            .AddText(pa)
-                            .AddText(path.Replace("\\n", Environment.NewLine))
+                            .AddText(parameter[0])
+                            .AddText(parameter[1].Replace("\\n", Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(Get_Transalte("alarmone")))
                             .Show();
                         }
                         else
                         {
-                            new Hiro_Alarm(-1, CustomedTitle: pa, CustomedContnet: path, OneButtonOnly: 1).Show();
+                            new Hiro_Alarm(-1, CustomedTitle: parameter[0], CustomedContnet: parameter[1], OneButtonOnly: 1).Show();
                         }
                     }
                     else
@@ -1464,23 +1419,9 @@ namespace hiro
                             os = os[..os.IndexOf(".")];
                         if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
-                            if (path.ToLower().StartsWith("http://") || path.ToLower().StartsWith("https://"))
-                            {
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    path = GetWebContent(path);
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    RunExe("alarm(" + path.Replace("<br>", "\\n") + ")", source);
-                                };
-                                bw.RunWorkerAsync();
-                                return;
-                            }
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddText(Get_Transalte("alarmtitle"))
-                            .AddText(path.Replace("\\n", Environment.NewLine))
+                            .AddText(parameter[0].Replace("\\n", Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(Get_Transalte("alarmone")))
                             .Show();
@@ -1488,7 +1429,7 @@ namespace hiro
                         }
                         else
                         {
-                            new Hiro_Alarm(-1, CustomedContnet: path, OneButtonOnly: 1).Show();
+                            new Hiro_Alarm(-1, CustomedContnet: parameter[0], OneButtonOnly: 1).Show();
                         }
 
                     }
@@ -1597,64 +1538,41 @@ namespace hiro
                     msg.Show();
                     return;
                 }
-                //notify(uri) - Reverse
                 if (path.Length > 7 && path.ToLower().StartsWith("notify("))
                 {
-                    string titile, mes, toolstr;
-                    if (path.LastIndexOf(")") != -1)
+                    string titile = Get_Transalte("syntax");
+                    int duration = -1;
+                    if (parameter.Count > 0)
                     {
-                        toolstr = path[7..path.LastIndexOf(")")];
-                        if (toolstr.LastIndexOf(",") != -1)
+                        try
                         {
-                            titile = toolstr[..toolstr.LastIndexOf(",")];
-                            if (titile.Length < toolstr.Length - 1)
+                            duration = parameter.Count > 1 ? Convert.ToInt32(parameter[1]) : 2;
+                            titile = parameter[0];
+                            if (titile.ToLower().StartsWith("http://") || titile.ToLower().StartsWith("https://"))
                             {
-                                mes = toolstr[(titile.Length + 1)..];
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    titile = GetWebContent(titile).Replace("<br>", "\\n");
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    RunExe("notify(" + titile + "," + duration.ToString() + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
                             }
-                            else
-                            {
-                                mes = "2";
-                            }
-
+                            if (File.Exists(titile))
+                                titile = File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
                         }
-
-                        else
+                        catch (Exception ex)
                         {
-                            titile = toolstr;
-                            mes = "2";
+                            RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
+                            LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
                         }
                     }
-                    else
-                    {
-                        titile = Get_Transalte("syntax");
-                        mes = "2";
-                    }
-                    try
-                    {
-                        int duration = Convert.ToInt32(mes);
-                        if (titile.ToLower().StartsWith("http://") || titile.ToLower().StartsWith("https://"))
-                        {
-                            BackgroundWorker bw = new();
-                            bw.DoWork += delegate
-                            {
-                                titile = GetWebContent(titile).Replace("<br>", "\\n");
-                            };
-                            bw.RunWorkerCompleted += delegate
-                            {
-                                RunExe("notify(" + titile + "," + duration.ToString() + ")", source);
-                            };
-                            bw.RunWorkerAsync();
-                            return;
-                        }
-                        if (File.Exists(titile))
-                            titile = File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
-                        App.Notify(new(titile, duration));
-                    }
-                    catch (Exception ex)
-                    {
-                        RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
-                    }
+                    duration = duration <= 0 ? 2 : duration;
+                    App.Notify(new(titile, duration));
                     return;
                 }
                 if (path.ToLower().StartsWith("web("))
@@ -1699,7 +1617,6 @@ namespace hiro
                         web.topbtn.Content = "\uE77A";
                         web.topbtn.ToolTip = Get_Transalte("webbottom");
                     }
-                        
                     if (webpara.IndexOf("b") != -1)
                         web.URLGrid.Visibility = Visibility.Visible;
                     web.Show();
@@ -1747,54 +1664,29 @@ namespace hiro
                     }
                     return;
                 }
-                try
+                string? FileName_ = null;
+                string? Arguments_ = null;
+                if (!parameter[0].Contains(' ', StringComparison.CurrentCulture))
                 {
-                    ProcessStartInfo pinfo = new()
-                    {
-                        UseShellExecute = true
-                    };
-                    List<string> blank = new();
-                    var a = 0;
-                    while (path.IndexOf('\"') != -1)
-                    {
-                        a++;
-                        var lef = path[..path.IndexOf("\"")];
-                        path = path[(lef.Length + 1)..];
-                        if (!path.Contains('\"', StringComparison.CurrentCulture))
-                            break;
-                        var inside = path[..path.IndexOf("\"")];
-                        path = path[(inside.Length + 1)..];
-                        blank.Add(inside);
-                        path = lef + "[" + a.ToString() + "]" + path;
-                    }
-                    if (!path.Contains(' ', StringComparison.CurrentCulture))
-                    {
-                        pinfo.FileName = path;
-                    }
-                    else
-                    {
-                        pinfo.FileName = path[..path.IndexOf(" ")];
-                        pinfo.Arguments = path[(path.IndexOf(" ") + 1)..];
-                    }
-                    a = 1;
-                    while (blank.Count > 0 && pinfo.FileName.IndexOf("[" + a.ToString() + "]") != -1)
-                    {
-                        pinfo.FileName = pinfo.FileName.Replace("[" + a.ToString() + "]", blank[0]);
-                        blank.RemoveAt(0);
-                        a++;
-                    }
-                    while (blank.Count > 0 && pinfo.Arguments.IndexOf("[" + a.ToString() + "]") != -1)
-                    {
-                        pinfo.Arguments = pinfo.Arguments.Replace("[" + a.ToString() + "]", "\"" + blank[0]) + "\"";
-                        blank.RemoveAt(0);
-                        a++;
-                    }
-                    Run_Process(pinfo, path, RunPath);
+                    FileName_ = parameter[0];
                 }
-                catch (Exception ex)
+                else
                 {
-                    LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                    FileName_ = parameter[0][..parameter[0].IndexOf(" ")];
+                    Arguments_ = parameter[0][(parameter[0].IndexOf(" ") + 1)..];
                 }
+                if (FileName_ == null)
+                {
+                    App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                    return;
+                }
+                ProcessStartInfo pinfo_ = new()
+                {
+                    UseShellExecute = true,
+                    FileName = FileName_,
+                    Arguments = Arguments_
+                };
+                Run_Process(pinfo_, path, RunPath);
                 #endregion
                 if (App.mn == null)
                     RunExe("exit()");
@@ -1912,6 +1804,52 @@ namespace hiro
             if (val.EndsWith(")"))
                 val = val[0..^1];
             return new List<string>(val.Split(','));
+        }
+
+        public static List<string> HiroCmdParse(string val)
+        {
+            if (!val.Contains('(', StringComparison.CurrentCulture))
+                return new List<string>() { val };
+            val = val[(val.IndexOf("(") + 1)..];
+            if (val.EndsWith(")"))
+                val = val[0..^1];
+            val = val.Replace("\\\"", "\uAAA1");
+            val = val.Replace("\\\\", "\uAAA3");
+            List<string> blank = new();
+            var startIndex = val.IndexOf('\"');
+            var a = 0;
+            while (startIndex != -1)
+            {
+                var endIndex = val.IndexOf('\"', startIndex + 1);
+                if (endIndex == -1)
+                {
+                    break;
+                }
+                else
+                {
+                    var left = val.Substring(0, startIndex);
+                    var right = val[(endIndex + 1)..];
+                    var tmp = val.Substring(startIndex + 1, endIndex - startIndex - 1);
+                    val = left + "\uAAA5" + a.ToString() + "\uAAA6" + right;
+                    blank.Add(tmp);
+                    a++;
+                    startIndex = val.IndexOf('\"');
+                }
+            }
+            a--;
+            var res = new List<string>(val.Split(','));
+            for (var r = res.Count - 1; r >= 0; r--)
+            {
+                if (a < 0)
+                    break;
+                res[r] = res[r].Replace("\uAAA1", "\"").Replace("\uAAA3", "\\");
+                if (res[r].IndexOf("\uAAA5" + a.ToString() + "\uAAA6") != -1)
+                {
+                    res[r] = res[r].Replace("\uAAA5" + a.ToString() + "\uAAA6", blank[a]);
+                    a--;
+                }
+            }
+            return res;
         }
 
         [DllImport("user32.dll")]

@@ -63,39 +63,56 @@ namespace hiro
 
         private void Create_Vlc()
         {
-            var videoPath = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackVideo", "");
-            videoPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(videoPath));
-            vlimage.Visibility = Visibility.Visible;
-            if (!System.IO.File.Exists(videoPath))
-                return;
-            vlimage.Visibility = Visibility.Hidden;
-            hiro_provider ??= new(Dispatcher);
-            if (vlcPlayer.Tag == null)
+            new System.Threading.Thread(() =>
             {
-                hiro_provider.CreatePlayer(new(System.IO.Directory.GetCurrentDirectory() + "\\runtimes\\win-vlc"), new[] { "--input-repeat=65535" });
-                vlcPlayer.Dispatcher.Invoke(() => {
-                    vlcPlayer.SetBinding(Image.SourceProperty,
-                    new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
-                });
-            }
-            hiro_provider.MediaPlayer.Play(new Uri(videoPath));
-            //vlcPlayer.SourceProvider.MediaPlayer.Play(new Uri(@"C:\\Users\\Rex\\Videos\\2022-06-17_16-30-24.mp4"));
-            hiro_provider.MediaPlayer.Audio.IsMute = true;
-            hiro_provider.MediaPlayer.EndReached += delegate
-            {
-                new System.Threading.Thread(() =>
+                try
                 {
-                    Reset_Vlc();
-                }).Start();
-            };
-            hiro_provider.MediaPlayer.LengthChanged += delegate
-            {
-                Dispatcher.Invoke(() =>
+                    var videoPath = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackVideo", "");
+                    videoPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(videoPath));
+                    Dispatcher.Invoke(() =>
+                    {
+                        vlimage.Visibility = Visibility.Visible;
+                    });
+                    if (!System.IO.File.Exists(videoPath))
+                        return;
+                    Object? obj = null;
+                    Dispatcher.Invoke(() =>
+                    {
+                        vlimage.Visibility = Visibility.Hidden;
+                        obj = vlcPlayer.Tag;
+                    });
+                    hiro_provider ??= new(Dispatcher);
+                    if (obj == null)
+                    {
+                        hiro_provider.CreatePlayer(new(System.IO.Directory.GetCurrentDirectory() + "\\runtimes\\win-vlc"), new[] { "--input-repeat=65535" });
+                        vlcPlayer.Dispatcher.Invoke(() => {
+                            vlcPlayer.SetBinding(Image.SourceProperty,
+                            new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
+                        });
+                    }
+                    hiro_provider.MediaPlayer.Play(new Uri(videoPath));
+                    hiro_provider.MediaPlayer.Audio.IsMute = true;
+                    hiro_provider.MediaPlayer.EndReached += delegate
+                    {
+                        new System.Threading.Thread(() =>
+                        {
+                            Reset_Vlc();
+                        }).Start();
+                    };
+                    hiro_provider.MediaPlayer.LengthChanged += delegate
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            vlcPlayer.Tag = "Playing";
+                            Load_VlcPlayer();
+                        });
+                    };
+                }
+                catch (Exception ex)
                 {
-                    vlcPlayer.Tag = "Playing";
-                    Load_VlcPlayer();
-                });
-            };
+                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                }
+            }).Start();
         }
         public void MainUI_Initialize()
         {
@@ -1080,9 +1097,11 @@ namespace hiro
                         var h = track.Height;
                         var ww = Width;
                         var hh = Height;
-                        var www = h * ww / hh;
-                        var hhh = w * hh / ww;
-                        if (www > vlcGrid.Width)
+                        var wi = ww / w;
+                        var hi = hh / h;
+                        var www = hh * w / h;
+                        var hhh = ww * h / w;
+                        if (wi < hi)
                         {
                             vlcGrid.Width = www;
                             vlcGrid.Height = hh;
