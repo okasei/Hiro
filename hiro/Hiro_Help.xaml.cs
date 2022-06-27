@@ -101,7 +101,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Update.Parse: " + ex.Message);
                 }
 
             };

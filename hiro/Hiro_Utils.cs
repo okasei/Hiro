@@ -354,7 +354,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]" + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Config.Update: " + ex.Message);
                 return false;
             }
 
@@ -382,8 +382,14 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]" + ex.Message);
+                try
+                {
+                    LogtoFile("[ERROR]Hiro.Exception.Log: " + ex.Message);
+                }
+                catch
+                {
 
+                }
             }
         }
         #endregion
@@ -425,7 +431,7 @@ namespace hiro
                         sb.Begin();
                     }catch (Exception ex)
                     {
-                        LogtoFile("[ERROR]" + ex.Message);
+                        LogtoFile("[ERROR]Hiro.Exception.Animation: " + ex.Message);
                         sender.Background = new SolidColorBrush(App.AppAccentColor);
                     }
                     
@@ -538,7 +544,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]" + "sender " + val + "|" + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Location: " + "sender " + val + "|" + ex.Message);
             }
 
         }
@@ -574,7 +580,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]" + "sender " + val + "|" + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Location.Grid: " + "sender " + val + "|" + ex.Message);
             }
 
         }
@@ -806,7 +812,7 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                                LogtoFile("[ERROR]Hiro.Exception.Wallpaper.HttpClient: Error at " + path + " | Details: " + ex.Message);
                             }
                         };
                         bw.RunWorkerCompleted += delegate
@@ -860,10 +866,10 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                                LogtoFile("[ERROR]Hiro.Exception.IO.Delete: Error at " + path + " | Details: " + ex.Message);
                             }
                         else
-                            LogtoFile("[WARNING]Warning at " + path + " | Details: " + Get_Transalte("filenotexist"));
+                            LogtoFile("[WARNING]Hiro.Warning.IO.Delete: Warning at " + path + " | Details: " + Get_Transalte("filenotexist"));
                         return;
                     }
                     try
@@ -873,7 +879,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                        LogtoFile("[ERROR]Hiro.Exception.IO.Delete: Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -889,7 +895,7 @@ namespace hiro
                         catch (Exception ex)
                         {
                             App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                            LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                            LogtoFile("[ERROR]Hiro.Exception.IO.Move: Error at " + path + " | Details: " + ex.Message);
                         }
                         return;
                     }
@@ -901,7 +907,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                        LogtoFile("[ERROR]Hiro.Exception.IO.Move: Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -917,12 +923,12 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                                LogtoFile("[ERROR]Hiro.Exception.IO.Copy: Error at " + path + " | Details: " + ex.Message);
                             }
                         else
                         {
                             App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("file")));
-                            LogtoFile("[ERROR]Error at " + path + " | Details: " + Get_Transalte("filenotexist"));
+                            LogtoFile("[ERROR]Hiro.Exception.IO.Copy: Error at " + path + " | Details: " + Get_Transalte("filenotexist"));
                         }
                         return;
                     }
@@ -934,7 +940,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                        LogtoFile("[ERROR]Hiro.Exception.IO.Copy: Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -1121,7 +1127,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                        LogtoFile("[ERROR]Hiro.Exception.Exit: Error at " + path + " | Details: " + ex.Message);
                     }
                     return;
                 }
@@ -1243,22 +1249,10 @@ namespace hiro
                         App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
                         return;
                     }
-                    string? FileName = null;
-                    string? Arguments = null;
-                    string? HiroArguments = null;
-                    if (!parameter[0].Contains(' ', StringComparison.CurrentCulture))
-                    {
-                        FileName = parameter[0];
-                    }
-                    else
-                    {
-                        FileName = parameter[0][..parameter[0].IndexOf(" ")];
-                        Arguments = parameter[0][(parameter[0].IndexOf(" ") + 1)..];
-                    }
-                    if (parameter.Count > 1)
-                    {
-                        HiroArguments = parameter[1].ToLower();
-                    }
+                    string? FileName = parameter.Count >= 1 ? parameter[0] : null;
+                    string? Arguments = parameter.Count >= 3 ? parameter[2] : null;
+                    string? HiroArguments = parameter.Count >= 2 ? parameter[1] : null;
+                    HiroArguments = HiroArguments == null ? null : HiroArguments.ToLower();
                     if (FileName == null)
                     {
                         App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
@@ -1290,7 +1284,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                        LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                        LogtoFile("[ERROR]Hiro.Exception.Run.Extra: Error at " + path + " | Details: " + ex.Message);
                     }
                     if (App.mn == null)
                         RunExe("exit()");
@@ -1356,83 +1350,69 @@ namespace hiro
                 if (path.ToLower().StartsWith("alarm("))
                 {
                     var pa = parameter[0].ToLower();
-                    if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
+                    var os = Get_OSVersion();
+                    if (os.IndexOf(".") != -1)
+                        os = os[..os.IndexOf(".")];
+                    var boo = Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10;
+                    if (boo)
                     {
-                        BackgroundWorker bw = new();
-                        bw.DoWork += delegate
-                        {
-                            pa = GetWebContent(pa);
-                        };
-                        bw.RunWorkerCompleted += delegate
-                        {
-                            var val = parameter.Count == 1 ? "\"" + pa + "\"" : "\"" + pa + "\"" + "," + "\"" + parameter[1] + "\"";
-                            RunExe("alarm(" + val + ")", source);
-                        };
-                        bw.RunWorkerAsync();
-                        return;
-                    }
-                    if (parameter.Count > 1)
-                    {
-                        var par = parameter[1].ToLower();
-                        if (par.ToLower().StartsWith("http://") || par.ToLower().StartsWith("https://"))
+                        if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
                         {
                             BackgroundWorker bw = new();
                             bw.DoWork += delegate
                             {
-                                par = GetWebContent(par);
+                                pa = GetWebContent(pa);
                             };
                             bw.RunWorkerCompleted += delegate
                             {
-                                var val = "\"" + parameter[0] + "\",\"" + par + "\"";
+                                var val = parameter.Count == 1 ? "\"" + pa + "\"" : "\"" + pa + "\"" + "," + "\"" + parameter[1] + "\"";
                                 RunExe("alarm(" + val + ")", source);
                             };
                             bw.RunWorkerAsync();
                             return;
                         }
-                    }
-                    path = path[6..];
-                    path = path[0..^1];
-                    if (parameter.Count > 1)
-                    {
-                        var os = Get_OSVersion();
-                        if (os.IndexOf(".") != -1)
-                            os = os[..os.IndexOf(".")];
-                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
+                        if (parameter.Count > 1)
+                        {
+                            var par = parameter[1].ToLower();
+
+                            if ((par.ToLower().StartsWith("http://") || par.ToLower().StartsWith("https://")) && boo)
+                            {
+                                BackgroundWorker bw = new();
+                                bw.DoWork += delegate
+                                {
+                                    par = GetWebContent(par);
+                                };
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    var val = "\"" + parameter[0] + "\",\"" + par + "\"";
+                                    RunExe("alarm(" + val + ")", source);
+                                };
+                                bw.RunWorkerAsync();
+                                return;
+                            }
+                        }
+                        if (parameter.Count > 1)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddArgument("Launch", App.AppTitle)
                             .AddText(parameter[0])
-                            .AddText(parameter[1].Replace("\\n", Environment.NewLine))
+                            .AddText(parameter[1].Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(Get_Transalte("alarmone")))
                             .Show();
                         }
                         else
-                        {
-                            new Hiro_Alarm(-1, CustomedTitle: parameter[0], CustomedContnet: parameter[1], OneButtonOnly: 1).Show();
-                        }
-                    }
-                    else
-                    {
-                        var os = Get_OSVersion();
-                        if (os.IndexOf(".") != -1)
-                            os = os[..os.IndexOf(".")];
-                        if (Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddText(Get_Transalte("alarmtitle"))
-                            .AddText(parameter[0].Replace("\\n", Environment.NewLine))
+                            .AddText(parameter[0].Replace("\\n", Environment.NewLine).Replace("<br>",Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(Get_Transalte("alarmone")))
                             .Show();
-                            
                         }
-                        else
-                        {
-                            new Hiro_Alarm(-1, CustomedContnet: parameter[0], OneButtonOnly: 1).Show();
-                        }
-
                     }
+                    else
+                        new Hiro_Alarm(-1, CustomedTitle: parameter[0], CustomedContnet: parameter[1], OneButtonOnly: 1).Show();
                     return;
                 }
                 if (App.mn != null)
@@ -1568,11 +1548,19 @@ namespace hiro
                         catch (Exception ex)
                         {
                             RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                            LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                            LogtoFile("[ERROR]Hiro.Exception.Run.Notification: Error at " + path + " | Details: " + ex.Message);
                         }
                     }
                     duration = duration <= 0 ? 2 : duration;
                     App.Notify(new(titile, duration));
+                    return;
+                }
+                if (path.ToLower().StartsWith("play("))
+                {
+                    if (path.ToLower().Equals("play()"))
+                        new Hiro_Player().Show();
+                    else
+                        new Hiro_Player(parameter[0]).Show();
                     return;
                 }
                 if (path.ToLower().StartsWith("web("))
@@ -1664,17 +1652,8 @@ namespace hiro
                     }
                     return;
                 }
-                string? FileName_ = null;
-                string? Arguments_ = null;
-                if (!parameter[0].Contains(' ', StringComparison.CurrentCulture))
-                {
-                    FileName_ = parameter[0];
-                }
-                else
-                {
-                    FileName_ = parameter[0][..parameter[0].IndexOf(" ")];
-                    Arguments_ = parameter[0][(parameter[0].IndexOf(" ") + 1)..];
-                }
+                var parameter_ = HiroCmdParse(path, false);
+                string? FileName_ = parameter_.Count >= 1 ? parameter_[0] : null;
                 if (FileName_ == null)
                 {
                     App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
@@ -1684,8 +1663,17 @@ namespace hiro
                 {
                     UseShellExecute = true,
                     FileName = FileName_,
-                    Arguments = Arguments_
                 };
+                if (parameter_.Count > 1)
+                {
+                    pinfo_.Arguments = parameter_[1];
+                    for (var j = 2; j < parameter_.Count; j++)
+                    {
+                        pinfo_.Arguments += " " + parameter_[j];
+                        if (App.dflag)
+                            LogtoFile("[DEBUG]Argument " + parameter_[j]);
+                    }
+                }
                 Run_Process(pinfo_, path, RunPath);
                 #endregion
                 if (App.mn == null)
@@ -1694,7 +1682,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Error at " + path + " | Details: " + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Run: Error at " + path + " | Details: " + ex.Message);
                 App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, source));
                 return;
             }
@@ -1757,7 +1745,7 @@ namespace hiro
                         }
                     }
                     App.Notify(new(Get_Transalte("notfound"), 2, Get_Transalte("execute")));
-                    LogtoFile("[ERROR]" + ex.Message);
+                    LogtoFile("[ERROR]Hiro.Exception.Run.Process: " + ex.Message);
                 }
             }
         }
@@ -1790,7 +1778,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]" + ex.Message);
+                    LogtoFile("[ERROR]Hiro.Exception.FindItemByName: " + ex.Message);
                 }   
             }
             return null;
@@ -1806,15 +1794,16 @@ namespace hiro
             return new List<string>(val.Split(','));
         }
 
-        public static List<string> HiroCmdParse(string val)
+        public static List<string> HiroCmdParse(string val, bool replaceBrackets = true)
         {
-            if (!val.Contains('(', StringComparison.CurrentCulture))
-                return new List<string>() { val };
-            val = val[(val.IndexOf("(") + 1)..];
-            if (val.EndsWith(")"))
-                val = val[0..^1];
-            val = val.Replace("\\\"", "\uAAA1");
+            if (val.IndexOf(")") != -1 && replaceBrackets)
+            {
+                val = val[(val.IndexOf("(") + 1)..];
+                if (val.EndsWith(")"))
+                    val = val[0..^1];
+            }
             val = val.Replace("\\\\", "\uAAA3");
+            val = val.Replace("\\\"", "\uAAA1");
             List<string> blank = new();
             var startIndex = val.IndexOf('\"');
             var a = 0;
@@ -1827,8 +1816,8 @@ namespace hiro
                 }
                 else
                 {
-                    var left = val.Substring(0, startIndex);
-                    var right = val[(endIndex + 1)..];
+                    var left = startIndex == 0 ? "" : val.Substring(0, startIndex);
+                    var right = endIndex == val.Length ? "" : val[(endIndex + 1)..];
                     var tmp = val.Substring(startIndex + 1, endIndex - startIndex - 1);
                     val = left + "\uAAA5" + a.ToString() + "\uAAA6" + right;
                     blank.Add(tmp);
@@ -1837,7 +1826,7 @@ namespace hiro
                 }
             }
             a--;
-            var res = new List<string>(val.Split(','));
+            var res = replaceBrackets ? new List<string>(val.Split(',')) : new List<string>(val.Split(' '));
             for (var r = res.Count - 1; r >= 0; r--)
             {
                 if (a < 0)
@@ -1896,7 +1885,7 @@ namespace hiro
             catch (Exception ex)
             {
                 App.Notify(new Hiro_Notice(Get_Transalte("error"), 2));
-                LogtoFile("[ERROR]" + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Bluetooth: " + ex.Message);
             }
         }
 
@@ -2007,7 +1996,7 @@ namespace hiro
             catch (Exception ex)
             {
                 App.Notify(new Hiro_Notice(Get_Transalte("error"), 2, Get_Transalte("wifi")));
-                LogtoFile("[ERROR]" + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Wifi: " + ex.Message);
             }
         }
 
@@ -2435,10 +2424,10 @@ namespace hiro
                 throw new Exception(Get_Transalte("webnotinitial"));
             try
             {
-                System.Net.Http.HttpResponseMessage response = App.hc.Send(request);
+                HttpResponseMessage response = App.hc.Send(request);
                 if (response.Content != null)
                 {
-                    System.IO.Stream stream = response.Content.ReadAsStream();
+                    Stream stream = response.Content.ReadAsStream();
                     string result = string.Empty;
                     if (save == true && savepath != null)
                     {
@@ -2452,26 +2441,26 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            LogtoFile("[ERROR]" + ex.Message);
+                            LogtoFile("[ERROR]Hiro.Exception.Web.Get: " + ex.Message);
                             throw new Exception(ex.Message);
                         }
                     }
                     else
                     {
-                        System.IO.StreamReader sr = new(stream);
+                        StreamReader sr = new(stream);
                         result = sr.ReadToEnd();
                         return result;
                     }
                 }
                 else
                 {
-                    LogtoFile("[ERROR]Response is null");
+                    LogtoFile("[ERROR]Hiro.Exception.Web.Respose: Response is null");
                     return Get_Transalte("error");
                 }
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]" + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Web.HttpClient: " + ex.Message);
                 throw new Exception(ex.Message);
             }
 
@@ -2631,7 +2620,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]" + ex.Message);
+                    LogtoFile("[ERROR]Hiro.Exception.Alarm.OK: " + ex.Message);
                 }
 
             }
@@ -2702,7 +2691,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]" + ex.Message);
+                    LogtoFile("[ERROR]Hiro.Exception.Config.Autorun: " + ex.Message);
                 }
             }
             else
@@ -2737,7 +2726,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]" + ex.Message);
+                LogtoFile("[ERROR]Hiro.Exception.Directory.Create: " + ex.Message);
                 return false;
             }
             return true;
@@ -2818,7 +2807,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]" + ex.Message);
+                    LogtoFile("[ERROR]Hiro.Exception.System.Color: " + ex.Message);
                     App.AppAccentColor = (Color)ColorConverter.ConvertFromString("#00C4FF");
                 }
             }
@@ -2911,7 +2900,7 @@ namespace hiro
                 int sa = Marshal.GetLastWin32Error();
                 _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
                 RunExe("notify(" + Get_Transalte("regfailed").Replace("%n", sa.ToString()) + ",2)");
-                LogtoFile("[ERROR]Register hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
+                LogtoFile("[ERROR]Hiro.Exception.Hotkey.Register: Register hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
             }
             App.vs.Add(kid);
             App.vs.Add(cid);
@@ -2932,7 +2921,7 @@ namespace hiro
                 int sa = Marshal.GetLastWin32Error();
                 _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
                 RunExe("notify(" + Get_Transalte("unregfailed").Replace("%n", sa.ToString()) + ",2)");
-                LogtoFile("[ERROR]Unregister hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
+                LogtoFile("[ERROR]Hiro.Exception.Hotkey.Unregister: Unregister hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
             }
             else
                 LogtoFile("[REGISTER]Successfully unregistered.");
@@ -3025,6 +3014,30 @@ namespace hiro
             IntPtr hWnd = (IntPtr)GetForegroundWindow();
             GetWindowRect(new HandleRef(null, hWnd), ref rect);
             return screen.Bounds.Width == (rect.right - rect.left) && screen.Bounds.Height == (rect.bottom - rect.top);
+        }
+        #endregion
+
+        #region 获取文件名
+        public static string GetFileName(string file, bool ext = false)
+        {
+            var lasts = file.LastIndexOf("\\");
+            var lasta = file.LastIndexOf("/");
+            var lastd = file.LastIndexOf(".");
+            if (lasts == -1)
+            {
+                if (lasta == -1)
+                {
+                    return file;
+                }
+                else
+                {
+                    return lastd > lasta ? file.Substring(lasta + 1, lastd - lasta - 1) : file.Substring(lasta + 1);
+                }
+            }
+            else
+            {
+                return lastd > lasts ? file.Substring(lasts + 1, lastd - lasts - 1) : file.Substring(lasts + 1);
+            }
         }
         #endregion
 

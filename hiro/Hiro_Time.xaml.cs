@@ -91,7 +91,7 @@ namespace hiro
             catch (Exception ex)
             {
                 a = "0";
-                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Time.Parse: " + ex.Message);
             }
             if (a.Length > b)
             {

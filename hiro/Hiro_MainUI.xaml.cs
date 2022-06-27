@@ -57,7 +57,7 @@ namespace hiro
             {
                 hiro_provider.MediaPlayer.Stop();
                 hiro_provider.MediaPlayer.Position = 0;
-                hiro_provider.MediaPlayer.Play(new Uri(videoPath));
+                hiro_provider.MediaPlayer.Play(new Uri(@videoPath));
             }
         }
 
@@ -84,13 +84,13 @@ namespace hiro
                     hiro_provider ??= new(Dispatcher);
                     if (obj == null)
                     {
-                        hiro_provider.CreatePlayer(new(System.IO.Directory.GetCurrentDirectory() + "\\runtimes\\win-vlc"), new[] { "--input-repeat=65535" });
+                        hiro_provider.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "--input-repeat=65535" });
                         vlcPlayer.Dispatcher.Invoke(() => {
                             vlcPlayer.SetBinding(Image.SourceProperty,
                             new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
                         });
                     }
-                    hiro_provider.MediaPlayer.Play(new Uri(videoPath));
+                    hiro_provider.MediaPlayer.Play(new Uri(@videoPath));
                     hiro_provider.MediaPlayer.Audio.IsMute = true;
                     hiro_provider.MediaPlayer.EndReached += delegate
                     {
@@ -110,7 +110,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Player.Initialize: " + ex.Message);
                 }
             }).Start();
         }
@@ -132,8 +132,8 @@ namespace hiro
         public void MainUI_FirstInitialize()
         {
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Set Home");
-            Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - this.Width / 2);
-            Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2);
+            Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
+            Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Loaded");
         }
@@ -311,7 +311,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]Error occurred while trying to register hotkey " + mo + "+" + vkey + ":" + ex.Message);
+                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Hotkey.Register: Error occurred while trying to register hotkey " + mo + "+" + vkey + ":" + ex.Message);
                         }
 
                     }
@@ -319,7 +319,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Hotkey.Register.Format: " + ex.Message);
                 }
                 co = co[1..^1];
                 App.cmditems.Add(new Cmditem(p, i, ti, co, key));
@@ -857,13 +857,6 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            if (current is Hiro_Config hc)
-            {
-                hc.blureff.IsEnabled = false;
-                hc.rbtn14.IsEnabled = false;
-                hc.rbtn15.IsEnabled = false;
-                hc.btn10.IsEnabled = false;
-            }   
             foreach (Window win in Application.Current.Windows)
             {
                 switch (win)
@@ -886,6 +879,9 @@ namespace hiro
                     case Hiro_Finder g:
                         g.Loadbgi(direction);
                         break;
+                    case Hiro_Player h:
+                        h.Loadbgi(direction);
+                        break;
                 }
 
                 System.Windows.Forms.Application.DoEvents();
@@ -896,10 +892,11 @@ namespace hiro
             {
                 if (current is not Hiro_Config hc) 
                     return;
-                hc.blureff.IsEnabled = true;
+                hc.blureff.IsEnabled = false;
                 hc.rbtn14.IsEnabled = true;
                 hc.rbtn15.IsEnabled = true;
                 hc.btn10.IsEnabled = true;
+                hc.video_btn.IsEnabled = true;
                 if (hc.rbtn15.IsChecked == true)
                     hc.blureff.IsEnabled = true;
             };
@@ -907,10 +904,15 @@ namespace hiro
             bgimage.Visibility = Visibility.Visible;
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
                 Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
+            else
+                bw.RunWorkerAsync();
             if (vlcPlayer.Tag != null && ((String)vlcPlayer.Tag).Equals("Playing"))
             {
-                hiro_provider?.Dispose();
-                hiro_provider = null;
+                new System.Threading.Thread(() =>
+                {
+                    hiro_provider?.Dispose();
+                    hiro_provider = null;
+                }).Start();
                 vlcPlayer.Tag = null;
             }
             bflag = 0;
@@ -1115,7 +1117,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Player.Resize: " + ex.Message);
                 }
             }
         }

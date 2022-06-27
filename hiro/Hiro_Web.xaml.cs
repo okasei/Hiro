@@ -283,7 +283,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Webview: " + ex.Message);
             }
         }
 
@@ -368,6 +368,7 @@ namespace hiro
         private void Closebtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Close();
+            e.Handled = true;
         }
 
         private void Maxbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -501,7 +502,7 @@ namespace hiro
                             }
                             catch
                             {
-                                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Webview.URL: " + ex.Message);
                             }
                         }
                     

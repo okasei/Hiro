@@ -355,7 +355,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Hotkey.RegisterFunc: " + ex.Message);
                     }
                 }
             }
@@ -382,7 +382,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.HotKey.RegisterFunc: " + ex.Message);
                         }
                     }
                 }
@@ -395,46 +395,54 @@ namespace hiro
         }
         private void Tb8_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            var data = e.Data;
+            var formats = data.GetData(DataFormats.FileDrop).GetType().ToString();
+            if (formats.Equals("System.String[]"))
             {
-                var path = (string)e.Data.GetData(DataFormats.FileDrop);
-                tb8.Text = path;
-                if (tb7.Text == "")
-                    Ntn1_Click(sender, e);
-
+                var info = e.Data.GetData(DataFormats.FileDrop) as String[];
+                if (info != null && info.Length > 0)
+                {
+                    tb8.Text = info[0];
+                    if (tb7.Text == "")
+                        Ntn1_Click(sender, e);
+                }
             }
-            if (e.Data.GetDataPresent(DataFormats.Text))
+            else if (formats.Equals("System.String"))
             {
-                var path = (string)e.Data.GetData(DataFormats.Text);
-                tb8.Text = path;
-                if (tb7.Text == "")
-                    Ntn1_Click(sender, e);
+                var info = e.Data.GetData(DataFormats.FileDrop) as String;
+                if (info != null)
+                {
+                    tb8.Text = info;
+                    if (tb7.Text == "")
+                        Ntn1_Click(sender, e);
+                }
             }
-            return;
         }
 
         private void Tb7_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            var data = e.Data;
+            var formats = data.GetData(DataFormats.FileDrop).GetType().ToString();
+            if (formats.Equals("System.String[]"))
             {
-                var path = (string)e.Data.GetData(DataFormats.FileDrop);
-                var st = tb8.Text;
-                tb8.Text = path;
-                Ntn1_Click(sender, e);
-                if (st != "")
-                    tb8.Text = st;
-
+                var info = e.Data.GetData(DataFormats.FileDrop) as String[];
+                if (info != null && info.Length > 0)
+                {
+                    tb8.Text = info[0];
+                    if (tb7.Text == "")
+                        Ntn1_Click(sender, e);
+                }
             }
-            if (e.Data.GetDataPresent(DataFormats.Text))
+            else if (formats.Equals("System.String"))
             {
-                var path = (string)e.Data.GetData(DataFormats.FileDrop);
-                var st = tb8.Text;
-                tb8.Text = path;
-                Ntn1_Click(sender, e);
-                if (st != "")
-                    tb8.Text = st;
+                var info = e.Data.GetData(DataFormats.FileDrop) as String;
+                if (info != null)
+                {
+                    tb8.Text = info;
+                    if (tb7.Text == "")
+                        Ntn1_Click(sender, e);
+                }
             }
-            return;
         }
 
         private void Tb7_DragEnter(object sender, DragEventArgs e)
@@ -555,7 +563,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Data.Parse: " + ex.Message);
                     }
                     if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
                     {

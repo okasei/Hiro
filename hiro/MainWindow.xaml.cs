@@ -35,7 +35,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Power: " + ex.Message);
             }
         }
 
@@ -113,7 +113,7 @@ namespace hiro
                 }
                 catch(Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Wifi.Network: " + ex.Message);
                 }
                 if (ncl == profile.GetNetworkConnectivityLevel() && rec_nc.Equals(ext))
                     return;
@@ -217,8 +217,6 @@ namespace hiro
                     }).Start();
                     break;
                 default:
-                    if (App.dflag)
-                        Hiro_Utils.LogtoFile("[DEBUG]Msg: " + msg.ToString() + ";LParam: " + lParam.ToString() + ";WParam: " + wParam.ToString());
                     break;
             }
             return IntPtr.Zero;
@@ -255,6 +253,9 @@ namespace hiro
                         break;
                     case Hiro_Finder g:
                         g.Load_Color();
+                        break;
+                    case Hiro_Player h:
+                        h.Load_Color();
                         break;
                 }
                 System.Windows.Forms.Application.DoEvents();

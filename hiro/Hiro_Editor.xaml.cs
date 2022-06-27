@@ -98,7 +98,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     con.Text = "";
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Editor.Write: " + ex.Message);
                 }
                 
             }
@@ -123,7 +123,7 @@ namespace hiro
             catch(Exception ex)
             {
                 con.Text = "";
-                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Editor.Read: " + ex.Message);
             }
             status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Update_Animation();

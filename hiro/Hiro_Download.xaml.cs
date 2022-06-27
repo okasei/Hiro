@@ -182,7 +182,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Continue: " + ex.Message);
                 App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
                 Stop_Download(false);
                 return;
@@ -205,7 +205,7 @@ namespace hiro
                     }
                     catch (Exception e)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]" + e.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Stream: " + e.Message);
                         startpos = 0;
                     }
                 }
@@ -241,7 +241,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Write: " + ex.Message);
                     App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
                     successflag = false;
                     break;
@@ -282,7 +282,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Save: " + ex.Message);
                 }
             }
             Stop_Download(successflag);
@@ -333,7 +333,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.ListFile: " + ex.Message);
                     }
                 }
             }

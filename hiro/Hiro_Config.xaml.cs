@@ -595,7 +595,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     Autorun.IsChecked = false;
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Config.Autorun: " + ex.Message);
                 }
             }
             Autorun.Tag = "1";
@@ -623,7 +623,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     Autorun.IsChecked = true;
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Config.Autorun: " + ex.Message);
                 }
             }
             Autorun.Tag = "1";
@@ -659,16 +659,20 @@ namespace hiro
                 rbtn15.IsEnabled = false;
                 rbtn14.IsEnabled = false;
                 video_btn.IsEnabled = false;
-                btn10.IsEnabled = true;
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Background", "2");
                 if (Hiro_Main != null)
                 {
                     Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
                     Hiro_Main.Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                 }
-                rbtn15.IsEnabled = true;
-                rbtn14.IsEnabled = true;
-                video_btn.IsEnabled = true;
+                else
+                {
+                    blureff.IsEnabled = true;
+                    rbtn15.IsEnabled = true;
+                    rbtn14.IsEnabled = true;
+                    video_btn.IsEnabled = true;
+                    btn10.IsEnabled = true;
+                }
             }
         }
 
@@ -685,9 +689,14 @@ namespace hiro
                     Hiro_Main.bgimage.Background = new SolidColorBrush(App.AppAccentColor);
                     Hiro_Main.Blurbgi(0);
                 }
-                rbtn15.IsEnabled = true;
-                rbtn14.IsEnabled = true;
-                video_btn.IsEnabled = true;
+                else
+                {
+                    blureff.IsEnabled = false;
+                    rbtn15.IsEnabled = true;
+                    rbtn14.IsEnabled = true;
+                    video_btn.IsEnabled = true;
+                    btn10.IsEnabled = true;
+                }
             }
         }
 
@@ -868,13 +877,14 @@ namespace hiro
                 rbtn15.IsEnabled = false;
                 rbtn14.IsEnabled = false;
                 video_btn.IsEnabled = false;
-                btn10.IsEnabled = true;
                 blureff.IsEnabled = false;
+                btn10.IsEnabled = false;
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Background", "3");
                 Hiro_Main?.BlurVideo();
                 rbtn15.IsEnabled = true;
                 rbtn14.IsEnabled = true;
                 video_btn.IsEnabled = true;
+                btn10.IsEnabled = true;
             }
         }
     }

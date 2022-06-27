@@ -61,17 +61,25 @@ namespace hiro
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
         {
-             _ = new System.Threading.Mutex(true, "0x415417hiro", out bool ret);
+            _ = new System.Threading.Mutex(true, "0x415417hiro", out bool ret);
             if (!ret)
             {
                 Hiro_Utils.RunExe("exit()");
                 return;
             }
-            InitializeInnerParameters();
-            Initialize_Notify_Recall();
-            InitializeMethod();
-            InitializeStartParameters(e);
-            Build_Socket();
+            try
+            {
+                InitializeInnerParameters();
+                Initialize_Notify_Recall();
+                InitializeMethod();
+                InitializeStartParameters(e);
+                Build_Socket();
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("Hiro.Exception.Initialize: " + ex.Message);
+            }
+            
         }
 
         private void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
@@ -141,7 +149,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Socket: " + ex.Message);
             }
         }
 
@@ -336,7 +344,7 @@ namespace hiro
                 if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                 {
                     lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName.ToString();
-                    Hiro_Utils.LogtoFile("[ERROR]Translateion not found, try to initialize as " + lang.ToString());
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Globalization: Translateion not found, try to initialize as " + lang.ToString());
                     if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                     {
                         lang = "zh-CN";
@@ -350,7 +358,7 @@ namespace hiro
                 {
                     if (str.IndexOf("-") != -1)
                         lang = str[..str.IndexOf("-")];
-                    Hiro_Utils.LogtoFile("[ERROR]Translateion not found, try to initialize as " + lang.ToString());
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Globalization: Translateion not found, try to initialize as " + lang.ToString());
                     if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                     {
                         lang = "zh-CN";
@@ -412,7 +420,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Proxy: " + ex.Message);
                     hc = new();
                 }
             }
@@ -659,7 +667,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Menu.Run: " + ex.Message);
                         }
                     };
                     wnd.cm.Items.Add(mu);

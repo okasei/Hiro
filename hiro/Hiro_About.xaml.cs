@@ -141,7 +141,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]" + ex.Message);
+                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Update.Check: " + ex.Message);
                         App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
                     }
 

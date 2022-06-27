@@ -79,7 +79,7 @@ namespace hiro {
         }
         
         /// <summary>
-        ///   查找类似 2020504 的本地化字符串。
+        ///   查找类似 2020505 的本地化字符串。
         /// </summary>
         internal static string ApplicationUpdateVersion {
             get {
