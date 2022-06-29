@@ -118,6 +118,7 @@ namespace hiro
             win_style.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1");
             reverse_style.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1");
             tr_btn.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "TRBtn", "0").Equals("1");
+            image_compress.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1");
             Autorun.Tag = "1";
             Load = true;
         }
@@ -145,6 +146,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(win_style, "winbox");
             Hiro_Utils.Set_Control_Location(reverse_style, "reversebox");
             Hiro_Utils.Set_Control_Location(tr_btn, "trbtnbox");
+            Hiro_Utils.Set_Control_Location(image_compress, "imgzip");
             Hiro_Utils.Set_Control_Location(Verbose, "verbosebox");
             Hiro_Utils.Set_Control_Location(animation, "anibox");
             Hiro_Utils.Set_Control_Location(lc_label, "leftclick");
@@ -217,6 +219,7 @@ namespace hiro
             win_style.Content = Hiro_Utils.Get_Transalte("winbox");
             reverse_style.Content = Hiro_Utils.Get_Transalte("reversebox");
             tr_btn.Content = Hiro_Utils.Get_Transalte("trbtnbox");
+            image_compress.Content = Hiro_Utils.Get_Transalte("imgzip");
             Verbose.Content = Hiro_Utils.Get_Transalte("verbosebox");
             animation.Content = Hiro_Utils.Get_Transalte("anibox");
             lc_label.Content = Hiro_Utils.Get_Transalte("leftclick");
@@ -580,17 +583,61 @@ namespace hiro
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
-                    strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-
+                    strFileName = ofd.FileName;
                 }
-                if (System.IO.File.Exists(strFileName))
+                if (System.IO.File.Exists(@strFileName))
                 {
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "BackImage", strFileName);
-                    if (Hiro_Main != null)
+                    new System.Threading.Thread(() =>
                     {
-                        Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
-                        Hiro_Main.Blurbgi(Convert.ToInt16(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
-                    }
+                        try
+                        {
+                            System.Drawing.Image img = System.Drawing.Image.FromFile(@strFileName);
+                            double w = img.Width;
+                            double h = img.Height;
+                            double ww = 550 * 2;
+                            double hh = 450 * 2;
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (Hiro_Main != null)
+                                {
+                                    ww = Hiro_Main.Width * 2;
+                                    hh = Hiro_Main.Height * 2;
+                                }
+                            });
+                            if (ww < w && hh < h && Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
+                            {
+                                while (ww < w && hh < h)
+                                {
+                                    w /= 2;
+                                    h /= 2;
+                                }
+                                w *= 2;
+                                h *= 2;
+                                img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
+                                img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
+                                strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
+                                strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
+                                Hiro_Utils.CreateFolder(strFileName);
+                                if (System.IO.File.Exists(strFileName))
+                                    System.IO.File.Delete(strFileName);
+                                img.Save(strFileName);
+                            }
+                            strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
+                            Hiro_Utils.Write_Ini(App.dconfig, "Config", "BackImage", strFileName);
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (Hiro_Main != null)
+                                {
+                                    Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
+                                    Hiro_Main.Blurbgi(Convert.ToInt16(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+                                }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Background.Image.Select Details: " + ex.Message);
+                        }
+                    }).Start();
                 }
             }
             else if (video_btn.IsChecked == true)
@@ -686,6 +733,24 @@ namespace hiro
                 rbtn14.IsEnabled = true;
                 video_btn.IsEnabled = true;
                 btn10.IsEnabled = true;
+            }
+        }
+
+        private void Image_compress_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                image_compress.IsEnabled = false;
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Compression", "1");
+                image_compress.IsEnabled = true;
+            }
+        }
+
+        private void Image_compress_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Compression", "0");
             }
         }
     }

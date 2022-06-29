@@ -12,13 +12,14 @@
     <Page.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDisabled" Color="Azure"></SolidColorBrush>
         <Color x:Key="AppForeDim" A="1" B="1" G="1" ></Color>
-        <ImageBrush x:Key="CircleAvatar" Stretch="UniformToFill" ImageSource="/OpacityMask.png"/>
+        <ImageBrush x:Key="Avatar" Stretch="UniformToFill"/>
     </Page.Resources>
     <Grid>
         <Grid x:Name="BaseGrid" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Margin="0">
             <Grid x:Name="Profile" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Margin="0">
-                <Label x:Name="Profile_Background" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Height="60" Margin="0" MouseDown="Profile_Background_MouseDown" AllowDrop="True" Drop="Profile_Background_Drop">
+                <Label x:Name="Profile_Background" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Height="80" Margin="0" MouseDown="Profile_Background_MouseDown" AllowDrop="True" Drop="Profile_Background_Drop">
                     <Label.OpacityMask>
                         <SolidColorBrush Color="Coral"></SolidColorBrush>
                     </Label.OpacityMask>
@@ -43,13 +44,13 @@
                         </EventTrigger>
                     </Label.Triggers>
                 </Label>
-                <Image x:Name="Profile_Avatar" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="60" Margin="10,30,0,0" MouseDown="Profile_Avatar_MouseDown" Stretch="UniformToFill" OpacityMask="{DynamicResource AppFore}" AllowDrop="True" Drop="Profile_Avatar_Drop">
-                    <Image.Triggers>
+                <Ellipse x:Name="Profile_Ellipse" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="60" Margin="10,30,0,0"  Visibility="Visible" Stroke="{DynamicResource AppFore}" StrokeThickness="2" MouseDown="Profile_Avatar_MouseDown" OpacityMask="{DynamicResource AppFore}" AllowDrop="True" Drop="Profile_Avatar_Drop">
+                    <Ellipse.Triggers>
                         <EventTrigger RoutedEvent="MouseEnter">
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To=".667" 
-                                        Storyboard.TargetName="Profile_Avatar"                                             
+                                        Storyboard.TargetName="Profile_Ellipse"                                             
                                         Storyboard.TargetProperty="Opacity"/>
                                 </Storyboard>
                             </BeginStoryboard>
@@ -58,17 +59,39 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="1" 
-                                        Storyboard.TargetName="Profile_Avatar"                                             
+                                        Storyboard.TargetName="Profile_Ellipse"                                             
                                         Storyboard.TargetProperty="Opacity"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                    </Image.Triggers>
-                </Image>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <Rectangle x:Name="Profile_Rectangle" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="60" Margin="10,30,0,0"  Visibility="Visible" Stroke="{DynamicResource AppFore}" StrokeThickness="2" MouseDown="Profile_Avatar_MouseDown" OpacityMask="{DynamicResource AppFore}" AllowDrop="True" Drop="Profile_Avatar_Drop">
+                    <Rectangle.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To=".667" 
+                                        Storyboard.TargetName="Profile_Rectangle"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="1" 
+                                        Storyboard.TargetName="Profile_Rectangle"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Rectangle.Triggers>
+                </Rectangle>
                 <Label x:Name="Profile_Nickname" VerticalAlignment="Top" HorizontalAlignment="Left" Width="340" Height="30" Margin="80,45,0,0" Content="User" Foreground="{DynamicResource AppFore}" MouseDoubleClick="Profile_Nickname_MouseDoubleClick"></Label>
-                <TextBox x:Name="Profile_Nickname_Textbox" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="{Binding Width, ElementName=Profile_Nickname}" Height="{Binding Height, ElementName=Profile_Nickname}" Margin="{Binding Margin, ElementName=Profile_Nickname}" FontFamily="{Binding FontFamily, ElementName=Profile_Nickname}" FontSize="{Binding FontSize, ElementName=Profile_Nickname}" FontWeight="{Binding FontWeight, ElementName=Profile_Nickname}" FontStyle="{Binding FontStyle, ElementName=Profile_Nickname}" KeyDown="Profile_Nickname_Textbox_KeyDown"></TextBox>
+                <TextBox x:Name="Profile_Nickname_Textbox" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="{Binding Width, ElementName=Profile_Nickname}" Height="{Binding Height, ElementName=Profile_Nickname}" Margin="{Binding Margin, ElementName=Profile_Nickname}" FontFamily="{Binding FontFamily, ElementName=Profile_Nickname}" FontSize="{Binding FontSize, ElementName=Profile_Nickname}" FontWeight="{Binding FontWeight, ElementName=Profile_Nickname}" FontStyle="{Binding FontStyle, ElementName=Profile_Nickname}" KeyDown="Profile_Nickname_Textbox_KeyDown" LostFocus="Profile_Nickname_Textbox_LostFocus"></TextBox>
                 <Label x:Name="Profile_Signature" VerticalAlignment="Top" HorizontalAlignment="Left" Width="340" Height="30" Margin="80,75,0,0" Content="" Foreground="{DynamicResource AppFore}" MouseDoubleClick="Profile_Signature_MouseDoubleClick" ></Label>
-                <TextBox x:Name="Profile_Signature_Textbox" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="{Binding Width, ElementName=Profile_Signature}" Height="{Binding Height, ElementName=Profile_Signature}" Margin="{Binding Margin, ElementName=Profile_Signature}"  FontFamily="{Binding FontFamily, ElementName=Profile_Signature}" FontSize="{Binding FontSize, ElementName=Profile_Signature}" FontWeight="{Binding FontWeight, ElementName=Profile_Signature}" FontStyle="{Binding FontStyle, ElementName=Profile_Signature}" KeyDown="Profile_Signature_Textbox_KeyDown"></TextBox>
+                <TextBox x:Name="Profile_Signature_Textbox" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="{Binding Width, ElementName=Profile_Signature}" Height="{Binding Height, ElementName=Profile_Signature}" Margin="{Binding Margin, ElementName=Profile_Signature}"  FontFamily="{Binding FontFamily, ElementName=Profile_Signature}" FontSize="{Binding FontSize, ElementName=Profile_Signature}" FontWeight="{Binding FontWeight, ElementName=Profile_Signature}" FontStyle="{Binding FontStyle, ElementName=Profile_Signature}" KeyDown="Profile_Signature_Textbox_KeyDown" LostFocus="Profile_Signature_Textbox_LostFocus"></TextBox>
             </Grid>
             <Grid x:Name="name_grid" Margin="10,150,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Cursor="Arrow">
                 <Label  Style="{DynamicResource HiroLabel}" x:Name="name_label" Content="How do you want to call me" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="0,5,0,0"/>

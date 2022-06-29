@@ -135,6 +135,83 @@ namespace hiro
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
+            new System.Threading.Thread(() =>
+            {
+                var strFileName = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackImage", string.Empty);
+                if (System.IO.File.Exists(@strFileName))
+                {
+                    try
+                    {
+                        System.Drawing.Image img = System.Drawing.Image.FromFile(@strFileName);
+                        double w = img.Width;
+                        double h = img.Height;
+                        double ww = 550 * 2;
+                        double hh = 450 * 2;
+                        Dispatcher.Invoke(() =>
+                        {
+                            ww = Width * 2;
+                            hh = Height * 2;
+                        });
+                        bool m = false;
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
+                        {
+                            if (ww < w && hh < h)
+                            {
+                                var r = 0;
+                                while (ww < w && hh < h)
+                                {
+                                    w /= 2;
+                                    h /= 2;
+                                    r++;
+                                }
+                                w *= 2;
+                                h *= 2;
+                                if (r > 1)
+                                {
+                                    img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
+                                    m = true;
+                                }
+
+                            }
+                            long len = 0;
+                            using (var stream = new System.IO.MemoryStream())
+                            {
+                                img.Save(stream, Hiro_Utils.GetImageFormat(img));
+                                len = stream.Length;
+                            }
+                            if (len > 2048 * 1024)
+                            {
+                                img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
+                                m = true;
+                            }
+                        }
+                        if (m)
+                        {
+                            System.Drawing.Bitmap b = new(img);
+                            img.Dispose();
+                            strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
+                            strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
+                            Hiro_Utils.CreateFolder(strFileName);
+                            if (System.IO.File.Exists(strFileName))
+                                System.IO.File.Delete(strFileName);
+                            b.Save(strFileName);
+                            b.Dispose();
+                            strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName);
+                            Hiro_Utils.Write_Ini(App.dconfig, "Config", "BackImage", strFileName);
+                        }
+                        else
+                            img.Dispose();
+                        Dispatcher.Invoke(() =>
+                        {
+                            Hiro_Utils.Set_Bgimage(bgimage, this);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Background.Image.Select Details: " + ex.Message);
+                    }
+                }
+            }).Start();
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Loaded");
         }
 
@@ -247,7 +324,7 @@ namespace hiro
         {
             Hiro_Utils.IntializeColorParameters();
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            switch(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1"))
+            switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1"))
             {
                 case "1":
                     Blurbgi(0);

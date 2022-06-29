@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,8 @@ namespace hiro
             Hiro_Initialize();
             Loaded += delegate
             {
+                SetAvatar(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", ""))));
+                SetBackground(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", ""))));
                 HiHiro();
             };
         }
@@ -48,17 +51,32 @@ namespace hiro
         }
         private void Hiro_Initialize()
         {
-            Load_Data();
+            Profile_Background.Background = new ImageBrush()
+            {
+                Stretch = Stretch.UniformToFill,
+                ImageSource = ImageSourceFromBitmap(res.Default_Background)
+            };
+            Resources["Avatar"] = new ImageBrush()
+            {
+                Stretch = Stretch.UniformToFill,
+                ImageSource = ImageSourceFromBitmap(res.Default_User)
+            };
             Load_Color();
+            Load_Data();
             Load_Translate();
             Load_Position();
         }
 
         public void Load_Color()
         {
+            var sign = Profile_Signature.Foreground == (SolidColorBrush)Resources["AppFore"];
+            var nick = Profile_Nickname.Foreground == (SolidColorBrush)Resources["AppFore"];
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppForeDisabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 160));
             Resources["AppForeDim"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Profile_Signature.Foreground = sign ? (SolidColorBrush)Resources["AppFore"] : (SolidColorBrush)Resources["AppForeDisabled"];
+            Profile_Nickname.Foreground = nick ? (SolidColorBrush)Resources["AppFore"] : (SolidColorBrush)Resources["AppForeDisabled"];
         }
 
         public void Load_Data()
@@ -76,68 +94,37 @@ namespace hiro
             msg_audio.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1");
             msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1");
             tb10.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "");
-            Profile_Signature.Content = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", "");
-            Profile_Nickname.Content = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomName", "");
-            var strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", "")));
-            try
+            var str = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty);
+            if (str.Trim().Equals(string.Empty))
             {
-                if (System.IO.File.Exists(strFileName))
-                {
-                    BitmapImage bi = new();
-                    bi.BeginInit();
-                    bi.UriSource = new Uri(@strFileName);
-                    bi.EndInit();
-                    Profile_Avatar.Source = bi;
-                }
-                else
-                    Profile_Avatar.Source = ImageSourceFromBitmap(res.Default_User);
+                Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
+                Profile_Signature.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
             }
-            catch(Exception ex)
+            else
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Avatar.Load Details: " + ex.Message);
-                Profile_Avatar.Source = ImageSourceFromBitmap(res.Default_User);
+                Profile_Signature.Content = str;
+                Profile_Signature.Foreground = (SolidColorBrush)Resources["AppFore"];
             }
-            strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", "")));
-            try
+            str = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomName", string.Empty);
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomUser", "1").Equals("1") || str.Trim().Equals(string.Empty))
             {
-                if (System.IO.File.Exists(strFileName))
-                {
-                    BitmapImage bi = new();
-                    bi.BeginInit();
-                    bi.CacheOption = BitmapCacheOption.OnLoad;
-                    bi.UriSource = new Uri(@strFileName);
-                    ImageBrush ib = new()
-                    {
-                        Stretch = Stretch.UniformToFill,
-                        ImageSource = bi
-                    };
-                    Profile_Background.Background = ib;
-                    bi.EndInit();
-                    bi.Freeze();
-                }
-                else
-                    Profile_Background.Background = new ImageBrush ()
-                    {
-                        Stretch = Stretch.UniformToFill,
-                        ImageSource = ImageSourceFromBitmap(res.Default_Background)
-                    };
+                Profile_Nickname.Content = App.Username;
+                Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
             }
-            catch (Exception ex)
+            else
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Background.Load Details: " + ex.Message);
-                Profile_Background.Background = new ImageBrush()
-                {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = ImageSourceFromBitmap(res.Default_Background)
-                };
+                Profile_Nickname.Content = str;
+                Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppFore"];
             }
             switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"))
             {
                 case "0":
-                    Profile_Avatar.OpacityMask = (SolidColorBrush)Resources["AppFore"];
+                    Profile_Rectangle.Visibility = Visibility.Hidden;
+                    Profile_Ellipse.Visibility = Visibility.Visible;
                     break;
                 default:
-                    Profile_Avatar.OpacityMask = (ImageBrush)Resources["CircleAvatar"];
+                    Profile_Rectangle.Visibility = Visibility.Visible;
+                    Profile_Ellipse.Visibility = Visibility.Hidden;
                     break;
             }
             Load = true;
@@ -167,6 +154,8 @@ namespace hiro
                 2 => Hiro_Utils.Get_Transalte("disturbok"),
                 _ => Hiro_Utils.Get_Transalte("disturbno")
             };
+            if (Profile_Signature.Foreground == (SolidColorBrush)Resources["AppForeDisabled"])
+                Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
         }
 
         public void Load_Position()
@@ -189,7 +178,8 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(disturb_label, "disturblabel");
             Hiro_Utils.Set_Control_Location(disturb_level, "disturbslider");
             Hiro_Utils.Set_Control_Location(disturb_status, "disturbstatus");
-            Hiro_Utils.Set_FrameworkElement_Location(Profile_Avatar, "profileavatar");
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "profileavatar");
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "profileavatar");
             Hiro_Utils.Set_FrameworkElement_Location(Profile, "profilegrid");
             Hiro_Utils.Set_FrameworkElement_Location(BaseGrid, "profileg");
             Hiro_Utils.Set_FrameworkElement_Location(name_grid, "nameg");
@@ -362,16 +352,18 @@ namespace hiro
 
         private void Profile_Nickname_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Profile_Nickname_Textbox.Text = (string)Profile_Nickname.Content;
+            Profile_Nickname_Textbox.Text = Profile_Nickname.Foreground == (SolidColorBrush)Resources["AppForeDisabled"] ? string.Empty : (string)Profile_Nickname.Content;
             Profile_Nickname.Visibility = Visibility.Hidden;
             Profile_Nickname_Textbox.Visibility = Visibility.Visible;
+            Profile_Nickname_Textbox.Focus();
         }
 
         private void Profile_Signature_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Profile_Signature_Textbox.Text = (string)Profile_Signature.Content;
+            Profile_Signature_Textbox.Text = Profile_Signature.Foreground == (SolidColorBrush)Resources["AppForeDisabled"] ? string.Empty : (string)Profile_Signature.Content;
             Profile_Signature.Visibility = Visibility.Hidden;
             Profile_Signature_Textbox.Visibility = Visibility.Visible;
+            Profile_Signature_Textbox.Focus();
         }
 
         private void Profile_Nickname_Textbox_KeyDown(object sender, KeyEventArgs e)
@@ -383,6 +375,7 @@ namespace hiro
                     Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomUser", "1");
                     App.CustomUsernameFlag = 0;
                     App.Username = App.EnvironmentUsername;
+                    Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
                 }
                 else
                 {
@@ -390,6 +383,7 @@ namespace hiro
                     Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomName", Profile_Nickname_Textbox.Text);
                     App.CustomUsernameFlag = 1;
                     App.Username = Profile_Nickname_Textbox.Text;
+                    Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppFore"];
                 }
                 Profile_Nickname.Content = App.Username;
                 Profile_Nickname.Visibility = Visibility.Visible;
@@ -408,8 +402,10 @@ namespace hiro
         {
             if (e.Key == Key.Enter)
             {
+                Profile_Signature_Textbox.Text = Profile_Signature_Textbox.Text.Trim().Equals(string.Empty) ? string.Empty : Profile_Signature_Textbox.Text;
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomSign", Profile_Signature_Textbox.Text);
-                Profile_Signature.Content = Profile_Signature_Textbox.Text;
+                Profile_Signature.Content = Profile_Signature_Textbox.Text.Equals(string.Empty) ? Hiro_Utils.Get_Transalte("profilesign") : Profile_Signature_Textbox.Text;
+                Profile_Signature.Foreground = Profile_Signature_Textbox.Text.Equals(string.Empty) ? (SolidColorBrush)Resources["AppForeDisabled"] : (SolidColorBrush)Resources["AppFore"];
                 Profile_Signature.Visibility = Visibility.Visible;
                 Profile_Signature_Textbox.Visibility = Visibility.Hidden;
                 e.Handled = true;
@@ -438,9 +434,8 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-
+                    SetBackground(strFileName);
                 }
-                SetBackground(strFileName);
                 e.Handled = true;
             }
         }
@@ -461,9 +456,8 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-
+                    SetAvatar(strFileName);
                 }
-                SetAvatar(strFileName);
                 e.Handled = true;
             }
             else if (e.ButtonState == e.RightButton)
@@ -471,11 +465,17 @@ namespace hiro
                 switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"))
                 {
                     case "0":
-                        Profile_Avatar.OpacityMask = (ImageBrush)Resources["CircleAvatar"];
+                        Profile_Rectangle.Visibility = Visibility.Visible;
+                        Profile_Rectangle.Fill = (ImageBrush)Resources["Avatar"];
+                        Profile_Ellipse.Visibility = Visibility.Hidden;
+                        Profile_Ellipse.Fill = null;
                         Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatarStyle", "1");
                         break;
                     default:
-                        Profile_Avatar.OpacityMask = (SolidColorBrush)Resources["AppFore"];
+                        Profile_Rectangle.Visibility = Visibility.Hidden;
+                        Profile_Rectangle.Fill = null;
+                        Profile_Ellipse.Visibility = Visibility.Visible;
+                        Profile_Ellipse.Fill = (ImageBrush)Resources["Avatar"];
                         Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatarStyle", "0");
                         break;
                 }
@@ -535,73 +535,197 @@ namespace hiro
 
         private void SetAvatar(string strFileName)
         {
-            try
+            new System.Threading.Thread(() =>
             {
-                if (System.IO.File.Exists(strFileName))
+                try
                 {
-                    BitmapImage bi = new();
-                    bi.BeginInit();
-                    bi.UriSource = new Uri(@strFileName);
-                    bi.EndInit();
-                    Profile_Avatar.Source = bi;
-                    strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName);
+                    System.Drawing.Image img = System.Drawing.Image.FromFile(@strFileName);
+                    double w = img.Width;
+                    double h = img.Height;
+                    double ww = 60 * 2;
+                    double hh = 60 * 2;
+                    Dispatcher.Invoke(() =>
+                    {
+                        ww = Profile_Rectangle.Width * 2;
+                        hh = Profile_Rectangle.Height * 2;
+                    });
+                    bool m = false;
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
+                    {
+                        if (ww < w && hh < h)
+                        {
+                            var r = 0;
+                            while (ww < w && hh < h)
+                            {
+                                w /= 2;
+                                h /= 2;
+                                r++;
+                            }
+                            w *= 2;
+                            h *= 2;
+                            if (r > 1)
+                            {
+                                img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
+                                m = true;
+                            }
+
+                        }
+                        long len = 0;
+                        using (var stream = new System.IO.MemoryStream())
+                        {
+                            img.Save(stream, Hiro_Utils.GetImageFormat(img));
+                            len = stream.Length;
+                        }
+                        if (len > 1024 * 1024)
+                        {
+                            img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 1024);
+                            m = true;
+                        }
+                    }
+                    if (m)
+                    {
+                        System.Drawing.Bitmap b = new(img);
+                        img.Dispose();
+                        strFileName = @"<hiapp>\images\avatar\" + strFileName[strFileName.LastIndexOf("\\")..];
+                        strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
+                        Hiro_Utils.CreateFolder(strFileName);
+                        if (System.IO.File.Exists(strFileName))
+                            System.IO.File.Delete(strFileName);
+                        b.Save(strFileName);
+                        b.Dispose();
+                    }
+                    else
+                        img.Dispose();
+                    Dispatcher.Invoke(() =>
+                    {
+                        BitmapImage bi = new();
+                        bi.BeginInit();
+                        bi.CacheOption = BitmapCacheOption.OnLoad;
+                        bi.UriSource = new Uri(@strFileName);
+                        ImageBrush ib = new()
+                        {
+                            Stretch = Stretch.UniformToFill,
+                            ImageSource = bi
+                        };
+                        Resources["Avatar"] = ib;
+                        bi.EndInit();
+                        bi.Freeze();
+                    });
+                    strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
                     Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", strFileName);
                 }
-                else
+                catch (Exception ex)
                 {
-                    Profile_Avatar.Source = ImageSourceFromBitmap(res.Default_User);
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", "");
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Profile.Avatar Details: " + ex.Message);
                 }
-            }
-            catch (Exception ex)
-            {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Avatar.Background Details: " + ex.Message);
-                Profile_Avatar.Source = ImageSourceFromBitmap(res.Default_User);
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", "");
-            }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Profile_Rectangle.Fill = Profile_Rectangle.Visibility == Visibility.Visible ? (ImageBrush)Resources["Avatar"] : null;
+                        Profile_Ellipse.Fill = Profile_Ellipse.Visibility == Visibility.Visible ? (ImageBrush)Resources["Avatar"] : null;
+                    });
+                }
+            }).Start();
         }
 
         private void SetBackground(string strFileName)
         {
-            try
+            new System.Threading.Thread(() =>
             {
-                if (System.IO.File.Exists(strFileName))
+                try
                 {
-                    BitmapImage bi = new();
-                    bi.BeginInit();
-                    bi.CacheOption = BitmapCacheOption.OnLoad;
-                    bi.UriSource = new Uri(@strFileName);
-                    ImageBrush ib = new()
+                    System.Drawing.Image img = System.Drawing.Image.FromFile(@strFileName);
+                    double w = img.Width;
+                    double h = img.Height;
+                    double ww = 420 * 1.5;
+                    double hh = 80 * 1.5;
+                    Dispatcher.Invoke(() =>
                     {
-                        Stretch = Stretch.UniformToFill,
-                        ImageSource = bi
-                    };
-                    Profile_Background.Background = ib;
-                    bi.EndInit();
-                    bi.Freeze();
-                    strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName);
+                        ww = Profile_Background.Width * 1.5;
+                        hh = Profile_Background.Height * 1.5;
+                    });
+                    bool m = false;
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
+                    {
+                        if (ww < w && hh < h)
+                        {
+                            var r = 0;
+                            while (ww < w && hh < h)
+                            {
+                                w /= 2;
+                                h /= 2;
+                                r++;
+                            }
+                            w *= 2;
+                            h *= 2;
+                            if (r > 1)
+                            {
+                                img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
+                                m = true;
+                            }
+                        }
+                        long len = 0;
+                        using (var stream = new System.IO.MemoryStream())
+                        {
+                            img.Save(stream, Hiro_Utils.GetImageFormat(img));
+                            len = stream.Length;
+                        }
+                        if (len > 2048 * 1024)
+                        {
+                            img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
+                            m = true;
+                        }
+                    }
+                    if (m)
+                    {
+                        System.Drawing.Bitmap b = new(img);
+                        img.Dispose();
+                        strFileName = @"<hiapp>\images\profile\" + strFileName[strFileName.LastIndexOf("\\")..];
+                        strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
+                        Hiro_Utils.CreateFolder(strFileName);
+                        if (System.IO.File.Exists(strFileName))
+                            System.IO.File.Delete(strFileName);
+                        b.Save(strFileName);
+                        b.Dispose();
+                    }
+                    else
+                        img.Dispose();
+                    Dispatcher.Invoke(() =>
+                    {
+                        BitmapImage bi = new();
+                        bi.BeginInit();
+                        bi.CacheOption = BitmapCacheOption.OnLoad;
+                        bi.UriSource = new Uri(@strFileName);
+                        ImageBrush ib = new()
+                        {
+                            Stretch = Stretch.UniformToFill,
+                            ImageSource = bi
+                        };
+                        Profile_Background.Background = ib;
+                        bi.EndInit();
+                        bi.Freeze();
+                    });
+                    strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
                     Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", strFileName);
                 }
-                else
+                catch (Exception ex)
                 {
-                    Profile_Background.Background = new ImageBrush()
-                    {
-                        Stretch = Stretch.UniformToFill,
-                        ImageSource = ImageSourceFromBitmap(res.Default_Background)
-                    };
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", "");
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Profile.Background Details: " + ex.Message);
                 }
-            }
-            catch (Exception ex)
-            {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Profile.Background Details: " + ex.Message);
-                Profile_Background.Background = new ImageBrush()
-                {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = ImageSourceFromBitmap(res.Default_Background)
-                };
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", "");
-            }
+            }).Start();
+        }
+
+        private void Profile_Nickname_Textbox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Profile_Nickname.Visibility = Visibility.Visible;
+            Profile_Nickname_Textbox.Visibility = Visibility.Hidden;
+        }
+
+        private void Profile_Signature_Textbox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Profile_Signature.Visibility = Visibility.Visible;
+            Profile_Signature_Textbox.Visibility = Visibility.Hidden;
         }
     }
 }
