@@ -548,7 +548,7 @@ namespace hiro
             }
 
         }
-        public static void Set_Grid_Location(Grid sender, string val)
+        public static void Set_FrameworkElement_Location(FrameworkElement sender, string val)
         {
             try
             {
@@ -1361,7 +1361,7 @@ namespace hiro
                             BackgroundWorker bw = new();
                             bw.DoWork += delegate
                             {
-                                pa = GetWebContent(pa);
+                                pa = "\"" + GetWebContent(pa) + "\"";
                             };
                             bw.RunWorkerCompleted += delegate
                             {
@@ -1380,7 +1380,7 @@ namespace hiro
                                 BackgroundWorker bw = new();
                                 bw.DoWork += delegate
                                 {
-                                    par = GetWebContent(par);
+                                    par = "\"" + GetWebContent(par) + "\"";
                                 };
                                 bw.RunWorkerCompleted += delegate
                                 {
@@ -1441,10 +1441,10 @@ namespace hiro
                         App.mn.Set_Label(App.mn.configx);
                         return;
                     }
-                    if (path.ToLower().StartsWith("help()"))
+                    if (path.ToLower().StartsWith("me()"))
                     {
                         RunExe("show()");
-                        App.mn.Set_Label(App.mn.helpx);
+                        App.mn.Set_Label(App.mn.profilex);
                         return;
                     }
                     if (path.ToLower().StartsWith("about()"))
@@ -1533,7 +1533,7 @@ namespace hiro
                                 BackgroundWorker bw = new();
                                 bw.DoWork += delegate
                                 {
-                                    titile = GetWebContent(titile).Replace("<br>", "\\n");
+                                    titile = "\"" + GetWebContent(titile).Replace("<br>", "\\n") + "\"";
                                 };
                                 bw.RunWorkerCompleted += delegate
                                 {

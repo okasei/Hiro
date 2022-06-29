@@ -16,12 +16,8 @@
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
+    <StartupObject></StartupObject>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="hiro.png" />
-    <None Remove="hiro_circle.ico" />
-  </ItemGroup>
 
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
@@ -55,11 +51,6 @@
     <Reference Include="CSVideoPlayer">
       <HintPath>CSVideoPlayer.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="hiro.png" />
-    <Resource Include="hiro_circle.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -103,6 +94,17 @@
 
   <ItemGroup>
     <None Remove="C:\Users\Rex\.nuget\packages\csvideoplayer\1.0.3\build\\..\CSVideoPlayer.License.txt" />
+    <None Remove="hiro.png" />
+    <None Remove="hiro_circle.ico" />
+    <None Remove="OpacityMask.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="hiro.png" />
+    <Resource Include="hiro_circle.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="OpacityMask.png" />
   </ItemGroup>
 
 </Project>

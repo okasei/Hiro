@@ -79,7 +79,7 @@ namespace hiro {
         }
         
         /// <summary>
-        ///   查找类似 2020505 的本地化字符串。
+        ///   查找类似 2020506 的本地化字符串。
         /// </summary>
         internal static string ApplicationUpdateVersion {
             get {
@@ -93,6 +93,26 @@ namespace hiro {
         internal static string ApplicationVersion {
             get {
                 return ResourceManager.GetString("ApplicationVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap Default_Background {
+            get {
+                object obj = ResourceManager.GetObject("Default_Background", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap Default_User {
+            get {
+                object obj = ResourceManager.GetObject("Default_User", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

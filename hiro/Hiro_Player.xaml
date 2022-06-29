@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
-        Title="Hiro_Player" Height="450" Width="800" SizeChanged="Hiro_Player1_SizeChanged" Closing="Hiro_Player1_Closing" Background="{DynamicResource AppAccent}" WindowStyle="SingleBorderWindow" KeyDown="Hiro_Player1_KeyDown" StateChanged="Hiro_Player1_StateChanged">
+        Title="Hiro_Player" Height="450" Width="800" SizeChanged="Hiro_Player1_SizeChanged" Closing="Hiro_Player1_Closing" Background="{DynamicResource AppAccent}" WindowStyle="SingleBorderWindow" KeyDown="Hiro_Player1_KeyDown" StateChanged="Hiro_Player1_StateChanged" MouseWheel="Hiro_Player1_MouseWheel" Icon="/hiro_circle.ico">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeReverse" Color="Black"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccentDim" Color="Coral"></SolidColorBrush>
@@ -25,10 +26,12 @@
                 <Label x:Name="Ctrl_Bg" Background="{DynamicResource AppAccentDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>
                 <Label x:Name="Ctrl_Progress_Bg" Background="{DynamicResource AppForeDim}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="730" Height="10" Margin="10,5,0,0" MouseDown="Ctrl_Progress_Bg_MouseDown"></Label>
                 <Label x:Name="Ctrl_Progress" Background="{DynamicResource AppAccent}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="0" Height="10"  Margin="{Binding Margin, ElementName=Ctrl_Progress_Bg}" MouseDown="Ctrl_Progress_MouseDown"></Label>
-                <Label x:Name="Ctrl_Time" Content="00:00" Style="{DynamicResource HiroLabel}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" Width="Auto" SizeChanged="Ctrl_Time_SizeChanged" Foreground="{DynamicResource AppAccent}"/>
+                <Label x:Name="Ctrl_Time" Content="00:00" Style="{DynamicResource HiroLabel}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" Width="Auto" SizeChanged="Ctrl_Time_SizeChanged" Foreground="{DynamicResource AppForeReverse}"/>
             </Grid>
-            <Label x:Name="Move_Label" Width="1024" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0" MouseDown="Move_Label_MouseDown" Height="{Binding Height, ElementName=Ctrl_Btns}"></Label>
-            <StackPanel x:Name="Ctrl_Btns" Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-5,5,0" Orientation="Horizontal" Height="35">
+            <Label x:Name="UI_Label" Width="Auto" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="{Binding Margin, ElementName=Ctrl_Btns}" MouseDown="Move_Label_MouseDown" Height="{Binding Height, ElementName=Ctrl_Btns}" MouseDoubleClick="Move_Label_MouseDoubleClick"></Label>
+            <Label x:Name="Move_Label" Background="{DynamicResource AppAccent}" Width="Auto" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="{Binding Margin, ElementName=Ctrl_Btns}" MouseDown="Move_Label_MouseDown" Height="{Binding Height, ElementName=Ctrl_Btns}" MouseDoubleClick="Move_Label_MouseDoubleClick"></Label>
+            <Label x:Name="Player_Info" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{DynamicResource AppAccent}" Foreground="{DynamicResource AppFore}" Width="Auto" Height="Auto" Content="" Visibility="Hidden" FontWeight="Normal" FontSize="16"></Label>
+            <StackPanel x:Name="Ctrl_Btns" Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0" Orientation="Horizontal" Height="35">
                 <Label x:Name="minbtn" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
                     <Label.Triggers>
                         <EventTrigger RoutedEvent="UIElement.MouseEnter">
@@ -98,7 +101,7 @@
                     </Label.Triggers>
                     <Path Width="50" Height="30" Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
                 </Label>
-                <Label x:Name="closebtn" Grid.Column="2" HorizontalAlignment="Right" Margin="0,-5,0,0" VerticalAlignment="Center" Background="#00000000"  Foreground ="{DynamicResource AppFore}" Width="55" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown"  Grid.RowSpan="2">
+                <Label x:Name="closebtn" Grid.Column="2" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Center" Background="#00000000"  Foreground ="{DynamicResource AppFore}" Width="55" Height="{Binding Height, ElementName=Ctrl_Btns}" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown"  Grid.RowSpan="2">
                     <Label.Triggers>
                         <EventTrigger RoutedEvent="UIElement.MouseEnter">
                             <BeginStoryboard>
@@ -122,9 +125,9 @@
                     <Path Width="50" Height="30" Data="M 18,11 27,20 M 18,20 27,11" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
                 </Label>
             </StackPanel>
-            <Grid x:Name="Ctrl_Address" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0" Height="30" Visibility="Hidden">
+            <Grid x:Name="Ctrl_Address" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0" Height="{Binding Height, ElementName=Ctrl_Btns}" Visibility="Hidden">
                 <Label x:Name="Ctrl_Text_Bg" Background="{DynamicResource AppForeDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>
-                <TextBox x:Name="Ctrl_Text" Foreground="{DynamicResource AppAccent}" KeyDown="Ctrl_Text_KeyDown" BorderThickness="0,0,0,0" Padding="5,4,5,4"></TextBox>
+                <TextBox x:Name="Ctrl_Text" Foreground="{DynamicResource AppForeReverse}" KeyDown="Ctrl_Text_KeyDown" BorderThickness="0,0,0,0" Padding="6,5,6,5" FontSize="16" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Grid.IsSharedSizeScope="True"></TextBox>
             </Grid>
         </Grid>
     </Grid>

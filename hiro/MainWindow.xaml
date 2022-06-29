@@ -1,4 +1,4 @@
-﻿<Window x:Class="hiro.MainWindow"
+﻿<Window x:Name="window" x:Class="hiro.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,6 +12,6 @@
         ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 
         Closing="Main_Closing" Icon="/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
     <Grid>
-        <tb:TaskbarIcon x:Name="ti" IconSource="/hiro_circle.ico" />
+        <tb:TaskbarIcon x:Name="Hiro_Tray" Visibility="Visible" IconSource="/hiro_circle.ico"></tb:TaskbarIcon>
     </Grid>
 </Window>

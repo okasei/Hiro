@@ -20,7 +20,7 @@ namespace hiro
 
         public void InitializeInnerParameters()
         {
-            ti.ToolTipText = App.AppTitle;
+            Hiro_Tray.ToolTipText = App.AppTitle;
             Title = App.AppTitle;
             InitializeMethod();
             SourceInitialized += OnSourceInitialized;
@@ -264,13 +264,13 @@ namespace hiro
 
         private void InitializeMethod()
         {
-            ti.TrayMiddleMouseDown += delegate
+            Hiro_Tray.TrayMiddleMouseDown += delegate
             {
                 var mc = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MiddleClick", "2");
                 switch (mc)
                 {
                     case "2":
-                        Hiro_Utils.RunExe("menu()");;
+                        Hiro_Utils.RunExe("menu()"); ;
                         break;
                     case "3":
                         var mce = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MiddleAction", "");
@@ -288,7 +288,7 @@ namespace hiro
                         break;
                 }
             };
-            ti.TrayRightMouseDown += delegate
+            Hiro_Tray.TrayRightMouseDown += delegate
             {
                 var rc = Hiro_Utils.Read_Ini(App.dconfig, "Config", "RightClick", "2");
                 switch (rc)
@@ -312,7 +312,7 @@ namespace hiro
                         break;
                 }
             };
-            ti.TrayLeftMouseDown += delegate
+            Hiro_Tray.TrayLeftMouseDown += delegate
             {
                 var lc = Hiro_Utils.Read_Ini(App.dconfig, "Config", "LeftClick", "1");
                 switch (lc)
@@ -340,7 +340,7 @@ namespace hiro
 
         private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            ti.Dispose();
+            Hiro_Tray.Dispose();
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.Uninstall();
             Hiro_Utils.LogtoFile("[INFOMATION]Main UI: Closing " + e.GetType().ToString());
         }

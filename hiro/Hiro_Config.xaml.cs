@@ -58,9 +58,7 @@ namespace hiro
             tb1.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "LeftAction", "");
             tb2.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MiddleAction", "");
             tb3.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "RightAction", "");
-            tb4.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomName", "");
             tb5.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "");
-            tb10.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "");
             switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "LeftClick", "1"))
             {
                 case "2":
@@ -97,35 +95,12 @@ namespace hiro
                     rbtn7.IsChecked = true;
                     break;
             }
-            switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomUser", "1"))
-            {
-                case "2":
-                    rbtn11.IsChecked = true;
-                    App.CustomUsernameFlag = 1;
-                    App.Username = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomName", "");
-                    break;
-                default:
-                    rbtn10.IsChecked = true;
-                    App.CustomUsernameFlag = 0;
-                    App.Username = App.EnvironmentUsername;
-                    break;
-            }
             rbtn13.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Autoexe", "1").Equals("2");
             rbtn12.IsChecked = !rbtn13.IsChecked;
             cb_box.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Min", "1").Equals("1");
             rbtn15.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2");
             rbtn14.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1");
             video_btn.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("3");
-            rbtn17.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomNick", "1").Equals("2");
-            rbtn16.IsChecked = !rbtn17.IsChecked;
-            if (rbtn17.IsChecked == true)
-            {
-                App.AppTitle = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
-                if (App.wnd != null)
-                    App.wnd.ti.ToolTipText = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
-            }
-            msg_audio.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1");
-            msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1");
             Autorun.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoRun", "0").Equals("1");
             blureff.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0") switch
             {
@@ -159,23 +134,11 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(rbtn7, "showwin3");
             Hiro_Utils.Set_Control_Location(rbtn8, "showmenu3");
             Hiro_Utils.Set_Control_Location(rbtn9, "runcmd3");
-            Hiro_Utils.Set_Control_Location(rbtn10, "calluser");
-            Hiro_Utils.Set_Control_Location(rbtn11, "callcus");
             Hiro_Utils.Set_Control_Location(rbtn12, "disabled");
             Hiro_Utils.Set_Control_Location(rbtn13, "runcmd4");
             Hiro_Utils.Set_Control_Location(rbtn14, "colortheme");
             Hiro_Utils.Set_Control_Location(rbtn15, "imagetheme");
             Hiro_Utils.Set_Control_Location(video_btn, "videotheme");
-            Hiro_Utils.Set_Control_Location(rbtn16, "namehiro");
-            Hiro_Utils.Set_Control_Location(rbtn17, "namecus");
-            Hiro_Utils.Set_Control_Location(msg_label, "msglabel");
-            Hiro_Utils.Set_Control_Location(msg_level, "msgslider");
-            Hiro_Utils.Set_Control_Location(msg_status, "msgstatus");
-            Hiro_Utils.Set_Control_Location(msg_audio, "msgaudio");
-            Hiro_Utils.Set_Control_Location(msg_auto, "msgauto");
-            Hiro_Utils.Set_Control_Location(disturb_label, "disturblabel");
-            Hiro_Utils.Set_Control_Location(disturb_level, "disturbslider");
-            Hiro_Utils.Set_Control_Location(disturb_status, "disturbstatus");
             Hiro_Utils.Set_Control_Location(cb_box, "minclose");
             Hiro_Utils.Set_Control_Location(Autorun, "autorun");
             Hiro_Utils.Set_Control_Location(blureff, "blurbox");
@@ -187,8 +150,6 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(lc_label, "leftclick");
             Hiro_Utils.Set_Control_Location(mc_label, "middleclick");
             Hiro_Utils.Set_Control_Location(rc_label, "rightclick");
-            Hiro_Utils.Set_Control_Location(call_label, "callmethod");
-            Hiro_Utils.Set_Control_Location(name_label, "namelabel");
             Hiro_Utils.Set_Control_Location(ar_label, "autoExe");
             Hiro_Utils.Set_Control_Location(bg_label, "background");
             Hiro_Utils.Set_Control_Location(bg_darker, "bgdarker");
@@ -203,19 +164,13 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(tb1, "lefttb");
             Hiro_Utils.Set_Control_Location(tb2, "middletb");
             Hiro_Utils.Set_Control_Location(tb3, "righttb");
-            Hiro_Utils.Set_Control_Location(tb4, "calltb");
             Hiro_Utils.Set_Control_Location(tb5, "autoexetb");
-            Hiro_Utils.Set_Control_Location(tb10, "hirotb");
-            Hiro_Utils.Set_Grid_Location(BaseGrid, "configg");
-            Hiro_Utils.Set_Grid_Location(rc_grid, "rightg");
-            Hiro_Utils.Set_Grid_Location(mc_grid, "middleg");
-            Hiro_Utils.Set_Grid_Location(lc_grid, "leftg");
-            Hiro_Utils.Set_Grid_Location(ar_grid, "autog");
-            Hiro_Utils.Set_Grid_Location(cm_grid, "callg");
-            Hiro_Utils.Set_Grid_Location(bg_grid, "backg");
-            Hiro_Utils.Set_Grid_Location(name_grid, "nameg");
-            Hiro_Utils.Set_Grid_Location(msg_grid, "msgg");
-            Hiro_Utils.Set_Grid_Location(disturb_grid, "disturbg");
+            Hiro_Utils.Set_FrameworkElement_Location(BaseGrid, "configg");
+            Hiro_Utils.Set_FrameworkElement_Location(rc_grid, "rightg");
+            Hiro_Utils.Set_FrameworkElement_Location(mc_grid, "middleg");
+            Hiro_Utils.Set_FrameworkElement_Location(lc_grid, "leftg");
+            Hiro_Utils.Set_FrameworkElement_Location(ar_grid, "autog");
+            Hiro_Utils.Set_FrameworkElement_Location(bg_grid, "backg");
             Thickness thickness = BaseGrid.Margin;
             thickness.Top = 0.0;
             BaseGrid.Margin = thickness;
@@ -248,34 +203,11 @@ namespace hiro
             rbtn7.Content = Hiro_Utils.Get_Transalte("showwin");
             rbtn8.Content = Hiro_Utils.Get_Transalte("showmenu");
             rbtn9.Content = Hiro_Utils.Get_Transalte("runcmd");
-            rbtn10.Content = Hiro_Utils.Get_Transalte("calluser");
-            rbtn11.Content = Hiro_Utils.Get_Transalte("callcus");
             rbtn12.Content = Hiro_Utils.Get_Transalte("disabled");
             rbtn13.Content = Hiro_Utils.Get_Transalte("runcmd");
             rbtn14.Content = Hiro_Utils.Get_Transalte("colortheme");
             rbtn15.Content = Hiro_Utils.Get_Transalte("imagetheme");
             video_btn.Content = Hiro_Utils.Get_Transalte("videotheme");
-            rbtn16.Content = Hiro_Utils.Get_Transalte("namehiro");
-            rbtn17.Content = Hiro_Utils.Get_Transalte("namecus");
-            msg_label.Content = Hiro_Utils.Get_Transalte("msglabel");
-            msg_audio.Content = Hiro_Utils.Get_Transalte("msgaudio");
-            msg_auto.Content = Hiro_Utils.Get_Transalte("msgauto");
-            msg_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Message", "3")));
-            msg_status.Content = Convert.ToInt32(msg_level.Value) switch
-            {
-                1 => Hiro_Utils.Get_Transalte("msghide"),
-                2 => Hiro_Utils.Get_Transalte("msglock"),
-                3 => Hiro_Utils.Get_Transalte("msgalways"),
-                _ => Hiro_Utils.Get_Transalte("msgnever")
-            };
-            disturb_label.Content = Hiro_Utils.Get_Transalte("disturblabel");
-            disturb_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Disturb", "2")));
-            disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
-            {
-                1 => Hiro_Utils.Get_Transalte("disturbfs"),
-                2 => Hiro_Utils.Get_Transalte("disturbok"),
-                _ => Hiro_Utils.Get_Transalte("disturbno")
-            };
             if (!double.TryParse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
             bg_slider.Value = to;
@@ -290,13 +222,11 @@ namespace hiro
             lc_label.Content = Hiro_Utils.Get_Transalte("leftclick");
             mc_label.Content = Hiro_Utils.Get_Transalte("middleclick");
             rc_label.Content = Hiro_Utils.Get_Transalte("rightclick");
-            call_label.Content = Hiro_Utils.Get_Transalte("callmethod");
             ar_label.Content = Hiro_Utils.Get_Transalte("autoexe");
             bg_label.Content = Hiro_Utils.Get_Transalte("background");
             bg_darker.Content = Hiro_Utils.Get_Transalte("bgdarker");
             bg_brighter.Content = Hiro_Utils.Get_Transalte("bgbrighter");
             langlabel.Content = Hiro_Utils.Get_Transalte("language");
-            name_label.Content = Hiro_Utils.Get_Transalte("namelabel");
             moreandsoon.Content = Hiro_Utils.Get_Transalte("morecome");
             btn7.Content = Hiro_Utils.Get_Transalte("lock");
             btnx1.Content = Hiro_Utils.Get_Transalte("proxybtn");
@@ -374,32 +304,6 @@ namespace hiro
         private void Rbtn8_Checked(object sender, RoutedEventArgs e)
         {
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "RightClick", "2");
-        }
-
-        private void Rbtn10_Checked(object sender, RoutedEventArgs e)
-        {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomUser", "1");
-            App.CustomUsernameFlag = 0;
-            App.Username = App.EnvironmentUsername;
-        }
-
-        private void Rbtn11_Checked(object sender, RoutedEventArgs e)
-        {
-            tb4.IsEnabled = true;
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomUser", "2");
-            App.CustomUsernameFlag = 1;
-            App.Username = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomName", "");
-        }
-
-        private void Rbtn11_Unchecked(object sender, RoutedEventArgs e)
-        {
-            tb4.IsEnabled = false;
-        }
-
-        private void Tb4_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomName", tb4.Text);
-            App.Username = tb4.Text;
         }
 
         private void Rbtn12_Checked(object sender, RoutedEventArgs e)
@@ -546,33 +450,6 @@ namespace hiro
             configbar.Value += e.Delta * (configbar.Maximum - configbar.ViewportSize) / configbar.ViewportSize;
         }
 
-        private void Rbtn17_Checked(object sender, RoutedEventArgs e)
-        {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "2");
-            tb10.IsEnabled = true;
-            App.AppTitle = tb10.Text;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
-            if (Hiro_Main != null)
-                Hiro_Main.titlelabel.Content = App.AppTitle;
-            if (App.wnd != null)
-                App.wnd.ti.ToolTipText = tb10.Text;
-        }
-
-        private void Tb10_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomNick", "1").Equals("2"))
-            {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomHIRO", tb10.Text);
-                App.AppTitle = tb10.Text;
-                Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
-                if (Hiro_Main != null)
-                    Hiro_Main.titlelabel.Content = App.AppTitle;
-                if (App.wnd != null)
-                    App.wnd.ti.ToolTipText = tb10.Text;
-            }
-
-        }
-
         private void Autorun_Checked(object sender, RoutedEventArgs e)
         {
             if (Autorun.Tag != null && Autorun.Tag.Equals("1") && Load)
@@ -627,18 +504,6 @@ namespace hiro
                 }
             }
             Autorun.Tag = "1";
-        }
-
-        private void Rbtn16_Checked(object sender, RoutedEventArgs e)
-        {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "1");
-            tb10.IsEnabled = false;
-            App.AppTitle = res.ApplicationName;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
-            if (Hiro_Main != null)
-                Hiro_Main.titlelabel.Content = App.AppTitle;
-            if (App.wnd != null)
-                App.wnd.ti.ToolTipText = App.AppTitle;
         }
 
         private void Tb2_TextChanged(object sender, TextChangedEventArgs e)
@@ -795,70 +660,6 @@ namespace hiro
         private void BaseGrid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             configbar.Value += e.Delta * (configbar.Maximum - configbar.ViewportSize) / configbar.ViewportSize;
-        }
-
-        private void Msg_level_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (Load)
-            {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Message", (Convert.ToInt32(msg_level.Value)).ToString());
-                msg_status.Content = Convert.ToInt32(msg_level.Value) switch
-                {
-                    1 => Hiro_Utils.Get_Transalte("msghide"),
-                    2 => Hiro_Utils.Get_Transalte("msglock"),
-                    3 => Hiro_Utils.Get_Transalte("msgalways"),
-                    _ => Hiro_Utils.Get_Transalte("msgnever")
-                };
-            }
-            
-        }
-
-        private void Disturb_level_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (Load)
-            {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Disturb", (Convert.ToInt32(disturb_level.Value)).ToString());
-                disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
-                {
-                    1 => Hiro_Utils.Get_Transalte("disturbfs"),
-                    2 => Hiro_Utils.Get_Transalte("disturbok"),
-                    _ => Hiro_Utils.Get_Transalte("disturbno")
-                };
-            }
-        }
-
-        private void Msg_audio_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Load)
-            {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "MessageAudio", "1");
-            }
-        }
-
-        private void Msg_audio_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (Load)
-            {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "MessageAudio", "0");
-            }
-        }
-
-        private void Msg_auto_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Load)
-            {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoChat", "1");
-                if (Hiro_Main != null)
-                    Hiro_Main.hiro_chat ??= new(Hiro_Main);
-            }
-        }
-
-        private void Msg_auto_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (Load)
-            {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoChat", "0");
-            }
         }
 
         private void Bg_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

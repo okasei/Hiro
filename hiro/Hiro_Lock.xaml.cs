@@ -57,7 +57,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(titlelabel, "locked");
             Hiro_Utils.Set_Control_Location(InfoLabel, "lockedinfo");
             Hiro_Utils.Set_Control_Location(InfoLabel2, "lockedwait");
-            Hiro_Utils.Set_Grid_Location(Pwd, "lockedpwd");
+            Hiro_Utils.Set_FrameworkElement_Location(Pwd, "lockedpwd");
             Hiro_Utils.Set_Control_Location(Pwd_Btn1, "lockedpwdbtn", location: false);
             Hiro_Utils.Set_Control_Location(PwdInput, "lockedpwdinput");
         }
@@ -269,7 +269,7 @@ namespace hiro
             }
             else if(ipwd.Length > 0)
             {
-                ipwd = ipwd.Substring(0, ipwd.Length - 1);
+                ipwd = ipwd[..^1];
             }
             UpdatePwd(null);
         }

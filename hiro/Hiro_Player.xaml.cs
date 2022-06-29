@@ -33,6 +33,8 @@ namespace hiro
                 Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
                 Initialize_Player();
                 Update_Progress();
+                Focus();
+                Update_Layout();
             };
         }
 
@@ -56,7 +58,6 @@ namespace hiro
                             new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
                         });
                     }
-                    hiro_provider.MediaPlayer.Audio.Volume = 100;
                     hiro_provider.MediaPlayer.Audio.IsMute = false;
                     hiro_provider.MediaPlayer.EndReached += MediaPlayer_EndReached;
                     hiro_provider.MediaPlayer.LengthChanged += MediaPlayer_LengthChanged;
@@ -120,32 +121,54 @@ namespace hiro
             StringBuilder sb = new();
             if (time < 3600)
             {
-                var a = Convert.ToInt32(time / 60).ToString();
+                var a = Convert.ToInt32(Math.Floor(time / 60)).ToString();
                 a = a.Length == 2 ? a : "0" + a;
                 sb.Append(a);
                 time %= 60;
                 sb.Append(":");
-                a = Convert.ToInt32(time).ToString();
+                a = Convert.ToInt32(Math.Floor(time)).ToString();
                 a = a.Length == 2 ? a : "0" + a;
                 sb.Append(a);
             }
             else
             {
-                var a = Convert.ToInt32(time / 3600).ToString();
+                var a = Convert.ToInt32(Math.Floor(time / 3600)).ToString();
                 a = a.Length == 2 ? a : "0" + a;
                 sb.Append(a);
                 time = time % 3600;
                 sb.Append(":");
-                a = Convert.ToInt32(time / 60).ToString();
+                a = Convert.ToInt32(Math.Floor(time / 60)).ToString();
                 a = a.Length == 2 ? a : "0" + a;
                 sb.Append(a);
                 time = time % 60;
                 sb.Append(":");
-                a = Convert.ToInt32(time).ToString();
+                a = Convert.ToInt32(Math.Floor(time)).ToString();
                 a = a.Length == 2 ? a : "0" + a;
                 sb.Append(a);
             }
             return sb.ToString();
+        }
+
+        private void ParseCommand()
+        {
+            var txt = Ctrl_Text.Text;
+            if (hiro_provider != null)
+            {
+                if (txt.StartsWith("hiro.vol:"))
+                {
+                    hiro_provider.MediaPlayer.Audio.Volume = Convert.ToInt32(txt[9..]);
+                    Title = txt[9..];
+                }
+                else if (txt.StartsWith("hiro.speed:"))
+                {
+                    hiro_provider.MediaPlayer.Rate = float.Parse(txt[11..]);
+                }
+                else
+                {
+                    Play(txt);
+                }
+            }
+            
         }
 
         private void MediaPlayer_LengthChanged(object? sender, Vlc.DotNet.Core.VlcMediaPlayerLengthChangedEventArgs e)
@@ -184,9 +207,10 @@ namespace hiro
         internal void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppForeReverse"] = App.AppForeColor == Colors.White ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.White);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
-            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 180));
+            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 80));
             Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 20));
         }
 
@@ -356,11 +380,13 @@ namespace hiro
                 ResizeMode = ResizeMode.CanResize;
                 Width = mSize.Width;
                 Height = mSize.Height;
+                Chrome.NonClientFrameEdges = (System.Windows.Shell.NonClientFrameEdges)13;
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Video.FullScreen = false;
                 }
-                Ctrl_Btns.Visibility = Visibility.Visible;
+                Ctrl_Btns.Visibility = Controller.Visibility;
+                Move_Label.Visibility = Controller.Visibility;
                 rflag = 1;
             }
             else
@@ -370,11 +396,13 @@ namespace hiro
                 WindowState = WindowState.Normal;
                 Width = SystemParameters.PrimaryScreenWidth;
                 Height = SystemParameters.PrimaryScreenHeight;
+                Chrome.NonClientFrameEdges = (System.Windows.Shell.NonClientFrameEdges)0;
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Video.FullScreen = true;
                 }
                 Ctrl_Btns.Visibility = Visibility.Hidden;
+                Move_Label.Visibility = Visibility.Hidden;
             }
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
@@ -394,22 +422,22 @@ namespace hiro
 
         private void Player_Cover_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyStates == Keyboard.GetKeyStates(Key.Left))
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.Right))
             {
                 if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
                 {
-                    if (hiro_provider.MediaPlayer.Position + 0.05 < 1)
-                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position + 0.05);
+                    if (hiro_provider.MediaPlayer.Position + 0.01 < 1)
+                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position + 0.01);
                     Update_Progress();
                     e.Handled = true;
                 }
             }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Right))
+            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Left))
             {
                 if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
                 {
-                    if (hiro_provider.MediaPlayer.Position - 0.05 > 0)
-                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position - 0.05);
+                    if (hiro_provider.MediaPlayer.Position - 0.01 > 0)
+                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position - 0.01);
                     Update_Progress();
                     e.Handled = true;
                 }
@@ -424,6 +452,14 @@ namespace hiro
                 FullScreen();
                 e.Handled = true;
             }
+            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Escape))
+            {
+                if (WindowStyle == WindowStyle.None)
+                {
+                    FullScreen();
+                    e.Handled = true;
+                }
+            }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.I) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (Controller.Visibility == Visibility.Hidden)
@@ -432,11 +468,25 @@ namespace hiro
                     {
                         Controller.Visibility = Visibility.Visible;
                         Storyboard sb = new();
+                        if (WindowStyle != WindowStyle.None)
+                        {
+                            Ctrl_Btns.Visibility = Visibility.Visible;
+                            Move_Label.Visibility = Visibility.Visible;
+                            Hiro_Utils.AddPowerAnimation(1, Ctrl_Btns, sb, -30, null);
+                            Hiro_Utils.AddPowerAnimation(1, Move_Label, sb, -30, null);
+                        }
                         Hiro_Utils.AddPowerAnimation(3, Controller, sb, -30, null);
                         sb.Begin();
                     }
                     else
+                    {
                         Controller.Visibility = Visibility.Visible;
+                        if (WindowStyle != WindowStyle.None)
+                        {
+                            Ctrl_Btns.Visibility = Visibility.Visible;
+                            Move_Label.Visibility = Visibility.Visible;
+                        }
+                    }
                 }
                 else
                 {
@@ -444,15 +494,28 @@ namespace hiro
                     {
                         Controller.Visibility = Visibility.Visible;
                         Storyboard sb = new();
+                        if (WindowStyle != WindowStyle.None)
+                        {
+                            Ctrl_Btns.Visibility = Visibility.Visible;
+                            Move_Label.Visibility = Visibility.Visible;
+                            Hiro_Utils.AddPowerAnimation(1, Ctrl_Btns, sb, null, -30);
+                            Hiro_Utils.AddPowerAnimation(1, Move_Label, sb, null, -30);
+                        }
                         Hiro_Utils.AddPowerAnimation(3, Controller, sb, null, -30);
                         sb.Completed += delegate
                         {
                             Controller.Visibility = Visibility.Hidden;
+                            Ctrl_Btns.Visibility = Visibility.Hidden;
+                            Move_Label.Visibility = Visibility.Hidden;
                         };
                         sb.Begin();
                     }
                     else
+                    {
                         Controller.Visibility = Visibility.Hidden;
+                        Ctrl_Btns.Visibility = Visibility.Hidden;
+                        Move_Label.Visibility = Visibility.Hidden;
+                    }
                     e.Handled = true;
                 }
             }
@@ -465,10 +528,17 @@ namespace hiro
                         Ctrl_Address.Visibility = Visibility.Visible;
                         Storyboard sb = new();
                         Hiro_Utils.AddPowerAnimation(1, Ctrl_Address, sb, -30, null);
+                        sb.Completed += delegate
+                        {
+                            Ctrl_Address.Focus();
+                        };
                         sb.Begin();
                     }
                     else
+                    {
                         Ctrl_Address.Visibility = Visibility.Visible;
+                        Ctrl_Address.Focus();
+                    }
                 }
                 else
                 {
@@ -524,20 +594,11 @@ namespace hiro
             }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.Escape))
             {
-                rflag = 0;
                 if (WindowStyle == WindowStyle.None)
                 {
-                    WindowStyle = WindowStyle.SingleBorderWindow;
-                    ResizeMode = ResizeMode.CanResize;
-                    Width = mSize.Width;
-                    Height = mSize.Height;
-                    if (hiro_provider != null)
-                    {
-                        hiro_provider.MediaPlayer.Video.FullScreen = false;
-                    }
+                    FullScreen();
+                    e.Handled = true;
                 }
-                rflag = 1;
-                e.Handled = true;
             }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.I) && Keyboard.Modifiers == ModifierKeys.Control)
             {
@@ -547,11 +608,25 @@ namespace hiro
                     {
                         Controller.Visibility = Visibility.Visible;
                         Storyboard sb = new();
+                        if (WindowStyle != WindowStyle.None)
+                        {
+                            Ctrl_Btns.Visibility = Visibility.Visible;
+                            Move_Label.Visibility = Visibility.Visible;
+                            Hiro_Utils.AddPowerAnimation(1, Ctrl_Btns, sb, -30, null);
+                            Hiro_Utils.AddPowerAnimation(1, Move_Label, sb, -30, null);
+                        }
                         Hiro_Utils.AddPowerAnimation(3, Controller, sb, -30, null);
                         sb.Begin();
                     }
                     else
+                    {
                         Controller.Visibility = Visibility.Visible;
+                        if (WindowStyle != WindowStyle.None)
+                        {
+                            Ctrl_Btns.Visibility = Visibility.Visible;
+                            Move_Label.Visibility = Visibility.Visible;
+                        }
+                    }
                 }
                 else
                 {
@@ -559,17 +634,30 @@ namespace hiro
                     {
                         Controller.Visibility = Visibility.Visible;
                         Storyboard sb = new();
+                        if (WindowStyle != WindowStyle.None)
+                        {
+                            Ctrl_Btns.Visibility = Visibility.Visible;
+                            Move_Label.Visibility = Visibility.Visible;
+                            Hiro_Utils.AddPowerAnimation(1, Ctrl_Btns, sb, null, -30);
+                            Hiro_Utils.AddPowerAnimation(1, Move_Label, sb, null, -30);
+                        }
                         Hiro_Utils.AddPowerAnimation(3, Controller, sb, null, -30);
                         sb.Completed += delegate
                         {
                             Controller.Visibility = Visibility.Hidden;
+                            Ctrl_Btns.Visibility = Visibility.Hidden;
+                            Move_Label.Visibility = Visibility.Hidden;
                         };
                         sb.Begin();
                     }
                     else
+                    {
                         Controller.Visibility = Visibility.Hidden;
+                        Ctrl_Btns.Visibility = Visibility.Hidden;
+                        Move_Label.Visibility = Visibility.Hidden;
+                    }
+                    e.Handled = true;
                 }
-                e.Handled = true;
             }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.O) && Keyboard.Modifiers == ModifierKeys.Control)
             {
@@ -580,10 +668,17 @@ namespace hiro
                         Ctrl_Address.Visibility = Visibility.Visible;
                         Storyboard sb = new();
                         Hiro_Utils.AddPowerAnimation(1, Ctrl_Address, sb, -30, null);
+                        sb.Completed += delegate
+                        {
+                            Ctrl_Address.Focus();
+                        };
                         sb.Begin();
                     }
                     else
+                    {
                         Ctrl_Address.Visibility = Visibility.Visible;
+                        Ctrl_Address.Focus();
+                    }
                 }
                 else
                 {
@@ -625,12 +720,12 @@ namespace hiro
             if (e.KeyStates == Keyboard.GetKeyStates(Key.Enter))
             {
                 if (!Ctrl_Text.Text.Equals(string.Empty))
-                    Play(Ctrl_Text.Text);
+                    ParseCommand();
                 if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(1, Ctrl_Address, sb, 0, -30);
+                    Hiro_Utils.AddPowerAnimation(1, Ctrl_Address, sb, null, -30);
                     sb.Completed += delegate
                     {
                         Ctrl_Address.Visibility = Visibility.Hidden;
@@ -688,8 +783,8 @@ namespace hiro
             Ctrl_Btns.Height = WindowState == WindowState.Maximized ? 35 : 37;
             maxbtn.Visibility = ResizeMode == ResizeMode.NoResize || ResizeMode == ResizeMode.CanMinimize ? Visibility.Collapsed : WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Visible;
             resbtn.Visibility = ResizeMode == ResizeMode.NoResize || ResizeMode == ResizeMode.CanMinimize ? Visibility.Collapsed : WindowState == WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
-            Ctrl_Btns.Margin = WindowState == WindowState.Maximized ? new(0, -5, 5, 0) : new(0, -7, 5, 0);
-            Ctrl_Address.Margin = WindowState == WindowState.Maximized ? new(0, 7, 0, 0) : new(0);
+            Ctrl_Btns.Margin = WindowState == WindowState.Maximized ? new(0, 0, 5, 0) : new(0, -2, 5, 0);
+            Ctrl_Address.Margin = WindowState == WindowState.Maximized ? new(0) : new(0, -2, 0, 0);
         }
 
         private void Move_Label_MouseDown(object sender, MouseButtonEventArgs e)
@@ -699,6 +794,134 @@ namespace hiro
                 Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
             }
             e.Handled = true;
+        }
+
+        private void Move_Label_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (WindowStyle != WindowStyle.None)
+            {
+                if (WindowState == WindowState.Maximized)
+                {
+                    WindowState = WindowState.Normal;
+                    e.Handled = true;
+                    rflag = 1;
+                }
+                else
+                {
+                    rflag = 0;
+                    WindowState = WindowState.Maximized;
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void Player_Notify(string val)
+        {
+            Player_Info.Content = val;
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            {
+                if (Player_Info.Visibility != Visibility.Visible)
+                {
+                    Player_Info.Visibility = Visibility.Visible;
+                    Storyboard sb = new();
+                    Hiro_Utils.AddPowerAnimation(1, Player_Info, sb, -30, null);
+                    sb.Completed += delegate
+                    {
+                        new System.Threading.Thread(() =>
+                        {
+                            System.Threading.Thread.Sleep(2000);
+                            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    Storyboard sb = new();
+                                    Hiro_Utils.AddPowerAnimation(1, Player_Info, sb, null, -30);
+                                    sb.Completed += delegate
+                                    {
+                                        Player_Info.Visibility = Visibility.Hidden;
+                                    };
+                                    sb.Begin();
+                                });
+                            }
+                            else
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    Player_Info.Visibility = Visibility.Hidden;
+                                });
+                            }
+                        }).Start();
+                    };
+                    sb.Begin();
+                }
+            }
+            else
+            {
+                if (Player_Info.Visibility != Visibility.Visible)
+                {
+                    Player_Info.Visibility = Visibility.Visible;
+                    new System.Threading.Thread(() =>
+                    {
+                        System.Threading.Thread.Sleep(2000);
+                        if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                Storyboard sb = new();
+                                Hiro_Utils.AddPowerAnimation(1, Player_Info, sb, null, -30);
+                                sb.Completed += delegate
+                                {
+                                    Player_Info.Visibility = Visibility.Hidden;
+                                };
+                                    sb.Begin();
+                            });
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                Player_Info.Visibility = Visibility.Hidden;
+                            });
+                        }
+                    }).Start();
+                }
+            }
+        }
+
+
+        private void Hiro_Player1_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (hiro_provider != null)
+                {
+                    var vol = hiro_provider.MediaPlayer.Rate;
+                    var del = (float)e.Delta > 0 ? 0.25f : -0.25f;
+                    if (vol + del <= 0)
+                        vol = 0.25f;
+                    else
+                        vol = vol + del;
+                    hiro_provider.MediaPlayer.Rate = vol;
+                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", vol.ToString()));
+                    e.Handled = true;
+                }
+            }
+            else
+            {
+                if (hiro_provider != null)
+                {
+                    var vol = hiro_provider.MediaPlayer.Audio.Volume;
+                    var del = e.Delta / 100;
+                    if (vol + del < 0)
+                        vol = 0;
+                    else
+                        vol = vol + del;
+                    hiro_provider.MediaPlayer.Audio.Volume = vol;
+                    Player_Notify(Hiro_Utils.Get_Transalte("playervol").Replace("%v", vol.ToString()));
+                    e.Handled = true;
+                }
+            }
         }
     }
 }

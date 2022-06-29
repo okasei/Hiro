@@ -23,7 +23,7 @@ namespace hiro
         internal Hiro_Items? hiro_items = null;
         internal Hiro_Schedule? hiro_schedule = null;
         internal Hiro_Config? hiro_config = null;
-        internal Hiro_Help? hiro_help = null;
+        internal Hiro_Profile? hiro_profile = null;
         internal Hiro_About? hiro_about = null;
         internal Hiro_NewItem? hiro_newitem = null;
         internal Hiro_NewSchedule? hiro_newschedule = null;
@@ -228,7 +228,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(itemx, "item", location: false);
             Hiro_Utils.Set_Control_Location(schedulex, "schedule", location: false);
             Hiro_Utils.Set_Control_Location(configx, "config", location: false);
-            Hiro_Utils.Set_Control_Location(helpx, "help", location: false);
+            Hiro_Utils.Set_Control_Location(profilex, "profile", location: false);
             Hiro_Utils.Set_Control_Location(aboutx, "about", location: false);
             Hiro_Utils.Set_Control_Location(newx, "new", location: false);
             Hiro_Utils.Set_Control_Location(colorx, "color", location: false);
@@ -275,7 +275,7 @@ namespace hiro
             hiro_items?.Load_Color();
             hiro_schedule?.Load_Color();
             hiro_config?.Load_Color();
-            hiro_help?.Load_Color();
+            hiro_profile?.Load_Color();
             hiro_about?.Load_Color();
             hiro_newitem?.Load_Color();
             hiro_newschedule?.Load_Color();
@@ -415,7 +415,7 @@ namespace hiro
             itemx.Content = Hiro_Utils.Get_Transalte("item");
             schedulex.Content = Hiro_Utils.Get_Transalte("schedule");
             configx.Content = Hiro_Utils.Get_Transalte("config");
-            helpx.Content = Hiro_Utils.Get_Transalte("help");
+            profilex.Content = Hiro_Utils.Get_Transalte("profile");
             aboutx.Content = Hiro_Utils.Get_Transalte("about");
             newx.Content = Hiro_Utils.Get_Transalte("new");
             colorx.Content = Hiro_Utils.Get_Transalte("color");
@@ -429,8 +429,8 @@ namespace hiro
             hiro_schedule?.Load_Position();
             hiro_config?.Load_Translate();
             hiro_config?.Load_Position();
-            hiro_help?.Load_Translate();
-            hiro_help?.Load_Position();
+            hiro_profile?.Load_Translate();
+            hiro_profile?.Load_Position();
             hiro_about?.Load_Translate();
             hiro_about?.Load_Position();
             hiro_newitem?.Load_Translate();
@@ -455,7 +455,7 @@ namespace hiro
                 itemx.Background = new SolidColorBrush(Colors.Transparent);
                 schedulex.Background = new SolidColorBrush(Colors.Transparent);
                 configx.Background = new SolidColorBrush(Colors.Transparent);
-                helpx.Background = new SolidColorBrush(Colors.Transparent);
+                profilex.Background = new SolidColorBrush(Colors.Transparent);
                 aboutx.Background = new SolidColorBrush(Colors.Transparent);
                 newx.Background = new SolidColorBrush(Colors.Transparent);
                 colorx.Background = new SolidColorBrush(Colors.Transparent);
@@ -466,7 +466,7 @@ namespace hiro
                 itemx.IsEnabled = true;
                 schedulex.IsEnabled = true;
                 configx.IsEnabled = true;
-                helpx.IsEnabled = true;
+                profilex.IsEnabled = true;
                 aboutx.IsEnabled = true;
                 newx.IsEnabled = true;
                 colorx.IsEnabled = true;
@@ -479,7 +479,7 @@ namespace hiro
             itemx.Foreground = Foreground;
             schedulex.Foreground = Foreground;
             configx.Foreground = Foreground;
-            helpx.Foreground = Foreground;
+            profilex.Foreground = Foreground;
             aboutx.Foreground = Foreground;
             newx.Foreground = Foreground;
             colorx.Foreground = Foreground;
@@ -646,8 +646,8 @@ namespace hiro
                         case Hiro_Config hc:
                             hc.HiHiro();
                             break;
-                        case Hiro_Help hlp:
-                            hlp.HiHiro();
+                        case Hiro_Profile hp:
+                            hp.HiHiro();
                             break;
                         case Hiro_NewItem hni:
                             hni.HiHiro();
@@ -680,7 +680,7 @@ namespace hiro
                 current = hiro_home;
                 frame.Content = current;
             }
-            if (label == itemx || label == schedulex || label == configx || label == chatx)
+            if (label == itemx || label == schedulex || label == profilex || label == configx || label == chatx)
             {
                 if (App.Locked)
                 {
@@ -715,18 +715,24 @@ namespace hiro
                     current = hiro_schedule;
                     frame.Content = current;
                 }
+                if (label == profilex)
+                {
+                    hiro_profile ??= new(this);
+                    current = hiro_profile;
+                    frame.Content = current;
+                }
                 if (label == configx)
                 {
                     hiro_config ??= new(this);
                     current = hiro_config;
                     frame.Content = current;
                 }
-            }
-            if (label == helpx)
-            {
-                hiro_help ??= new(this);
-                current = hiro_help;
-                frame.Content = current;
+                if (label == chatx)
+                {
+                    hiro_chat ??= new(this);
+                    current = hiro_chat;
+                    frame.Content = hiro_chat;
+                }
             }
             if (label == aboutx)
             {
@@ -772,12 +778,6 @@ namespace hiro
                 current = hiro_proxy;
                 frame.Content = hiro_proxy;
             }
-            if (label == chatx)
-            {
-                hiro_chat ??= new(this);
-                current = hiro_chat;
-                frame.Content = hiro_chat;
-            }
             selected = label;
             label.IsEnabled = true;
         }
@@ -797,9 +797,9 @@ namespace hiro
             Set_Label(configx);
         }
 
-        private void Helpx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Profilex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Set_Label(helpx);
+            Set_Label(profilex);
         }
 
         private void Aboutx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

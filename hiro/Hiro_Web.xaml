@@ -8,7 +8,7 @@
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
-        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"  MouseDown="TitleGrid_MouseDown" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown">
+        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"  MouseDown="TitleGrid_MouseDown" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown" Icon="/hiro_circle.ico">
     <WindowChrome.WindowChrome>
         <WindowChrome x:Name="Chrome"  GlassFrameThickness="0 1 0 0" NonClientFrameEdges="Left,Right,Bottom" CaptionHeight="0" UseAeroCaptionButtons="False"></WindowChrome>
     </WindowChrome.WindowChrome>
