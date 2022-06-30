@@ -13,7 +13,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="LightBlue" SecondaryColor="Orange" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="/HiroStyles.xaml"/>
+                <ResourceDictionary Source="/Hiro_Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
         </ResourceDictionary>

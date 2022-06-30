@@ -16,7 +16,7 @@ namespace hiro
     /// </summary>
     public partial class Hiro_Profile : Page
     {
-        internal System.ComponentModel.BackgroundWorker? whatsbw = null;
+        internal BackgroundWorker? whatsbw = null;
         private Hiro_MainUI? Hiro_Main = null;
         private bool Load = false;
         public Hiro_Profile(Hiro_MainUI? Parent)
@@ -26,8 +26,8 @@ namespace hiro
             Hiro_Initialize();
             Loaded += delegate
             {
-                SetAvatar(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", ""))));
-                SetBackground(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", ""))));
+                SetAvatar(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", ""))), false);
+                SetBackground(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", ""))), false);
                 HiHiro();
             };
         }
@@ -54,12 +54,12 @@ namespace hiro
             Profile_Background.Background = new ImageBrush()
             {
                 Stretch = Stretch.UniformToFill,
-                ImageSource = ImageSourceFromBitmap(res.Default_Background)
+                ImageSource = null
             };
             Resources["Avatar"] = new ImageBrush()
             {
                 Stretch = Stretch.UniformToFill,
-                ImageSource = ImageSourceFromBitmap(res.Default_User)
+                ImageSource = null
             };
             Load_Color();
             Load_Data();
@@ -72,7 +72,7 @@ namespace hiro
             var sign = Profile_Signature.Foreground == (SolidColorBrush)Resources["AppFore"];
             var nick = Profile_Nickname.Foreground == (SolidColorBrush)Resources["AppFore"];
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppForeDisabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 160));
+            Resources["AppForeDisabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 180));
             Resources["AppForeDim"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             Profile_Signature.Foreground = sign ? (SolidColorBrush)Resources["AppFore"] : (SolidColorBrush)Resources["AppForeDisabled"];
@@ -212,7 +212,7 @@ namespace hiro
             var wps = "";
             whatsbw.DoWork += delegate
             {
-                wps = Hiro_Utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + res.ApplicationVersion + "&lang=" + App.lang);
+                wps = Hiro_Utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + Hiro_Resources.ApplicationVersion + "&lang=" + App.lang);
             };
             whatsbw.RunWorkerCompleted += delegate
             {
@@ -240,8 +240,8 @@ namespace hiro
         {
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "1");
             tb10.IsEnabled = false;
-            App.AppTitle = res.ApplicationName;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
+            App.AppTitle = Hiro_Resources.ApplicationName;
+            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
                 Hiro_Main.titlelabel.Content = App.AppTitle;
             if (App.wnd != null)
@@ -252,7 +252,7 @@ namespace hiro
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "2");
             tb10.IsEnabled = true;
             App.AppTitle = tb10.Text;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
+            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
                 Hiro_Main.titlelabel.Content = App.AppTitle;
             if (App.wnd != null)
@@ -265,7 +265,7 @@ namespace hiro
             {
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomHIRO", tb10.Text);
                 App.AppTitle = tb10.Text;
-                Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
+                Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 if (Hiro_Main != null)
                     Hiro_Main.titlelabel.Content = App.AppTitle;
                 if (App.wnd != null)
@@ -487,7 +487,7 @@ namespace hiro
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteObject([In] IntPtr hObject);
 
-        public ImageSource ImageSourceFromBitmap(System.Drawing.Bitmap bmp)
+        public static ImageSource ImageSourceFromBitmap(System.Drawing.Bitmap bmp)
         {
             var handle = bmp.GetHbitmap();
             try
@@ -533,7 +533,7 @@ namespace hiro
             }
         }
 
-        private void SetAvatar(string strFileName)
+        private void SetAvatar(string strFileName, bool append = true)
         {
             new System.Threading.Thread(() =>
             {
@@ -611,8 +611,45 @@ namespace hiro
                         bi.EndInit();
                         bi.Freeze();
                     });
-                    strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", strFileName);
+                    if (m || append)
+                    {
+                        var file = new string(strFileName);
+                        var mac = Hiro_Utils.GetMacByIpConfig();
+                        if (mac != null)
+                        {
+                            var ext = ".hap";
+                            new System.Threading.Thread(() =>
+                            {
+                                var trfile = "avatarsucc";
+                                if (new System.IO.FileInfo(file).Length > 1024 * 1024)
+                                    trfile = "avatarlarge";
+                                else
+                                {
+                                    var res = Hiro_Utils.FtpUpload(file, mac + ext);
+                                    if (res == null)
+                                        trfile = "avatarexist";
+                                    else if (res == true)
+                                        trfile = "avatarsucc";
+                                    else
+                                        trfile = "avatarfail";
+                                }
+                                Dispatcher.Invoke(() =>
+                                {
+                                    Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                                });
+                            }).Start();
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("avatarweb") + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                            });
+                        }
+                        strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
+                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", strFileName);
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -629,7 +666,7 @@ namespace hiro
             }).Start();
         }
 
-        private void SetBackground(string strFileName)
+        private void SetBackground(string strFileName, bool append = true)
         {
             new System.Threading.Thread(() =>
             {
@@ -706,8 +743,45 @@ namespace hiro
                         bi.EndInit();
                         bi.Freeze();
                     });
-                    strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", strFileName);
+                    if (m || append)
+                    {
+                        var file = new string(strFileName);
+                        var mac = Hiro_Utils.GetMacByIpConfig();
+                        if (mac != null)
+                        {
+                            var ext = ".hpp";
+                            new System.Threading.Thread(() =>
+                            {
+                                var trfile = "profilesucc";
+                                if (new System.IO.FileInfo(file).Length > 2048 * 1024)
+                                    trfile = "profilelarge";
+                                else
+                                {
+                                    var res = Hiro_Utils.FtpUpload(file, mac + ext);
+                                    if (res == null)
+                                        trfile = "profileexist";
+                                    else if (res == true)
+                                        trfile = "profilesucc";
+                                    else
+                                        trfile = "profilefail";
+                                }
+                                Dispatcher.Invoke(() =>
+                                {
+                                    Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                                });
+                            }).Start();
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("profileweb") + ", 2)", Hiro_Utils.Get_Transalte("profile"));
+                            });
+                        }
+                        strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
+                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", strFileName);
+                    }
+                    
                 }
                 catch (Exception ex)
                 {

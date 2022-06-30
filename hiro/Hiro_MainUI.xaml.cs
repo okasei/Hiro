@@ -263,9 +263,9 @@ namespace hiro
         public void InitializeUIWindow()
         {
             if (App.Locked)
-                versionlabel.Content = res.ApplicationVersion + " 🔒";
+                versionlabel.Content = Hiro_Resources.ApplicationVersion + " 🔒";
             else
-                versionlabel.Content = res.ApplicationVersion;
+                versionlabel.Content = Hiro_Resources.ApplicationVersion;
             Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
         
@@ -482,7 +482,7 @@ namespace hiro
 
         public void Load_Translate()
         {
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", res.ApplicationVersion);
+            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             titlelabel.Content = App.AppTitle;
             infotitle.Content = Hiro_Utils.Get_Transalte("infotitle");
             minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
@@ -767,14 +767,14 @@ namespace hiro
                     {
                         App.Locked = false;
                         if (App.mn != null)
-                            App.mn.versionlabel.Content = res.ApplicationVersion;
+                            App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion;
                         App.mn?.Set_Label(label);
                     };
                     fa.RunWorkerCompleted += delegate
                     {
                         if (App.mn == null) 
                             return;
-                        App.mn.versionlabel.Content = res.ApplicationVersion + (App.Locked ? " 🔒" : "");
+                        App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion + (App.Locked ? " 🔒" : "");
                         App.mn.Set_Label(selected ?? homex);
                     };
                     Hiro_Utils.Register(sc, fa, fa);

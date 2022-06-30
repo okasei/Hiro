@@ -16,11 +16,12 @@ namespace hiro
     public partial class Hiro_Chat : Page
     {
         private Hiro_MainUI? Hiro_Main = null;
-        private string MacAddress = "D03C1F3C2094";
+        private string MacAddress = "D03C1F3C2098";
         private string LocalMacAddress = "unknown";
         private string Aite = "unknown-user";
         private bool load = false;
         private bool eload = false;
+        private int ernum = 0;
         public Hiro_Chat(Hiro_MainUI? Parent)
         {
             InitializeComponent();
@@ -31,7 +32,6 @@ namespace hiro
                 LocalMacAddress = GetMacAddress();
                 Hiro_Utils.LogtoFile("[INFO]Current Mac Address : " + LocalMacAddress);
             }).Start();
-            MacAddress = Hiro_Utils.Read_Ini(App.dconfig, "Config", "ChatMAC", "D03C1F3C2094");
             Loaded += delegate
             {
                 HiHiro();
@@ -44,15 +44,15 @@ namespace hiro
         }
 
 
-            public void HiHiro()
+        public void HiHiro()
         {
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
-                Hiro_Utils.AddPowerAnimation(1, ChatContent, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, SendContent, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, SendButton, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(0, ChatContent, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(0, SendContent, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(2, SendButton, sb, -50, null);
             }
             if (animation)
             {
@@ -71,15 +71,150 @@ namespace hiro
 
         private void Hiro_Initialize()
         {
+            Hiro_Utils.LogtoFile("[INFO]Hiro.Chat Initializing");
+            MacAddress = Hiro_Utils.Read_Ini(App.dconfig, "Config", "ChatMAC", "D03C1F3C2098");
+            Load_Friend_Info_First();
             Load_Color();
             Load_Translate();
             Load_Position();
+        }
+
+        private void Load_Friend_Info_First()
+        {
+            new System.Threading.Thread(() =>
+            {
+                Load_Avatar();
+                Hiro_Utils.LogtoFile("[INFO]Hiro.Chat.Avatar Initialized");
+                Load_Background();
+                Hiro_Utils.LogtoFile("[INFO]Hiro.Chat.Background Initialized");
+                Load_Profile();
+                Hiro_Utils.LogtoFile("[INFO]Hiro.Chat.Profile Initialized");
+            }).Start();
+        }
+
+        private void Load_Avatar()
+        {
+            var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+            StrFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, MacAddress, "Avatar", string.Empty)));
+            try
+            {
+                if (System.IO.File.Exists(StrFileName))
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        System.Windows.Media.Imaging.BitmapImage? bi = Hiro_Utils.GetBitmapImage(StrFileName);
+                        ImageBrush ib = new()
+                        {
+                            Stretch = Stretch.UniformToFill,
+                            ImageSource = bi
+                        };
+                        Resources["ChatAvatar"] = ib;
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Resources["ChatAvatar"] = new ImageBrush()
+                        {
+                            Stretch = Stretch.UniformToFill,
+                            ImageSource = Hiro_Profile.ImageSourceFromBitmap(Hiro_Resources.Default_User)
+                        };
+                        Profile_Rectangle.Fill = Profile_Rectangle.Visibility == Visibility.Visible ? (ImageBrush)Resources["ChatAvatar"] : null;
+                        Profile_Ellipse.Fill = Profile_Ellipse.Visibility == Visibility.Visible ? (ImageBrush)Resources["ChatAvatar"] : null;
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Update.Friend.Avatar Details: " + ex.Message);
+                Dispatcher.Invoke(() =>
+                {
+                    Resources["ChatAvatar"] = new ImageBrush()
+                    {
+                        Stretch = Stretch.UniformToFill,
+                        ImageSource = Hiro_Profile.ImageSourceFromBitmap(Hiro_Resources.Default_User)
+                    };
+                    Profile_Rectangle.Fill = Profile_Rectangle.Visibility == Visibility.Visible ? (ImageBrush)Resources["ChatAvatar"] : null;
+                    Profile_Ellipse.Fill = Profile_Ellipse.Visibility == Visibility.Visible ? (ImageBrush)Resources["ChatAvatar"] : null;
+                });
+            }
+        }
+
+        private void Load_Background()
+        {
+            var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+            StrFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, MacAddress, "BackImage", string.Empty)));
+            try
+            {
+                if (System.IO.File.Exists(StrFileName))
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        System.Windows.Media.Imaging.BitmapImage? bi = Hiro_Utils.GetBitmapImage(StrFileName);
+                        ImageBrush ib = new()
+                        {
+                            Stretch = Stretch.UniformToFill,
+                            ImageSource = bi
+                        };
+                        Profile_Background.Background = ib;
+                    });
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Update.Friend.Profile Details: " + ex.Message);
+                Dispatcher.Invoke(() =>
+                {
+                    Profile_Background.Background = new ImageBrush()
+                    {
+                        Stretch = Stretch.UniformToFill,
+                        ImageSource = Hiro_Profile.ImageSourceFromBitmap(Hiro_Resources.Default_Background)
+                    };
+                });
+            }
+        }
+
+        private void Load_Profile()
+        {
+            var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+            StrFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, MacAddress, "Profile", string.Empty)));
+            Aite = Hiro_Utils.Read_Ini(StrFileName, "Config", "Name", Hiro_Utils.Get_Transalte("chatuser").Replace("%m", MacAddress));
+            Dispatcher.Invoke(() =>
+            {
+                if (!Profile_Nickname.Content.Equals(Aite))
+                {
+                    Profile_Nickname.Content = Aite;
+                    Load_Chat();
+                }
+                Profile_Signature.Content = Hiro_Utils.Read_Ini(StrFileName, "Config", "Signature", string.Empty);
+                var psc = Profile_Signature.Content.ToString();
+                if (psc == null)
+                    Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
+                else if (psc.Trim().Equals(string.Empty))
+                    Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
+                switch (Hiro_Utils.Read_Ini(StrFileName, "Config", "Avatar", "1"))
+                {
+                    case "0":
+                        Profile_Rectangle.Visibility = Visibility.Hidden;
+                        Profile_Ellipse.Visibility = Visibility.Visible;
+                        break;
+                    default:
+                        Profile_Rectangle.Visibility = Visibility.Visible;
+                        Profile_Ellipse.Visibility = Visibility.Hidden;
+                        break;
+                }
+                Profile_Rectangle.Fill = Profile_Rectangle.Visibility == Visibility.Visible ? (ImageBrush)Resources["ChatAvatar"] : null;
+                Profile_Ellipse.Fill = Profile_Ellipse.Visibility == Visibility.Visible ? (ImageBrush)Resources["ChatAvatar"] : null;
+            });
         }
 
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 180));
+            Resources["AppForeDisabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 180));
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 180));
             if (load)
@@ -103,12 +238,52 @@ namespace hiro
                 try
                 {
                     Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\"));
-                    var aitea = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + MacAddress + "&mode=query");
-                    if (!aitea.Equals(Aite))
+                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\profile\\"));
+                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\back\\"));
+                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\"));
+                    var hus = Guid.NewGuid();
+                    var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+                    while (System.IO.File.Exists(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\profile\\" + hus + ".hus")))
                     {
-                        Aite = aitea;
-                        eload = false;
+                        hus = Guid.NewGuid();
                     }
+                    var former = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, MacAddress, "Profile", string.Empty)));
+                    var res = Hiro_Utils.FtpDownload(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\profile\\" + hus + ".hus"), "/" + MacAddress + ".hus", Hiro_Utils.GetMD5(former));
+                    if (res != null)
+                    {
+                        if (System.IO.File.Exists(former))
+                            System.IO.File.Delete(former);
+                        Hiro_Utils.Write_Ini(StrFileName, MacAddress, "Profile", "<hiapp>\\chat\\friends\\profile\\" + hus + ".hus");
+                        Load_Profile();
+
+                    }
+                    while (System.IO.File.Exists(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\" + hus + ".hap")))
+                    {
+                        hus = Guid.NewGuid();
+                    }
+                    former = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, MacAddress, "Avatar", string.Empty)));
+                    var a = Hiro_Utils.FtpDownload(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\" + hus + ".hap"), "/" + MacAddress + ".hap", Hiro_Utils.GetMD5(former));
+                    if (a == true)
+                    {
+                        if (System.IO.File.Exists(former))
+                            System.IO.File.Delete(former);
+                        Hiro_Utils.Write_Ini(StrFileName, MacAddress, "Avatar", "<hiapp>\\chat\\friends\\avatar\\" + hus + ".hap");
+                        Load_Avatar();
+                    }
+                    while (System.IO.File.Exists(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\back\\" + hus + ".hpp")))
+                    {
+                        hus = Guid.NewGuid();
+                    }
+                    former = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, MacAddress, "BackImage", string.Empty)));
+                    var b = Hiro_Utils.FtpDownload(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\back\\" + hus + ".hpp"), "/" + MacAddress + ".hpp", Hiro_Utils.GetMD5(former));
+                    if (b == true)
+                    {
+                        if (System.IO.File.Exists(former))
+                            System.IO.File.Delete(former);
+                        Hiro_Utils.Write_Ini(StrFileName, MacAddress, "BackImage", "<hiapp>\\chat\\friends\\back\\" + hus + ".hpp");
+                        Load_Background();
+                    }
+                    eload = false;
                     var content = Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/log.php?from=" + LocalMacAddress + "&to=" + MacAddress,
                         true, Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf"));
                     Dispatcher.Invoke(() =>
@@ -129,6 +304,9 @@ namespace hiro
 
         private void AddErrorMsg(string user, string msg)
         {
+            ernum++;
+            if (ernum > 5)
+                return;
             Paragraph nick = new();
             Run nrun = new()
             {
@@ -178,9 +356,18 @@ namespace hiro
                     {
                         Text = icon[0].Replace(LocalMacAddress, App.Username).Replace(MacAddress, Aite) + " " + icon[1] + Environment.NewLine
                     };
+                    var pre = icon[2].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\");
+                    if (pre.Equals("[Hiro.Predefinited:LikeAvatar]"))
+                        pre = Hiro_Utils.Get_Transalte("avatarlike");
+                    if (pre.Equals("[Hiro.Predefinited:LikeProfile]"))
+                        pre = Hiro_Utils.Get_Transalte("profilelike");
+                    if (pre.Equals("[Hiro.Predefinited:LikeName]"))
+                        pre = Hiro_Utils.Get_Transalte("namelike");
+                    if (pre.Equals("[Hiro.Predefinited:LikeSign]"))
+                        pre = Hiro_Utils.Get_Transalte("signlike");
                     Run wrun = new()
                     {
-                        Text = icon[2].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\")
+                        Text = pre
                     };
                     for (int i = 3; i < icon.Length; i++)
                     {
@@ -195,6 +382,7 @@ namespace hiro
                     ChatContent.Document.Blocks.Add(nick);
                 }
                 ChatContent.ScrollToEnd();
+                ernum = 0;
                 Differ_Chat(System.IO.File.ReadAllText(file));
             }
             catch (Exception ex)
@@ -222,7 +410,7 @@ namespace hiro
                 user = user.Replace(LocalMacAddress, App.Username).Replace(MacAddress, Aite);
                 index = item.IndexOf(",", index + 1);
                 var content = item[(index + 1)..];
-                content.Replace(Environment.NewLine, "");
+                content = content.Replace(Environment.NewLine, "");
                 var i = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Message", "3"));
                 switch (i)
                 {
@@ -265,7 +453,10 @@ namespace hiro
             catch (Exception ex)
             {
                 Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Send: " + ex.Message);
-                AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatsenderror"));
+                Dispatcher.Invoke(() =>
+                {
+                    AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatsenderror"));
+                });
             }
             
         }
@@ -273,14 +464,32 @@ namespace hiro
         {
             try
             {
-                Hiro_Utils.GetWebContent("https://api.rexio.cn/v2/hiro/chat/query.php?mac=" + LocalMacAddress
-                        + "&mode=update"
-                        + "&name=" + App.Username);
+                var tmp = System.IO.Path.GetTempFileName();
+                Hiro_Utils.Write_Ini(tmp, "Config", "Name", App.Username);
+                Hiro_Utils.Write_Ini(tmp, "Config", "Signature", Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty));
+                Hiro_Utils.Write_Ini(tmp, "Config", "Avatar", Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"));
+                var mac = Hiro_Utils.GetMacByIpConfig();
+                if (mac != null)
+                {
+                    Hiro_Utils.FtpUpload(tmp, "/" + mac + ".hus");
+                    System.IO.File.Delete(tmp);
+                }
+                else
+                {
+                    System.IO.File.Delete(tmp);
+                    Dispatcher.Invoke(() =>
+                    {
+                        AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatdeve"));
+                    });
+                }
             }
             catch(Exception ex)
             {
                 Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Update.Nickname: " + ex.Message);
-                AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnonick"));
+                Dispatcher.Invoke(() =>
+                {
+                    AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnonick"));
+                });
             }
         }
         public void Load_Translate()
@@ -293,44 +502,51 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(ChatContent, "chatcontent");
             Hiro_Utils.Set_Control_Location(SendContent, "chatsendcontent");
             Hiro_Utils.Set_Control_Location(SendButton, "chatsend", right: true, bottom: true);
+            Hiro_Utils.Set_Control_Location(Profile_Nickname, "chatname");
+            Hiro_Utils.Set_Control_Location(Profile_Signature, "chatsign");
+            Hiro_Utils.Set_Control_Location(Profile_Background, "chatback");
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "chatavatar");
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "chatavatar");
+            Hiro_Utils.Set_FrameworkElement_Location(Profile, "chatprofile");            
         }
 
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            Send();
+            Send(SendContent.Text);
+            SendContent.Clear();
         }
 
-        private void Send()
+        private void Send(string text)
         {
-            if (SendContent.Text.ToLower().Equals("refreash"))
+            if (text.ToLower().Equals("refreash"))
             {
                 SendContent.Clear();
                 eload = false;
                 Hiro_Get_Chat();
                 return;
             }
-            if (SendContent.Text.ToLower().StartsWith("talkto:"))
+            if (text.ToLower().StartsWith("talkto:"))
             {
-                MacAddress = SendContent.Text[7..];
+                MacAddress = text[7..];
                 Hiro_Utils.LogtoFile("[INFO]Talk to " + MacAddress);
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "ChatMAC", MacAddress);
                 var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + MacAddress + ".hcf");
                 ChatContentBak.Text = System.IO.File.Exists(file) ? System.IO.File.ReadAllText(file) : "";
                 SendContent.Clear();
+                Load_Friend_Info_First();
                 Hiro_Get_Chat();
                 return;
             }
-            if (!SendContent.Text.Equals(string.Empty))
+            if (!text.Equals(string.Empty))
             {
                 SendButton.IsEnabled = false;
-                var tmp = SendContent.Text.Replace(Environment.NewLine, "\\n");
+                var tmp = text.Replace(Environment.NewLine, "\\n");
                 new System.Threading.Thread(() =>
                 {
                     Hiro_Send_Chat(tmp);
                     Hiro_Update_Name();
                     Hiro_Get_Chat();
                 }).Start();
-                SendContent.Clear();
                 SendButton.IsEnabled = true;
             }
         }
@@ -348,7 +564,8 @@ namespace hiro
             }
             else if(e.KeyStates == Keyboard.GetKeyStates(Key.Return))
             {
-                Send();
+                Send(SendContent.Text);
+                SendContent.Clear();
                 e.Handled = true;
             }
         }
@@ -356,6 +573,31 @@ namespace hiro
         private void EMojiButton_Click(object sender, RoutedEventArgs e)
         {
             ChatContent.Paste();
+        }
+
+        private void Profile_Background_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Send("[Hiro.Predefinited:LikeProfile]");
+        }
+
+        private void Profile_Ellipse_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Send("[Hiro.Predefinited:LikeAvatar]");
+        }
+
+        private void Profile_Rectangle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Send("[Hiro.Predefinited:LikeAvatar]");
+        }
+
+        private void Profile_Nickname_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Send("[Hiro.Predefinited:LikeName]");
+        }
+
+        private void Profile_Signature_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Send("[Hiro.Predefinited:LikeSign]");
         }
     }
 }

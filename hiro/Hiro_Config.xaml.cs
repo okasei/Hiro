@@ -346,7 +346,7 @@ namespace hiro
             App.Locked = true;
             btn7.IsEnabled = true;
             if (Hiro_Main != null)
-                Hiro_Main.versionlabel.Content = res.ApplicationVersion + " 🔒";
+                Hiro_Main.versionlabel.Content = Hiro_Resources.ApplicationVersion + " 🔒";
             Hiro_Main?.Set_Label(Hiro_Main.homex);
         }
 
@@ -465,7 +465,7 @@ namespace hiro
                         System.Diagnostics.ProcessStartInfo pinfo = new()
                         {
                             UseShellExecute = true,
-                            FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath),
+                            FileName = Hiro_Utils.Path_Prepare(Hiro_Resources.ApplicationPath),
                             Arguments = "autostart_on",
                             Verb = "runas"
                         };
@@ -493,7 +493,7 @@ namespace hiro
                         System.Diagnostics.ProcessStartInfo pinfo = new()
                         {
                             UseShellExecute = true,
-                            FileName = Hiro_Utils.Path_Prepare(res.ApplicationPath),
+                            FileName = Hiro_Utils.Path_Prepare(Hiro_Resources.ApplicationPath),
                             Arguments = "autostart_off",
                             Verb = "runas"
                         };

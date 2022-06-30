@@ -21,6 +21,7 @@ namespace hiro
         private int rflag = 1;
         private Size mSize = new(450, 800);
         private int cflag = 1;
+        internal ContextMenu? cm = null;
         public Hiro_Player(string? play = null)
         {
             InitializeComponent();
@@ -212,6 +213,23 @@ namespace hiro
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 80));
             Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 20));
+            if (cm != null)
+            {
+                cm.Background = new SolidColorBrush(App.AppAccentColor);
+                cm.Foreground = new SolidColorBrush(App.AppForeColor);
+                foreach (var obj in cm.Items)
+                {
+                    if (obj is MenuItem mi)
+                    {
+                        if (mi.Items.Count > 0)
+                        {
+                            mi.Background = new SolidColorBrush(App.AppAccentColor);
+                            mi.Foreground = new SolidColorBrush(App.AppForeColor);
+                        }
+                    }
+                }
+            }
+            
         }
 
         public void Loadbgi(int direction,bool? animation = null)
@@ -358,6 +376,7 @@ namespace hiro
                     {
                         hiro_provider.MediaPlayer.Pause();
                         Player_Container.Tag = "Paused";
+                        Player_Notify(Hiro_Utils.Get_Transalte("playerpause"));
                     }
                 }
                 else if (((string)Player_Container.Tag).Equals("Paused"))
@@ -366,6 +385,7 @@ namespace hiro
                     {
                         Player_Container.Tag = "Playing";
                         hiro_provider.MediaPlayer.Play();
+                        Player_Notify(Hiro_Utils.Get_Transalte("playerplay"));
                     }
                 }
             }
@@ -712,7 +732,175 @@ namespace hiro
         private void Player_Cover_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ButtonState == e.LeftButton)
+            {
                 PlayPause();
+                e.Handled = true;
+            }
+            else if (e.ButtonState == e.RightButton)
+            {
+                if (cm != null)
+                    cm.IsOpen = true;
+                e.Handled = true;
+            }
+        }
+
+        private void Load_Menu()
+        {
+            cm?.Items.Clear();
+            cm ??= new()
+            {
+                CacheMode = null,
+                Foreground = new SolidColorBrush(App.AppForeColor),
+                Background = new SolidColorBrush(App.AppAccentColor),
+                BorderBrush = null,
+                Style = (Style)App.Current.Resources["HiroContextMenu"],
+                Padding = new(1, 10, 1, 10)
+            };
+            MenuItem open = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermopen")
+            };
+            open.Click += delegate
+            {
+                string strFileName = "";
+                Microsoft.Win32.OpenFileDialog ofd = new()
+                {
+                    Filter = Hiro_Utils.Get_Transalte("vidfiles") +
+                    "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;*.m4v;*.mkv;*.mov;" +
+                    "*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;*.rec;*.rm;*.rmvb;" +
+                    "*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
+                    + Hiro_Utils.Get_Transalte("allfiles") + "|*.*",
+                    ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
+                    CheckFileExists = true, //验证路径的有效性
+                    CheckPathExists = true,//验证路径的有效性
+                    Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                };
+                if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
+                {
+                    strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
+
+                }
+                if (System.IO.File.Exists(strFileName))
+                {
+                    Play(strFileName);
+                }
+            };
+            cm.Items.Add(open);
+            MenuItem speed = new()
+            {
+                CacheMode = null,
+                Foreground = new SolidColorBrush(App.AppForeColor),
+                Background = new SolidColorBrush(App.AppAccentColor),
+                BorderBrush = null,
+                Header = Hiro_Utils.Get_Transalte("playermspeed")
+            };
+            MenuItem uu = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermspeeduu")
+            };
+            uu.Click += delegate
+            {
+                if (hiro_provider != null)
+                {
+                    hiro_provider.MediaPlayer.Rate = 2;
+                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "2"));
+                }
+            };
+            MenuItem u = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermspeedu")
+            };
+            u.Click += delegate
+            {
+                if (hiro_provider != null)
+                {
+                    hiro_provider.MediaPlayer.Rate = 1.5f;
+                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "1.5"));
+                }
+            };
+            MenuItem n = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermspeedn")
+            };
+            n.Click += delegate
+            {
+                if (hiro_provider != null)
+                {
+                    hiro_provider.MediaPlayer.Rate = 1;
+                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "1"));
+                }
+            };
+            MenuItem s = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermspeeds")
+            };
+            s.Click += delegate
+            {
+                if (hiro_provider != null)
+                {
+                    hiro_provider.MediaPlayer.Rate = 0.75f;
+                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "0.75"));
+                }
+            };
+            MenuItem ss = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermspeedss")
+            };
+            ss.Click += delegate
+            {
+                if (hiro_provider != null)
+                {
+                    hiro_provider.MediaPlayer.Rate = 0.5f;
+                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "0.5"));
+                }
+            };
+            speed.Items.Add(uu);
+            speed.Items.Add(u);
+            speed.Items.Add(n);
+            speed.Items.Add(s);
+            speed.Items.Add(ss);
+            cm.Items.Add(speed);
+            MenuItem ui = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermui")
+            };
+            ui.Click += delegate
+            {
+                Hiro_Utils.RunExe("key(2,52)");
+            };
+            cm.Items.Add(ui);
+            MenuItem exi = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermexit")
+            };
+            exi.Click += delegate
+            {
+                Close();
+            };
+            cm.Items.Add(exi);
+            foreach (var obj in cm.Items)
+            {
+                if (obj is MenuItem mi)
+                {
+                    Hiro_Utils.Set_Control_Location(mi, "context", location: false);
+                    if (mi.Items.Count > 0)
+                    {
+                        foreach (var mobj in cm.Items)
+                        {
+                            if(mobj is MenuItem mii)
+                                Hiro_Utils.Set_Control_Location(mii, "context", location: false);
+                        }
+                    }
+                }
+            }
         }
 
         private void Ctrl_Text_KeyDown(object sender, KeyEventArgs e)
@@ -775,6 +963,7 @@ namespace hiro
             closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
             maxbtn.ToolTip = Hiro_Utils.Get_Transalte("max");
             resbtn.ToolTip = Hiro_Utils.Get_Transalte("restore");
+            Load_Menu();
         }
 
         private void Update_Layout()

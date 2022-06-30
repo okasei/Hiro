@@ -18,7 +18,7 @@ namespace hiro
         internal static string EnvironmentUsername = Environment.UserName;
         internal static string Username = Environment.UserName;
         internal static int CustomUsernameFlag = 0;
-        internal static string AppTitle = res.ApplicationName;
+        internal static string AppTitle = Hiro_Resources.ApplicationName;
         internal static Color AppAccentColor = Colors.Coral;
         internal static Color AppForeColor = Colors.White;
         internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
@@ -45,7 +45,7 @@ namespace hiro
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient? hc = null;
         internal static int ColorCD = -1;
-        internal static int ChatCD = 23;
+        internal static int ChatCD = 5;
         internal static IntPtr WND_Handle = IntPtr.Zero;
         internal static bool FirstUse = false;
         #endregion
@@ -67,19 +67,14 @@ namespace hiro
                 Hiro_Utils.RunExe("exit()");
                 return;
             }
-            try
-            {
                 InitializeInnerParameters();
                 Initialize_Notify_Recall();
                 InitializeMethod();
                 InitializeStartParameters(e);
                 Build_Socket();
-            }
-            catch (Exception ex)
-            {
-                Hiro_Utils.LogtoFile("Hiro.Exception.Initialize: " + ex.Message);
-            }
             
+
+
         }
 
         private void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
@@ -368,7 +363,7 @@ namespace hiro
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(lang);
             Hiro_Utils.LogtoFile("[HIROWEGO]Current language: " + lang);
             LangFilePath = CurrentDirectory + "\\system\\lang\\" + lang + ".hlp";
-            AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomNick", "1").Equals("2") ? Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro") : res.ApplicationName;
+            AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomNick", "1").Equals("2") ? Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro") : Hiro_Resources.ApplicationName;
             System.IO.DirectoryInfo di = new(CurrentDirectory + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
             {

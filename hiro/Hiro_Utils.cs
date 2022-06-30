@@ -21,6 +21,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
+using System.Net;
 
 namespace hiro
 {
@@ -710,7 +711,7 @@ namespace hiro
             path = Path_Replace(path, "<m>", DateTime.Now.ToString("m"), true);
             path = Path_Replace(path, "<ss>", DateTime.Now.ToString("ss"));
             path = Path_Replace(path, "<s>", DateTime.Now.ToString("s"));
-            path = Path_Replace(path, "<version>", res.ApplicationVersion);
+            path = Path_Replace(path, "<version>", Hiro_Resources.ApplicationVersion);
             path = Path_Replace(path, "<lang>", App.lang);
             path = Path_Replace(path, "<date>", DateTime.Now.ToString("yyyyMMdd"));
             path = Path_Replace(path, "<time>", DateTime.Now.ToString("HHmmss"));
@@ -791,7 +792,7 @@ namespace hiro
                     if (!File.Exists(parameter[0]))
                     {
                         HttpRequestMessage request = new(HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
-                        request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/" + res.ApplicationVersion);
+                        request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/" + Hiro_Resources.ApplicationVersion);
                         request.Content = new StringContent("");
                         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
                         BackgroundWorker bw = new();
@@ -1298,7 +1299,7 @@ namespace hiro
                     if (App.mn == null)
                         return;
                     App.mn.Set_Label(App.mn.homex);
-                    App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
+                    App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion + " 🔒";
                     return;
                 }
                 if (path.ToLower().StartsWith("weather("))
@@ -1633,14 +1634,14 @@ namespace hiro
                     {
                         if (App.mn != null)
                         {
-                            App.mn.versionlabel.Content = res.ApplicationVersion;
+                            App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion;
                             App.Locked = false;
                         }
                     };
                     fa.RunWorkerCompleted += delegate
                     {
                         if (App.mn != null && App.Locked)
-                            App.mn.versionlabel.Content = res.ApplicationVersion + " 🔒";
+                            App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion + " 🔒";
                     };
                     Register(sc, fa, fa);
                     return;
@@ -1818,7 +1819,7 @@ namespace hiro
                 }
                 else
                 {
-                    var left = startIndex == 0 ? "" : val.Substring(0, startIndex);
+                    var left = startIndex == 0 ? "" : val[..startIndex];
                     var right = endIndex == val.Length ? "" : val[(endIndex + 1)..];
                     var tmp = val.Substring(startIndex + 1, endIndex - startIndex - 1);
                     val = left + "\uAAA5" + a.ToString() + "\uAAA6" + right;
@@ -2410,18 +2411,18 @@ namespace hiro
         #region 检查更新
         public static string GetWebContent(String url, bool save = false, String? savepath = null)
         {
-            System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, url);
+            HttpRequestMessage request = new(HttpMethod.Get, url);
             request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
-            request.Content = new System.Net.Http.StringContent("");
-            request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
+            request.Content = new StringContent("");
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
             request.Options.TryAdd("AllowAutoRedirect", true);
             request.Options.TryAdd("KeppAlive", true);
-            request.Options.TryAdd("ProtocolVersion", System.Net.HttpVersion.Version11);
+            request.Options.TryAdd("ProtocolVersion", HttpVersion.Version11);
             //这里设置协议
-            System.Net.ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;// SecurityProtocolType.Tls1.2; 
-            System.Net.ServicePointManager.CheckCertificateRevocationList = true;
-            System.Net.ServicePointManager.DefaultConnectionLimit = 100;
-            System.Net.ServicePointManager.Expect100Continue = false;
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;// SecurityProtocolType.Tls1.2; 
+            ServicePointManager.CheckCertificateRevocationList = true;
+            ServicePointManager.DefaultConnectionLimit = 100;
+            ServicePointManager.Expect100Continue = false;
             if (App.hc == null)
                 throw new Exception(Get_Transalte("webnotinitial"));
             try
@@ -2684,7 +2685,7 @@ namespace hiro
             {
                 try
                 {
-                    string strName = "\"" + Path_Prepare(res.ApplicationPath) + "\"";//获取要自动运行的应用程序名
+                    string strName = "\"" + Path_Prepare(Hiro_Resources.ApplicationPath) + "\"";//获取要自动运行的应用程序名
                     Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//检索指定的子项
                     registry ??= Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                     registry.SetValue("Hiro_Autostart", strName + " silent");//设置该子项的新的“键值对”
@@ -3220,14 +3221,193 @@ namespace hiro
                 }
                 else
                 {
-                    return lastd > lasta ? file.Substring(lasta + 1, lastd - lasta - 1) : file.Substring(lasta + 1);
+                    return lastd > lasta ? file.Substring(lasta + 1, lastd - lasta - 1) : file[(lasta + 1)..];
                 }
             }
             else
             {
-                return lastd > lasts ? file.Substring(lasts + 1, lastd - lasts - 1) : file.Substring(lasts + 1);
+                return lastd > lasts ? file.Substring(lasts + 1, lastd - lasts - 1) : file[(lasts + 1)..];
             }
         }
+        #endregion
+
+        #region 计算MD5
+        public static string GetMD5(string file)
+        {
+            if (!System.IO.File.Exists(file))
+                return string.Empty;
+            using (FileStream fs = File.OpenRead(file))
+            {
+                using (var crypto = System.Security.Cryptography.MD5.Create())
+                {
+                    var md5Hash = crypto.ComputeHash(fs);
+                    return DeleteUnVisibleChar(BitConverter.ToString(md5Hash));
+                }
+            }
+        }
+        #endregion
+
+        #region ftp操作
+
+        public static bool? FtpUpload(string file, string name)
+        {
+           try
+            {
+                if (File.Exists(file))
+                {
+                    using (FluentFTP.FtpClient ftp = new("ftp://ftp.rexio.cn", "chat", "dzZiBCE8ETSKkYxC"))
+                    {
+                        ftp.Port = 3213;
+                        ftp.Connect();
+                        var md5 = GetMD5(file);
+                        var tempFile = Path.GetTempFileName();
+                        if (!File.Exists(tempFile))
+                            File.Create(tempFile);
+                        using (FileStream fs = new(tempFile, FileMode.Open))
+                        {
+                            using (StreamWriter stw = new StreamWriter(fs, Encoding.GetEncoding("utf-8")))
+                            {
+                                stw.WriteLine(md5);
+                            }
+                        }
+                        if (ftp.FileExists("/" + name))
+                        {
+                            if (ftp.FileExists("/" + name + ".md5"))
+                            {
+                                var tmp = Path.GetTempFileName();
+                                ftp.DownloadFile(tmp, "/" + name + ".md5");
+                                if (DeleteUnVisibleChar(File.ReadAllText(tmp)).Equals(md5))
+                                {
+                                    File.Delete(tmp);
+                                    return null;
+                                }
+                                File.Delete(tmp);
+                                ftp.DeleteFile("/" + name + ".md5");
+                            }
+                            ftp.DeleteFile("/" + name);
+                        }
+                        ftp.UploadFile(file, "/" + name);
+                        ftp.UploadFile(tempFile, "/" + name + ".md5");
+                        File.Delete(tempFile);
+                        ftp.Disconnect();
+                    }
+                    return true;
+                }
+            }
+            catch(Exception ex)
+            {
+                LogtoFile("[ERROR]Hiro.Exception.FTP.Upload Details: " + ex.Message);
+                return false;
+            }
+            return false;
+        }
+
+        public static bool? FtpDownload(string file, string name,string? fmd5 = null)
+        {
+            try
+            {
+                using (FluentFTP.FtpClient ftp = new("ftp://ftp.rexio.cn", "chat", "dzZiBCE8ETSKkYxC"))
+                {
+                    ftp.Port = 3213;
+                    ftp.Connect();
+                    var tempFile = Path.GetTempFileName();
+                    if (!ftp.FileExists(name))
+                        return false;
+                    ftp.DownloadFile(tempFile, name);
+                    ftp.Disconnect();
+                    if (fmd5 == null)
+                    {
+                        if (!File.Exists(file))
+                        {
+                            File.Move(tempFile, file);
+                            return true;
+                        }
+                        else
+                        {
+                            if (GetMD5(tempFile).Equals(GetMD5(file)))
+                            {
+                                File.Delete(tempFile);
+                                return null;
+                            }
+                            else
+                            {
+                                File.Delete(file);
+                                File.Move(tempFile, file);
+                                return true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (GetMD5(tempFile).Equals(fmd5))
+                        {
+                            File.Delete(tempFile);
+                            return null;
+                        }
+                        else
+                        {
+                            if (!File.Exists(file))
+                            {
+                                File.Move(tempFile, file);
+                                return true;
+                            }
+                            else
+                            {
+                                File.Delete(file);
+                                File.Move(tempFile, file);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogtoFile("[ERROR]Hiro.Exception.FTP.Download Details: " + ex.Message);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region 获取拓展名
+        public static string GetExtensionName(string file)
+        {
+            var d = file.IndexOf(".");
+            var s = file.IndexOf("\\");
+            if (d <= s)
+                return string.Empty;
+            else
+            {
+                if (d >= file.Length - 1)
+                    return string.Empty;
+                else
+                    return file.Substring(d + 1);
+            }
+        }
+        #endregion
+
+        #region 非占用读取图片
+        public static BitmapImage? GetBitmapImage(string fileName)
+        {
+            if (File.Exists(fileName) == false) 
+                return null;
+            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            var image = System.Drawing.Image.FromStream(fileStream);
+            MemoryStream memory = new();
+            image.Save(memory, GetImageFormat(image));
+            memory.Position = 0;
+            BitmapImage bitmapimage = new();
+            bitmapimage.BeginInit();
+            bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapimage.StreamSource = memory;
+            bitmapimage.EndInit();
+            bitmapimage.Freeze();
+            fileStream.Close();
+            fileStream.Dispose();
+            return bitmapimage;
+        }
+
         #endregion
 
         #region 杂项功能

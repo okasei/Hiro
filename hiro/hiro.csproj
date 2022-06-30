@@ -32,15 +32,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentFTP" Version="37.0.4" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-    <PackageReference Include="MaterialDesignColors" Version="2.0.6">
+    <PackageReference Include="MaterialDesignColors" Version="2.0.7-ci220">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="MaterialDesignThemes" Version="4.5.0">
+    <PackageReference Include="MaterialDesignThemes" Version="4.6.0-ci220">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1245.22" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1248-prerelease" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Core" Version="1.1.0.2" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.17.4" />
@@ -54,23 +55,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Hiro_Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Hiro_Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="res.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>res.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="res.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>res.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -94,10 +88,6 @@
 
   <ItemGroup>
     <None Remove="C:\Users\Rex\.nuget\packages\csvideoplayer\1.0.3\build\\..\CSVideoPlayer.License.txt" />
-    <None Remove="hiro.png" />
-    <None Remove="hiro_circle.ico" />
-    <None Remove="Resources\default.jpg" />
-    <None Remove="Resources\rex_circle_2.0.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -105,12 +95,13 @@
     <Resource Include="hiro_circle.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Content Include="Resources\default.jpg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\rex_circle_2.0.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Hiro_Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Hiro_Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
