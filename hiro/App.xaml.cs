@@ -193,7 +193,7 @@ namespace hiro
                     {
                         Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
                         mn.hiro_chat ??= new(mn);
-                        mn.hiro_chat.Hiro_Chat_Initialize();
+                        mn.hiro_chat.Load_Friend_Info_First();
                     }
                         if (FirstUse)
                     {

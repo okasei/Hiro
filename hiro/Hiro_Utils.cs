@@ -458,7 +458,7 @@ namespace hiro
             }
         }
 
-        public static void Set_Opacity(FrameworkElement sender, Control win)
+        public static void Set_Opacity(FrameworkElement sender, Control? win = null)
         {
             if (!double.TryParse(Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
@@ -477,7 +477,8 @@ namespace hiro
             }
             Color dest = (to >= 0 && to <= 255) ?
                 Color.FromArgb(Convert.ToByte(to), 0, 0, 0) : Color.FromArgb(255, 0, 0, 0);
-            win.Background = new SolidColorBrush(bg);
+            if (win != null)
+                win.Background = new SolidColorBrush(bg);
             sender.OpacityMask = new SolidColorBrush(dest);
         }
         public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false,bool location = true)
@@ -735,7 +736,7 @@ namespace hiro
         #endregion
 
         #region 运行文件
-        public static void RunExe(String RunPath, string? source = null)
+        public static void RunExe(string RunPath, string? source = null)
         {
             var path = Path_Prepare_EX(Path_Prepare(RunPath));
             try
@@ -1415,7 +1416,12 @@ namespace hiro
                         }
                     }
                     else
-                        new Hiro_Alarm(-1, CustomedTitle: parameter[0], CustomedContnet: parameter[1], OneButtonOnly: 1).Show();
+                    {
+                        if (parameter.Count > 1)
+                            new Hiro_Alarm(-1, CustomedTitle: parameter[0], CustomedContnet: parameter[1], OneButtonOnly: 1).Show();
+                        else
+                            new Hiro_Alarm(-1, CustomedContnet: parameter[0], OneButtonOnly: 1).Show();
+                    }
                     return;
                 }
                 if (App.mn != null)
@@ -1582,7 +1588,12 @@ namespace hiro
                         };
                     }
                     else
-                        web = new(parameter[0]);
+                    {
+                        if (parameter.Count >= 1)
+                            web = new(parameter[0]);
+                        else
+                            web = new("https://www.rexio.cn/");
+                    }    
                     if (webpara.IndexOf("s") != -1)
                         web.self = true;
                     if (webpara.IndexOf("-m") != -1)
@@ -3392,19 +3403,12 @@ namespace hiro
         {
             if (File.Exists(fileName) == false) 
                 return null;
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            var image = System.Drawing.Image.FromStream(fileStream);
-            MemoryStream memory = new();
-            image.Save(memory, GetImageFormat(image));
-            memory.Position = 0;
             BitmapImage bitmapimage = new();
             bitmapimage.BeginInit();
             bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapimage.StreamSource = memory;
+            bitmapimage.UriSource = new Uri(fileName);
             bitmapimage.EndInit();
             bitmapimage.Freeze();
-            fileStream.Close();
-            fileStream.Dispose();
             return bitmapimage;
         }
 

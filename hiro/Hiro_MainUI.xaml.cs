@@ -1030,8 +1030,14 @@ namespace hiro
                     case Hiro_Finder g:
                         Hiro_Utils.Set_Opacity(g.bgimage, g);
                         break;
+                    case Hiro_Player h:
+                        Hiro_Utils.Set_Opacity(h.bgimage, h);
+                        break;
                 }
-
+                if (hiro_profile != null)
+                    Hiro_Utils.Set_Opacity(hiro_profile.Profile_Background, hiro_profile.BackControl);
+                if (hiro_chat != null)
+                    Hiro_Utils.Set_Opacity(hiro_chat.Profile_Background, hiro_chat.BackControl);
                 System.Windows.Forms.Application.DoEvents();
             }
         }

@@ -77,6 +77,7 @@ namespace hiro
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             Profile_Signature.Foreground = sign ? (SolidColorBrush)Resources["AppFore"] : (SolidColorBrush)Resources["AppForeDisabled"];
             Profile_Nickname.Foreground = nick ? (SolidColorBrush)Resources["AppFore"] : (SolidColorBrush)Resources["AppForeDisabled"];
+            Hiro_Utils.Set_Opacity(Profile_Background, BackControl);
         }
 
         public void Load_Data()
@@ -127,6 +128,8 @@ namespace hiro
                     Profile_Ellipse.Visibility = Visibility.Hidden;
                     break;
             }
+            var mac = Hiro_Utils.GetMacByIpConfig();
+            Profile_Mac.Content = mac == null ? Hiro_Utils.Get_Transalte("nullmac") : mac;
             Load = true;
         }
 
@@ -161,8 +164,9 @@ namespace hiro
         public void Load_Position()
         {
             
-            Hiro_Utils.Set_Control_Location(Profile_Nickname, "profilename");
+            Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilename");
             Hiro_Utils.Set_Control_Location(Profile_Signature, "profilesign");
+            Hiro_Utils.Set_Control_Location(Profile_Mac, "profilemac");
             Hiro_Utils.Set_Control_Location(Profile_Background, "profileback");
             Hiro_Utils.Set_Control_Location(btn8, "feedback");
             Hiro_Utils.Set_Control_Location(btn9, "whatsnew");
@@ -192,6 +196,7 @@ namespace hiro
             configbar.Visibility = configbar.Maximum > 0 ? Visibility.Visible : Visibility.Hidden; 
             configbar.Value = 0.0;
             configbar.ViewportSize = 420;
+            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
         }
 
         private void Btn8_Click(object sender, RoutedEventArgs e)
@@ -366,6 +371,34 @@ namespace hiro
             Profile_Signature_Textbox.Focus();
         }
 
+        private void Update_Profile()
+        {
+            new System.Threading.Thread(() =>
+            {
+                try
+                {
+                    var tmp = System.IO.Path.GetTempFileName();
+                    Hiro_Utils.Write_Ini(tmp, "Config", "Name", App.Username);
+                    Hiro_Utils.Write_Ini(tmp, "Config", "Signature", Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty));
+                    Hiro_Utils.Write_Ini(tmp, "Config", "Avatar", Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"));
+                    var mac = Hiro_Utils.GetMacByIpConfig();
+                    if (mac != null)
+                    {
+                        Hiro_Utils.FtpUpload(tmp, "/" + mac + ".hus");
+                        System.IO.File.Delete(tmp);
+                    }
+                    else
+                    {
+                        System.IO.File.Delete(tmp);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Profile.Update.Nickname: " + ex.Message);
+                }
+            }).Start();
+        }
+
         private void Profile_Nickname_Textbox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -385,6 +418,7 @@ namespace hiro
                     App.Username = Profile_Nickname_Textbox.Text;
                     Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppFore"];
                 }
+                Update_Profile();
                 Profile_Nickname.Content = App.Username;
                 Profile_Nickname.Visibility = Visibility.Visible;
                 Profile_Nickname_Textbox.Visibility = Visibility.Hidden;
@@ -408,6 +442,7 @@ namespace hiro
                 Profile_Signature.Foreground = Profile_Signature_Textbox.Text.Equals(string.Empty) ? (SolidColorBrush)Resources["AppForeDisabled"] : (SolidColorBrush)Resources["AppFore"];
                 Profile_Signature.Visibility = Visibility.Visible;
                 Profile_Signature_Textbox.Visibility = Visibility.Hidden;
+                Update_Profile();
                 e.Handled = true;
             }
             else if (e.Key == Key.Escape)
@@ -479,6 +514,7 @@ namespace hiro
                         Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatarStyle", "0");
                         break;
                 }
+                Update_Profile();
                 e.Handled = true;
             }
         }
@@ -800,6 +836,20 @@ namespace hiro
         {
             Profile_Signature.Visibility = Visibility.Visible;
             Profile_Signature_Textbox.Visibility = Visibility.Hidden;
+        }
+
+        private void Profile_Nickname_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
+        }
+
+        private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!Profile_Mac.Content.Equals(Hiro_Utils.Get_Transalte("nullmac")))
+            {
+                Clipboard.SetText(Profile_Mac.Content.ToString());
+                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("maccopy") + ",2)", Hiro_Utils.Get_Transalte("profile"));
+            }
         }
     }
 }
