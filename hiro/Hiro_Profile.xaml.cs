@@ -165,7 +165,7 @@ namespace hiro
         {
             
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilename");
-            Hiro_Utils.Set_Control_Location(Profile_Signature, "profilesign");
+            Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesign");
             Hiro_Utils.Set_Control_Location(Profile_Mac, "profilemac");
             Hiro_Utils.Set_Control_Location(Profile_Background, "profileback");
             Hiro_Utils.Set_Control_Location(btn8, "feedback");

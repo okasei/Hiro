@@ -184,25 +184,28 @@ namespace hiro
 
         internal void Play(string uri)
         {
-            if (hiro_provider != null)
+            new System.Threading.Thread(() =>
             {
-                try
+                if (hiro_provider != null)
                 {
-                    hiro_provider.MediaPlayer.Play(new Uri(uri));
-                    Dispatcher.Invoke(() =>
+                    try
                     {
-                        Ctrl_Text.Text = uri;
-                        Title = Hiro_Utils.GetFileName(uri) + " - " + App.AppTitle;
-                        Player_Container.Visibility = Visibility.Visible;
-                        Player_Container.Tag = "Playing";
-                        Update_Progress();
-                    });
+                        hiro_provider.MediaPlayer.Play(new Uri(uri));
+                        Dispatcher.Invoke(() =>
+                        {
+                            Ctrl_Text.Text = uri;
+                            Title = Hiro_Utils.GetFileName(uri) + " - " + App.AppTitle;
+                            Player_Container.Visibility = Visibility.Visible;
+                            Player_Container.Tag = "Playing";
+                            Update_Progress();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.MediaPlayer.Play Details: " + ex.Message);
+                    }
                 }
-                catch(Exception ex)
-                {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.MediaPlayer.Play Details: " + ex.Message);
-                }
-            }
+            }).Start();
         }
 
         internal void Load_Color()

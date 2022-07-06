@@ -92,9 +92,9 @@ namespace hiro
                 socketConnection.ReceiveData();
                 socketConnection.DataReceiveCompleted += delegate
                 {
-                    var recStr = Hiro_Utils.DeleteUnVisibleChar(System.Text.Encoding.ASCII.GetString(socketConnection.msgBuffer));
+                    var recStr = Hiro_Utils.DeleteUnVisibleChar(Encoding.ASCII.GetString(socketConnection.msgBuffer));
                     var outputb = Convert.FromBase64String(recStr);
-                    recStr = System.Text.Encoding.Default.GetString(outputb);
+                    recStr = Encoding.Default.GetString(outputb);
                     recStr = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(recStr)).Trim();
                     if (System.IO.File.Exists(recStr))
                     {
@@ -148,67 +148,84 @@ namespace hiro
             }
         }
 
-        private static void InitializeStartParameters(StartupEventArgs e)
-        {
-            switch (e.Args.Length)
+            private static void InitializeStartParameters(StartupEventArgs e)
             {
-                case >= 1 when e.Args[0].ToLower().Equals("autostart_on"):
-                    Hiro_Utils.Set_Autorun(true);
-                    goto Executed;
-                case >= 1 when e.Args[0].ToLower().Equals("autostart_off"):
-                    Hiro_Utils.Set_Autorun(false);
-                    goto Executed;
-                default:
+                switch (e.Args.Length)
                 {
-                    bool silent = false;
-                    if (e.Args.Length >= 1)
+                    case >= 1 when e.Args[0].ToLower().Equals("autostart_on"):
+                        Hiro_Utils.Set_Autorun(true);
+                        goto Executed;
+                    case >= 1 when e.Args[0].ToLower().Equals("autostart_off"):
+                        Hiro_Utils.Set_Autorun(false);
+                        goto Executed;
+                    default:
                     {
-                        foreach (var para in e.Args)
+                        bool silent = false;
+                        bool create = true;
+                        bool autoexe = true;
+                        if (e.Args.Length >= 1)
                         {
-                            switch (para.ToLower())
+                            foreach (var para in e.Args)
                             {
-                                case "debug":
-                                    dflag = true;
-                                    continue;
-                                case "silent":
-                                    silent = true;
-                                    continue;
-                                default:
-                                    Hiro_Utils.IntializeColorParameters();
-                                        Hiro_Utils.RunExe(para, "Windows");
-                                    return;
+                                switch (para.ToLower())
+                                {
+                                    case "debug":
+                                        dflag = true;
+                                        continue;
+                                    case "silent":
+                                        silent = true;
+                                        continue;
+                                    case "utils":
+                                        create = false;
+                                        continue;
+                                    case "update":
+                                        autoexe = false;
+                                        continue;
+                                    case "pure":
+                                        autoexe |= false;
+                                        continue;
+                                    default:
+                                            Hiro_Utils.IntializeColorParameters();
+                                            Hiro_Utils.RunExe(para, "Windows");
+                                        return;
+                                }
                             }
                         }
+                        wnd = new MainWindow();
+                        wnd.InitializeInnerParameters();
+                        wnd.Show();
+                        wnd.Hide();
+                        if (create)
+                        {
+                            mn = new();
+                            if (silent)
+                                Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
+                            else
+                                mn.Show();
+                            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1"))
+                            {
+                                Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
+                                mn.hiro_chat ??= new(mn);
+                                mn.hiro_chat.Load_Friend_Info_First();
+                            }
+                            if (FirstUse)
+                            {
+                                FirstUse = false;
+                                Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + lang + "\\welcome.hws)", Hiro_Utils.Get_Transalte("infofirst").Replace("%h", AppTitle));
+                            }
+                            if (autoexe)
+                            {
+                                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
+                                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Transalte("autoexe"));
+                            }
+                        }
+                        return;
                     }
-                    wnd = new MainWindow();
-                    wnd.InitializeInnerParameters();
-                    wnd.Show();
-                    wnd.Hide();
-                    mn = new();
-                    if (silent)
-                        Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
-                    else
-                        mn.Show();
-                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1"))
-                    {
-                        Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
-                        mn.hiro_chat ??= new(mn);
-                        mn.hiro_chat.Load_Friend_Info_First();
-                    }
-                        if (FirstUse)
-                    {
-                        FirstUse = false;
-                        Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + lang + "\\welcome.hws)", Hiro_Utils.Get_Transalte("infofirst").Replace("%h", AppTitle));
-                    }
-                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
-                        Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Transalte("autoexe"));
-                    return;
                 }
+            Executed:
+                Hiro_Utils.RunExe("exit()");
+                return;
             }
-        Executed:
-            Hiro_Utils.RunExe("exit()");
-            return;
-        }
 
         public static void Notify(Hiro_Notice i)
         {

@@ -21,6 +21,7 @@ namespace hiro
         private string Aite = "unknown-user";
         private bool load = false;
         private bool eload = false;
+        private bool hload = true;
         private int ernum = 0;
         public Hiro_Chat(Hiro_MainUI? Parent)
         {
@@ -39,7 +40,7 @@ namespace hiro
         }
 
 
-        public void HiHiro()
+        public void HiHiro(bool first = false)
         {
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
@@ -55,12 +56,16 @@ namespace hiro
                 sb.Begin();
                 sb.Completed += delegate
                 {
-                    Load_Friend_Info_First();
+                    if (hload)
+                        Load_Friend_Info_First();
+                    hload = false;
                 };
             }
             else
             {
-                Load_Friend_Info_First();
+                if (hload)
+                    Load_Friend_Info_First();
+                hload = false;
             }
         }
 
@@ -76,6 +81,11 @@ namespace hiro
         {
             new System.Threading.Thread(() =>
             {
+                Dispatcher.Invoke(() =>
+                {
+                    ChatContentBak.Clear();
+                    ChatContent.Document.Blocks.Clear();
+                });
                 load = false;
                 eload = false;
                 var folder = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\");

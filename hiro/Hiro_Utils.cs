@@ -532,8 +532,10 @@ namespace hiro
                     };
                     if (location)
                     {
-                        sender.Width = (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
-                        sender.Height = (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
+                        var auto = result[7].ToLower().Equals("auto") || result[7].ToLower().Equals("nan") || result[7].Equals("-2") || result[7].Equals("0");
+                        sender.Width = auto ? double.NaN : (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
+                        auto = result[8].ToLower().Equals("auto") || result[8].ToLower().Equals("nan") || result[8].Equals("-2") || result[8].Equals("0");
+                        sender.Height = auto ? double.NaN : (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
                         Thickness thickness = new()
                         {
                             Left = (!result[5].Equals("-1")) ? right ? 0.0 : double.Parse(result[5]) : sender.Margin.Left,
@@ -1566,10 +1568,17 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("play("))
                 {
-                    if (path.ToLower().Equals("play()"))
-                        new Hiro_Player().Show();
+                    if (App.mn != null)
+                    {
+                        RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",," + path + " utils)");
+                    }
                     else
-                        new Hiro_Player(parameter[0]).Show();
+                    {
+                        if (path.ToLower().Equals("play()"))
+                            new Hiro_Player().Show();
+                        else
+                            new Hiro_Player(parameter[0]).Show();
+                    }
                     return;
                 }
                 if (path.ToLower().StartsWith("web("))
