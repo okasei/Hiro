@@ -51,12 +51,12 @@ namespace hiro
         #endregion
 
         #region 私有参数
-        private IntPtr? QQMusicPtr = null;
-        private IntPtr? NeteasePtr = null;
-        private IntPtr? KuwoPtr = null;
-        private string QQTitle = string.Empty;
-        private string NeteaseTitle = string.Empty;
-        private string KuwoTitle = string.Empty;
+        private static IntPtr? QQMusicPtr = null;
+        private static IntPtr? NeteasePtr = null;
+        private static IntPtr? KuwoPtr = null;
+        private static string QQTitle = string.Empty;
+        private static string NeteaseTitle = string.Empty;
+        private static string KuwoTitle = string.Empty;
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
@@ -69,7 +69,6 @@ namespace hiro
             }
                 InitializeInnerParameters();
                 Initialize_Notify_Recall();
-                InitializeMethod();
                 InitializeStartParameters(e);
                 Build_Socket();
             
@@ -218,6 +217,7 @@ namespace hiro
                                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
                                     Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Transalte("autoexe"));
                             }
+                            InitializeMethod();
                         }
                         return;
                     }
@@ -445,7 +445,7 @@ namespace hiro
             Hiro_Utils.LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
         }
 
-        private void InitializeMethod()
+        private static void InitializeMethod()
         {
             timer = new()
             {
@@ -458,7 +458,7 @@ namespace hiro
             timer.Start();
         }
 
-        public void TimerTick()
+        public static void TimerTick()
         {
             var hr = DateTime.Now.Hour;
             var morning = Hiro_Utils.Read_Ini(LangFilePath, "local", "morning", "[6,7,8,9,10]");
@@ -590,7 +590,7 @@ namespace hiro
             }
         }
 
-        private void Music_Tick()
+        private static void Music_Tick()
         {
             if (Initialize_Title(QQMusicPtr, out string? qtitle) == 0)
             {
@@ -760,7 +760,7 @@ namespace hiro
             GC.Collect();
         }
 
-        private IntPtr Initialize_Ptr(string ProcessName)
+        private static IntPtr Initialize_Ptr(string ProcessName)
         {
             var pns = System.Diagnostics.Process.GetProcessesByName(ProcessName);
             foreach (var pn in pns)
@@ -774,7 +774,7 @@ namespace hiro
             return IntPtr.Zero;
         }
 
-        private int Initialize_Title(IntPtr? intPtr, out string? Title)
+        private static int Initialize_Title(IntPtr? intPtr, out string? Title)
         {
             if (intPtr == IntPtr.Zero || intPtr == null)
             {
