@@ -31,6 +31,7 @@ namespace hiro
         internal Hiro_Color? hiro_color = null;
         internal Hiro_Proxy? hiro_proxy = null;
         internal Hiro_Chat? hiro_chat = null;
+        internal Hiro_Login? hiro_login = null;
         internal VlcVideoSourceProvider? hiro_provider = null;
 
         public Hiro_MainUI()
@@ -312,6 +313,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(timex, "time", location: false);
             Hiro_Utils.Set_Control_Location(proxyx, "proxy", location: false);
             Hiro_Utils.Set_Control_Location(chatx, "chat", location: false);
+            Hiro_Utils.Set_Control_Location(loginx, "login", location: false);
             Thickness th2 = extended.Margin;
             th2.Left = Width / 2 - Height / 2;
             th2.Top = 0;
@@ -359,6 +361,7 @@ namespace hiro
             hiro_time?.Load_Color();
             hiro_color?.Load_Color();
             hiro_chat?.Load_Color();
+            hiro_login?.Load_Color();
         }
 
         public static void Load_Data()
@@ -499,6 +502,7 @@ namespace hiro
             timex.Content = Hiro_Utils.Get_Transalte("time");
             proxyx.Content = Hiro_Utils.Get_Transalte("proxy");
             chatx.Content = Hiro_Utils.Get_Transalte("chat");
+            loginx.Content = Hiro_Utils.Get_Transalte("login");
             hiro_home?.Update_Labels();
             hiro_items?.Load_Translate();
             hiro_items?.Load_Position();
@@ -522,6 +526,8 @@ namespace hiro
             hiro_proxy?.Load_Position();
             hiro_chat?.Load_Translate();
             hiro_chat?.Load_Position();
+            hiro_login?.Load_Translate();
+            hiro_login?.Load_Position();
         }
 
         public void Load_Labels(bool reload = true)
@@ -539,6 +545,7 @@ namespace hiro
                 timex.Background = new SolidColorBrush(Colors.Transparent);
                 proxyx.Background = new SolidColorBrush(Colors.Transparent);
                 chatx.Background = new SolidColorBrush(Colors.Transparent);
+                loginx.Background = new SolidColorBrush(Colors.Transparent);
                 homex.IsEnabled = true;
                 itemx.IsEnabled = true;
                 schedulex.IsEnabled = true;
@@ -550,6 +557,7 @@ namespace hiro
                 timex.IsEnabled = true;
                 proxyx.IsEnabled = true;
                 chatx.IsEnabled = true;
+                loginx.IsEnabled = true;
 
             }
             homex.Foreground = Foreground;
@@ -563,6 +571,7 @@ namespace hiro
             timex.Foreground = Foreground;
             proxyx.Foreground = Foreground;
             chatx.Foreground = Foreground;
+            loginx.Foreground = Foreground;
         }
         #endregion
 
@@ -673,6 +682,8 @@ namespace hiro
         {
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Load_Labels();
+            if (!App.Logined && (label == profilex || label == chatx))
+                label = loginx;
             label.IsEnabled = false;
             if (label != newx && label != timex)
             {
@@ -689,6 +700,10 @@ namespace hiro
             if (label != proxyx)
             {
                 proxyx.Visibility = Visibility.Hidden;
+            }
+            if (label != loginx)
+            {
+                loginx.Visibility = Visibility.Hidden;
             }
             var duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
@@ -744,6 +759,9 @@ namespace hiro
                         case Hiro_Chat hct:
                             hct.HiHiro();
                             break;
+                        case Hiro_Login hlo:
+                            hlo.HiHiro();
+                            break;
                     }
 
                     sb.Begin();
@@ -757,7 +775,7 @@ namespace hiro
                 current = hiro_home;
                 frame.Content = current;
             }
-            if (label == itemx || label == schedulex || label == profilex || label == configx || label == chatx)
+            if (label == itemx || label == schedulex || label == profilex || label == configx || label == chatx || label == loginx)
             {
                 if (App.Locked)
                 {
@@ -809,6 +827,13 @@ namespace hiro
                     hiro_chat ??= new(this);
                     current = hiro_chat;
                     frame.Content = hiro_chat;
+                }
+                if (label == loginx)
+                {
+                    hiro_login ??= new(this);
+                    current = hiro_login;
+                    frame.Content = hiro_login;
+                    loginx.Visibility = Visibility.Visible;
                 }
             }
             if (label == aboutx)
@@ -1089,7 +1114,7 @@ namespace hiro
         {
             Extend_Animation();
             touch++;
-            Hiro_Utils.RunExe("notify(https://ftp.rexio.cn/hiro/hiro.php?r=touch&t=" + touch.ToString() + "&lang=" + App.lang + ",2)");
+            Hiro_Utils.RunExe("notify(https://hiro.rexio.cn/Update/hiro.php?r=touch&t=" + touch.ToString() + "&lang=" + App.lang + ",2)");
         }
 
         internal void Hiro_We_Extend()
@@ -1274,6 +1299,11 @@ namespace hiro
             var thickness = infolabel.Margin;
             thickness.Left = versionlabel.Margin.Left + versionlabel.ActualWidth + 2;
             infolabel.Margin = thickness;
+        }
+
+        private void Loginx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Set_Label(loginx);
         }
     }
 }

@@ -84,16 +84,7 @@ namespace hiro
                     string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
                     if (!System.IO.File.Exists(path))
                         System.IO.File.Create(path).Close();
-                    using(System.IO.FileStream fs = new(path, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite))
-                    {
-                        using(System.IO.StreamWriter sw = new(fs))
-                        {
-                            sw.Write(con.Text);
-                            sw.Flush();
-                            sw.Close();
-                        }
-                        fs.Close();
-                    }
+                    System.IO.File.WriteAllText(path, con.Text);
                 }
                 catch (Exception ex)
                 {

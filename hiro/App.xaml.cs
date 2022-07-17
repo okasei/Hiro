@@ -48,6 +48,9 @@ namespace hiro
         internal static int ChatCD = 5;
         internal static IntPtr WND_Handle = IntPtr.Zero;
         internal static bool FirstUse = false;
+        internal static bool Logined = false;
+        internal static string LoginedUser = string.Empty;
+        internal static string LoginedToken = string.Empty;
         #endregion
 
         #region 私有参数
@@ -67,11 +70,10 @@ namespace hiro
                 Hiro_Utils.RunExe("exit()");
                 return;
             }
-                InitializeInnerParameters();
-                Initialize_Notify_Recall();
-                InitializeStartParameters(e);
-                Build_Socket();
-            
+            InitializeInnerParameters();
+            Initialize_Notify_Recall();
+            InitializeStartParameters(e);
+            Build_Socket();
 
 
         }
@@ -201,7 +203,27 @@ namespace hiro
                                 Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
                             else
                                 mn.Show();
-                            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1"))
+                            if (Hiro_Utils.Read_Ini(dconfig, "Config", "AutoLogin", "0").Equals("1"))
+                            {
+                                Hiro_Utils.LogtoFile("[INFO]AutoLogin enabled");
+                                new System.Threading.Thread(() =>
+                                {
+                                    var tmp = System.IO.Path.GetTempFileName();
+                                    var r = Hiro_Utils.Login(LoginedUser, LoginedToken, true, tmp);
+                                    if (r.Equals("success") && Hiro_Utils.Read_Ini(tmp, "Login", "res", "-1").Equals("0"))
+                                    {
+                                        Logined = true;
+                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin as " + App.LoginedUser);
+                                    }
+                                    else
+                                    {
+                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin Failed: " + Hiro_Utils.Read_Ini(tmp, "Config", "msg", string.Empty));
+                                    }
+                                    if (System.IO.File.Exists(tmp))
+                                        System.IO.File.Delete(tmp);
+                                }).Start();
+                            }
+                            if (Hiro_Utils.Read_Ini(dconfig, "Config", "AutoChat", "1").Equals("1"))
                             {
                                 Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
                                 mn.hiro_chat ??= new(mn);
@@ -398,7 +420,7 @@ namespace hiro
             {
                 case "2":
                     CustomUsernameFlag = 1;
-                    Username = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomName", "");
+                    Username = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomName", "");
                     break;
                 default:
                     CustomUsernameFlag = 0;
@@ -443,6 +465,8 @@ namespace hiro
                 hc = new(hch);
             }
             Hiro_Utils.LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
+            LoginedUser = Hiro_Utils.Read_Ini(dconfig, "Config", "User", string.Empty);
+            LoginedToken = Hiro_Utils.Read_Ini(dconfig, "Config", "Token", string.Empty);
         }
 
         private static void InitializeMethod()
@@ -493,7 +517,7 @@ namespace hiro
                 {
                     mn.Set_Home_Labels("night");
                 }
-                if (mn.hiro_chat != null)
+                if (mn.hiro_chat != null && Logined)
                 {
                     ChatCD--;
                     if (ChatCD == 0)

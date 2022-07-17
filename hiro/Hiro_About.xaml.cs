@@ -73,7 +73,7 @@ namespace hiro
                 upbw.WorkerSupportsCancellation = true;
                 upbw.DoWork += delegate
                 {
-                    ups = Hiro_Utils.GetWebContent("https://ftp.rexio.cn/hiro/hiro.php?r=update&v=" + Hiro_Resources.ApplicationUpdateVersion + "&lang=" + App.lang);
+                    ups = Hiro_Utils.GetWebContent("https://hiro.rexio.cn/Update/hiro.php?r=update&v=" + Hiro_Resources.ApplicationUpdateVersion + "&lang=" + App.lang);
                 };
                 upbw.RunWorkerCompleted += delegate
                 {

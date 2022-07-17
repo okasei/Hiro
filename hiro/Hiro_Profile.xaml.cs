@@ -40,6 +40,7 @@ namespace hiro
             {
                 Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(0, BaseGrid, sb, -100, null);
+                Hiro_Utils.AddPowerAnimation(1, btn10, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn9, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn8, sb, 50, null);
             }
@@ -128,8 +129,8 @@ namespace hiro
                     Profile_Ellipse.Visibility = Visibility.Hidden;
                     break;
             }
-            var mac = Hiro_Utils.GetMacByIpConfig();
-            Profile_Mac.Content = mac == null ? Hiro_Utils.Get_Transalte("nullmac") : mac;
+            var mac = Hiro_Utils.Read_Ini(App.dconfig, "Config", "User", Hiro_Utils.Get_Transalte("idnull"));
+            Profile_Mac.Content = mac;
             Load = true;
         }
 
@@ -137,6 +138,7 @@ namespace hiro
         {
             btn8.Content = Hiro_Utils.Get_Transalte("feedback");
             btn9.Content = Hiro_Utils.Get_Transalte("whatsnew");
+            btn10.Content = Hiro_Utils.Get_Transalte("lgout");
             name_label.Content = Hiro_Utils.Get_Transalte("namelabel");
             rbtn16.Content = Hiro_Utils.Get_Transalte("namehiro");
             rbtn17.Content = Hiro_Utils.Get_Transalte("namecus");
@@ -166,10 +168,11 @@ namespace hiro
             
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilename");
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesign");
-            Hiro_Utils.Set_Control_Location(Profile_Mac, "profilemac");
+            Hiro_Utils.Set_Control_Location(Profile_Mac, "profileid");
             Hiro_Utils.Set_Control_Location(Profile_Background, "profileback");
             Hiro_Utils.Set_Control_Location(btn8, "feedback");
             Hiro_Utils.Set_Control_Location(btn9, "whatsnew");
+            Hiro_Utils.Set_Control_Location(btn10, "lgout");
             Hiro_Utils.Set_Control_Location(tb10, "hirotb");
             Hiro_Utils.Set_Control_Location(name_label, "namelabel");
             Hiro_Utils.Set_Control_Location(rbtn16, "namehiro");
@@ -217,7 +220,7 @@ namespace hiro
             var wps = "";
             whatsbw.DoWork += delegate
             {
-                wps = Hiro_Utils.GetWebContent("https://ftp.rexio.cn/hiro/new.php?ver=" + Hiro_Resources.ApplicationVersion + "&lang=" + App.lang);
+                wps = Hiro_Utils.GetWebContent("https://hiro.rexio.cn/Update/new.php?ver=" + Hiro_Resources.ApplicationVersion + "&lang=" + App.lang);
             };
             whatsbw.RunWorkerCompleted += delegate
             {
@@ -377,19 +380,20 @@ namespace hiro
             {
                 try
                 {
-                    var tmp = System.IO.Path.GetTempFileName();
-                    Hiro_Utils.Write_Ini(tmp, "Config", "Name", App.Username);
-                    Hiro_Utils.Write_Ini(tmp, "Config", "Signature", Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty));
-                    Hiro_Utils.Write_Ini(tmp, "Config", "Avatar", Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"));
-                    var mac = Hiro_Utils.GetMacByIpConfig();
-                    if (mac != null)
+                    var res = Hiro_Utils.UploadProfileSettings(
+                    App.LoginedUser, App.LoginedToken, App.Username,
+                    Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty),
+                    Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"),
+                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", "")),
+                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", "")),
+                    "update"
+                    );
+                    if (!res.Equals("success"))
                     {
-                        Hiro_Utils.FtpUpload(tmp, "/" + mac + ".hus");
-                        System.IO.File.Delete(tmp);
-                    }
-                    else
-                    {
-                        System.IO.File.Delete(tmp);
+                        Dispatcher.Invoke(() =>
+                        {
+                            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("chatdeve") + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                        });
                     }
                 }
                 catch (Exception ex)
@@ -650,38 +654,24 @@ namespace hiro
                     if (m || append)
                     {
                         var file = new string(strFileName);
-                        var mac = Hiro_Utils.GetMacByIpConfig();
-                        if (mac != null)
+                        new System.Threading.Thread(() =>
                         {
-                            var ext = ".hap";
-                            new System.Threading.Thread(() =>
+                            var trfile = "avatarsucc";
+                            if (new System.IO.FileInfo(file).Length > 1024 * 1024)
+                                trfile = "avatarlarge";
+                            else
                             {
-                                var trfile = "avatarsucc";
-                                if (new System.IO.FileInfo(file).Length > 1024 * 1024)
-                                    trfile = "avatarlarge";
+                                var res = Hiro_Utils.UploadProfileImage(file, App.LoginedUser, App.LoginedToken, "hap");
+                                if (res.Equals("success"))
+                                    trfile = "avatarsucc";
                                 else
-                                {
-                                    var res = Hiro_Utils.FtpUpload(file, mac + ext);
-                                    if (res == null)
-                                        trfile = "avatarexist";
-                                    else if (res == true)
-                                        trfile = "avatarsucc";
-                                    else
-                                        trfile = "avatarfail";
-                                }
-                                Dispatcher.Invoke(() =>
-                                {
-                                    Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
-                                });
-                            }).Start();
-                        }
-                        else
-                        {
+                                    trfile = "avatarfail";
+                            }
                             Dispatcher.Invoke(() =>
                             {
-                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("avatarweb") + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
                             });
-                        }
+                        }).Start();
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
                         Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", strFileName);
                     }
@@ -782,38 +772,24 @@ namespace hiro
                     if (m || append)
                     {
                         var file = new string(strFileName);
-                        var mac = Hiro_Utils.GetMacByIpConfig();
-                        if (mac != null)
+                        new System.Threading.Thread(() =>
                         {
-                            var ext = ".hpp";
-                            new System.Threading.Thread(() =>
+                            var trfile = "profilesucc";
+                            if (new System.IO.FileInfo(file).Length > 2048 * 1024)
+                                trfile = "profilelarge";
+                            else
                             {
-                                var trfile = "profilesucc";
-                                if (new System.IO.FileInfo(file).Length > 2048 * 1024)
-                                    trfile = "profilelarge";
+                                var res = Hiro_Utils.UploadProfileImage(file, App.LoginedUser, App.LoginedToken, "hpp");
+                                if (res.Equals("success"))
+                                    trfile = "profilesucc";
                                 else
-                                {
-                                    var res = Hiro_Utils.FtpUpload(file, mac + ext);
-                                    if (res == null)
-                                        trfile = "profileexist";
-                                    else if (res == true)
-                                        trfile = "profilesucc";
-                                    else
-                                        trfile = "profilefail";
-                                }
-                                Dispatcher.Invoke(() =>
-                                {
-                                    Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
-                                });
-                            }).Start();
-                        }
-                        else
-                        {
+                                    trfile = "profilefail";
+                            }
                             Dispatcher.Invoke(() =>
                             {
-                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("profileweb") + ", 2)", Hiro_Utils.Get_Transalte("profile"));
+                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
                             });
-                        }
+                        }).Start();
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
                         Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", strFileName);
                     }
@@ -845,11 +821,17 @@ namespace hiro
 
         private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!Profile_Mac.Content.Equals(Hiro_Utils.Get_Transalte("nullmac")))
+            if (!Profile_Mac.Content.Equals(Hiro_Utils.Get_Transalte("idnull")))
             {
                 Clipboard.SetText(Profile_Mac.Content.ToString());
-                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("maccopy") + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("idcopy") + ",2)", Hiro_Utils.Get_Transalte("profile"));
             }
+        }
+
+        private void Btn10_Click(object sender, RoutedEventArgs e)
+        {
+            Hiro_Utils.Logout();
+            Hiro_Main?.Set_Label(Hiro_Main.homex);
         }
     }
 }

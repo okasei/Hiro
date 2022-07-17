@@ -1713,7 +1713,7 @@ namespace hiro
 
         private static void Run_Process(ProcessStartInfo pinfo, string path, string RunPath)
         {
-            pinfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            pinfo.WorkingDirectory = Path_Prepare("<current>");
             try
             {
                 _ = Process.Start(pinfo);
@@ -2450,29 +2450,31 @@ namespace hiro
                 HttpResponseMessage response = App.hc.Send(request);
                 if (response.Content != null)
                 {
-                    Stream stream = response.Content.ReadAsStream();
-                    string result = string.Empty;
-                    if (save == true && savepath != null)
+                    using (Stream stream = response.Content.ReadAsStream())
                     {
-                        try
+                        string result = string.Empty;
+                        if (save == true && savepath != null)
                         {
-                            using (var fileStream = File.Create(savepath))
+                            try
                             {
-                                stream.CopyTo(fileStream);
+                                using (var fileStream = File.Create(savepath))
+                                {
+                                    stream.CopyTo(fileStream);
+                                }
+                                return "saved";
                             }
-                            return "saved";
+                            catch (Exception ex)
+                            {
+                                LogtoFile("[ERROR]Hiro.Exception.Web.Get: " + ex.Message);
+                                throw new Exception(ex.Message);
+                            }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            LogtoFile("[ERROR]Hiro.Exception.Web.Get: " + ex.Message);
-                            throw new Exception(ex.Message);
+                            StreamReader sr = new(stream);
+                            result = sr.ReadToEnd();
+                            return result;
                         }
-                    }
-                    else
-                    {
-                        StreamReader sr = new(stream);
-                        result = sr.ReadToEnd();
-                        return result;
                     }
                 }
                 else
@@ -2659,15 +2661,18 @@ namespace hiro
                     App.scheduleitems[id].Name = App.scheduleitems[id + 1].Name;
                     App.scheduleitems[id].Command = App.scheduleitems[id + 1].Command;
                     App.scheduleitems[id].Time = App.scheduleitems[id + 1].Time;
-                    Write_Ini(inipath, (id + 1).ToString(), "Name", Read_Ini(inipath, (id + 2).ToString(), "Name", " "));
-                    Write_Ini(inipath, (id + 1).ToString(), "Command", Read_Ini(inipath, (id + 2).ToString(), "Command", " "));
-                    Write_Ini(inipath, (id + 1).ToString(), "Time", Read_Ini(inipath, (id + 2).ToString(), "Time", " "));
+                    App.scheduleitems[id].re = App.scheduleitems[id + 1].re;
+                    Write_Ini(inipath, (id + 1).ToString(), "name", Read_Ini(inipath, (id + 2).ToString(), "name", " "));
+                    Write_Ini(inipath, (id + 1).ToString(), "command", Read_Ini(inipath, (id + 2).ToString(), "command", " "));
+                    Write_Ini(inipath, (id + 1).ToString(), "time", Read_Ini(inipath, (id + 2).ToString(), "time", " "));
+                    Write_Ini(inipath, (id + 1).ToString(), "repeat", Read_Ini(inipath, (id + 2).ToString(), "repeat", " "));
                     id++;
                     System.Windows.Forms.Application.DoEvents();
                 }
                 Write_Ini(inipath, (id + 1).ToString(), "Name", " ");
                 Write_Ini(inipath, (id + 1).ToString(), "Command", " ");
                 Write_Ini(inipath, (id + 1).ToString(), "Time", " ");
+                Write_Ini(inipath, (id + 1).ToString(), "repeat", " ");
                 App.scheduleitems.RemoveAt(id);
             }
             else
@@ -2763,58 +2768,6 @@ namespace hiro
             return new Microsoft.VisualBasic.Devices.ComputerInfo().OSVersion.Trim();
         }
 
-        #endregion
-
-        #region 获取MAC地址
-        public static string? GetMacByIpConfig()
-        {
-            List<string> macs = new();
-            var runCmd = ExecuteInCmd("chcp 437&&ipconfig/all");
-            foreach (var line in runCmd.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(l => l.Trim()))
-            {
-                if (!string.IsNullOrEmpty(line))
-                {
-                    if (line.StartsWith("Physical Address"))
-                    {
-                        macs.Add(line[36..].Replace("-", ""));
-                    }
-                    else if (line.StartsWith("DNS Servers") && line.Length > 36 && line[36..].Contains("::"))
-                    {
-                        macs.Clear();
-                    }
-                    else if (macs.Count > 0 && line.StartsWith("NetBIOS") && line.Contains("Enabled"))
-                    {
-                        return macs.Last();
-                    }
-                }
-            }
-            return macs.FirstOrDefault();
-        }
-
-        public static string ExecuteInCmd(string cmdline)
-        {
-            using (var process = new Process())
-            {
-                process.StartInfo.FileName = "cmd.exe";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.CreateNoWindow = true;
-
-                process.Start();
-                process.StandardInput.AutoFlush = true;
-                process.StandardInput.WriteLine(cmdline + "&exit");
-
-                //获取cmd窗口的输出信息  
-                string output = process.StandardOutput.ReadToEnd();
-
-                process.WaitForExit();
-                process.Close();
-
-                return output;
-            }
-        }
         #endregion
 
         #region 获取系统主题色
@@ -3230,24 +3183,7 @@ namespace hiro
         #region 获取文件名
         public static string GetFileName(string file, bool ext = false)
         {
-            var lasts = file.LastIndexOf("\\");
-            var lasta = file.LastIndexOf("/");
-            var lastd = file.LastIndexOf(".");
-            if (lasts == -1)
-            {
-                if (lasta == -1)
-                {
-                    return file;
-                }
-                else
-                {
-                    return lastd > lasta ? file.Substring(lasta + 1, lastd - lasta - 1) : file[(lasta + 1)..];
-                }
-            }
-            else
-            {
-                return lastd > lasts ? file.Substring(lasts + 1, lastd - lasts - 1) : file[(lasts + 1)..];
-            }
+            return ext ? System.IO.Path.GetFileName(file) : System.IO.Path.GetFileNameWithoutExtension(file);
         }
         #endregion
 
@@ -3267,127 +3203,307 @@ namespace hiro
         }
         #endregion
 
-        #region ftp操作
+        #region 个人资料操作
 
-        public static bool? FtpUpload(string file, string name)
+        public static string Login(string account, string pwd,bool token = false, string? saveto = null)
         {
-           try
-            {
-                if (File.Exists(file))
-                {
-                    using (FluentFTP.FtpClient ftp = new("ftp://ftp.rexio.cn", "chat", "dzZiBCE8ETSKkYxC"))
-                    {
-                        ftp.Port = 3213;
-                        ftp.Connect();
-                        var md5 = GetMD5(file);
-                        var tempFile = Path.GetTempFileName();
-                        if (!File.Exists(tempFile))
-                            File.Create(tempFile);
-                        using (FileStream fs = new(tempFile, FileMode.Open))
-                        {
-                            using (StreamWriter stw = new StreamWriter(fs, Encoding.GetEncoding("utf-8")))
-                            {
-                                stw.WriteLine(md5);
-                            }
-                        }
-                        if (ftp.FileExists("/" + name))
-                        {
-                            if (ftp.FileExists("/" + name + ".md5"))
-                            {
-                                var tmp = Path.GetTempFileName();
-                                ftp.DownloadFile(tmp, "/" + name + ".md5");
-                                if (DeleteUnVisibleChar(File.ReadAllText(tmp)).Equals(md5))
-                                {
-                                    File.Delete(tmp);
-                                    return null;
-                                }
-                                File.Delete(tmp);
-                                ftp.DeleteFile("/" + name + ".md5");
-                            }
-                            ftp.DeleteFile("/" + name);
-                        }
-                        ftp.UploadFile(file, "/" + name);
-                        ftp.UploadFile(tempFile, "/" + name + ".md5");
-                        File.Delete(tempFile);
-                        ftp.Disconnect();
-                    }
-                    return true;
-                }
-            }
-            catch(Exception ex)
-            {
-                LogtoFile("[ERROR]Hiro.Exception.FTP.Upload Details: " + ex.Message);
-                return false;
-            }
-            return false;
-        }
-
-        public static bool? FtpDownload(string file, string name,string? fmd5 = null)
-        {
+            var url = "https://id.rexio.cn/login.php";
             try
             {
-                using (FluentFTP.FtpClient ftp = new("ftp://ftp.rexio.cn", "chat", "dzZiBCE8ETSKkYxC"))
+                if (App.hc == null)
+                    throw new Exception(Get_Transalte("webnotinitial"));
+                string boundary = DateTime.Now.Ticks.ToString("X");
+                string Enter = "\r\n";
+                string t = token ? "token" : "pwd";
+                byte[] eof = Encoding.UTF8.GetBytes(
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"account\"" + Enter + Enter + "" + account + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"pwd\"" + Enter + Enter + "" + pwd + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"lang\"" + Enter + Enter + "" + App.lang + "" + Enter + "--" + boundary + "--"+
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + t + "" + Enter + "--" + boundary + "--" 
+                    );
+                byte[] ndata = new byte[eof.Length];
+                eof.CopyTo(ndata, 0);
+                HttpRequestMessage request = new(HttpMethod.Post, url);
+                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Content = new ByteArrayContent(ndata);
+                request.Content.Headers.Remove("Content-Type");
+                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
+                HttpResponseMessage response = App.hc.Send(request);
+                if (response.Content != null)
                 {
-                    ftp.Port = 3213;
-                    ftp.Connect();
-                    var tempFile = Path.GetTempFileName();
-                    if (!ftp.FileExists(name))
-                        return false;
-                    ftp.DownloadFile(tempFile, name);
-                    ftp.Disconnect();
-                    if (fmd5 == null)
+                    if (saveto != null)
                     {
-                        if (!File.Exists(file))
+                        try
                         {
-                            File.Move(tempFile, file);
-                            return true;
+                            using (Stream stream = response.Content.ReadAsStream())
+                            {
+                                using (var fileStream = File.Create(saveto))
+                                {
+                                    stream.CopyTo(fileStream);
+                                }
+                            }
+                            return "success";
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            if (GetMD5(tempFile).Equals(GetMD5(file)))
-                            {
-                                File.Delete(tempFile);
-                                return null;
-                            }
-                            else
-                            {
-                                File.Delete(file);
-                                File.Move(tempFile, file);
-                                return true;
-                            }
+                            LogtoFile("[ERROR]Hiro.Exception.Login.Save: " + ex.Message);
+                            throw new Exception(ex.Message);
                         }
                     }
                     else
                     {
-                        if (GetMD5(tempFile).Equals(fmd5))
+                        using (Stream stream = response.Content.ReadAsStream())
                         {
-                            File.Delete(tempFile);
-                            return null;
-                        }
-                        else
-                        {
-                            if (!File.Exists(file))
+                            string result = string.Empty;
+                            using (StreamReader sr = new(stream))
                             {
-                                File.Move(tempFile, file);
-                                return true;
-                            }
-                            else
-                            {
-                                File.Delete(file);
-                                File.Move(tempFile, file);
-                                return true;
+                                result = sr.ReadToEnd();
+                                return result;
                             }
                         }
                     }
                 }
+                else
+                    return "null";
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.FTP.Download Details: " + ex.Message);
-                return false;
+                LogtoFile("[ERROR]Hiro.Exception.Login: " + ex.Message);
+                return "error";
             }
         }
 
+        public static void Logout()
+        {
+            App.Logined = false;
+            App.LoginedToken = string.Empty;
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "Token", string.Empty);
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoLogin", "0");
+        }
+
+        public static string UploadProfileImage(string file, string user, string token, string type)
+        {
+            var url = "https://hiro.rexio.cn/Chat/upload.php";
+            try
+            {
+                if (App.hc == null)
+                    throw new Exception(Get_Transalte("webnotinitial"));
+                FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
+                byte[] bytebuffer;
+                bytebuffer = new byte[fs.Length];
+                fs.Read(bytebuffer, 0, (int)fs.Length);
+                fs.Close();
+                string filename = Path.GetFileName(file);
+                filename = filename ?? "null";
+                string boundary = DateTime.Now.Ticks.ToString("X");
+                string Enter = "\r\n";
+                byte[] send = Encoding.UTF8.GetBytes(
+                    "--" + boundary + Enter + "Content-Type: application/octet-stream" + Enter + "Content-Disposition: form-data; filename=\"" + "" + filename + "" + "\"; name=\"file\"" + Enter + Enter
+                    );
+                byte[] eof = Encoding.UTF8.GetBytes(
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"type\"" + Enter + Enter + "" + type + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"md5\"" + Enter + Enter + "" + GetMD5(file).Replace("-", "") + "" + Enter + "--" + boundary + "--"
+                    );
+                byte[] ndata = new byte[send.Length + bytebuffer.Length + eof.Length];
+                send.CopyTo(ndata, 0);
+                bytebuffer.CopyTo(ndata, send.Length);
+                eof.CopyTo(ndata, send.Length + bytebuffer.Length);
+                HttpRequestMessage request = new(HttpMethod.Post, url);
+                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Content = new ByteArrayContent(ndata);
+                request.Content.Headers.Remove("Content-Type");
+                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
+                HttpResponseMessage response = App.hc.Send(request);
+                if (response.Content != null)
+                {
+                    using (Stream stream = response.Content.ReadAsStream())
+                    {
+                        string result = string.Empty;
+                        using (StreamReader sr = new(stream))
+                        {
+                            result = sr.ReadToEnd();
+                            return result;
+                        }
+                    }
+                }
+                else
+                    return "null";
+            }
+            catch (Exception ex)
+            {
+                LogtoFile("[ERROR]Hiro.Exception.Update.Profile: " + ex.Message);
+                return "error";
+            }
+        }
+
+        public static string UploadProfileSettings(string user, string token, string name, string signature, string avatar, string iavatar, string back, string method = "update", string? saveto = null)
+        {
+            var url = "https://hiro.rexio.cn/Chat/update.php";
+            try
+            {
+                if (App.hc == null)
+                    throw new Exception(Get_Transalte("webnotinitial"));
+                
+                string boundary = DateTime.Now.Ticks.ToString("X");
+                string Enter = "\r\n";
+                byte[] send = Encoding.UTF8.GetBytes(
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"name\"" + Enter + Enter + "" + name + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"sign\"" + Enter + Enter + "" + signature + "" + Enter + "--" + boundary + "--" + 
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + avatar + "" + Enter + "--" + boundary + "--" + 
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + iavatar + "" + Enter + "--" + boundary + "--" + 
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + back + "" + Enter + "--" + boundary + "--" + 
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"method\"" + Enter + Enter + "" + method + "" + Enter + "--" + boundary + "--"
+                    );
+                HttpRequestMessage request = new(HttpMethod.Post, url);
+                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Content = new ByteArrayContent(send);
+                request.Content.Headers.Remove("Content-Type");
+                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
+                HttpResponseMessage response = App.hc.Send(request);
+                if (response.Content != null)
+                {
+                    if (method.Equals("check") && saveto != null)
+                    {
+                        try
+                        {
+                            using (Stream stream = response.Content.ReadAsStream())
+                            {
+                                using (var fileStream = File.Create(saveto))
+                                {
+                                    stream.CopyTo(fileStream);
+                                }
+                            }
+                            return "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            LogtoFile("[ERROR]Hiro.Exception.Update.Profile.Settings.Save: " + ex.Message);
+                            throw new Exception(ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        using (Stream stream = response.Content.ReadAsStream())
+                        {
+                            string result = string.Empty;
+                            using (StreamReader sr = new(stream))
+                            {
+                                result = sr.ReadToEnd();
+                                return result;
+                            }
+                        }
+                    }
+                }
+                else
+                    return "null";
+            }
+            catch (Exception ex)
+            {
+                LogtoFile("[ERROR]Hiro.Exception.Update.Profile.Settings: " + ex.Message);
+                return "error";
+            }
+        }
+
+        public static string SendMsg(string user, string token, string to, string content)
+        {
+            var url = "https://hiro.rexio.cn/Chat/send.php";
+            try
+            {
+                if (App.hc == null)
+                    throw new Exception(Get_Transalte("webnotinitial"));
+                string boundary = DateTime.Now.Ticks.ToString("X");
+                string Enter = "\r\n";
+                byte[] eof = Encoding.UTF8.GetBytes(
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"to\"" + Enter + Enter + "" + to + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"content\"" + Enter + Enter + "" + content + "" + Enter + "--" + boundary + "--" 
+                    );
+                byte[] ndata = new byte[eof.Length];
+                eof.CopyTo(ndata, 0);
+                HttpRequestMessage request = new(HttpMethod.Post, url);
+                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Content = new ByteArrayContent(ndata);
+                request.Content.Headers.Remove("Content-Type");
+                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
+                HttpResponseMessage response = App.hc.Send(request);
+                if (response.Content != null)
+                {
+                    using (Stream stream = response.Content.ReadAsStream())
+                    {
+                        string result = string.Empty;
+                        using (StreamReader sr = new(stream))
+                        {
+                            result = sr.ReadToEnd();
+                            return result;
+                        }
+                    }
+                }
+                else
+                    return "null";
+            }
+            catch (Exception ex)
+            {
+                LogtoFile("[ERROR]Hiro.Exception.Chat.Send: " + ex.Message);
+                return "error";
+            }
+        }
+
+
+        public static string GetChat(string user, string token, string to, string saveto)
+        {
+            var url = "https://hiro.rexio.cn/Chat/log.php";
+            try
+            {
+                if (App.hc == null)
+                    throw new Exception(Get_Transalte("webnotinitial"));
+                string boundary = DateTime.Now.Ticks.ToString("X");
+                string Enter = "\r\n";
+                byte[] eof = Encoding.UTF8.GetBytes(
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"to\"" + Enter + Enter + "" + to + "" + Enter + "--" + boundary + "--"
+                    );
+                byte[] ndata = new byte[eof.Length];
+                eof.CopyTo(ndata, 0);
+                HttpRequestMessage request = new(HttpMethod.Post, url);
+                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Content = new ByteArrayContent(ndata);
+                request.Content.Headers.Remove("Content-Type");
+                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
+                HttpResponseMessage response = App.hc.Send(request);
+                if (response.Content != null)
+                {
+                    try
+                    {
+                        using (Stream stream = response.Content.ReadAsStream())
+                        {
+                            using (var fileStream = File.Create(saveto))
+                            {
+                                stream.CopyTo(fileStream);
+                            }
+                        }
+                        return "success";
+                    }
+                    catch (Exception ex)
+                    {
+                        LogtoFile("[ERROR]Hiro.Exception.Chat.Get.Save: " + ex.Message);
+                        throw new Exception(ex.Message);
+                    }
+                }
+                else
+                    return "null";
+            }
+            catch (Exception ex)
+            {
+                LogtoFile("[ERROR]Hiro.Exception.Chat.Get: " + ex.Message);
+                return "error";
+            }
+        }
         #endregion
 
         #region 获取拓展名
