@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -48,7 +49,7 @@ namespace hiro
         internal static int ChatCD = 5;
         internal static IntPtr WND_Handle = IntPtr.Zero;
         internal static bool FirstUse = false;
-        internal static bool Logined = false;
+        internal static bool? Logined = false;
         internal static string LoginedUser = string.Empty;
         internal static string LoginedToken = string.Empty;
         #endregion
@@ -74,7 +75,64 @@ namespace hiro
             Initialize_Notify_Recall();
             InitializeStartParameters(e);
             Build_Socket();
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            DispatcherUnhandledException += App_DispatcherUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
+
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                var exception = e.ExceptionObject as Exception;
+                if (exception != null)
+                {
+                    Hiro_Utils.LogError(exception, "Hiro.Exception.UnhandledException");
+                }
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Exception.UnhandledException.Catch");
+            }
+        }
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Hiro_Utils.LogError(e.Exception, "Hiro.Exception.Dispatcher");
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Dispatcher.Catch");
+            }
+            finally
+            {
+                e.Handled = true;
+            }
+
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            try
+            {
+                var exception = e.Exception as Exception;
+                if (exception != null)
+                {
+                    Hiro_Utils.LogError(exception, "Hiro.Exception.UnobservedTask");
+                }
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Exception.UnobservedTask.Catch");
+            }
+            finally
+            {
+                e.SetObserved();
+            }
 
         }
 
@@ -145,7 +203,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Socket: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Socket");
             }
         }
 
@@ -208,19 +266,23 @@ namespace hiro
                                 Hiro_Utils.LogtoFile("[INFO]AutoLogin enabled");
                                 new System.Threading.Thread(() =>
                                 {
+                                    Logined = null;
                                     var tmp = System.IO.Path.GetTempFileName();
                                     var r = Hiro_Utils.Login(LoginedUser, LoginedToken, true, tmp);
                                     if (r.Equals("success") && Hiro_Utils.Read_Ini(tmp, "Login", "res", "-1").Equals("0"))
                                     {
                                         Logined = true;
-                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin as " + App.LoginedUser);
+                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin as " + LoginedUser);
+                                        Logined = true;
                                     }
                                     else
                                     {
                                         Hiro_Utils.LogtoFile("[INFO]AutoLogin Failed: " + Hiro_Utils.Read_Ini(tmp, "Config", "msg", string.Empty));
+                                        Logined = false;
                                     }
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
+                                    
                                 }).Start();
                             }
                             if (Hiro_Utils.Read_Ini(dconfig, "Config", "AutoChat", "1").Equals("1"))
@@ -358,7 +420,6 @@ namespace hiro
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\config\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\app\\");
-            Hiro_Utils.CreateFolder(CurrentDirectory + "\\users\\default\\cache\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\system\\lang\\");
             Hiro_Utils.CreateFolder(CurrentDirectory + "\\system\\wallpaper\\");
             LogFilePath = CurrentDirectory + "\\users\\" + EnvironmentUsername + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
@@ -378,7 +439,7 @@ namespace hiro
                 if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                 {
                     lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName.ToString();
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Globalization: Translateion not found, try to initialize as " + lang.ToString());
+                    Hiro_Utils.LogError(new System.IO.FileNotFoundException(), "Hiro.Exception.Globalization");
                     if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                     {
                         lang = "zh-CN";
@@ -392,7 +453,7 @@ namespace hiro
                 {
                     if (str.IndexOf("-") != -1)
                         lang = str[..str.IndexOf("-")];
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Globalization: Translateion not found, try to initialize as " + lang.ToString());
+                    Hiro_Utils.LogError(new System.IO.FileNotFoundException(), "Hiro.Exception.Globalization");
                     if (!System.IO.File.Exists(CurrentDirectory + "\\system\\lang\\" + lang + ".hlp"))
                     {
                         lang = "zh-CN";
@@ -454,7 +515,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Proxy: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Proxy");
                     hc = new();
                 }
             }
@@ -517,7 +578,7 @@ namespace hiro
                 {
                     mn.Set_Home_Labels("night");
                 }
-                if (mn.hiro_chat != null && Logined)
+                if (mn.hiro_chat != null && Logined == true)
                 {
                     ChatCD--;
                     if (ChatCD == 0)
@@ -703,7 +764,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Menu.Run: " + ex.Message);
+                            Hiro_Utils.LogError(ex, "Hiro.Exception.Menu.Run");
                         }
                     };
                     wnd.cm.Items.Add(mu);

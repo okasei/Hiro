@@ -143,7 +143,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Data.Parse: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Data.Parse");
                     re = -2.0;
                 }
             }
@@ -268,7 +268,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Data.Parse: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Data.Parse");
             }
 
             if (Hiro_Main == null) 

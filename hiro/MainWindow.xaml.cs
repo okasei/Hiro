@@ -35,7 +35,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Power: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Power");
             }
         }
 
@@ -113,7 +113,7 @@ namespace hiro
                 }
                 catch(Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Wifi.Network: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Wifi.Network");
                 }
                 if (ncl == profile.GetNetworkConnectivityLevel() && rec_nc.Equals(ext))
                     return;

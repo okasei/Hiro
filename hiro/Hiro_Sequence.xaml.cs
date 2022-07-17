@@ -153,7 +153,7 @@ namespace hiro
                 }
                 catch(Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Sequence.Pause: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Sequence.Pause");
                     tick = 5;
                 }
                 skipbtn.Visibility = Visibility.Visible;
@@ -381,7 +381,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Sequence.Parent: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Sequence.Parent");
             }
         }
     }

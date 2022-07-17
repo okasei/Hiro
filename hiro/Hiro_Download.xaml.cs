@@ -182,7 +182,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Continue: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Download.Continue");
                 App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
                 Stop_Download(false);
                 return;
@@ -203,9 +203,9 @@ namespace hiro
                         }
 
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Stream: " + e.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Download.Stream");
                         startpos = 0;
                     }
                 }
@@ -241,7 +241,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Write: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Download.Write");
                     App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
                     successflag = false;
                     break;
@@ -282,7 +282,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.Save: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Download.Save");
                 }
             }
             Stop_Download(successflag);
@@ -333,7 +333,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Download.ListFile: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Download.ListFile");
                     }
                 }
             }

@@ -20,12 +20,14 @@ namespace hiro
         private bool secure = false;
         internal int bflag = 0;
         private string FlowTitle = "";
-        public Hiro_Web(string? uri = null, string? title = null)
+        public Hiro_Web(string? uri = null, string? title = null,string startUri = "<hiuser>")
         {
             InitializeComponent();
             Load_Color();
             Load_Translate();
             Refreash_Layout();
+            var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<hiapp>\\web\\" + startUri + "\\")));
+            wv2.EnsureCoreWebView2Async(env.Result);
             if (uri != null)
             {
                 if (uri.ToLower().Equals("hiro://clear"))
@@ -283,7 +285,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Webview: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Webview");
             }
         }
 
@@ -502,7 +504,7 @@ namespace hiro
                             }
                             catch
                             {
-                                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Webview.URL: " + ex.Message);
+                                Hiro_Utils.LogError(ex, "Hiro.Exception.Webview.URL");
                             }
                         }
                     

@@ -82,7 +82,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.MediaPlayer.Initialize: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlayer.Initialize");
                 }
             }).Start();
         }
@@ -214,7 +214,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.MediaPlayer.Play Details: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlayer.Play");
                     }
                 }
             }).Start();
@@ -362,7 +362,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.MediaPlay.Close Details: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlay.Close");
             }
         }
 

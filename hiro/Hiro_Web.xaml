@@ -21,9 +21,6 @@
         <Grid x:Name="BaseGrid" MouseDown="TitleGrid_MouseDown">
             <Grid x:Name="WebGrid" Margin="0 32 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <wv2:WebView2 x:Name="wv2">
-                    <wv2:WebView2.CreationProperties>
-                        <wv2:CoreWebView2CreationProperties UserDataFolder=".\users\default\cache\"/>
-                    </wv2:WebView2.CreationProperties>
                 </wv2:WebView2>
             </Grid>
             <Grid x:Name="TitleGrid" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top">

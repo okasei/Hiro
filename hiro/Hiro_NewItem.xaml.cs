@@ -355,7 +355,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Hotkey.RegisterFunc: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Hotkey.RegisterFunc");
                     }
                 }
             }
@@ -382,7 +382,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.HotKey.RegisterFunc: " + ex.Message);
+                            Hiro_Utils.LogError(ex, "Hiro.Exception.HotKey.RegisterFunc");
                         }
                     }
                 }
@@ -563,7 +563,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Data.Parse: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Data.Parse");
                     }
                     if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
                     {

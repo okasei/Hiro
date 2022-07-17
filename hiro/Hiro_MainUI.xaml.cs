@@ -111,7 +111,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Player.Initialize: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Player.Initialize");
                 }
             }).Start();
         }
@@ -209,7 +209,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Background.Image.Select Details: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Background.Image.Select");
                     }
                 }
             }).Start();
@@ -391,7 +391,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Hotkey.Register: Error occurred while trying to register hotkey " + mo + "+" + vkey + ":" + ex.Message);
+                            Hiro_Utils.LogError(ex, $"Hiro.Exception.Hotkey.Register{Environment.NewLine}Key: {mo} + {key}");
                         }
 
                     }
@@ -399,7 +399,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Hotkey.Register.Format: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Hotkey.Register.Format");
                 }
                 co = co[1..^1];
                 App.cmditems.Add(new Cmditem(p, i, ti, co, key));
@@ -682,7 +682,7 @@ namespace hiro
         {
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             Load_Labels();
-            if (!App.Logined && (label == profilex || label == chatx))
+            if (App.Logined != true && (label == profilex || label == chatx))
                 label = loginx;
             label.IsEnabled = false;
             if (label != newx && label != timex)
@@ -704,6 +704,10 @@ namespace hiro
             if (label != loginx)
             {
                 loginx.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                loginx.Visibility = Visibility.Visible;
             }
             var duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
@@ -775,7 +779,7 @@ namespace hiro
                 current = hiro_home;
                 frame.Content = current;
             }
-            if (label == itemx || label == schedulex || label == profilex || label == configx || label == chatx || label == loginx)
+            if (label == itemx || label == schedulex || label == profilex || label == configx || label == chatx)
             {
                 if (App.Locked)
                 {
@@ -828,13 +832,6 @@ namespace hiro
                     current = hiro_chat;
                     frame.Content = hiro_chat;
                 }
-                if (label == loginx)
-                {
-                    hiro_login ??= new(this);
-                    current = hiro_login;
-                    frame.Content = hiro_login;
-                    loginx.Visibility = Visibility.Visible;
-                }
             }
             if (label == aboutx)
             {
@@ -879,6 +876,13 @@ namespace hiro
                 hiro_proxy ??= new(this);
                 current = hiro_proxy;
                 frame.Content = hiro_proxy;
+            }
+            if (label == loginx)
+            {
+                hiro_login ??= new(this);
+                current = hiro_login;
+                frame.Content = hiro_login;
+                loginx.Visibility = Visibility.Visible;
             }
             selected = label;
             label.IsEnabled = true;
@@ -1225,7 +1229,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Player.Resize: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Player.Resize");
                 }
             }
         }

@@ -52,7 +52,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.LockScreen.Wallpaper: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.LockScreen.Wallpaper");
                     }
                     StringBuilder wallPaperPath = new(200);
                     if (Hiro_Utils.GetSystemParametersInfo(0x0073, 200, wallPaperPath, 0))

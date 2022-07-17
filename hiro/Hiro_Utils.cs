@@ -356,7 +356,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Config.Update: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Config.Update");
                 return false;
             }
 
@@ -364,6 +364,29 @@ namespace hiro
         #endregion
 
         #region 写日志相关
+
+        public static void LogError(Exception ex, string Module)
+        {
+            StringBuilder str = new StringBuilder();
+            if (ex.InnerException == null)
+            {
+                str.Append($"{Environment.NewLine}[ERROR]{Module}{Environment.NewLine}");
+                str.Append($"Object: {ex.Source}{Environment.NewLine}");
+                str.Append($"Exception: {ex.GetType().Name}{Environment.NewLine}");
+                str.Append($"Details: {ex.Message}{Environment.NewLine}");
+                str.Append($"StackTrace: {ex.StackTrace}");
+            }
+            else
+            {
+                str.Append($"{Environment.NewLine}[ERROR]{Module}.InnerException{Environment.NewLine}");
+                str.Append($"Object: {ex.InnerException.Source}{Environment.NewLine}");
+                str.Append($"Exception: {ex.InnerException.GetType().Name}{Environment.NewLine}");
+                str.Append($"Details: {ex.InnerException.Message}{Environment.NewLine}");
+                str.Append($"StackTrace: {ex.InnerException.StackTrace}");
+            }
+            LogtoFile(str.ToString());
+        }
+
         public static void LogtoFile(string val)
         {
             try
@@ -386,7 +409,7 @@ namespace hiro
             {
                 try
                 {
-                    LogtoFile("[ERROR]Hiro.Exception.Log: " + ex.Message);
+                    LogError(ex, "Hiro.Exception.Log");
                 }
                 catch
                 {
@@ -433,7 +456,7 @@ namespace hiro
                         sb.Begin();
                     }catch (Exception ex)
                     {
-                        LogtoFile("[ERROR]Hiro.Exception.Animation: " + ex.Message);
+                        LogError(ex, "Hiro.Exception.Animation");
                         sender.Background = new SolidColorBrush(App.AppAccentColor);
                     }
                     
@@ -549,7 +572,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Location: " + "sender " + val + "|" + ex.Message);
+                LogError(ex, $"Hiro.Exception.Location{Environment.NewLine}Path: {val}");
             }
 
         }
@@ -585,7 +608,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Location.Grid: " + "sender " + val + "|" + ex.Message);
+                LogError(ex, $"Hiro.Exception.Location.Grid{Environment.NewLine}Path: {val}");
             }
 
         }
@@ -818,7 +841,7 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                                LogtoFile("[ERROR]Hiro.Exception.Wallpaper.HttpClient: Error at " + path + " | Details: " + ex.Message);
+                                LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
                             }
                         };
                         bw.RunWorkerCompleted += delegate
@@ -872,7 +895,7 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]Hiro.Exception.IO.Delete: Error at " + path + " | Details: " + ex.Message);
+                                LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
                             }
                         else
                             LogtoFile("[WARNING]Hiro.Warning.IO.Delete: Warning at " + path + " | Details: " + Get_Transalte("filenotexist"));
@@ -885,7 +908,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Hiro.Exception.IO.Delete: Error at " + path + " | Details: " + ex.Message);
+                        LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
                     }
                     return;
                 }
@@ -901,7 +924,7 @@ namespace hiro
                         catch (Exception ex)
                         {
                             App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                            LogtoFile("[ERROR]Hiro.Exception.IO.Move: Error at " + path + " | Details: " + ex.Message);
+                            LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
                         }
                         return;
                     }
@@ -913,7 +936,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Hiro.Exception.IO.Move: Error at " + path + " | Details: " + ex.Message);
+                        LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
                     }
                     return;
                 }
@@ -929,12 +952,12 @@ namespace hiro
                             catch (Exception ex)
                             {
                                 App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                                LogtoFile("[ERROR]Hiro.Exception.IO.Copy: Error at " + path + " | Details: " + ex.Message);
+                                LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                             }
                         else
                         {
                             App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("file")));
-                            LogtoFile("[ERROR]Hiro.Exception.IO.Copy: Error at " + path + " | Details: " + Get_Transalte("filenotexist"));
+                            LogError(new FileNotFoundException(), $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                         }
                         return;
                     }
@@ -946,7 +969,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
-                        LogtoFile("[ERROR]Hiro.Exception.IO.Copy: Error at " + path + " | Details: " + ex.Message);
+                        LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                     }
                     return;
                 }
@@ -1133,7 +1156,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        LogtoFile("[ERROR]Hiro.Exception.Exit: Error at " + path + " | Details: " + ex.Message);
+                        LogError(ex, $"Hiro.Exception.Exit{Environment.NewLine}Path: {path}");
                     }
                     return;
                 }
@@ -1290,7 +1313,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                        LogtoFile("[ERROR]Hiro.Exception.Run.Extra: Error at " + path + " | Details: " + ex.Message);
+                        LogError(ex, $"Hiro.Exception.Run.Extra{Environment.NewLine}Path: {path}");
                     }
                     if (App.mn == null)
                         RunExe("exit()");
@@ -1559,7 +1582,7 @@ namespace hiro
                         catch (Exception ex)
                         {
                             RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
-                            LogtoFile("[ERROR]Hiro.Exception.Run.Notification: Error at " + path + " | Details: " + ex.Message);
+                            LogError(ex, $"Hiro.Exception.Run.Notification{Environment.NewLine}Path: {path}");
                         }
                     }
                     duration = duration <= 0 ? 2 : duration;
@@ -1590,7 +1613,9 @@ namespace hiro
                         string? title = null;
                         if (!Read_Ini(parameter[0], "Web", "Title", string.Empty).Equals(string.Empty))
                             title = Read_Ini(parameter[0], "Web", "Title", string.Empty).Replace("%b", " ");
-                        web = new(Read_Ini(parameter[0], "Web", "URI", "about:blank"), title)
+                        var uri = Read_Ini(parameter[0], "Web", "URI", "about:blank");
+                        var UPF = Read_Ini(parameter[0], "Web", "Folder", "<hiuser>");
+                        web = new(uri, title, UPF)
                         {
                             Height = Double.Parse(Read_Ini(parameter[0], "Web", "Height", "450")),
                             Width = Double.Parse(Read_Ini(parameter[0], "Web", "Width", "800"))
@@ -1598,10 +1623,18 @@ namespace hiro
                     }
                     else
                     {
-                        if (parameter.Count >= 1)
-                            web = new(parameter[0]);
-                        else
-                            web = new("https://www.rexio.cn/");
+                        switch (parameter.Count)
+                        {
+                            case 1:
+                                web = new(parameter[0]);
+                                break;
+                            case > 1:
+                                web = new(parameter[0], null, parameter[1]);
+                            break;
+                            default:
+                                web = new("https://www.rexio.cn/");
+                            break;
+                        } 
                     }    
                     if (webpara.IndexOf("s") != -1)
                         web.self = true;
@@ -1705,7 +1738,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Run: Error at " + path + " | Details: " + ex.Message);
+                LogError(ex, $"Hiro.Exception.Run{Environment.NewLine}Path: {path}");
                 App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, source));
                 return;
             }
@@ -1768,7 +1801,7 @@ namespace hiro
                         }
                     }
                     App.Notify(new(Get_Transalte("notfound"), 2, Get_Transalte("execute")));
-                    LogtoFile("[ERROR]Hiro.Exception.Run.Process: " + ex.Message);
+                    LogError(ex, $"Hiro.Exception.Run.Process{Environment.NewLine}");
                 }
             }
         }
@@ -1801,7 +1834,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]Hiro.Exception.FindItemByName: " + ex.Message);
+                    LogError(ex, $"Hiro.Exception.FindItemByName");
                 }   
             }
             return null;
@@ -1908,7 +1941,7 @@ namespace hiro
             catch (Exception ex)
             {
                 App.Notify(new Hiro_Notice(Get_Transalte("error"), 2));
-                LogtoFile("[ERROR]Hiro.Exception.Bluetooth: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Bluetooth");
             }
         }
 
@@ -2019,7 +2052,7 @@ namespace hiro
             catch (Exception ex)
             {
                 App.Notify(new Hiro_Notice(Get_Transalte("error"), 2, Get_Transalte("wifi")));
-                LogtoFile("[ERROR]Hiro.Exception.Wifi: " + ex.Message);
+                LogError(ex, $"Hiro.Exception.Wifi");
             }
         }
 
@@ -2429,7 +2462,7 @@ namespace hiro
         #endregion
 
         #region 检查更新
-        public static string GetWebContent(String url, bool save = false, String? savepath = null)
+        public static string GetWebContent(string url, bool save = false, String? savepath = null)
         {
             HttpRequestMessage request = new(HttpMethod.Get, url);
             request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
@@ -2465,7 +2498,7 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                LogtoFile("[ERROR]Hiro.Exception.Web.Get: " + ex.Message);
+                                LogError(ex, $"Hiro.Exception.Web.Get");
                                 throw new Exception(ex.Message);
                             }
                         }
@@ -2479,13 +2512,13 @@ namespace hiro
                 }
                 else
                 {
-                    LogtoFile("[ERROR]Hiro.Exception.Web.Respose: Response is null");
+                    LogError(new ArgumentNullException(), $"Hiro.Exception.Web.Respose");
                     return Get_Transalte("error");
                 }
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Web.HttpClient: " + ex.Message);
+                LogError(ex, $"Hiro.Exception.Web.HttpClient");
                 throw new Exception(ex.Message);
             }
 
@@ -2645,7 +2678,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]Hiro.Exception.Alarm.OK: " + ex.Message);
+                    LogError(ex, "Hiro.Exception.Alarm.OK");
                 }
 
             }
@@ -2719,7 +2752,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]Hiro.Exception.Config.Autorun: " + ex.Message);
+                    LogError(ex, "Hiro.Exception.Config.Autorun");
                 }
             }
             else
@@ -2754,7 +2787,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Directory.Create: " + ex.Message);
+                LogError(ex, $"Hiro.Exception.Directory.Create");
                 return false;
             }
             return true;
@@ -2783,7 +2816,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    LogtoFile("[ERROR]Hiro.Exception.System.Color: " + ex.Message);
+                    LogError(ex, "Hiro.Exception.System.Color");
                     App.AppAccentColor = (Color)ColorConverter.ConvertFromString("#00C4FF");
                 }
             }
@@ -3025,7 +3058,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Utils.ZoomImage Details: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Utils.ZoomImage");
                 return bitmap;
             }
         }
@@ -3063,7 +3096,7 @@ namespace hiro
                 int sa = Marshal.GetLastWin32Error();
                 _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
                 RunExe("notify(" + Get_Transalte("regfailed").Replace("%n", sa.ToString()) + ",2)");
-                LogtoFile("[ERROR]Hiro.Exception.Hotkey.Register: Register hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
+                LogError(new NotSupportedException(), $"Hiro.Exception.Hotkey.Register{Environment.NewLine}Extra: {sa} - {msg.Replace(Environment.NewLine, "")}");
             }
             App.vs.Add(kid);
             App.vs.Add(cid);
@@ -3084,7 +3117,7 @@ namespace hiro
                 int sa = Marshal.GetLastWin32Error();
                 _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
                 RunExe("notify(" + Get_Transalte("unregfailed").Replace("%n", sa.ToString()) + ",2)");
-                LogtoFile("[ERROR]Hiro.Exception.Hotkey.Unregister: Unregister hotkey failed(" + sa.ToString() + "):" + msg.Replace(Environment.NewLine, ""));
+                LogError(new NotSupportedException(), $"Hiro.Exception.Hotkey.Unregister{Environment.NewLine}Extra: {sa} - {msg.Replace(Environment.NewLine, "")}");
             }
             else
                 LogtoFile("[REGISTER]Successfully unregistered.");
@@ -3204,7 +3237,6 @@ namespace hiro
         #endregion
 
         #region 个人资料操作
-
         public static string Login(string account, string pwd,bool token = false, string? saveto = null)
         {
             var url = "https://id.rexio.cn/login.php";
@@ -3246,7 +3278,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            LogtoFile("[ERROR]Hiro.Exception.Login.Save: " + ex.Message);
+                            LogError(ex, "Hiro.Exception.Login.Save");
                             throw new Exception(ex.Message);
                         }
                     }
@@ -3268,7 +3300,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Login: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Login");
                 return "error";
             }
         }
@@ -3277,8 +3309,14 @@ namespace hiro
         {
             App.Logined = false;
             App.LoginedToken = string.Empty;
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "Token", string.Empty);
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoLogin", "0");
+            App.Username = App.EnvironmentUsername;
+            App.CustomUsernameFlag = 0;
+            Write_Ini(App.dconfig, "Config", "Token", string.Empty);
+            Write_Ini(App.dconfig, "Config", "AutoLogin", "0");
+            Write_Ini(App.dconfig, "Config", "CustomUser", "0");
+            Write_Ini(App.dconfig, "Config", "CustomName", string.Empty);
+            Write_Ini(App.dconfig, "Config", "CustomSign", string.Empty);
+            Write_Ini(App.dconfig, "Config", "UserAvatarStyle", string.Empty);
         }
 
         public static string UploadProfileImage(string file, string user, string token, string type)
@@ -3333,7 +3371,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Update.Profile: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Update.Profile");
                 return "error";
             }
         }
@@ -3345,7 +3383,6 @@ namespace hiro
             {
                 if (App.hc == null)
                     throw new Exception(Get_Transalte("webnotinitial"));
-                
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
@@ -3381,7 +3418,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            LogtoFile("[ERROR]Hiro.Exception.Update.Profile.Settings.Save: " + ex.Message);
+                            LogError(ex, "Hiro.Exception.Update.Profile.Settings.Save");
                             throw new Exception(ex.Message);
                         }
                     }
@@ -3403,7 +3440,78 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Update.Profile.Settings: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Update.Profile.Settings");
+                return "error";
+            }
+        }
+
+        public static string SyncProfile(string user, string token)
+        {
+            var url = "https://hiro.rexio.cn/Chat/sync.php";
+            try
+            {
+                if (App.hc == null)
+                    throw new Exception(Get_Transalte("webnotinitial"));
+                string boundary = DateTime.Now.Ticks.ToString("X");
+                string Enter = "\r\n";
+                byte[] send = Encoding.UTF8.GetBytes(
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--"
+                    );
+                HttpRequestMessage request = new(HttpMethod.Post, url);
+                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Content = new ByteArrayContent(send);
+                request.Content.Headers.Remove("Content-Type");
+                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
+                HttpResponseMessage response = App.hc.Send(request);
+                if (response.Content != null)
+                {
+                    var saveto = Path.GetTempFileName();
+                    try
+                    {
+                        using (Stream stream = response.Content.ReadAsStream())
+                        {
+                            using (var fileStream = File.Create(saveto))
+                            {
+                                stream.CopyTo(fileStream);
+                            }
+                        }
+                        Write_Ini(App.dconfig, "Config", "CustomUser", "2");
+                        Write_Ini(App.dconfig, "Config", "CustomName", Read_Ini(saveto, "Profile", "Name", string.Empty));
+                        Write_Ini(App.dconfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty)); 
+                        Write_Ini(App.dconfig, "Config", "UserAvatarStyle", Read_Ini(saveto, "Profile", "Avatar", "1"));
+                        App.Username = Read_Ini(saveto, "Profile", "Name", string.Empty);
+                        App.CustomUsernameFlag = 1;
+                        var usrAvatar = "<hiapp>\\images\\avatar\\" + user + ".hap";
+                        var usrBack = "<hiapp>\\images\\background\\" + user + ".hpp";
+                        Write_Ini(App.dconfig, "Config", "UserAvatar", usrAvatar);
+                        Write_Ini(App.dconfig, "Config", "UserBackground", usrBack);
+                        CreateFolder(Path_Prepare(usrAvatar));
+                        CreateFolder(Path_Prepare(usrBack));
+                        if (File.Exists(Path_Prepare(usrAvatar)))
+                            File.Delete(Path_Prepare(usrAvatar));
+                        if (File.Exists(Path_Prepare(usrBack)))
+                            File.Delete(Path_Prepare(usrBack));
+                        GetWebContent(Read_Ini(saveto, "Profile", "Iavavtar", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + ".hap"), true, Path_Prepare(usrAvatar));
+                        GetWebContent(Read_Ini(saveto, "Profile", "Back", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + ".hpp"), true, Path_Prepare(usrBack));
+                        if (File.Exists(saveto))
+                            File.Delete(saveto);
+                        return "success";
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(ex, "Hiro.Exception.Update.Profile.Sync.Save");
+                        if (File.Exists(saveto))
+                            File.Delete(saveto);
+                        throw new Exception(ex.Message);
+                    }
+                }
+                else
+                    return "null";
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, "Hiro.Exception.Update.Profile.Sync");
                 return "error";
             }
         }
@@ -3448,7 +3556,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Chat.Send: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Chat.Send");
                 return "error";
             }
         }
@@ -3491,7 +3599,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        LogtoFile("[ERROR]Hiro.Exception.Chat.Get.Save: " + ex.Message);
+                        LogError(ex, "Hiro.Exception.Chat.Get.Save");
                         throw new Exception(ex.Message);
                     }
                 }
@@ -3500,7 +3608,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                LogtoFile("[ERROR]Hiro.Exception.Chat.Get: " + ex.Message);
+                LogError(ex, "Hiro.Exception.Chat.Get");
                 return "error";
             }
         }

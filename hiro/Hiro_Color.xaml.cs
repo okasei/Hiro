@@ -133,7 +133,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Color.Pick: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Color.Pick");
                 }
             }
             Unify_Color();

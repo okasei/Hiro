@@ -237,7 +237,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Items.Bind: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Items.Bind");
                 Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
                 Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
             }

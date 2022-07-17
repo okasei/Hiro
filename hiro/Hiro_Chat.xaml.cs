@@ -144,7 +144,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Update.Friend.Avatar Details: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Update.Friend.Avatar");
                 Dispatcher.Invoke(() =>
                 {
                     Resources["ChatAvatar"] = new ImageBrush()
@@ -181,7 +181,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Update.Friend.Profile Details: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Update.Friend.Profile");
                 Dispatcher.Invoke(() =>
                 {
                     Profile_Background.Background = new ImageBrush()
@@ -368,7 +368,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Update: Cannot fetch chatting data." + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Update");
                     Dispatcher.Invoke(() =>
                     {
                         AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnofetch"));
@@ -462,7 +462,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Load: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Load");
                 AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), ex.Message);
             }
         }
@@ -520,7 +520,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Sound: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Sound");
                     }
             }
         }
@@ -549,7 +549,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Send: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Send");
                 Dispatcher.Invoke(() =>
                 {
                     AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatsenderror"));
@@ -579,7 +579,7 @@ namespace hiro
             }
             catch(Exception ex)
             {
-                Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Chat.Update.Nickname: " + ex.Message);
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Update.Nickname");
                 Dispatcher.Invoke(() =>
                 {
                     AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnonick"));

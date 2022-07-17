@@ -50,7 +50,7 @@ namespace hiro
                 sb.Begin();
             }
         }
-        private void Hiro_Initialize()
+        internal void Hiro_Initialize()
         {
             Profile_Background.Background = new ImageBrush()
             {
@@ -235,7 +235,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Update.Parse: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Parse");
                 }
 
             };
@@ -398,7 +398,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Profile.Update.Nickname: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Profile.Update.Nickname");
                 }
             }).Start();
         }
@@ -679,7 +679,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Profile.Avatar Details: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Profile.Avatar");
                 }
                 finally
                 {
@@ -797,7 +797,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Profile.Background Details: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Profile.Background");
                 }
             }).Start();
         }

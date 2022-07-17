@@ -35,7 +35,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Message.Sound: " + ex.Message);
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Message.Sound");
                     }
             }
             SourceInitialized += OnSourceInitialized;

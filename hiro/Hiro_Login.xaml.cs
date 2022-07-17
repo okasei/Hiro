@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace hiro
 {
@@ -27,6 +20,7 @@ namespace hiro
             Loaded += delegate
             {
                 HiHiro();
+                Name_Textbox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "User", string.Empty);
             };
         }
 
@@ -64,12 +58,12 @@ namespace hiro
             Storyboard sb = new();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
-                Hiro_Utils.AddPowerAnimation(0, Login_Title, sb, -100, null);
-                Hiro_Utils.AddPowerAnimation(0, Pwd_Label, sb, -100, null);
-                Hiro_Utils.AddPowerAnimation(0, Name_Label, sb, -100, null);
-                Hiro_Utils.AddPowerAnimation(0, Login_Btn, sb, -100, null);
-                Hiro_Utils.AddPowerAnimation(0, Auto_Login, sb, -100, null);
-                Hiro_Utils.AddPowerAnimation(0, Create_Account, sb, -100, null);
+                Hiro_Utils.AddPowerAnimation(0, Login_Title, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(0, Pwd_Label, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(0, Name_Label, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(0, Login_Btn, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(0, Auto_Login, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(0, Create_Account, sb, 50, null);
             }
             if (animation)
             {
@@ -90,6 +84,17 @@ namespace hiro
         {
             if (Name_Textbox.Text.Equals(string.Empty) || Pwd_Textbox.Password.Equals(string.Empty))
                 return;
+            if (App.Logined == null)
+            {
+                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("lgging") + ",2)", Hiro_Utils.Get_Transalte("login"));
+                return;
+            }
+            if (App.Logined == true)
+            {
+                Hiro_Main?.Set_Label(Hiro_Main.profilex);
+                return;
+            }
+            App.Logined = null;
             Login_Btn.IsEnabled = false;
             Name_Textbox.IsEnabled = false;
             Pwd_Textbox.IsEnabled = false;
@@ -116,16 +121,23 @@ namespace hiro
                         App.LoginedUser = Hiro_Utils.Read_Ini(tmp, "Login", "usr", string.Empty);
                         App.LoginedToken = Hiro_Utils.Read_Ini(tmp, "Login", "msg", string.Empty);
                         App.Logined = true;
+                        Hiro_Utils.SyncProfile(App.LoginedUser, App.LoginedToken);
                         Dispatcher.Invoke(() =>
                         {
                             if (Hiro_Main != null)
                             {
+                                if (Hiro_Main.hiro_profile != null)
+                                {
+                                    Hiro_Main.hiro_profile.Load_Data();
+                                    Hiro_Main.hiro_profile.Load_Color();
+                                }
                                 Hiro_Main.Set_Label(Hiro_Main.profilex);
                                 if (Hiro_Main.hiro_profile != null)
                                     Hiro_Main.hiro_profile.Profile_Mac.Content = user;
                             }
                             
                         });
+                        App.Logined = true;
                     }
                     else
                     {
@@ -133,6 +145,7 @@ namespace hiro
                         {
                             Hiro_Utils.RunExe("notify(" + Hiro_Utils.Read_Ini(tmp, "Login", "msg", Hiro_Utils.Get_Transalte("lgfailed")) + ",2)", Hiro_Utils.Get_Transalte("login"));
                         });
+                        App.Logined = false;
                     }
                     Dispatcher.Invoke(() =>
                     {
@@ -146,7 +159,7 @@ namespace hiro
                 }
                 catch(Exception ex)
                 {
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Login.Thread: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Login.Thread");
                     Dispatcher.Invoke(() =>
                     {
                         Login_Btn.IsEnabled = true;
@@ -157,6 +170,7 @@ namespace hiro
                     });
                     if (System.IO.File.Exists(tmp))
                         System.IO.File.Delete(tmp);
+                    App.Logined = false;
                 }
             }).Start();
         }

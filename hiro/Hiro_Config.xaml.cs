@@ -475,7 +475,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     Autorun.IsChecked = false;
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Config.Autorun: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Config.Autorun");
                 }
             }
             Autorun.Tag = "1";
@@ -503,7 +503,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     Autorun.IsChecked = true;
-                    Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Config.Autorun: " + ex.Message);
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.Config.Autorun");
                 }
             }
             Autorun.Tag = "1";
@@ -635,7 +635,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogtoFile("[ERROR]Hiro.Exception.Background.Image.Select Details: " + ex.Message);
+                            Hiro_Utils.LogError(ex, "Hiro.Exception.Background.Image.Select");
                         }
                     }).Start();
                 }
