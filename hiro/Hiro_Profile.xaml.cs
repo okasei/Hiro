@@ -19,6 +19,7 @@ namespace hiro
         internal BackgroundWorker? whatsbw = null;
         private Hiro_MainUI? Hiro_Main = null;
         private bool Load = false;
+        private bool xflag = false;
         public Hiro_Profile(Hiro_MainUI? Parent)
         {
             InitializeComponent();
@@ -199,7 +200,7 @@ namespace hiro
             configbar.Visibility = configbar.Maximum > 0 ? Visibility.Visible : Visibility.Hidden; 
             configbar.Value = 0.0;
             configbar.ViewportSize = 420;
-            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
+            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth + 5, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
         }
 
         private void Btn8_Click(object sender, RoutedEventArgs e)
@@ -816,7 +817,9 @@ namespace hiro
 
         private void Profile_Nickname_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var tag = xflag ? "profileidx" : "profileid";
+            Hiro_Utils.Set_Mac_Location(Profile_Mac, tag, Profile_Nickname, animation: animation, animationTime: 250);
         }
 
         private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -832,6 +835,32 @@ namespace hiro
         {
             Hiro_Utils.Logout();
             Hiro_Main?.Set_Label(Hiro_Main.homex);
+        }
+
+        private void Profile_MouseEnter(object sender, MouseEventArgs e)
+        {
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            xflag = true;
+            Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilenamex", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesignx", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Background, "profilebackx", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "profileavatarx", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "profileavatarx", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile, "profilegridx", animation: animation, animationTime: 250);
+            e.Handled = true;
+        }
+
+        private void Profile_MouseLeave(object sender, MouseEventArgs e)
+        {
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            xflag = false;
+            Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilename", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesign", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Background, "profileback", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "profileavatar", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "profileavatar", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile, "profilegrid", animation: animation, animationTime: 250);
+            e.Handled = true;
         }
     }
 }

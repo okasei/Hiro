@@ -17,12 +17,13 @@ namespace hiro
     {
         private Hiro_MainUI? Hiro_Main = null;
         private string UserId = "rex";
-        private string LocalId = "unknown";
+        internal string LocalId = "unknown";
         private string Aite = "unknown-user";
         private bool load = false;
         private bool eload = false;
         private bool hload = true;
         private int ernum = 0;
+        private bool xflag = false;
         public Hiro_Chat(Hiro_MainUI? Parent)
         {
             InitializeComponent();
@@ -353,7 +354,7 @@ namespace hiro
                             Dispatcher.Invoke(() =>
                             {
                                 Hiro_Main?.Set_Label(Hiro_Main.loginx);
-                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("lgexpired") + ",2)", Hiro_Utils.Get_Transalte("chat"));
+                                App.Notify(new(Hiro_Utils.Get_Transalte("lgexpired"), 2, Hiro_Utils.Get_Transalte("chat")));
                             });
                         }
                         else
@@ -511,7 +512,7 @@ namespace hiro
                 if (cont.Contains("[Hiro.Predefinited:LikeSign]"))
                     content = Hiro_Utils.Get_Transalte("signlike");
                 if (i != 0)
-                    Hiro_Utils.RunExe("notify(" + user + ": " + content + ",2)", user);
+                    App.Notify(new(user + ": " + content, 2, user));
                 if(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
                     try
                     {
@@ -542,7 +543,7 @@ namespace hiro
                     Dispatcher.Invoke(() =>
                     {
                         Hiro_Main?.Set_Label(Hiro_Main.loginx);
-                        Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("lgexpired") + ",2)", Hiro_Utils.Get_Transalte("chat"));
+                        App.Notify(new(Hiro_Utils.Get_Transalte("lgexpired"), 2, Hiro_Utils.Get_Transalte("chat")));
                     });
                 }
                     
@@ -603,7 +604,7 @@ namespace hiro
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "chatavatar");
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "chatavatar");
             Hiro_Utils.Set_FrameworkElement_Location(Profile, "chatprofile");
-            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
+            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth + 5, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
         }
 
         private void SendButton_Click(object sender, RoutedEventArgs e)
@@ -694,13 +695,41 @@ namespace hiro
 
         private void Profile_Nickname_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var tag = xflag ? "chatidx" : "chatid";
+            Hiro_Utils.Set_Mac_Location(Profile_Mac, tag, Profile_Nickname, animation: animation, animationTime: 250);
         }
 
         private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Clipboard.SetText(Profile_Mac.Content.ToString());
             Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("chatmcopy").Replace("%u", Aite) + ",2)", Hiro_Utils.Get_Transalte("chat"));
+        }
+
+        private void Profile_MouseEnter(object sender, MouseEventArgs e)
+        {
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            xflag = true;
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "chatavatarx", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "chatavatarx", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile, "chatprofilex", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "chatnamex", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "chatsignx", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Background, "chatbackx", animation: animation, animationTime: 250);
+            e.Handled = true;
+        }
+
+        private void Profile_MouseLeave(object sender, MouseEventArgs e)
+        {
+            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            xflag = false;
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "chatavatar", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "chatavatar", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_FrameworkElement_Location(Profile, "chatprofile", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "chatname", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "chatsign", animation: animation, animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Profile_Background, "chatback", animation: animation, animationTime: 250);
+            e.Handled = true;
         }
     }
 }

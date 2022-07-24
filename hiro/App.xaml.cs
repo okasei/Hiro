@@ -61,6 +61,7 @@ namespace hiro
         private static string QQTitle = string.Empty;
         private static string NeteaseTitle = string.Empty;
         private static string KuwoTitle = string.Empty;
+        private static bool AutoChat = false;
         #endregion
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
@@ -277,19 +278,13 @@ namespace hiro
                                     }
                                     else
                                     {
-                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin Failed: " + Hiro_Utils.Read_Ini(tmp, "Config", "msg", string.Empty));
+                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin Failed " + Hiro_Utils.Read_Ini(tmp, "Config", "msg", string.Empty));
                                         Logined = false;
                                     }
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
                                     
                                 }).Start();
-                            }
-                            if (Hiro_Utils.Read_Ini(dconfig, "Config", "AutoChat", "1").Equals("1"))
-                            {
-                                Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
-                                mn.hiro_chat ??= new(mn);
-                                mn.hiro_chat.Load_Friend_Info_First();
                             }
                             if (FirstUse)
                             {
@@ -528,6 +523,7 @@ namespace hiro
             Hiro_Utils.LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
             LoginedUser = Hiro_Utils.Read_Ini(dconfig, "Config", "User", string.Empty);
             LoginedToken = Hiro_Utils.Read_Ini(dconfig, "Config", "Token", string.Empty);
+            AutoChat = Hiro_Utils.Read_Ini(dconfig, "Config", "AutoChat", "1").Equals("1");
         }
 
         private static void InitializeMethod()
@@ -578,14 +574,24 @@ namespace hiro
                 {
                     mn.Set_Home_Labels("night");
                 }
-                if (mn.hiro_chat != null && Logined == true)
+                if (AutoChat && Logined == true)
                 {
-                    ChatCD--;
-                    if (ChatCD == 0)
+                    if(mn.hiro_chat == null)
                     {
-                        mn.hiro_chat?.Hiro_Get_Chat();
-                        ChatCD = 5;
+                        Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
+                        mn.hiro_chat ??= new(mn);
+                        mn.hiro_chat.Load_Friend_Info_First();
                     }
+                    else
+                    {
+                        ChatCD--;
+                        if (ChatCD == 0)
+                        {
+                            mn.hiro_chat?.Hiro_Get_Chat();
+                            ChatCD = 5;
+                        }
+                    }
+                    
                 }
             }
             var tim = Hiro_Utils.Read_Ini(LangFilePath, "local", "locktime", "HH:mm");

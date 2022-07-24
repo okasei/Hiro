@@ -22,6 +22,8 @@ namespace hiro
         private Size mSize = new(450, 800);
         private int cflag = 1;
         internal ContextMenu? cm = null;
+        internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> playlist = new();
+        internal int index = -1;
         public Hiro_Player(string? play = null)
         {
             InitializeComponent();
@@ -41,6 +43,33 @@ namespace hiro
             };
         }
 
+        private void AddDanmaku(string content, Color color, FontWeight fontWeight, FontStretch fontStretch, FontStyle fontStyle, int Position)
+        {
+            Label label = new()
+            {
+                Content = content,
+                Width = double.NaN,
+                Foreground = new SolidColorBrush(color),
+                FontWeight = fontWeight,
+                FontStretch = fontStretch,
+                FontStyle = fontStyle,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Visibility = Visibility.Visible,
+                Margin = new Thickness(Width, Position, 0, 0)
+            };
+            Controller.Children.Add(label);
+            Storyboard sb = new();
+            Hiro_Utils.AddThicknessAnimaton(new(-label.ActualWidth, label.Margin.Top, 0, 0), 150, label, "Margin", sb);
+            sb.Completed += delegate
+            {
+                label.DataContext = null;
+                Controller.Children.Remove(label);
+            };
+            sb.Begin();
+            
+        }
+
         private void Initialize_Player()
         {
             new System.Threading.Thread(() =>
@@ -51,6 +80,7 @@ namespace hiro
                     Dispatcher.Invoke(() =>
                     {
                         obj = Player_Container.Tag;
+                        Dgi.ItemsSource = playlist;
                     });
                     hiro_provider ??= new(Dispatcher);
                     if (obj == null)
@@ -110,12 +140,30 @@ namespace hiro
                         if (tag.Equals("Playing") || tag.Equals("Paused"))
                         {
                             var wid = Ctrl_Progress_Bg.Width * hiro_provider.MediaPlayer.Position;
-                            Ctrl_Progress.Width = wid >= 0 ? wid : 0;
+                            wid = wid >= 0 ? wid : 0;
                             Ctrl_Time.Content = ParseDuration(hiro_provider.MediaPlayer.Position * hiro_provider.MediaPlayer.GetMedia().Duration.TotalSeconds) + "/" + ParseDuration(hiro_provider.MediaPlayer.GetMedia().Duration.TotalSeconds);
                             if (pnlClient != null)
                             {
                                 Ctrl_Progress_Bg.Width = pnlClient.ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
                             }
+                            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                            {
+                                var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
+                                if (len < 150)
+                                {
+                                    Ctrl_Progress.Width = wid;
+                                    return;
+                                }
+                                Storyboard sb = new();
+                                sb = Hiro_Utils.AddDoubleAnimaton(wid, len, Ctrl_Progress, "Width", sb);
+                                sb.Begin();
+                                sb.Completed += delegate
+                                {
+                                    Ctrl_Progress.Width = wid;
+                                };
+                            }
+                            else
+                                Ctrl_Progress.Width = wid;
                             return;
                         }
                     }
@@ -189,6 +237,7 @@ namespace hiro
             Dispatcher.Invoke(() =>
             {
                 Player_Container.Visibility = Visibility.Visible;
+                Dgi.IsEnabled = true;
                 Player_Container.Tag = "Playing";
                 Update_Progress();
             });
@@ -202,15 +251,26 @@ namespace hiro
                 {
                     try
                     {
-                        hiro_provider.MediaPlayer.Play(new Uri(uri));
                         Dispatcher.Invoke(() =>
                         {
-                            Ctrl_Text.Text = uri;
-                            Title = Hiro_Utils.GetFileName(uri) + " - " + App.AppTitle;
-                            Player_Container.Visibility = Visibility.Visible;
-                            Player_Container.Tag = "Playing";
-                            Update_Progress();
+                            playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(uri), uri, string.Empty));
+                            if (hiro_provider != null)
+                            {
+                                var a = Player_Container.Tag != null && !((string)Player_Container.Tag).Equals("Playing") && !((string)Player_Container.Tag).Equals("Paused");
+                                var b = Player_Container.Tag == null;
+                                if (a || b)
+                                {
+                                    index = playlist.Count - 1;
+                                    hiro_provider.MediaPlayer.Play(new Uri(uri));
+                                    Ctrl_Text.Text = uri;
+                                    Title = Hiro_Utils.GetFileName(uri) + " - " + App.AppTitle;
+                                    Player_Container.Visibility = Visibility.Visible;
+                                    Player_Container.Tag = "Playing";
+                                    Update_Progress();
+                                }
+                            }
                         });
+                        
                     }
                     catch (Exception ex)
                     {
@@ -244,7 +304,7 @@ namespace hiro
                     }
                 }
             }
-            
+            Dgi.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 20));
         }
 
         public void Loadbgi(int direction,bool? animation = null)
@@ -269,6 +329,13 @@ namespace hiro
                 Ctrl_Time.Content = "00:00";
                 Update_Progress();
             });
+            new System.Threading.Thread(() =>
+            {
+                System.Threading.Thread.Sleep(150);
+                if (index < playlist.Count - 1)
+                    PlayIndex(index + 1);
+            }).Start();
+            
         }
 
         private void Ctrl_Progress_Bg_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -284,7 +351,7 @@ namespace hiro
             }
         }
 
-        private void Ctrl_Progress_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Ctrl_Progress_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ButtonState == e.LeftButton)
             {
@@ -299,6 +366,7 @@ namespace hiro
 
         private void Hiro_Player1_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            Dgi.Visibility = Visibility.Hidden;
             Update_Progress();
             Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
             if (rflag == 1)
@@ -319,13 +387,19 @@ namespace hiro
             var formats = data.GetData(DataFormats.FileDrop).GetType().ToString();
             if (formats.Equals("System.String[]"))
             {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String[];
+                var info = e.Data.GetData(DataFormats.FileDrop) as string[];
                 if (info != null && info.Length > 0)
-                    Play(info[0]);
+                {
+                    foreach(var inf in info)
+                    {
+                        var li = inf as string;
+                        Play(li);
+                    }
+                }
             }
             else if (formats.Equals("System.String"))
             {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String;
+                var info = e.Data.GetData(DataFormats.FileDrop) as string;
                 if (info != null)
                     Play(info);
             }
@@ -885,6 +959,88 @@ namespace hiro
             speed.Items.Add(s);
             speed.Items.Add(ss);
             cm.Items.Add(speed);
+            MenuItem to = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermpin")
+            };
+            to.Click += delegate
+            {
+                Topmost = !Topmost;
+                to.Header = Topmost == true ? Hiro_Utils.Get_Transalte("playermunpin") : Hiro_Utils.Get_Transalte("playermpin");
+
+            };
+            cm.Items.Add(to);
+            MenuItem list = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = Hiro_Utils.Get_Transalte("playermlist")
+            };
+            list.Click += delegate
+            {
+                bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+                if (Dgi.Visibility == Visibility.Visible)
+                {
+                    Thickness to = new()
+                    {
+                        Left = ActualWidth,
+                        Top = 0
+                    };
+                    Thickness from = new()
+                    {
+                        Left = ActualWidth - Dgi.ActualWidth,
+                        Top = 0
+                    };
+                    Dgi.Height = ActualHeight - to.Top;
+                    if (animation)
+                    {
+                        Storyboard sb = new();
+                        Hiro_Utils.AddThicknessAnimaton(to, 150, Dgi, "Margin", sb, from);
+                        sb.Completed += delegate
+                        {
+                            Dgi.Margin = to;
+                            Dgi.Visibility = Visibility.Hidden;
+                        };
+                        sb.Begin();
+                    }
+                    else
+                    {
+                        Dgi.Margin = to;
+                        Dgi.Visibility = Visibility.Hidden;
+                    }    
+                }
+                else
+                {
+                    Canvas.SetLeft(Dgi,ActualWidth);
+                    Dgi.Visibility = Visibility.Visible;
+                    Thickness to = new()
+                    {
+                        Left = ActualWidth,
+                        Top = 0
+                    };
+                    Thickness from = new()
+                    {
+                        Left = ActualWidth - Dgi.ActualWidth,
+                        Top = 0
+                    };
+                    Dgi.Height = ActualHeight - to.Top;
+                    if (animation)
+                    {
+                        Storyboard sb = new();
+                        Hiro_Utils.AddThicknessAnimaton(from, 150, Dgi, "Margin", sb, to);
+                        sb.Completed += delegate
+                        {
+                            Dgi.Margin = from;
+                        };
+                        sb.Begin();
+                    }
+                    else
+                    {
+                        Dgi.Margin = from;
+                    }
+                }
+            };
+            cm.Items.Add(list);
             MenuItem ui = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
@@ -1130,6 +1286,48 @@ namespace hiro
                     e.Handled = true;
                 }
             }
+        }
+
+        private void Dgi_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (Dgi.SelectedIndex > -1)
+                {
+                    Dgi.IsEnabled = false;
+                    PlayIndex(Dgi.SelectedIndex);
+                }
+            });
+            
+        }
+
+        private void PlayIndex(int i)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (hiro_provider != null && index < playlist.Count)
+                {
+                    try
+                    {
+                        index = i;
+                        var uri = playlist[i].Command;
+                        hiro_provider.MediaPlayer.Play(new Uri(uri));
+                        Ctrl_Text.Text = uri;
+                        Title = Hiro_Utils.GetFileName(uri) + " - " + App.AppTitle;
+                        Player_Container.Visibility = Visibility.Visible;
+                        Player_Container.Tag = "Playing";
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Utils.LogError(ex, "Hiro.Player.List.PlayIndex");
+                    }
+                }
+            });
+        }
+
+        private void Dgi_Drop(object sender, DragEventArgs e)
+        {
+            DealDragEventArgs(e);
         }
     }
 }

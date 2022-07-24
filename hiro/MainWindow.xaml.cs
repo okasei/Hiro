@@ -41,38 +41,59 @@ namespace hiro
 
         private void PowerManager_EnergySaverStatusChanged(object? sender, object e)
         {
-            var p = Windows.System.Power.PowerManager.EnergySaverStatus;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
+            try
             {
-                switch (p)
+                var p = Windows.System.Power.PowerManager.EnergySaverStatus;
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
                 {
-                    case Windows.System.Power.EnergySaverStatus.On:
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("basaveron"), 2, Hiro_Utils.Get_Transalte("battery")));
-                        break;
-                    case Windows.System.Power.EnergySaverStatus.Disabled:
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("basaveroff"), 2, Hiro_Utils.Get_Transalte("battery")));
-                        break;
-                    default:
-                        break;
+                    switch (p)
+                    {
+                        case Windows.System.Power.EnergySaverStatus.On:
+                            Dispatcher.Invoke(() =>
+                            {
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("basaveron"), 2, Hiro_Utils.Get_Transalte("battery")));
+                            });
+                            break;
+                        case Windows.System.Power.EnergySaverStatus.Disabled:
+                            Dispatcher.Invoke(() =>
+                            {
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("basaveroff"), 2, Hiro_Utils.Get_Transalte("battery")));
+                            });
+                            break;
+                        default:
+                            break;
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Power.StatusChanged");
             }
         }
 
         private void PowerManager_RemainingChargePercentChanged(object? sender, object e)
         {
-            int p = Windows.System.Power.PowerManager.RemainingChargePercent;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
+            try
             {
-                if (Windows.System.Power.PowerManager.BatteryStatus ==
-                    Windows.System.Power.BatteryStatus.Charging) 
-                    return;
-                var low = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
-                var notice = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "tippower", "").Replace("[", "[,").Replace("]", ",]").Trim();
-                if (low.IndexOf(p.ToString()) != -1)
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
-                else if (notice.IndexOf(p.ToString()) != -1)
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
+                int p = Windows.System.Power.PowerManager.RemainingChargePercent;
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
+                {
+                    if (Windows.System.Power.PowerManager.BatteryStatus ==
+                        Windows.System.Power.BatteryStatus.Charging)
+                        return;
+                    var low = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
+                    var notice = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "tippower", "").Replace("[", "[,").Replace("]", ",]").Trim();
+                    if (low.IndexOf(p.ToString()) != -1)
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
+                    else if (notice.IndexOf(p.ToString()) != -1)
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
+                }
             }
+            catch(Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Power.PercentChanged");
+            }
+            
         }
 
         private void NetworkChange_NetworkAddressChanged(object? sender, EventArgs e)
@@ -169,13 +190,21 @@ namespace hiro
                 case 0x0218:
                     if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
                     {
-                        Hiro_Utils.GetSystemPowerStatusImpl(out Hiro_Utils.SYSTEM_POWER_STATUS p);
-                        if (p.ACLineStatus == 1 && p.BatteryFlag == 8)
-                            App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("bacharge"), 2, Hiro_Utils.Get_Transalte("battery")));
-                        if (p.ACLineStatus == 1 && p.BatteryFlag != 8)
-                            App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("baconnect"), 2, Hiro_Utils.Get_Transalte("battery")));
-                        if (p.ACLineStatus == 0)
-                            App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("baremove"), 2, Hiro_Utils.Get_Transalte("battery")));
+                        try
+                        {
+                            GetSystemPowerStatus(out SYSTEM_POWER_STATUS p);
+                            if (p.ACLineStatus == 1 && p.BatteryFlag == 8)
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("bacharge"), 2, Hiro_Utils.Get_Transalte("battery")));
+                            if (p.ACLineStatus == 1 && p.BatteryFlag != 8)
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("baconnect"), 2, Hiro_Utils.Get_Transalte("battery")));
+                            if (p.ACLineStatus == 0)
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("baremove"), 2, Hiro_Utils.Get_Transalte("battery")));
+                        }
+                        catch(Exception ex)
+                        {
+                            Hiro_Utils.LogError(ex, "Hiro.Power.Impl");
+                        }
+                        
                     }
                     break;
                 case 0x0219:
@@ -350,5 +379,21 @@ namespace hiro
             System.Windows.Controls.Canvas.SetTop(this, -233);
             System.Windows.Controls.Canvas.SetLeft(this, -233);
         }
+
+        #region 获取系统电量
+
+        struct SYSTEM_POWER_STATUS
+        {
+            public byte ACLineStatus;
+            public byte BatteryFlag;
+            public byte BatteryLifePercent;
+            public byte Reserved1;
+            public int BatteryLifeTime;
+            public int BatteryFullLifeTime;
+        }
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpSystemPowerStatus);
+        #endregion
     }
 }

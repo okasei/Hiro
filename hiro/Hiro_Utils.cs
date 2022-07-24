@@ -373,16 +373,16 @@ namespace hiro
                 str.Append($"{Environment.NewLine}[ERROR]{Module}{Environment.NewLine}");
                 str.Append($"Object: {ex.Source}{Environment.NewLine}");
                 str.Append($"Exception: {ex.GetType().Name}{Environment.NewLine}");
-                str.Append($"Details: {ex.Message}{Environment.NewLine}");
-                str.Append($"StackTrace: {ex.StackTrace}");
+                str.Append($"Details: {ex.Message}");
+                //str.Append($"StackTrace: {ex.StackTrace}");
             }
             else
             {
                 str.Append($"{Environment.NewLine}[ERROR]{Module}.InnerException{Environment.NewLine}");
                 str.Append($"Object: {ex.InnerException.Source}{Environment.NewLine}");
                 str.Append($"Exception: {ex.InnerException.GetType().Name}{Environment.NewLine}");
-                str.Append($"Details: {ex.InnerException.Message}{Environment.NewLine}");
-                str.Append($"StackTrace: {ex.InnerException.StackTrace}");
+                str.Append($"Details: {ex.InnerException.Message}");
+                //str.Append($"StackTrace: {ex.InnerException.StackTrace}");
             }
             LogtoFile(str.ToString());
         }
@@ -485,7 +485,7 @@ namespace hiro
         {
             if (!double.TryParse(Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
-            Color bg = Colors.Coral;
+            Color bg = Colors.White;
             switch (to)
             {
                 case > 255:
@@ -504,7 +504,7 @@ namespace hiro
                 win.Background = new SolidColorBrush(bg);
             sender.OpacityMask = new SolidColorBrush(dest);
         }
-        public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false,bool location = true)
+        public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false,bool location = true, bool animation = false,double animationTime = 150)
         {
             if (extra == false || path == null || !File.Exists(path))
                 path = App.LangFilePath;
@@ -555,10 +555,11 @@ namespace hiro
                     };
                     if (location)
                     {
+                        Size mSize = new();
                         var auto = result[7].ToLower().Equals("auto") || result[7].ToLower().Equals("nan") || result[7].Equals("-2") || result[7].Equals("0");
-                        sender.Width = auto ? double.NaN : (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
+                        mSize.Width = auto ? double.NaN : (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
                         auto = result[8].ToLower().Equals("auto") || result[8].ToLower().Equals("nan") || result[8].Equals("-2") || result[8].Equals("0");
-                        sender.Height = auto ? double.NaN : (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
+                        mSize.Height = auto ? double.NaN : (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
                         Thickness thickness = new()
                         {
                             Left = (!result[5].Equals("-1")) ? right ? 0.0 : double.Parse(result[5]) : sender.Margin.Left,
@@ -566,7 +567,28 @@ namespace hiro
                             Top = (!result[6].Equals("-1")) ? bottom ? 0.0 : double.Parse(result[6]) : sender.Margin.Top,
                             Bottom = (!result[6].Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(result[6]) : sender.Margin.Bottom
                         };
-                        sender.Margin = thickness;
+                        if (!animation)
+                        {
+                            sender.Width = mSize.Width;
+                            sender.Height = mSize.Height;
+                            sender.Margin = thickness;
+                        }
+                        else
+                        {
+                            Storyboard sb = new();
+                            AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb);
+                            if (!double.IsNaN(mSize.Height))
+                                AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb);
+                            if (!double.IsNaN(mSize.Width))
+                                AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb);
+                            sb.Completed += delegate
+                            {
+                                sender.Width = mSize.Width;
+                                sender.Height = mSize.Height;
+                                sender.Margin = thickness;
+                            };
+                            sb.Begin();
+                        }
                     }
                 }
             }
@@ -576,8 +598,84 @@ namespace hiro
             }
 
         }
-        public static void Set_FrameworkElement_Location(FrameworkElement sender, string val)
+
+        public static void Set_Mac_Location(Control mac,string mval, Control name, bool animation = false, double animationTime = 150)
         {
+            try
+            {
+                if (mac != null && name != null)
+                {
+                    var result = HiroParse(Read_Ini(App.LangFilePath, "location", mval, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
+                    if (!result[0].Equals("-1"))
+                        mac.FontFamily = new FontFamily(result[0]);
+                    if (!result[1].Equals("-1"))
+                        mac.FontSize = double.Parse(result[1]);
+                    mac.FontStretch = result[2] switch
+                    {
+                        "1" => FontStretches.UltraCondensed,
+                        "2" => FontStretches.ExtraCondensed,
+                        "3" => FontStretches.Condensed,
+                        "4" => FontStretches.SemiCondensed,
+                        "5" => FontStretches.Medium,
+                        "6" => FontStretches.SemiExpanded,
+                        "7" => FontStretches.Expanded,
+                        "8" => FontStretches.ExtraExpanded,
+                        "9" => FontStretches.UltraExpanded,
+                        _ => FontStretches.Normal
+                    };
+                    mac.FontWeight = result[3] switch
+                    {
+                        "1" => FontWeights.Thin,
+                        "2" => FontWeights.UltraLight,
+                        "3" => FontWeights.Light,
+                        "4" => FontWeights.Medium,
+                        "5" => FontWeights.SemiBold,
+                        "6" => FontWeights.Bold,
+                        "7" => FontWeights.UltraBold,
+                        "8" => FontWeights.Black,
+                        "9" => FontWeights.UltraBlack,
+                        _ => FontWeights.Normal
+                    };
+                    mac.FontStyle = result[4] switch
+                    {
+                        "1" => FontStyles.Italic,
+                        "2" => FontStyles.Oblique,
+                        _ => FontStyles.Normal
+                    };
+                    Thickness thickness = new()
+                    {
+                        Left = (!result[5].Equals("-1")) ? double.Parse(result[5]) + name.Margin.Left + name.ActualWidth + 5 : name.Margin.Left + name.ActualWidth + 5,
+                        Right = 0,
+                        Top = (!result[6].Equals("-1")) ? double.Parse(result[6]) : name.Margin.Top,
+                        Bottom = 0
+                    };
+                    if (!animation)
+                    {
+                        mac.Margin = thickness;
+                    }
+                    else
+                    {
+                        Storyboard sb = new();
+                        AddThicknessAnimaton(thickness, animationTime, mac, "Margin", sb);
+                        sb.Completed += delegate
+                        {
+                            mac.Margin = thickness;
+                        };
+                        sb.Begin();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, $"Hiro.Exception.Location{Environment.NewLine}Path: {mval}");
+            }
+
+        }
+
+        public static void Set_FrameworkElement_Location(FrameworkElement sender, string val, bool animation = false, double animationTime = 150)
+        {
+            Size mSize = new();
+            Thickness thickness = sender.Margin;
             try
             {
                 if (sender != null)
@@ -593,21 +691,46 @@ namespace hiro
                     var width = loc[..loc.IndexOf(",")];
                     loc = loc[(width.Length + 1)..];
                     var height = loc;
-                    if (!width.Equals("-1"))
-                        sender.Width = double.Parse(width);
-                    if (!height.Equals("-1"))
-                        sender.Height = double.Parse(height);
-                    Thickness thickness = sender.Margin;
+                    mSize.Width = width.Equals("-1") ? double.NaN : double.Parse(width);
+                    mSize.Height = height.Equals("-1") ? double.NaN : double.Parse(height);
                     if (!left.Equals("-1"))
                         thickness.Left = double.Parse(left);
                     if (!top.Equals("-1"))
                         thickness.Top = double.Parse(top);
-                    sender.Margin = thickness;
+                    if (!animation)
+                    {
+                        sender.Width = mSize.Width;
+                        sender.Height = mSize.Height;
+                        sender.Margin = thickness;
+                    }
+                    else
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            Storyboard sb = new();
+                            AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb);
+                            if (!double.IsNaN(mSize.Height))
+                                AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb);
+                            if (!double.IsNaN(mSize.Width))
+                                AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb);
+                            sb.Completed += delegate
+                            {
+                                sender.Width = mSize.Width;
+                                sender.Height = mSize.Height;
+                                sender.Margin = thickness;
+                            };
+                            sb.Begin();
+                        });
+                        
+                    }
 
                 }
             }
             catch (Exception ex)
             {
+                sender.Width = mSize.Width;
+                sender.Height = mSize.Height;
+                sender.Margin = thickness;
                 LogError(ex, $"Hiro.Exception.Location.Grid{Environment.NewLine}Path: {val}");
             }
 
@@ -2600,26 +2723,6 @@ namespace hiro
             _ = SetClassLong(hwnd, GCL_STYLE, GetClassLong(hwnd, GCL_STYLE) | CS_DropSHADOW);
         }
 
-        #endregion
-
-        #region 获取系统电量
-
-        public struct SYSTEM_POWER_STATUS
-        {
-            public byte ACLineStatus;
-            public byte BatteryFlag;
-            public byte BatteryLifePercent;
-            public byte Reserved1;
-            public int BatteryLifeTime;
-            public int BatteryFullLifeTime;
-        }
-
-        [DllImport("kernel32.dll")]
-        static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpSystemPowerStatus);
-        public static bool GetSystemPowerStatusImpl(out SYSTEM_POWER_STATUS lpSystemPowerStatus)
-        {
-            return GetSystemPowerStatusImpl(out lpSystemPowerStatus);
-        }
         #endregion
 
         #region 隐藏鼠标 0/1 隐藏/显示

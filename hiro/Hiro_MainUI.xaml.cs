@@ -1251,7 +1251,7 @@ namespace hiro
         {
             if (WindowState == WindowState.Minimized || Visibility != Visibility.Visible || extended.Visibility == Visibility.Visible || vlcGrid.Visibility != Visibility.Visible)
             {
-                if (vlcPlayer.Tag != null && ((String)vlcPlayer.Tag).Equals("Playing"))
+                if (vlcPlayer.Tag != null && ((string)vlcPlayer.Tag).Equals("Playing"))
                 {
                     hiro_provider?.MediaPlayer.Pause();
                     vlcPlayer.Tag = "Paused";
@@ -1259,7 +1259,7 @@ namespace hiro
             }
             else
             {
-                if (vlcPlayer.Tag != null && ((String)vlcPlayer.Tag).Equals("Paused"))
+                if (vlcPlayer.Tag != null && ((string)vlcPlayer.Tag).Equals("Paused"))
                 {
                     hiro_provider?.MediaPlayer.Play();
                     vlcPlayer.Tag = "Playing";

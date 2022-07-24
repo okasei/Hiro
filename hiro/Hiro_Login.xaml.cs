@@ -134,6 +134,8 @@ namespace hiro
                                 Hiro_Main.Set_Label(Hiro_Main.profilex);
                                 if (Hiro_Main.hiro_profile != null)
                                     Hiro_Main.hiro_profile.Profile_Mac.Content = user;
+                                if (Hiro_Main.hiro_chat != null)
+                                    Hiro_Main.hiro_chat.LocalId = user;
                             }
                             
                         });
