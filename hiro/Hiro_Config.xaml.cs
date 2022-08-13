@@ -387,11 +387,45 @@ namespace hiro
         {
             App.lang = App.la[langbox.SelectedIndex].Name;
             langname.Content = App.la[langbox.SelectedIndex].Langname;
-            App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].Name + ".hlp";
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "Lang", App.lang);
-            App.Load_Menu();
-            Hiro_Main?.Load_Translate();
-            Hiro_Main?.Load_Position();
+            if (Load)
+            {
+                App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].Name + ".hlp";
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Lang", App.lang);
+                App.Load_Menu();
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                {
+                    if (Hiro_Main != null)
+                    {
+                        Storyboard sb = new();
+                        Hiro_Main.foremask.Visibility = Visibility.Visible;
+                        Hiro_Utils.AddDoubleAnimaton(1, 150, Hiro_Main.foremask, "Opacity", sb, 0);
+                        sb.Completed += delegate
+                        {
+                            Hiro_Main.foremask.Opacity = 1;
+                            Dispatcher.Invoke(() =>
+                            {
+                                Hiro_Main?.Load_Translate();
+                                Hiro_Main?.Load_Position();
+                            });
+                            Storyboard sb2 = new();
+                            Hiro_Utils.AddDoubleAnimaton(0, 150, Hiro_Main.foremask, "Opacity", sb2, 1);
+                            sb2.Completed += delegate
+                            {
+                                Hiro_Main.foremask.Opacity = 0;
+                                Hiro_Main.foremask.Visibility = Visibility.Hidden;
+                            };
+                            sb2.Begin();
+                        };
+                        sb.Begin();
+                    }
+                    
+                }
+                else
+                {
+                    Hiro_Main?.Load_Translate();
+                    Hiro_Main?.Load_Position();
+                }
+            }
         }
 
         private void Reverse_style_Checked(object sender, RoutedEventArgs e)

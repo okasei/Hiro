@@ -1554,26 +1554,7 @@ namespace hiro
                     ht ?.Show();
                     return;
                 }
-                if (path.ToLower().StartsWith("tickero("))
-                {
-                    if (parameter.Count >= 2)
-                    {
-                        foreach (var win in Application.Current.Windows)
-                        {
-                            if (win is Hiro_Ticker hwin)
-                            {
-                                if (hwin.id.Equals(parameter[0]))
-                                {
-                                    int p = int.TryParse(parameter[1], out int pa) ? pa : 0;
-                                    hwin.OffsetNum(p);
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                    App.Notify(new(Get_Transalte("htnexist"), 2, Get_Transalte("htapp")));
-                    return;
-                }
+                
                 if (path.ToLower().StartsWith("hiroad("))
                 {
                     source = Get_Transalte("update");

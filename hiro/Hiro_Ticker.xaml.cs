@@ -36,7 +36,7 @@ namespace hiro
             SourceInitialized += OnSourceInitialized;
             Con.Content = format.Replace("%n", current.ToString());
             Load_Color();
-            Title = Hiro_Utils.Get_Transalte("httitle").Replace("%h", App.AppTitle);
+            Load_Translate();
             Loaded += delegate
             {
                 HiHiro();
@@ -51,6 +51,15 @@ namespace hiro
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 80));
             Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 20));
+        }
+
+        internal void Load_Translate()
+        {
+            Title = Hiro_Utils.Get_Transalte("httitle").Replace("%h", App.AppTitle);
+            maxbtn.ToolTip = Hiro_Utils.Get_Transalte("htup");
+            resbtn.ToolTip = Hiro_Utils.Get_Transalte("htdown");
+            minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
+            closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
         }
 
         public void HiHiro()
