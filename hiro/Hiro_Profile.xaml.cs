@@ -252,7 +252,10 @@ namespace hiro
             App.AppTitle = Hiro_Resources.ApplicationName;
             Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
+            {
                 Hiro_Main.titlelabel.Content = App.AppTitle;
+                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            }
             if (App.wnd != null)
                 App.wnd.Hiro_Tray.ToolTipText = App.AppTitle;
         }
@@ -263,7 +266,10 @@ namespace hiro
             App.AppTitle = tb10.Text;
             Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
+            {
                 Hiro_Main.titlelabel.Content = App.AppTitle;
+                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            }
             if (App.wnd != null)
                 App.wnd.Hiro_Tray.ToolTipText = tb10.Text;
         }
@@ -276,7 +282,10 @@ namespace hiro
                 App.AppTitle = tb10.Text;
                 Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 if (Hiro_Main != null)
+                {
                     Hiro_Main.titlelabel.Content = App.AppTitle;
+                    Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                }
                 if (App.wnd != null)
                     App.wnd.Hiro_Tray.ToolTipText = tb10.Text;
             }

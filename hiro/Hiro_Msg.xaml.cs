@@ -17,6 +17,9 @@ namespace hiro
         internal String? toolstr = null;
         internal int aflag = -1;
         internal int bflag = 0;
+        public event EventHandler<EventArgs>? OKButtonPressed;
+        public event EventHandler<EventArgs>? RejectButtonPressed;
+        public event EventHandler<EventArgs>? CancelButtonPressed;
         public Hiro_Msg(string? config = null)
         {
             InitializeComponent();
@@ -37,6 +40,18 @@ namespace hiro
                     {
                         Hiro_Utils.LogError(ex, "Hiro.Exception.Message.Sound");
                     }
+                OKButtonPressed += delegate
+                {
+                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "accept", "nop"));
+                };
+                RejectButtonPressed += delegate
+                {
+                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "reject", "nop"));
+                };
+                CancelButtonPressed += delegate
+                {
+                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "cancel", "nop"));
+                };
             }
             SourceInitialized += OnSourceInitialized;
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
@@ -155,8 +170,7 @@ namespace hiro
         {
             if (App.dflag)
                 Hiro_Utils.LogtoFile("[MESSAGE]Accept Button Clicked");
-            if (toolstr != null)
-                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "accept", "nop"));
+            OnOKButtonPressed(new());
             bg?.Fade_Out();
             Close();
         }
@@ -165,8 +179,7 @@ namespace hiro
         {
             if (App.dflag)
                 Hiro_Utils.LogtoFile("[MESSAGE]Reject Button Clicked");
-            if (toolstr != null)
-                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "reject", "nop"));
+            OnRejectButtonPressed(new());
             bg?.Fade_Out();
             Close();
         }
@@ -175,8 +188,7 @@ namespace hiro
         {
             if (App.dflag)
                 Hiro_Utils.LogtoFile("[MESSAGE]Cancel Button Clicked");
-            if (toolstr != null)
-                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(toolstr, "Action", "cancel", "nop"));
+            OnCancelButtonPressed(new());
             bg?.Fade_Out();
             Close();
         }
@@ -196,6 +208,21 @@ namespace hiro
             {
                 Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
             }
+        }
+
+        protected virtual void OnOKButtonPressed(EventArgs e)
+        {
+            OKButtonPressed?.Invoke(this, e);
+        }
+
+        protected virtual void OnRejectButtonPressed(EventArgs e)
+        {
+            RejectButtonPressed?.Invoke(this, e);
+        }
+        
+        protected virtual void OnCancelButtonPressed(EventArgs e)
+        {
+            CancelButtonPressed?.Invoke(this, e);
         }
 
     }

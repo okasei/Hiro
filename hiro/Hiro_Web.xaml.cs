@@ -28,21 +28,20 @@ namespace hiro
             Refreash_Layout();
             var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<hiapp>\\web\\" + startUri + "\\")));
             wv2.EnsureCoreWebView2Async(env.Result);
-            if (uri != null)
+            if (uri != null && uri.ToLower().Equals("hiro://clear"))
             {
-                if (uri.ToLower().Equals("hiro://clear"))
-                {
-                    wv2.Source = new Uri("about:blank");
-                    wv2.CoreWebView2InitializationCompleted += ClearCache;
-                    Width = Height = 1;
-                    ShowInTaskbar = false;
-                    Margin = new(-1, -1, 0, 0);
-                    WindowStyle = WindowStyle.None;
-                    WindowStartupLocation = WindowStartupLocation.Manual;
-                    Show();
-                    Hide();
-                }
-                else
+                Width = Height = 1;
+                ShowInTaskbar = false;
+                Margin = new(-1, -1, 0, 0);
+                WindowStyle = WindowStyle.None;
+                WindowStartupLocation = WindowStartupLocation.Manual;
+                Show();
+                Hide();
+                wv2.CoreWebView2InitializationCompleted += ClearCache;
+            }
+            else
+            {
+                if (uri != null)
                 {
                     try
                     {
@@ -54,14 +53,15 @@ namespace hiro
                     }
                     Show();
                 }
+                fixed_title = title;
+                wv2.CoreWebView2InitializationCompleted += Wv2_CoreWebView2InitializationCompleted;
+                Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
+                Loaded += delegate
+                {
+                    HiHiro();
+                };
             }
-            fixed_title = title;
-            wv2.CoreWebView2InitializationCompleted += Wv2_CoreWebView2InitializationCompleted;
-            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
-            Loaded += delegate
-            {
-                HiHiro();
-            };
+            
         }
 
         public void HiHiro()
