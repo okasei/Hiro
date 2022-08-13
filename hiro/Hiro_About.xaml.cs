@@ -48,7 +48,7 @@ namespace hiro
 
         public void Load_Translate()
         {
-            chk_btn.Content = Hiro_Utils.Get_Transalte("checkup");
+            chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
         }
 
         public void Load_Position()
@@ -63,9 +63,9 @@ namespace hiro
 
         private void Chk_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (chk_btn.Content.Equals(Hiro_Utils.Get_Transalte("checkup")))
+            if (chk_btn.Content.Equals(Hiro_Utils.Get_Translate("checkup")))
             {
-                chk_btn.Content = Hiro_Utils.Get_Transalte("checkcancel");
+                chk_btn.Content = Hiro_Utils.Get_Translate("checkcancel");
                 if (Hiro_Main != null)
                     Hiro_Main.pb.Visibility = Visibility.Visible;
                 upbw?.CancelAsync();
@@ -84,7 +84,7 @@ namespace hiro
             }
             else
             {
-                chk_btn.Content = Hiro_Utils.Get_Transalte("checkup");
+                chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
                 if (Hiro_Main != null)
                     Hiro_Main.pb.Visibility = Visibility.Hidden;
 
@@ -93,16 +93,16 @@ namespace hiro
 
         public void Check_update()
         {
-            chk_btn.Content = Hiro_Utils.Get_Transalte("checkup");
+            chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
             if (Hiro_Main != null)
                 Hiro_Main.pb.Visibility = Visibility.Hidden;
             switch (ups)
             {
                 case "latest":
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("updatelatest"), 2, Hiro_Utils.Get_Transalte("checkup")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("updatelatest"), 2, Hiro_Utils.Get_Translate("checkup")));
                     break;
                 case "Error":
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("updateerror"), 2, Hiro_Utils.Get_Translate("checkup")));
                     break;
                 default:
                     try
@@ -121,20 +121,20 @@ namespace hiro
                         if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                            .AddText(Hiro_Utils.Get_Transalte("updatetitle"))
-                            .AddText(Hiro_Utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine))
+                            .AddText(Hiro_Utils.Get_Translate("updatetitle"))
+                            .AddText(Hiro_Utils.Get_Translate("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                .SetContent(Hiro_Utils.Get_Transalte("updateok"))
+                                .SetContent(Hiro_Utils.Get_Translate("updateok"))
                                 .AddArgument("action", "uok"))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                .SetContent(Hiro_Utils.Get_Transalte("updateskip"))
+                                .SetContent(Hiro_Utils.Get_Translate("updateskip"))
                                 .AddArgument("action", "uskip"))
                             .AddArgument("url", url)
                             .Show();
                         }
                         else
                         {
-                            Hiro_Alarm up = new(-415, Hiro_Utils.Get_Transalte("updatetitle"), Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Transalte("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine)), 2);
+                            Hiro_Alarm up = new(-415, Hiro_Utils.Get_Translate("updatetitle"), Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Translate("updatecontent").Replace("%v", version).Replace("%n", info).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine)), 2);
                             up.url = url;
                             up.Show();
                         }
@@ -142,7 +142,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Check");
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("updateerror"), 2, Hiro_Utils.Get_Transalte("checkup")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("updateerror"), 2, Hiro_Utils.Get_Translate("checkup")));
                     }
 
                     break;

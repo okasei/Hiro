@@ -26,8 +26,25 @@ namespace hiro
             Load_Color();
             Load_Translate();
             Refreash_Layout();
-            var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<hiapp>\\web\\" + startUri + "\\")));
+            var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\")));
             wv2.EnsureCoreWebView2Async(env.Result);
+            try
+            {
+                string edgever = Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString();
+                if (string.IsNullOrEmpty(edgever))
+                {
+                    Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("webnotinstall")},2)", Hiro_Utils.Get_Translate("web"));
+                    Close();
+                    return;
+                }
+                Hiro_Utils.LogtoFile($"Edge Webview2 Version: {edgever}");
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Web.EdgeWebviewNotInstalled");
+                Close();
+                return;
+            }
             if (uri != null && uri.ToLower().Equals("hiro://clear"))
             {
                 Width = Height = 1;
@@ -49,7 +66,7 @@ namespace hiro
                     }
                     catch
                     {
-                        wv2.Source = new Uri("http://" + uri);
+                        wv2.Source = new Uri($"http://{uri}");
                     }
                     Show();
                 }
@@ -77,7 +94,7 @@ namespace hiro
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
         {
-            string ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
+            string ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title)) 
                 return;
@@ -90,7 +107,7 @@ namespace hiro
         private void ClearCache(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
         {
             wv2.CoreWebView2.CallDevToolsProtocolMethodAsync("Network.clearBrowserCache", "{}");
-            App.Notify(new(Hiro_Utils.Get_Transalte("webclear"), 2, Hiro_Utils.Get_Transalte("Web")));
+            App.Notify(new(Hiro_Utils.Get_Translate("webclear"), 2, Hiro_Utils.Get_Translate("Web")));
             Close();
         }
         public void Loadbgi(int direction, bool animation)
@@ -180,7 +197,7 @@ namespace hiro
 
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
-            prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? Hiro_Utils.Get_Transalte("webmusic") : "";
+            prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? Hiro_Utils.Get_Translate("webmusic") : "";
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             var visual = soundbtn.Visibility;
             soundbtn.Visibility = wv2.CoreWebView2.IsDocumentPlayingAudio ? Visibility.Visible : Visibility.Collapsed;
@@ -190,7 +207,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(2, soundbtn, sb, -50, null);
                 sb.Begin();
             }
-            var ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
+            var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
             {
@@ -233,7 +250,7 @@ namespace hiro
 
         private void CoreWebView2_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            var ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
+            var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
             {
@@ -242,9 +259,9 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
                 sb.Begin();
             }
-            URLBtn.Content = secure ? Hiro_Utils.Get_Transalte("websecure") : Hiro_Utils.Get_Transalte("webinsecure");
+            URLBtn.Content = secure ? Hiro_Utils.Get_Translate("websecure") : Hiro_Utils.Get_Translate("webinsecure");
             URLSign.Content = secure ? "\uF61A" : "\uF618";
-            URLBtn.ToolTip = secure ? Hiro_Utils.Get_Transalte("websecuretip") : Hiro_Utils.Get_Transalte("webinsecuretip");
+            URLBtn.ToolTip = secure ? Hiro_Utils.Get_Translate("websecuretip") : Hiro_Utils.Get_Translate("webinsecuretip");
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && URLGrid.Visibility == Visibility.Visible)
             {
                 System.Windows.Media.Animation.Storyboard sb = new();
@@ -256,8 +273,8 @@ namespace hiro
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
-            var ti = fixed_title ?? Hiro_Utils.Get_Transalte("webtitle");
-            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", Hiro_Utils.Get_Transalte("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
+            var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
+            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", Hiro_Utils.Get_Translate("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && (!FlowTitle.Equals(Title) || URLBox.Visibility == Visibility.Visible))
             {
                 FlowTitle = Title;
@@ -281,7 +298,7 @@ namespace hiro
             try
             {
                 var msg = e.TryGetWebMessageAsString();
-                App.Notify(new(msg, 2, Hiro_Utils.Get_Transalte("web")));
+                App.Notify(new(msg, 2, Hiro_Utils.Get_Translate("web")));
             }
             catch (Exception ex)
             {
@@ -327,7 +344,7 @@ namespace hiro
         }
         private void CoreWebView2_DownloadStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2DownloadStartingEventArgs e)
         {
-            Hiro_Utils.RunExe("Download(" + e.DownloadOperation.Uri + ")");
+            Hiro_Utils.RunExe($"Download({e.DownloadOperation.Uri})", Hiro_Utils.Get_Translate("web"));
             if (wv2.CoreWebView2.DocumentTitle.Trim().Equals(string.Empty) || wv2.CoreWebView2.Source.ToLower().StartsWith("about"))
                 Close();
             e.Cancel = true;
@@ -406,19 +423,19 @@ namespace hiro
 
         public void Load_Translate()
         {
-            minbtn.ToolTip = Hiro_Utils.Get_Transalte("Min");
-            closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
-            maxbtn.ToolTip = Hiro_Utils.Get_Transalte("max");
-            resbtn.ToolTip = Hiro_Utils.Get_Transalte("restore");
-            PreBtn.ToolTip = Hiro_Utils.Get_Transalte("webpre");
-            PreBtn.Content = Hiro_Utils.Get_Transalte("webprec").Replace("%s", "◀");
-            NextBtn.ToolTip = Hiro_Utils.Get_Transalte("webnext");
-            NextBtn.Content = Hiro_Utils.Get_Transalte("webnextc").Replace("%s", "▶");
-            URLBtn.Content = Hiro_Utils.Get_Transalte("webinsecure");
+            minbtn.ToolTip = Hiro_Utils.Get_Translate("Min");
+            closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
+            maxbtn.ToolTip = Hiro_Utils.Get_Translate("max");
+            resbtn.ToolTip = Hiro_Utils.Get_Translate("restore");
+            PreBtn.ToolTip = Hiro_Utils.Get_Translate("webpre");
+            PreBtn.Content = Hiro_Utils.Get_Translate("webprec").Replace("%s", "◀");
+            NextBtn.ToolTip = Hiro_Utils.Get_Translate("webnext");
+            NextBtn.Content = Hiro_Utils.Get_Translate("webnextc").Replace("%s", "▶");
+            URLBtn.Content = Hiro_Utils.Get_Translate("webinsecure");
             URLSign.Content = "\uF618";
-            URLBtn.ToolTip = Hiro_Utils.Get_Transalte("webinsecuretip");
-            topbtn.ToolTip = Topmost ? Hiro_Utils.Get_Transalte("webbottom") : Hiro_Utils.Get_Transalte("webtop");
-            soundbtn.ToolTip = Hiro_Utils.Get_Transalte("webmute");
+            URLBtn.ToolTip = Hiro_Utils.Get_Translate("webinsecuretip");
+            topbtn.ToolTip = Topmost ? Hiro_Utils.Get_Translate("webbottom") : Hiro_Utils.Get_Translate("webtop");
+            soundbtn.ToolTip = Hiro_Utils.Get_Translate("webmute");
         }
 
         private void Resbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -500,7 +517,7 @@ namespace hiro
                         {
                             try
                             {
-                                wv2.CoreWebView2.Navigate("http://" + URLBox.Text);
+                                wv2.CoreWebView2.Navigate($"http://{URLBox.Text}");
                             }
                             catch
                             {
@@ -528,7 +545,7 @@ namespace hiro
         {
             wv2.CoreWebView2.IsMuted = !wv2.CoreWebView2.IsMuted;
             soundbtn.Content = wv2.CoreWebView2.IsMuted ? "\uE198" : "\uE995";
-            soundbtn.ToolTip = wv2.CoreWebView2.IsMuted ? Hiro_Utils.Get_Transalte("websound") : Hiro_Utils.Get_Transalte("webmute");
+            soundbtn.ToolTip = wv2.CoreWebView2.IsMuted ? Hiro_Utils.Get_Translate("websound") : Hiro_Utils.Get_Translate("webmute");
             e.Handled = true;
         }
 
@@ -536,7 +553,7 @@ namespace hiro
         {
             Topmost = !Topmost;
             topbtn.Content = Topmost ? "\uE77A" : "\uE718";
-            topbtn.ToolTip = Topmost ? Hiro_Utils.Get_Transalte("webbottom") : Hiro_Utils.Get_Transalte("webtop");
+            topbtn.ToolTip = Topmost ? Hiro_Utils.Get_Translate("webbottom") : Hiro_Utils.Get_Translate("webtop");
             e.Handled = true;
         }
 

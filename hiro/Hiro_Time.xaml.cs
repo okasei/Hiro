@@ -59,9 +59,9 @@ namespace hiro
 
         public void Load_Translate()
         {
-            tp_title.Content = Hiro_Utils.Get_Transalte("Time");
-            tpbtn1.Content = Hiro_Utils.Get_Transalte("timeok");
-            tpbtn2.Content = Hiro_Utils.Get_Transalte("timecancel");
+            tp_title.Content = Hiro_Utils.Get_Translate("Time");
+            tpbtn1.Content = Hiro_Utils.Get_Translate("timeok");
+            tpbtn2.Content = Hiro_Utils.Get_Translate("timecancel");
         }
 
         public void Load_Position()

@@ -24,6 +24,7 @@ namespace hiro
         internal ContextMenu? cm = null;
         internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> playlist = new();
         internal int index = -1;
+        internal int pcd = -1;
         public Hiro_Player(string? play = null)
         {
             InitializeComponent();
@@ -67,7 +68,7 @@ namespace hiro
                 Controller.Children.Remove(label);
             };
             sb.Begin();
-            
+
         }
 
         private void Initialize_Player()
@@ -229,7 +230,7 @@ namespace hiro
                     Play(txt);
                 }
             }
-            
+
         }
 
         private void MediaPlayer_LengthChanged(object? sender, Vlc.DotNet.Core.VlcMediaPlayerLengthChangedEventArgs e)
@@ -270,7 +271,7 @@ namespace hiro
                                 }
                             }
                         });
-                        
+
                     }
                     catch (Exception ex)
                     {
@@ -307,7 +308,7 @@ namespace hiro
             Dgi.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 200));
         }
 
-        public void Loadbgi(int direction,bool? animation = null)
+        public void Loadbgi(int direction, bool? animation = null)
         {
             if (bflag == 1)
                 return;
@@ -335,7 +336,7 @@ namespace hiro
                 if (index < playlist.Count - 1)
                     PlayIndex(index + 1);
             }).Start();
-            
+
         }
 
         private void Ctrl_Progress_Bg_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -390,7 +391,7 @@ namespace hiro
                 var info = e.Data.GetData(DataFormats.FileDrop) as string[];
                 if (info != null && info.Length > 0)
                 {
-                    foreach(var inf in info)
+                    foreach (var inf in info)
                     {
                         var li = inf as string;
                         Play(li);
@@ -429,7 +430,7 @@ namespace hiro
                     }).Start();
                     e.Cancel = true;
                 }
-                else if(cflag == 2)
+                else if (cflag == 2)
                 {
                     e.Cancel = true;
                 }
@@ -465,7 +466,7 @@ namespace hiro
                     {
                         hiro_provider.MediaPlayer.Pause();
                         Player_Container.Tag = "Paused";
-                        Player_Notify(Hiro_Utils.Get_Transalte("playerpause"));
+                        Player_Notify(Hiro_Utils.Get_Translate("playerpause"));
                     }
                 }
                 else if (((string)Player_Container.Tag).Equals("Paused"))
@@ -474,7 +475,7 @@ namespace hiro
                     {
                         Player_Container.Tag = "Playing";
                         hiro_provider.MediaPlayer.Play();
-                        Player_Notify(Hiro_Utils.Get_Transalte("playerplay"));
+                        Player_Notify(Hiro_Utils.Get_Translate("playerplay"));
                     }
                 }
             }
@@ -677,24 +678,24 @@ namespace hiro
         {
             Microsoft.Win32.OpenFileDialog ofd = new()
             {
-                Filter = Hiro_Utils.Get_Transalte("vidfiles") +
+                Filter = Hiro_Utils.Get_Translate("vidfiles") +
                 "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;" +
                 "*.m4v;*.mkv;*.mov;*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;" +
                 "*.rec;*.rm;*.rmvb;*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
-                + Hiro_Utils.Get_Transalte("audfiles") +
+                + Hiro_Utils.Get_Translate("audfiles") +
                 "|*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;" +
                 "*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;" +
                 "*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm|"
-                + Hiro_Utils.Get_Transalte("allfiles") + "|*.*",
+                + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
                 ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                 CheckFileExists = true, //验证路径的有效性
                 CheckPathExists = true,//验证路径的有效性
                 Multiselect = true,
-                Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
             };
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
-                foreach(var strFileName in ofd.FileNames)
+                foreach (var strFileName in ofd.FileNames)
                 {
                     if (System.IO.File.Exists(strFileName))
                     {
@@ -882,7 +883,7 @@ namespace hiro
             MenuItem open = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermopen")
+                Header = Hiro_Utils.Get_Translate("playermopen")
             };
             open.Click += delegate
             {
@@ -895,71 +896,71 @@ namespace hiro
                 Foreground = new SolidColorBrush(App.AppForeColor),
                 Background = new SolidColorBrush(App.AppAccentColor),
                 BorderBrush = null,
-                Header = Hiro_Utils.Get_Transalte("playermspeed")
+                Header = Hiro_Utils.Get_Translate("playermspeed")
             };
             MenuItem uu = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermspeeduu")
+                Header = Hiro_Utils.Get_Translate("playermspeeduu")
             };
             uu.Click += delegate
             {
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 2;
-                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "2"));
+                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "2"));
                 }
             };
             MenuItem u = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermspeedu")
+                Header = Hiro_Utils.Get_Translate("playermspeedu")
             };
             u.Click += delegate
             {
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 1.5f;
-                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "1.5"));
+                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1.5"));
                 }
             };
             MenuItem n = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermspeedn")
+                Header = Hiro_Utils.Get_Translate("playermspeedn")
             };
             n.Click += delegate
             {
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 1;
-                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "1"));
+                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1"));
                 }
             };
             MenuItem s = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermspeeds")
+                Header = Hiro_Utils.Get_Translate("playermspeeds")
             };
             s.Click += delegate
             {
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 0.75f;
-                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "0.75"));
+                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.75"));
                 }
             };
             MenuItem ss = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermspeedss")
+                Header = Hiro_Utils.Get_Translate("playermspeedss")
             };
             ss.Click += delegate
             {
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 0.5f;
-                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", "0.5"));
+                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.5"));
                 }
             };
             speed.Items.Add(uu);
@@ -971,19 +972,19 @@ namespace hiro
             MenuItem to = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermpin")
+                Header = Hiro_Utils.Get_Translate("playermpin")
             };
             to.Click += delegate
             {
                 Topmost = !Topmost;
-                to.Header = Topmost == true ? Hiro_Utils.Get_Transalte("playermunpin") : Hiro_Utils.Get_Transalte("playermpin");
+                to.Header = Topmost == true ? Hiro_Utils.Get_Translate("playermunpin") : Hiro_Utils.Get_Translate("playermpin");
 
             };
             cm.Items.Add(to);
             MenuItem list = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermlist")
+                Header = Hiro_Utils.Get_Translate("playermlist")
             };
             list.Click += delegate
             {
@@ -993,7 +994,7 @@ namespace hiro
             MenuItem ui = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermui")
+                Header = Hiro_Utils.Get_Translate("playermui")
             };
             ui.Click += delegate
             {
@@ -1003,7 +1004,7 @@ namespace hiro
             MenuItem exi = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Transalte("playermexit")
+                Header = Hiro_Utils.Get_Translate("playermexit")
             };
             exi.Click += delegate
             {
@@ -1019,7 +1020,7 @@ namespace hiro
                     {
                         foreach (var mobj in cm.Items)
                         {
-                            if(mobj is MenuItem mii)
+                            if (mobj is MenuItem mii)
                                 Hiro_Utils.Set_Control_Location(mii, "context", location: false);
                         }
                     }
@@ -1083,10 +1084,10 @@ namespace hiro
 
         private void Load_Translate()
         {
-            minbtn.ToolTip = Hiro_Utils.Get_Transalte("Min");
-            closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
-            maxbtn.ToolTip = Hiro_Utils.Get_Transalte("max");
-            resbtn.ToolTip = Hiro_Utils.Get_Transalte("restore");
+            minbtn.ToolTip = Hiro_Utils.Get_Translate("Min");
+            closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
+            maxbtn.ToolTip = Hiro_Utils.Get_Translate("max");
+            resbtn.ToolTip = Hiro_Utils.Get_Translate("restore");
             Load_Menu();
         }
 
@@ -1131,6 +1132,7 @@ namespace hiro
         private void Player_Notify(string val)
         {
             Player_Info.Content = val;
+            pcd = 2;
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 if (Player_Info.Visibility != Visibility.Visible)
@@ -1142,7 +1144,11 @@ namespace hiro
                     {
                         new System.Threading.Thread(() =>
                         {
-                            System.Threading.Thread.Sleep(2000);
+                            while (pcd > 0)
+                            {
+                                pcd--;
+                                System.Threading.Thread.Sleep(2000);
+                            }
                             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
                             {
                                 Dispatcher.Invoke(() =>
@@ -1186,7 +1192,7 @@ namespace hiro
                                 {
                                     Player_Info.Visibility = Visibility.Hidden;
                                 };
-                                    sb.Begin();
+                                sb.Begin();
                             });
                         }
                         else
@@ -1216,7 +1222,7 @@ namespace hiro
                     else
                         vol = vol + del;
                     hiro_provider.MediaPlayer.Rate = vol;
-                    Player_Notify(Hiro_Utils.Get_Transalte("playerspeed").Replace("%s", vol.ToString()));
+                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
                     e.Handled = true;
                 }
             }
@@ -1231,7 +1237,7 @@ namespace hiro
                     else
                         vol = vol + del;
                     hiro_provider.MediaPlayer.Audio.Volume = vol;
-                    Player_Notify(Hiro_Utils.Get_Transalte("playervol").Replace("%v", vol.ToString()));
+                    Player_Notify(Hiro_Utils.Get_Translate("playervol").Replace("%v", vol.ToString()));
                     e.Handled = true;
                 }
             }
@@ -1247,7 +1253,7 @@ namespace hiro
                     PlayIndex(Dgi.SelectedIndex);
                 }
             });
-            
+
         }
 
         private void PlayIndex(int i)

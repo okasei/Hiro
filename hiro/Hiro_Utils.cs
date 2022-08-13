@@ -420,9 +420,9 @@ namespace hiro
         #endregion
 
         #region 翻译文件
-        public static string Get_Transalte(string val)
+        public static string Get_Translate(string val)
         {
-            return Read_Ini(App.CurrentDirectory + "\\system\\lang\\" + App.lang + ".hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine).Replace("%b", " ");
+            return Read_Ini($"{App.CurrentDirectory}\\system\\lang\\{App.lang}.hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine).Replace("%b", " ");
         }
         #endregion
 
@@ -766,9 +766,9 @@ namespace hiro
                 return string.Empty;
         }
 
-        public static String Anti_Path_Prepare(String path)
+        public static String Anti_Path_Prepare(string path)
         {
-            path = Anti_Path_Replace(path, "<hiapp>", (AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app").Replace("\\\\", "\\"));
+            path = Anti_Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.EnvironmentUsername}\\app").Replace("\\\\", "\\"));
             path = Anti_Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Anti_Path_Replace(path, "<system>", Environment.SystemDirectory);
             path = Anti_Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86.Path);
@@ -802,9 +802,9 @@ namespace hiro
             return path;
         }
 
-        public static String Path_Prepare(String path)
+        public static String Path_Prepare(string path)
         {
-            path = Path_Replace(path, "<hiapp>", (AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app").Replace("\\\\", "\\"));
+            path = Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.EnvironmentUsername}\\app").Replace("\\\\", "\\"));
             path = Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Path_Replace(path, "<system>", Environment.SystemDirectory);
             path = Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86.Path);
@@ -867,7 +867,7 @@ namespace hiro
             path = Path_Replace(path, "<now>", DateTime.Now.ToString("yyMMddHHmmss"));
             path = Path_Replace(path, "<me>", App.Username);
             path = Path_Replace(path, "<hiro>", App.AppTitle);
-            path = Path_Replace(path, "<product>", Get_Transalte("dlproduct"));
+            path = Path_Replace(path, "<product>", Get_Translate("dlproduct"));
             return path;
         }
         #endregion
@@ -892,7 +892,7 @@ namespace hiro
                 var parameter = HiroCmdParse(path);
                 int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
                 if (File.Exists(path) && path.ToLower().EndsWith(".hiro"))
-                    path = "seq(" + path + ")";
+                    path = $"seq({path})";
                 #region 不会造成打扰的命令
                 if (path.ToLower().Equals("memory()"))
                 {
@@ -901,24 +901,24 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("debug("))
                 {
-                    source = Get_Transalte("debug");
+                    source = Get_Translate("debug");
                     if (!path.ToLower().StartsWith("debug()"))
                     {
-                        RunExe("notify(" + path + ",2)", source);
+                        RunExe($"notify({path},2)", source);
                     }
                     else
                     {
                         App.dflag = !App.dflag;
                         if (App.dflag)
-                            RunExe("notify(" + Get_Transalte("debugon") + ",2)", source);
+                            RunExe($"notify({Get_Translate("debugon")},2)", source);
                         else
-                            RunExe("notify(" + Get_Transalte("debugoff") + ",2)", source);
+                            RunExe($"notify({Get_Translate("debugoff")},2)", source);
                     }
                     return;
                 }
                 if (path.ToLower().StartsWith("save("))
                 {
-                    source = Get_Transalte("download");
+                    source = Get_Translate("download");
                     BackgroundWorker bw = new();
                     string result = "";
                     CreateFolder(parameter[1]);
@@ -929,9 +929,9 @@ namespace hiro
                     bw.RunWorkerCompleted += delegate
                     {
                         if (result.ToLower().Equals("error"))
-                            App.Notify(new Hiro_Notice(Get_Transalte("error"), 2, source));
+                            App.Notify(new Hiro_Notice(Get_Translate("error"), 2, source));
                         else
-                            App.Notify(new Hiro_Notice(Get_Transalte("success"), 2, source));
+                            App.Notify(new Hiro_Notice(Get_Translate("success"), 2, source));
                     };
                     bw.RunWorkerAsync();
                     return;
@@ -941,7 +941,7 @@ namespace hiro
                     if (!File.Exists(parameter[0]))
                     {
                         HttpRequestMessage request = new(HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
-                        request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/" + Hiro_Resources.ApplicationVersion);
+                        request.Headers.Add("UserAgent", $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/{Hiro_Resources.ApplicationVersion}");
                         request.Content = new StringContent("");
                         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
                         BackgroundWorker bw = new();
@@ -963,26 +963,26 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
+                                RunExe($"alarm({Get_Translate("error")},{ex})");
                                 LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
                             }
                         };
                         bw.RunWorkerCompleted += delegate
                         {
                             if (!File.Exists(parameter[0]))
-                                App.Notify(new Hiro_Notice(Get_Transalte("unknown"), 2, Get_Transalte("wallpaper")));
+                                App.Notify(new Hiro_Notice(Get_Translate("unknown"), 2, Get_Translate("wallpaper")));
                             else
-                                App.Notify(new Hiro_Notice(Get_Transalte("wpsaved"), 2, Get_Transalte("wallpaper")));
+                                App.Notify(new Hiro_Notice(Get_Translate("wpsaved"), 2, Get_Translate("wallpaper")));
                         };
                         bw.RunWorkerAsync();
                     }
                     else
-                        App.Notify(new Hiro_Notice(Get_Transalte("wpexist"), 2, Get_Transalte("wallpaper")));
+                        App.Notify(new Hiro_Notice(Get_Translate("wpexist"), 2, Get_Translate("wallpaper")));
                     return;
                 }
                 if (path.ToLower().StartsWith("wallpaper("))
                 {
-                    source = Get_Transalte("wallpaper");
+                    source = Get_Translate("wallpaper");
                     if (File.Exists(parameter[0]))
                     {
                         using (Microsoft.Win32.RegistryKey? key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
@@ -998,11 +998,11 @@ namespace hiro
                             }
                         }
                         _ = SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
-                        App.Notify(new Hiro_Notice(Get_Transalte("wpchanged"), 2, source));
+                        App.Notify(new Hiro_Notice(Get_Translate("wpchanged"), 2, source));
                     }
                     else
                     {
-                        RunExe("notify(" + Get_Transalte("wpnexist") + ",2)", source);
+                        RunExe($"notify({Get_Translate("wpnexist")},2)", source);
                     }
                     return;
                 }
@@ -1017,11 +1017,11 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                                App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
                                 LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
                             }
                         else
-                            LogtoFile("[WARNING]Hiro.Warning.IO.Delete: Warning at " + path + " | Details: " + Get_Transalte("filenotexist"));
+                            LogtoFile($"[WARNING]Hiro.Warning.IO.Delete: Warning at {path} | Details: {Get_Translate("filenotexist")}");
                         return;
                     }
                     try
@@ -1030,7 +1030,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
                         LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
                     }
                     return;
@@ -1046,7 +1046,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                            App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
                             LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
                         }
                         return;
@@ -1058,7 +1058,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
                         LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
                     }
                     return;
@@ -1074,12 +1074,12 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                                App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
                                 LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                             }
                         else
                         {
-                            App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("file")));
+                            App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("file")));
                             LogError(new FileNotFoundException(), $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                         }
                         return;
@@ -1091,7 +1091,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new Hiro_Notice(Get_Transalte("failed"), 2, Get_Transalte("file")));
+                        App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
                         LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                     }
                     return;
@@ -1224,7 +1224,7 @@ namespace hiro
                             if (para.IndexOf("s") != -1)
                                 RunExe(parameter[1]);
                             if (para.IndexOf("d") != -1)
-                                RunExe("Delete(" + parameter[0] + ")");
+                                RunExe($"Delete({parameter[0]})");
                         }
                         if (parameter.Count > 3)
                         {
@@ -1255,7 +1255,7 @@ namespace hiro
                             if (para.IndexOf("s") != -1)
                                 RunExe(parameter[1]);
                             if (para.IndexOf("d") != -1)
-                                RunExe("Delete(" + parameter[0] + ")");
+                                RunExe($"Delete({parameter[0]})");
                         }
                         if (parameter.Count > 3)
                         {
@@ -1322,48 +1322,48 @@ namespace hiro
                     var afternoon = Read_Ini(App.LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
                     var evening = Read_Ini(App.LangFilePath, "local", "evening", "[19,20,21,22]");
                     var night = Read_Ini(App.LangFilePath, "local", "night", "[23,0,1,2,3,4,5]");
-                    morning = "," + morning.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    noon = "," + noon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    afternoon = "," + afternoon.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    evening = "," + evening.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
-                    night = "," + night.Replace("[", "").Replace("]", "").Replace(" ", "") + ",";
+                    morning = $",{morning.Replace("[", "").Replace("]", "").Replace(" ", "")},";
+                    noon = $",{noon.Replace("[", "").Replace("]", "").Replace(" ", "")},";
+                    afternoon = $",{afternoon.Replace("[", "").Replace("]", "").Replace(" ", "")},";
+                    evening = $",{evening.Replace("[", "").Replace("]", "").Replace(" ", "")},";
+                    night = $",{night.Replace("[", "").Replace("]", "").Replace(" ", "")},";
                     if (morning.IndexOf("," + hr + ",") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new Hiro_Notice(Get_Transalte("morning").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("morning").Replace("%u", App.EnvironmentUsername), 2, Get_Translate("hello")));
                         else
-                            App.Notify(new Hiro_Notice(Get_Transalte("morningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("morningcus").Replace("%u", App.Username), 2, Get_Translate("hello")));
 
                     }
-                    else if (noon.IndexOf("," + hr + ",") != -1)
+                    else if (noon.IndexOf($",{hr},") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new Hiro_Notice(Get_Transalte("noon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("noon").Replace("%u", App.EnvironmentUsername), 2, Get_Translate("hello")));
                         else
-                            App.Notify(new Hiro_Notice(Get_Transalte("nooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("nooncus").Replace("%u", App.Username), 2, Get_Translate("hello")));
 
                     }
-                    else if (afternoon.IndexOf("," + hr + ",") != -1)
+                    else if (afternoon.IndexOf($",{hr},") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new Hiro_Notice(Get_Transalte("afternoon").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("afternoon").Replace("%u", App.EnvironmentUsername), 2, Get_Translate("hello")));
                         else
-                            App.Notify(new Hiro_Notice(Get_Transalte("afternooncus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("afternooncus").Replace("%u", App.Username), 2, Get_Translate("hello")));
 
                     }
-                    else if (evening.IndexOf("," + hr + ",") != -1)
+                    else if (evening.IndexOf($",{hr},") != -1)
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new Hiro_Notice(Get_Transalte("evening").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("evening").Replace("%u", App.EnvironmentUsername), 2, Get_Translate("hello")));
                         else
-                            App.Notify(new Hiro_Notice(Get_Transalte("eveningcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("eveningcus").Replace("%u", App.Username), 2, Get_Translate("hello")));
                     }
                     else
                     {
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new Hiro_Notice(Get_Transalte("night").Replace("%u", App.EnvironmentUsername), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("night").Replace("%u", App.EnvironmentUsername), 2, Get_Translate("hello")));
                         else
-                            App.Notify(new Hiro_Notice(Get_Transalte("nightcus").Replace("%u", App.Username), 2, Get_Transalte("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate("nightcus").Replace("%u", App.Username), 2, Get_Translate("hello")));
                     }
                     return;
                 }
@@ -1383,7 +1383,7 @@ namespace hiro
                     var RealPath = parameter[0];
                     for (int i = 1; i < parameter.Count; i++)
                     {
-                        RealPath += ("," + parameter[i]);
+                        RealPath += ($",{parameter[i]}");
                     }
                     foreach (var cmd in App.cmditems)
                     {
@@ -1398,7 +1398,7 @@ namespace hiro
                 {
                     if (parameter.Count == 0)
                     {
-                        App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                        App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("execute")));
                         return;
                     }
                     string? FileName = parameter.Count >= 1 ? parameter[0] : null;
@@ -1407,7 +1407,7 @@ namespace hiro
                     HiroArguments = HiroArguments == null ? null : HiroArguments.ToLower();
                     if (FileName == null)
                     {
-                        App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                        App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("execute")));
                         return;
                     }
                     try
@@ -1435,7 +1435,7 @@ namespace hiro
                     }
                     catch (Exception ex)
                     {
-                        RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
+                        RunExe($"alarm({Get_Translate("error")},{ex})");
                         LogError(ex, $"Hiro.Exception.Run.Extra{Environment.NewLine}Path: {path}");
                     }
                     if (App.mn == null)
@@ -1453,12 +1453,12 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("weather("))
                 {
-                    source = Get_Transalte("weather");
+                    source = Get_Translate("weather");
                     path = path.ToLower() switch
                     {
-                        "weather(0)" => "alarm(" + Get_Transalte("weather") + ",https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ")",
-                        "weather(1)" => "notify(https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang=" + App.lang + ",2)",
-                        _ => "notify(" + Get_Transalte("syntax") + ",2)"
+                        "weather(0)" => $"alarm({Get_Translate("weather")},https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang={App.lang})",
+                        "weather(1)" => $"notify(https://api.rexio.cn/v1/rex.php?r=weather&k=6725dccca57b2998e8fc47cee2a8f72f&lang={App.lang},2)",
+                        _ => "notify(" + Get_Translate("syntax") + ",2)"
                     };
                     RunExe(path, source);
                     return;
@@ -1467,10 +1467,7 @@ namespace hiro
                 #endregion
                 if ((disturb == 1 && IsForegroundFullScreen()) || disturb == 0)
                 {
-                    App.mn?.AddToInfoCenter(
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
-                    + "\t" + Get_Transalte("infocmd") + ":" + "\t" + RunPath + Environment.NewLine
-                    + "\t" + Get_Transalte("infosource") + ":" + "\t" + source + Environment.NewLine);
+                    App.mn?.AddToInfoCenter($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ")}{Environment.NewLine}\t{Get_Translate("infocmd")}:\t{RunPath}{Environment.NewLine}\t{Get_Translate("infosource")}:\t{source} {Environment.NewLine} ");
                     return;
                 }
                 #region 可能造成打扰的命令
@@ -1557,7 +1554,7 @@ namespace hiro
                 
                 if (path.ToLower().StartsWith("hiroad("))
                 {
-                    source = Get_Transalte("update");
+                    source = Get_Translate("update");
                     Hiro_Download dl = new(1, parameter[2]);
                     dl.textBoxHttpUrl.Text = parameter[0];
                     dl.SavePath.Text = parameter[1];
@@ -1571,7 +1568,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("download("))
                 {
-                    source = Get_Transalte("download");
+                    source = Get_Translate("download");
                     Hiro_Download dl = new(0, "");
                     if (parameter.Count > 0)
                         dl.textBoxHttpUrl.Text = parameter[0];
@@ -1594,12 +1591,12 @@ namespace hiro
                             BackgroundWorker bw = new();
                             bw.DoWork += delegate
                             {
-                                pa = "\"" + GetWebContent(pa) + "\"";
+                                pa = $"\"{GetWebContent(pa)}\"";
                             };
                             bw.RunWorkerCompleted += delegate
                             {
-                                var val = parameter.Count == 1 ? "\"" + pa + "\"" : "\"" + pa + "\"" + "," + "\"" + parameter[1] + "\"";
-                                RunExe("alarm(" + val + ")", source);
+                                var val = parameter.Count == 1 ? $"\"{pa}\"" : $"\"{pa}\",\"{parameter[1]}\"";
+                                RunExe($"alarm({val})", source);
                             };
                             bw.RunWorkerAsync();
                             return;
@@ -1613,12 +1610,12 @@ namespace hiro
                                 BackgroundWorker bw = new();
                                 bw.DoWork += delegate
                                 {
-                                    par = "\"" + GetWebContent(par) + "\"";
+                                    par = $"\"{GetWebContent(par)}\"";
                                 };
                                 bw.RunWorkerCompleted += delegate
                                 {
-                                    var val = "\"" + parameter[0] + "\",\"" + par + "\"";
-                                    RunExe("alarm(" + val + ")", source);
+                                    var val = $"\"{parameter[0]}\",\"{par}\"";
+                                    RunExe($"alarm({val})", source);
                                 };
                                 bw.RunWorkerAsync();
                                 return;
@@ -1631,16 +1628,16 @@ namespace hiro
                             .AddText(parameter[0])
                             .AddText(parameter[1].Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                        .SetContent(Get_Transalte("alarmone")))
+                                        .SetContent(Get_Translate("alarmone")))
                             .Show();
                         }
                         else
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                            .AddText(Get_Transalte("alarmtitle"))
+                            .AddText(Get_Translate("alarmtitle"))
                             .AddText(parameter[0].Replace("\\n", Environment.NewLine).Replace("<br>",Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                        .SetContent(Get_Transalte("alarmone")))
+                                        .SetContent(Get_Translate("alarmone")))
                             .Show();
                         }
                     }
@@ -1727,16 +1724,16 @@ namespace hiro
                     Hiro_Msg msg = new(parameter[0])
                     {
                         bg = bg,
-                        Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Transalte("syntax")))) + " - " + App.AppTitle
+                        Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))) + " - " + App.AppTitle
                     };
-                    msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Transalte("syntax")))));
-                    msg.acceptbtn.Content = Read_Ini(parameter[0], "Message", "accept", Get_Transalte("msgaccept"));
-                    msg.rejectbtn.Content = Read_Ini(parameter[0], "Message", "reject", Get_Transalte("msgreject"));
-                    msg.cancelbtn.Content = Read_Ini(parameter[0], "Message", "cancel", Get_Transalte("msgcancel"));
-                    parameter[0] = Path_Prepare_EX(Path_Prepare(Read_Ini(parameter[0], "Message", "content", Get_Transalte("syntax"))));
+                    msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))));
+                    msg.acceptbtn.Content = Read_Ini(parameter[0], "Message", "accept", Get_Translate("msgaccept"));
+                    msg.rejectbtn.Content = Read_Ini(parameter[0], "Message", "reject", Get_Translate("msgreject"));
+                    msg.cancelbtn.Content = Read_Ini(parameter[0], "Message", "cancel", Get_Translate("msgcancel"));
+                    parameter[0] = Path_Prepare_EX(Path_Prepare(Read_Ini(parameter[0], "Message", "content", Get_Translate("syntax"))));
                     if (parameter[0].ToLower().StartsWith("http://") || parameter[0].ToLower().StartsWith("https://"))
                     {
-                        msg.sv.Content = Get_Transalte("msgload");
+                        msg.sv.Content = Get_Translate("msgload");
                         BackgroundWorker bw = new();
                         bw.DoWork += delegate
                         {
@@ -1758,7 +1755,7 @@ namespace hiro
                 }
                 if (path.Length > 7 && path.ToLower().StartsWith("notify("))
                 {
-                    string titile = Get_Transalte("syntax");
+                    string titile = Get_Translate("syntax");
                     int duration = -1;
                     if (parameter.Count > 0)
                     {
@@ -1785,7 +1782,7 @@ namespace hiro
                         }
                         catch (Exception ex)
                         {
-                            RunExe("alarm(" + Get_Transalte("error") + "," + ex.ToString() + ")");
+                            RunExe("alarm(" + Get_Translate("error") + "," + ex.ToString() + ")");
                             LogError(ex, $"Hiro.Exception.Run.Notification{Environment.NewLine}Path: {path}");
                         }
                     }
@@ -1863,7 +1860,7 @@ namespace hiro
                     {
                         web.Topmost = true;
                         web.topbtn.Content = "\uE77A";
-                        web.topbtn.ToolTip = Get_Transalte("webbottom");
+                        web.topbtn.ToolTip = Get_Translate("webbottom");
                     }
                     if (webpara.IndexOf("b") != -1)
                         web.URLGrid.Visibility = Visibility.Visible;
@@ -1916,7 +1913,7 @@ namespace hiro
                 string? FileName_ = parameter_.Count >= 1 ? parameter_[0] : null;
                 if (FileName_ == null)
                 {
-                    App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("execute")));
+                    App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("execute")));
                     return;
                 }
                 ProcessStartInfo pinfo_ = new()
@@ -1943,7 +1940,7 @@ namespace hiro
             catch (Exception ex)
             {
                 LogError(ex, $"Hiro.Exception.Run{Environment.NewLine}Path: {path}");
-                App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, source));
+                App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, source));
                 return;
             }
         }
@@ -2004,7 +2001,7 @@ namespace hiro
                         {
                         }
                     }
-                    App.Notify(new(Get_Transalte("notfound"), 2, Get_Transalte("execute")));
+                    App.Notify(new(Get_Translate("notfound"), 2, Get_Translate("execute")));
                     LogError(ex, $"Hiro.Exception.Run.Process{Environment.NewLine}");
                 }
             }
@@ -2114,7 +2111,7 @@ namespace hiro
                 var access = await Radio.RequestAccessAsync();
                 if (access != RadioAccessStatus.Allowed)
                 {
-                    App.Notify(new Hiro_Notice(Get_Transalte("bth") + Get_Transalte("dcreject"), 2, Get_Transalte("bth")));
+                    App.Notify(new Hiro_Notice(Get_Translate("bth") + Get_Translate("dcreject"), 2, Get_Translate("bth")));
                     return;
                 }
                 Windows.Devices.Bluetooth.BluetoothAdapter adapter = await Windows.Devices.Bluetooth.BluetoothAdapter.GetDefaultAsync();
@@ -2125,26 +2122,26 @@ namespace hiro
                     {
                         case true:
                             await btRadio.SetStateAsync(RadioState.On);
-                            App.Notify(new Hiro_Notice(Get_Transalte("bth") + Get_Transalte("dcon"), 2, Get_Transalte("bth")));
+                            App.Notify(new Hiro_Notice(Get_Translate("bth") + Get_Translate("dcon"), 2, Get_Translate("bth")));
                             break;
                         case false:
                             await btRadio.SetStateAsync(RadioState.Off);
-                            App.Notify(new Hiro_Notice(Get_Transalte("bth") + Get_Transalte("dcoff"), 2, Get_Transalte("bth")));
+                            App.Notify(new Hiro_Notice(Get_Translate("bth") + Get_Translate("dcoff"), 2, Get_Translate("bth")));
                             break;
                         default:
-                            App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("bth")));
+                            App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("bth")));
                             break;
                     }
                 }
                 else
                 {
-                    App.Notify(new Hiro_Notice(Get_Transalte(Get_Transalte("bth") + Get_Transalte("dcnull")), 2, Get_Transalte("bth")));
+                    App.Notify(new Hiro_Notice(Get_Translate(Get_Translate("bth") + Get_Translate("dcnull")), 2, Get_Translate("bth")));
                 }
 
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Get_Transalte("error"), 2));
+                App.Notify(new Hiro_Notice(Get_Translate("error"), 2));
                 LogError(ex, "Hiro.Exception.Bluetooth");
             }
         }
@@ -2155,19 +2152,19 @@ namespace hiro
             {
                 if (await WiFiAdapter.RequestAccessAsync() != WiFiAccessStatus.Allowed)
                 {
-                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcreject"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcreject"), 2, Get_Translate("wifi")));
                     return;
                 }
                 var adapters = await WiFiAdapter.FindAllAdaptersAsync();
                 if (adapters.Count <= 0)
                 {
-                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcnull"), 2, Get_Translate("wifi")));
                     return;
                 }
                 var adapter = adapters[0];
                 if (null == adapter)
                 {
-                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcnull"), 2, Get_Translate("wifi")));
                     return;
                 }
                 Radio? ra = null;
@@ -2181,23 +2178,23 @@ namespace hiro
                 }
                 if(null == ra)
                 {
-                    App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcnull"), 2, Get_Transalte("wifi")));
+                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcnull"), 2, Get_Translate("wifi")));
                     return;
                 }
                 switch (WiFiState)
                 {
                     case 0:
                         await ra.SetStateAsync(RadioState.Off);
-                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcoff"), 2, Get_Transalte("wifi")));
+                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcoff"), 2, Get_Translate("wifi")));
                         break;
                     case 1:
                         await ra.SetStateAsync(RadioState.On);
-                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcon"), 2, Get_Transalte("wifi")));
+                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcon"), 2, Get_Translate("wifi")));
                         await adapter.ScanAsync();
                         break;
                     case 2:
                         adapter.Disconnect();
-                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcdiscon"), 2, Get_Transalte("wifi")));
+                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcdiscon"), 2, Get_Translate("wifi")));
                         break;
                     case 3:
                         await adapter.ScanAsync();
@@ -2230,32 +2227,32 @@ namespace hiro
                                 }
                             }
                             if (!connect)
-                                App.Notify(new Hiro_Notice(Get_Transalte("wifimis").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
+                                App.Notify(new Hiro_Notice(Get_Translate("wifimis").Replace("%s", Ssid), 2, Get_Translate("wifi")));
                             else
                             {
                                 if (savedan == null)
-                                    App.Notify(new Hiro_Notice(Get_Transalte("wifina").Replace("%s", Ssid), 2, Get_Transalte("wifi")));
+                                    App.Notify(new Hiro_Notice(Get_Translate("wifina").Replace("%s", Ssid), 2, Get_Translate("wifi")));
                                 else
                                 {
                                     await adapter.ConnectAsync(savedan, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
                                     if (Ssid != null && !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
-                                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2, Get_Transalte("wifi")));
+                                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2, Get_Translate("wifi")));
                                     else
-                                        App.Notify(new Hiro_Notice(Get_Transalte("wifi") + Get_Transalte("dccon").Replace("%s", savedan.Ssid), 2, Get_Transalte("wifi")));
+                                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dccon").Replace("%s", savedan.Ssid), 2, Get_Translate("wifi")));
                                 }
                             }
                         }
                         else
-                            App.Notify(new Hiro_Notice(Get_Transalte("wifina"), 2, Get_Transalte("wifi")));
+                            App.Notify(new Hiro_Notice(Get_Translate("wifina"), 2, Get_Translate("wifi")));
                         break;
                     default:
-                        App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("wifi")));
+                        App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("wifi")));
                         break;
                 }
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Get_Transalte("error"), 2, Get_Transalte("wifi")));
+                App.Notify(new Hiro_Notice(Get_Translate("error"), 2, Get_Translate("wifi")));
                 LogError(ex, $"Hiro.Exception.Wifi");
             }
         }
@@ -2266,7 +2263,7 @@ namespace hiro
                 srcdir = srcdir[0..^1];
             if (desdir.ToLower().StartsWith(srcdir.ToLower()))
             {
-                App.Notify(new Hiro_Notice(Get_Transalte("syntax"), 2, Get_Transalte("file")));
+                App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("file")));
                 return;
             }
             string desfolderdir = desdir;
@@ -2681,7 +2678,7 @@ namespace hiro
             ServicePointManager.DefaultConnectionLimit = 100;
             ServicePointManager.Expect100Continue = false;
             if (App.hc == null)
-                throw new Exception(Get_Transalte("webnotinitial"));
+                throw new Exception(Get_Translate("webnotinitial"));
             try
             {
                 HttpResponseMessage response = App.hc.Send(request);
@@ -2717,7 +2714,7 @@ namespace hiro
                 else
                 {
                     LogError(new ArgumentNullException(), $"Hiro.Exception.Web.Respose");
-                    return Get_Transalte("error");
+                    return Get_Translate("error");
                 }
             }
             catch (Exception ex)
@@ -2893,7 +2890,7 @@ namespace hiro
                 App.scheduleitems.RemoveAt(id);
             }
             else
-                App.Notify(new Hiro_Notice(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
+                App.Notify(new Hiro_Notice(Get_Translate("alarmmissing"), 2, Get_Translate("schedule")));
 
         }
 
@@ -2902,7 +2899,7 @@ namespace hiro
             if (id > -1)
                 App.scheduleitems[id].Time = DateTime.Now.AddMinutes(5.0).ToString("yyyy/MM/dd HH:mm:ss");
             else
-                App.Notify(new Hiro_Notice(Get_Transalte("alarmmissing"), 2, Get_Transalte("schedule")));
+                App.Notify(new Hiro_Notice(Get_Translate("alarmmissing"), 2, Get_Translate("schedule")));
         }
         #endregion
 
@@ -3279,7 +3276,7 @@ namespace hiro
                 IntPtr tempptr = IntPtr.Zero;
                 int sa = Marshal.GetLastWin32Error();
                 _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
-                RunExe("notify(" + Get_Transalte("regfailed").Replace("%n", sa.ToString()) + ",2)");
+                RunExe("notify(" + Get_Translate("regfailed").Replace("%n", sa.ToString()) + ",2)");
                 LogError(new NotSupportedException(), $"Hiro.Exception.Hotkey.Register{Environment.NewLine}Extra: {sa} - {msg.Replace(Environment.NewLine, "")}");
             }
             App.vs.Add(kid);
@@ -3300,7 +3297,7 @@ namespace hiro
                 IntPtr tempptr = IntPtr.Zero;
                 int sa = Marshal.GetLastWin32Error();
                 _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
-                RunExe("notify(" + Get_Transalte("unregfailed").Replace("%n", sa.ToString()) + ",2)");
+                RunExe("notify(" + Get_Translate("unregfailed").Replace("%n", sa.ToString()) + ",2)");
                 LogError(new NotSupportedException(), $"Hiro.Exception.Hotkey.Unregister{Environment.NewLine}Extra: {sa} - {msg.Replace(Environment.NewLine, "")}");
             }
             else
@@ -3427,7 +3424,7 @@ namespace hiro
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Get_Transalte("webnotinitial"));
+                    throw new Exception(Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 string t = token ? "token" : "pwd";
@@ -3509,7 +3506,7 @@ namespace hiro
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Get_Transalte("webnotinitial"));
+                    throw new Exception(Get_Translate("webnotinitial"));
                 FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
                 byte[] bytebuffer;
                 bytebuffer = new byte[fs.Length];
@@ -3566,7 +3563,7 @@ namespace hiro
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Get_Transalte("webnotinitial"));
+                    throw new Exception(Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
@@ -3635,7 +3632,7 @@ namespace hiro
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Get_Transalte("webnotinitial"));
+                    throw new Exception(Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
@@ -3706,7 +3703,7 @@ namespace hiro
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Get_Transalte("webnotinitial"));
+                    throw new Exception(Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] eof = Encoding.UTF8.GetBytes(
@@ -3752,7 +3749,7 @@ namespace hiro
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Get_Transalte("webnotinitial"));
+                    throw new Exception(Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] eof = Encoding.UTF8.GetBytes(

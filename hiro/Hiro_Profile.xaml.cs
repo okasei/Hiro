@@ -100,7 +100,7 @@ namespace hiro
             var str = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty);
             if (str.Trim().Equals(string.Empty))
             {
-                Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
+                Profile_Signature.Content = Hiro_Utils.Get_Translate("profilesign");
                 Profile_Signature.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
             }
             else
@@ -130,38 +130,38 @@ namespace hiro
                     Profile_Ellipse.Visibility = Visibility.Hidden;
                     break;
             }
-            var mac = Hiro_Utils.Read_Ini(App.dconfig, "Config", "User", Hiro_Utils.Get_Transalte("idnull"));
+            var mac = Hiro_Utils.Read_Ini(App.dconfig, "Config", "User", Hiro_Utils.Get_Translate("idnull"));
             Profile_Mac.Content = mac;
             Load = true;
         }
 
         public void Load_Translate()
         {
-            btn8.Content = Hiro_Utils.Get_Transalte("feedback");
-            btn9.Content = Hiro_Utils.Get_Transalte("whatsnew");
-            btn10.Content = Hiro_Utils.Get_Transalte("lgout");
-            name_label.Content = Hiro_Utils.Get_Transalte("namelabel");
-            rbtn16.Content = Hiro_Utils.Get_Transalte("namehiro");
-            rbtn17.Content = Hiro_Utils.Get_Transalte("namecus");
-            msg_label.Content = Hiro_Utils.Get_Transalte("msglabel");
-            msg_audio.Content = Hiro_Utils.Get_Transalte("msgaudio");
-            msg_auto.Content = Hiro_Utils.Get_Transalte("msgauto");
+            btn8.Content = Hiro_Utils.Get_Translate("feedback");
+            btn9.Content = Hiro_Utils.Get_Translate("whatsnew");
+            btn10.Content = Hiro_Utils.Get_Translate("lgout");
+            name_label.Content = Hiro_Utils.Get_Translate("namelabel");
+            rbtn16.Content = Hiro_Utils.Get_Translate("namehiro");
+            rbtn17.Content = Hiro_Utils.Get_Translate("namecus");
+            msg_label.Content = Hiro_Utils.Get_Translate("msglabel");
+            msg_audio.Content = Hiro_Utils.Get_Translate("msgaudio");
+            msg_auto.Content = Hiro_Utils.Get_Translate("msgauto");
             msg_status.Content = Convert.ToInt32(msg_level.Value) switch
             {
-                1 => Hiro_Utils.Get_Transalte("msghide"),
-                2 => Hiro_Utils.Get_Transalte("msglock"),
-                3 => Hiro_Utils.Get_Transalte("msgalways"),
-                _ => Hiro_Utils.Get_Transalte("msgnever")
+                1 => Hiro_Utils.Get_Translate("msghide"),
+                2 => Hiro_Utils.Get_Translate("msglock"),
+                3 => Hiro_Utils.Get_Translate("msgalways"),
+                _ => Hiro_Utils.Get_Translate("msgnever")
             };
-            disturb_label.Content = Hiro_Utils.Get_Transalte("disturblabel");
+            disturb_label.Content = Hiro_Utils.Get_Translate("disturblabel");
             disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
             {
-                1 => Hiro_Utils.Get_Transalte("disturbfs"),
-                2 => Hiro_Utils.Get_Transalte("disturbok"),
-                _ => Hiro_Utils.Get_Transalte("disturbno")
+                1 => Hiro_Utils.Get_Translate("disturbfs"),
+                2 => Hiro_Utils.Get_Translate("disturbok"),
+                _ => Hiro_Utils.Get_Translate("disturbno")
             };
             if (Profile_Signature.Foreground == (SolidColorBrush)Resources["AppForeDisabled"])
-                Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
+                Profile_Signature.Content = Hiro_Utils.Get_Translate("profilesign");
         }
 
         public void Load_Position()
@@ -250,11 +250,11 @@ namespace hiro
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "1");
             tb10.IsEnabled = false;
             App.AppTitle = Hiro_Resources.ApplicationName;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
             {
                 Hiro_Main.titlelabel.Content = App.AppTitle;
-                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
                 App.wnd.Hiro_Tray.ToolTipText = App.AppTitle;
@@ -264,11 +264,11 @@ namespace hiro
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "2");
             tb10.IsEnabled = true;
             App.AppTitle = tb10.Text;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
             {
                 Hiro_Main.titlelabel.Content = App.AppTitle;
-                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
                 App.wnd.Hiro_Tray.ToolTipText = tb10.Text;
@@ -280,11 +280,11 @@ namespace hiro
             {
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomHIRO", tb10.Text);
                 App.AppTitle = tb10.Text;
-                Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 if (Hiro_Main != null)
                 {
                     Hiro_Main.titlelabel.Content = App.AppTitle;
-                    Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                    Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 }
                 if (App.wnd != null)
                     App.wnd.Hiro_Tray.ToolTipText = tb10.Text;
@@ -299,10 +299,10 @@ namespace hiro
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Message", (Convert.ToInt32(msg_level.Value)).ToString());
                 msg_status.Content = Convert.ToInt32(msg_level.Value) switch
                 {
-                    1 => Hiro_Utils.Get_Transalte("msghide"),
-                    2 => Hiro_Utils.Get_Transalte("msglock"),
-                    3 => Hiro_Utils.Get_Transalte("msgalways"),
-                    _ => Hiro_Utils.Get_Transalte("msgnever")
+                    1 => Hiro_Utils.Get_Translate("msghide"),
+                    2 => Hiro_Utils.Get_Translate("msglock"),
+                    3 => Hiro_Utils.Get_Translate("msgalways"),
+                    _ => Hiro_Utils.Get_Translate("msgnever")
                 };
             }
 
@@ -315,9 +315,9 @@ namespace hiro
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Disturb", (Convert.ToInt32(disturb_level.Value)).ToString());
                 disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
                 {
-                    1 => Hiro_Utils.Get_Transalte("disturbfs"),
-                    2 => Hiro_Utils.Get_Transalte("disturbok"),
-                    _ => Hiro_Utils.Get_Transalte("disturbno")
+                    1 => Hiro_Utils.Get_Translate("disturbfs"),
+                    2 => Hiro_Utils.Get_Translate("disturbok"),
+                    _ => Hiro_Utils.Get_Translate("disturbno")
                 };
             }
         }
@@ -402,7 +402,7 @@ namespace hiro
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("chatdeve") + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate("chatdeve") + ",2)", Hiro_Utils.Get_Translate("profile"));
                         });
                     }
                 }
@@ -452,7 +452,7 @@ namespace hiro
             {
                 Profile_Signature_Textbox.Text = Profile_Signature_Textbox.Text.Trim().Equals(string.Empty) ? string.Empty : Profile_Signature_Textbox.Text;
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomSign", Profile_Signature_Textbox.Text);
-                Profile_Signature.Content = Profile_Signature_Textbox.Text.Equals(string.Empty) ? Hiro_Utils.Get_Transalte("profilesign") : Profile_Signature_Textbox.Text;
+                Profile_Signature.Content = Profile_Signature_Textbox.Text.Equals(string.Empty) ? Hiro_Utils.Get_Translate("profilesign") : Profile_Signature_Textbox.Text;
                 Profile_Signature.Foreground = Profile_Signature_Textbox.Text.Equals(string.Empty) ? (SolidColorBrush)Resources["AppForeDisabled"] : (SolidColorBrush)Resources["AppFore"];
                 Profile_Signature.Visibility = Visibility.Visible;
                 Profile_Signature_Textbox.Visibility = Visibility.Hidden;
@@ -474,11 +474,11 @@ namespace hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Transalte("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Transalte("allfiles") + "|*.*",
+                    Filter = Hiro_Utils.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
@@ -496,11 +496,11 @@ namespace hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Transalte("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Transalte("allfiles") + "|*.*",
+                    Filter = Hiro_Utils.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
@@ -679,7 +679,7 @@ namespace hiro
                             }
                             Dispatcher.Invoke(() =>
                             {
-                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate(trfile) + ",2)", Hiro_Utils.Get_Translate("profile"));
                             });
                         }).Start();
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
@@ -797,7 +797,7 @@ namespace hiro
                             }
                             Dispatcher.Invoke(() =>
                             {
-                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte(trfile) + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate(trfile) + ",2)", Hiro_Utils.Get_Translate("profile"));
                             });
                         }).Start();
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
@@ -833,10 +833,10 @@ namespace hiro
 
         private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!Profile_Mac.Content.Equals(Hiro_Utils.Get_Transalte("idnull")))
+            if (!Profile_Mac.Content.Equals(Hiro_Utils.Get_Translate("idnull")))
             {
                 Clipboard.SetText(Profile_Mac.Content.ToString());
-                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("idcopy") + ",2)", Hiro_Utils.Get_Transalte("profile"));
+                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate("idcopy") + ",2)", Hiro_Utils.Get_Translate("profile"));
             }
         }
 

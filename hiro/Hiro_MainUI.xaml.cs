@@ -485,24 +485,24 @@ namespace hiro
 
         public void Load_Translate()
         {
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Transalte("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             titlelabel.Content = App.AppTitle;
-            infotitle.Content = Hiro_Utils.Get_Transalte("infotitle");
-            minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
-            closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
-            infolabel.ToolTip = Hiro_Utils.Get_Transalte("info");
-            homex.Content = Hiro_Utils.Get_Transalte("home");
-            itemx.Content = Hiro_Utils.Get_Transalte("item");
-            schedulex.Content = Hiro_Utils.Get_Transalte("schedule");
-            configx.Content = Hiro_Utils.Get_Transalte("config");
-            profilex.Content = Hiro_Utils.Get_Transalte("profile");
-            aboutx.Content = Hiro_Utils.Get_Transalte("about");
-            newx.Content = Hiro_Utils.Get_Transalte("new");
-            colorx.Content = Hiro_Utils.Get_Transalte("color");
-            timex.Content = Hiro_Utils.Get_Transalte("time");
-            proxyx.Content = Hiro_Utils.Get_Transalte("proxy");
-            chatx.Content = Hiro_Utils.Get_Transalte("chat");
-            loginx.Content = Hiro_Utils.Get_Transalte("login");
+            infotitle.Content = Hiro_Utils.Get_Translate("infotitle");
+            minbtn.ToolTip = Hiro_Utils.Get_Translate("min");
+            closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
+            infolabel.ToolTip = Hiro_Utils.Get_Translate("info");
+            homex.Content = Hiro_Utils.Get_Translate("home");
+            itemx.Content = Hiro_Utils.Get_Translate("item");
+            schedulex.Content = Hiro_Utils.Get_Translate("schedule");
+            configx.Content = Hiro_Utils.Get_Translate("config");
+            profilex.Content = Hiro_Utils.Get_Translate("profile");
+            aboutx.Content = Hiro_Utils.Get_Translate("about");
+            newx.Content = Hiro_Utils.Get_Translate("new");
+            colorx.Content = Hiro_Utils.Get_Translate("color");
+            timex.Content = Hiro_Utils.Get_Translate("time");
+            proxyx.Content = Hiro_Utils.Get_Translate("proxy");
+            chatx.Content = Hiro_Utils.Get_Translate("chat");
+            loginx.Content = Hiro_Utils.Get_Translate("login");
             hiro_home?.Update_Labels();
             hiro_items?.Load_Translate();
             hiro_items?.Load_Position();
@@ -668,12 +668,12 @@ namespace hiro
 
         public void Set_Home_Labels(string val)
         {
-            val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Transalte(val).Replace("%u", App.EnvironmentUsername) : Hiro_Utils.Get_Transalte(val + "cus").Replace("%u", App.Username);
+            val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Translate(val).Replace("%u", App.EnvironmentUsername) : Hiro_Utils.Get_Translate(val + "cus").Replace("%u", App.Username);
             if (current is not Hiro_Home hh)
                 return;
             if (!hh.Hello.Text.Equals(val))
                 hh.Hello.Text = val;
-            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Transalte("copyright")));
+            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Translate("copyright")));
             if (!hh.Copyright.Text.Equals(val))
                 hh.Copyright.Text = val;
         }

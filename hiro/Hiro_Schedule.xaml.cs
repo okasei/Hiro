@@ -57,13 +57,13 @@ namespace hiro
 
         public void Load_Translate()
         {
-            scbtn_1.Content = Hiro_Utils.Get_Transalte("scnew");
-            scbtn_2.Content = Hiro_Utils.Get_Transalte("scdelete");
-            scbtn_3.Content = Hiro_Utils.Get_Transalte("scmodify");
-            dgs.Columns[0].Header = Hiro_Utils.Get_Transalte("sid");
-            dgs.Columns[1].Header = Hiro_Utils.Get_Transalte("sname");
-            dgs.Columns[2].Header = Hiro_Utils.Get_Transalte("stime");
-            dgs.Columns[3].Header = Hiro_Utils.Get_Transalte("scommand");
+            scbtn_1.Content = Hiro_Utils.Get_Translate("scnew");
+            scbtn_2.Content = Hiro_Utils.Get_Translate("scdelete");
+            scbtn_3.Content = Hiro_Utils.Get_Translate("scmodify");
+            dgs.Columns[0].Header = Hiro_Utils.Get_Translate("sid");
+            dgs.Columns[1].Header = Hiro_Utils.Get_Translate("sname");
+            dgs.Columns[2].Header = Hiro_Utils.Get_Translate("stime");
+            dgs.Columns[3].Header = Hiro_Utils.Get_Translate("scommand");
         }
 
         public void Load_Position()
@@ -89,7 +89,7 @@ namespace hiro
             Hiro_Main.hiro_newschedule.tb12.Text = "";
             Hiro_Main.hiro_newschedule.tb13.Text = "";
             Hiro_Main.hiro_newschedule.tb14.Text = "";
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("new");
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("new");
             Hiro_Main.current = Hiro_Main.hiro_newschedule;
             Hiro_Main.Set_Label(Hiro_Main.newx);
 
@@ -123,7 +123,7 @@ namespace hiro
                     Hiro_Main.hiro_newschedule.tb14.Text = App.scheduleitems[dgs.SelectedIndex].re.ToString();
                     break;
             }
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("mod");
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("mod");
             Hiro_Main.current = Hiro_Main.hiro_newschedule;
             Hiro_Main.Set_Label(Hiro_Main.newx);
         }

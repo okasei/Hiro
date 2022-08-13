@@ -16,7 +16,7 @@ namespace hiro
         public Hiro_LockScreen()
         {
             InitializeComponent();
-            Title = Hiro_Utils.Get_Transalte("locktitle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Translate("locktitle") + " - " + App.AppTitle;
             Load_Colors();
             SetValue(Canvas.LeftProperty, 0.0);
             Canvas.SetTop(this, -SystemParameters.PrimaryScreenHeight);

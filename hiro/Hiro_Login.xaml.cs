@@ -32,12 +32,12 @@ namespace hiro
 
         public void Load_Translate()
         {
-            Login_Title.Content = Hiro_Utils.Get_Transalte("lgtitle");
-            Name_Label.Content = Hiro_Utils.Get_Transalte("lgid");
-            Pwd_Label.Content = Hiro_Utils.Get_Transalte("lgpwd");
-            Create_Account.Content = Hiro_Utils.Get_Transalte("lgnew");
-            Login_Btn.Content = Hiro_Utils.Get_Transalte("lgbtn");
-            Auto_Login.Content = Hiro_Utils.Get_Transalte("lgauto");
+            Login_Title.Content = Hiro_Utils.Get_Translate("lgtitle");
+            Name_Label.Content = Hiro_Utils.Get_Translate("lgid");
+            Pwd_Label.Content = Hiro_Utils.Get_Translate("lgpwd");
+            Create_Account.Content = Hiro_Utils.Get_Translate("lgnew");
+            Login_Btn.Content = Hiro_Utils.Get_Translate("lgbtn");
+            Auto_Login.Content = Hiro_Utils.Get_Translate("lgauto");
         }
 
         public void Load_Position()
@@ -77,7 +77,7 @@ namespace hiro
 
         private void Create_Account_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Hiro_Utils.RunExe("https://id.rexio.cn/register/local.php?lang=" + App.lang, Hiro_Utils.Get_Transalte("login"));
+            Hiro_Utils.RunExe($"https://id.rexio.cn/register/local.php?lang={App.lang}", Hiro_Utils.Get_Translate("login"));
         }
 
         private void Login_Btn_Click(object sender, RoutedEventArgs e)
@@ -86,7 +86,7 @@ namespace hiro
                 return;
             if (App.Logined == null)
             {
-                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("lgging") + ",2)", Hiro_Utils.Get_Transalte("login"));
+                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("lgging")},2)", Hiro_Utils.Get_Translate("login"));
                 return;
             }
             if (App.Logined == true)
@@ -145,7 +145,7 @@ namespace hiro
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Read_Ini(tmp, "Login", "msg", Hiro_Utils.Get_Transalte("lgfailed")) + ",2)", Hiro_Utils.Get_Transalte("login"));
+                            Hiro_Utils.RunExe($"notify({Hiro_Utils.Read_Ini(tmp, "Login", "msg", Hiro_Utils.Get_Translate("lgfailed"))},2)", Hiro_Utils.Get_Translate("login"));
                         });
                         App.Logined = false;
                     }
@@ -168,7 +168,7 @@ namespace hiro
                         Name_Textbox.IsEnabled = true;
                         Pwd_Textbox.IsEnabled = true;
                         Auto_Login.IsEnabled = true;
-                        Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("lgfailed") + ",2)", Hiro_Utils.Get_Transalte("login"));
+                        Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("lgfailed")},2)", Hiro_Utils.Get_Translate("login"));
                     });
                     if (System.IO.File.Exists(tmp))
                         System.IO.File.Delete(tmp);

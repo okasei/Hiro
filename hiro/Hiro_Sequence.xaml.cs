@@ -24,7 +24,7 @@ namespace hiro
             Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             Load_Position();
             Load_Translate();
-            Title = Hiro_Utils.Get_Transalte("seqtitle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Translate("seqtitle") + " - " + App.AppTitle;
             var maxwidth = SystemParameters.PrimaryScreenWidth / 5;
             var btnwidth = skipbtn.Width + skipbtn.Margin.Right + 5;
             maxwidth = (maxwidth > btnwidth) ? maxwidth : btnwidth;
@@ -55,7 +55,7 @@ namespace hiro
 
         private void TimerTick()
         {
-            if (pausebtn.Content.Equals(Hiro_Utils.Get_Transalte("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Utils.Get_Translate("seqconti")))
                 return;
             tick--;
             Resizel(ci + 1, cmds.Count);                
@@ -87,10 +87,10 @@ namespace hiro
 
         public void Load_Translate()
         {
-            skipbtn.Content = Hiro_Utils.Get_Transalte("seqskip");
-            textblock.Text = Hiro_Utils.Get_Transalte("seqload");
-            pausebtn.Content = Hiro_Utils.Get_Transalte("seqpause");
-            cancelbtn.Content = Hiro_Utils.Get_Transalte("seqcancel");
+            skipbtn.Content = Hiro_Utils.Get_Translate("seqskip");
+            textblock.Text = Hiro_Utils.Get_Translate("seqload");
+            pausebtn.Content = Hiro_Utils.Get_Translate("seqpause");
+            cancelbtn.Content = Hiro_Utils.Get_Translate("seqcancel");
         }
         public void Load_Colors()
         {
@@ -126,7 +126,7 @@ namespace hiro
         }
         internal void Next_CMD()
         {
-            if (pausebtn.Content.Equals(Hiro_Utils.Get_Transalte("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Utils.Get_Translate("seqconti")))
                 return;
             if (cmds.Count <= ci)
             {
@@ -141,7 +141,7 @@ namespace hiro
             ci++;
             if (sc.ToLower().Equals("trap") || sc.ToLower().Equals("trap()"))
             {
-                pausebtn.Content = Hiro_Utils.Get_Transalte("seqconti");
+                pausebtn.Content = Hiro_Utils.Get_Translate("seqconti");
                 return;
             }
             if (sc.ToLower().StartsWith("pause("))
@@ -197,7 +197,7 @@ namespace hiro
                 Next_CMD();
                 return;
             }
-            Hiro_Utils.RunExe(sc, Hiro_Utils.Get_Transalte("seqtitle"));
+            Hiro_Utils.RunExe(sc, Hiro_Utils.Get_Translate("seqtitle"));
             if (App.dflag)
                 Hiro_Utils.LogtoFile(sc);
             Next_CMD();
@@ -222,14 +222,14 @@ namespace hiro
             var changed = false;
             try
             {
-                var next = Hiro_Utils.Get_Transalte("seqnext");
+                var next = Hiro_Utils.Get_Translate("seqnext");
                 var sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
-                var current = Hiro_Utils.Get_Transalte("seqcurrent") + sc;
+                var current = Hiro_Utils.Get_Translate("seqcurrent") + sc;
                 var inde = (ci + 1).ToString() + "/" + cmds.Count.ToString();
                 if (tick > 0)
-                    current = current + Environment.NewLine + Hiro_Utils.Get_Transalte("seqcd").Replace("%s", tick.ToString());
+                    current = current + Environment.NewLine + Hiro_Utils.Get_Translate("seqcd").Replace("%s", tick.ToString());
                 if (ci >= cmds.Count - 1)
-                    next += Hiro_Utils.Get_Transalte("seqfinish");
+                    next += Hiro_Utils.Get_Translate("seqfinish");
                 else
                     next += cmds[ci + 1];
                 changed = textblock.Text == inde + Environment.NewLine + current + Environment.NewLine + next;
@@ -295,13 +295,13 @@ namespace hiro
 
         private void Rejectbtn_Click(object sender, RoutedEventArgs e)
         {
-            if (pausebtn.Content.Equals(Hiro_Utils.Get_Transalte("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Utils.Get_Translate("seqconti")))
             {
-                pausebtn.Content = Hiro_Utils.Get_Transalte("seqpause");
+                pausebtn.Content = Hiro_Utils.Get_Translate("seqpause");
                 Next_CMD();
             }
             else
-                pausebtn.Content = Hiro_Utils.Get_Transalte("seqconti");
+                pausebtn.Content = Hiro_Utils.Get_Translate("seqconti");
         }
 
         private void Cancelbtn_MouseDown(object sender, MouseButtonEventArgs e)
@@ -370,7 +370,7 @@ namespace hiro
 
         private void Seq_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            pausebtn.Content = Hiro_Utils.Get_Transalte("seqconti");
+            pausebtn.Content = Hiro_Utils.Get_Translate("seqconti");
             tick = 0;
             if (parent == null)
                 return;

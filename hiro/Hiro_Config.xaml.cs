@@ -195,44 +195,44 @@ namespace hiro
 
         public void Load_Translate()
         {
-            btn10.Content = Hiro_Utils.Get_Transalte("bgcustom");
-            rbtn1.Content = Hiro_Utils.Get_Transalte("showwin");
-            rbtn2.Content = Hiro_Utils.Get_Transalte("showmenu");
-            rbtn3.Content = Hiro_Utils.Get_Transalte("runcmd");
-            rbtn4.Content = Hiro_Utils.Get_Transalte("showwin");
-            rbtn5.Content = Hiro_Utils.Get_Transalte("showmenu");
-            rbtn6.Content = Hiro_Utils.Get_Transalte("runcmd");
-            rbtn7.Content = Hiro_Utils.Get_Transalte("showwin");
-            rbtn8.Content = Hiro_Utils.Get_Transalte("showmenu");
-            rbtn9.Content = Hiro_Utils.Get_Transalte("runcmd");
-            rbtn12.Content = Hiro_Utils.Get_Transalte("disabled");
-            rbtn13.Content = Hiro_Utils.Get_Transalte("runcmd");
-            rbtn14.Content = Hiro_Utils.Get_Transalte("colortheme");
-            rbtn15.Content = Hiro_Utils.Get_Transalte("imagetheme");
-            video_btn.Content = Hiro_Utils.Get_Transalte("videotheme");
+            btn10.Content = Hiro_Utils.Get_Translate("bgcustom");
+            rbtn1.Content = Hiro_Utils.Get_Translate("showwin");
+            rbtn2.Content = Hiro_Utils.Get_Translate("showmenu");
+            rbtn3.Content = Hiro_Utils.Get_Translate("runcmd");
+            rbtn4.Content = Hiro_Utils.Get_Translate("showwin");
+            rbtn5.Content = Hiro_Utils.Get_Translate("showmenu");
+            rbtn6.Content = Hiro_Utils.Get_Translate("runcmd");
+            rbtn7.Content = Hiro_Utils.Get_Translate("showwin");
+            rbtn8.Content = Hiro_Utils.Get_Translate("showmenu");
+            rbtn9.Content = Hiro_Utils.Get_Translate("runcmd");
+            rbtn12.Content = Hiro_Utils.Get_Translate("disabled");
+            rbtn13.Content = Hiro_Utils.Get_Translate("runcmd");
+            rbtn14.Content = Hiro_Utils.Get_Translate("colortheme");
+            rbtn15.Content = Hiro_Utils.Get_Translate("imagetheme");
+            video_btn.Content = Hiro_Utils.Get_Translate("videotheme");
             if (!double.TryParse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
             bg_slider.Value = to;
-            cb_box.Content = Hiro_Utils.Get_Transalte("minclose");
-            Autorun.Content = Hiro_Utils.Get_Transalte("autorun");
-            blureff.Content = Hiro_Utils.Get_Transalte("blurbox");
-            win_style.Content = Hiro_Utils.Get_Transalte("winbox");
-            reverse_style.Content = Hiro_Utils.Get_Transalte("reversebox");
-            tr_btn.Content = Hiro_Utils.Get_Transalte("trbtnbox");
-            image_compress.Content = Hiro_Utils.Get_Transalte("imgzip");
-            Verbose.Content = Hiro_Utils.Get_Transalte("verbosebox");
-            animation.Content = Hiro_Utils.Get_Transalte("anibox");
-            lc_label.Content = Hiro_Utils.Get_Transalte("leftclick");
-            mc_label.Content = Hiro_Utils.Get_Transalte("middleclick");
-            rc_label.Content = Hiro_Utils.Get_Transalte("rightclick");
-            ar_label.Content = Hiro_Utils.Get_Transalte("autoexe");
-            bg_label.Content = Hiro_Utils.Get_Transalte("background");
-            bg_darker.Content = Hiro_Utils.Get_Transalte("bgdarker");
-            bg_brighter.Content = Hiro_Utils.Get_Transalte("bgbrighter");
-            langlabel.Content = Hiro_Utils.Get_Transalte("language");
-            moreandsoon.Content = Hiro_Utils.Get_Transalte("morecome");
-            btn7.Content = Hiro_Utils.Get_Transalte("lock");
-            btnx1.Content = Hiro_Utils.Get_Transalte("proxybtn");
+            cb_box.Content = Hiro_Utils.Get_Translate("minclose");
+            Autorun.Content = Hiro_Utils.Get_Translate("autorun");
+            blureff.Content = Hiro_Utils.Get_Translate("blurbox");
+            win_style.Content = Hiro_Utils.Get_Translate("winbox");
+            reverse_style.Content = Hiro_Utils.Get_Translate("reversebox");
+            tr_btn.Content = Hiro_Utils.Get_Translate("trbtnbox");
+            image_compress.Content = Hiro_Utils.Get_Translate("imgzip");
+            Verbose.Content = Hiro_Utils.Get_Translate("verbosebox");
+            animation.Content = Hiro_Utils.Get_Translate("anibox");
+            lc_label.Content = Hiro_Utils.Get_Translate("leftclick");
+            mc_label.Content = Hiro_Utils.Get_Translate("middleclick");
+            rc_label.Content = Hiro_Utils.Get_Translate("rightclick");
+            ar_label.Content = Hiro_Utils.Get_Translate("autoexe");
+            bg_label.Content = Hiro_Utils.Get_Translate("background");
+            bg_darker.Content = Hiro_Utils.Get_Translate("bgdarker");
+            bg_brighter.Content = Hiro_Utils.Get_Translate("bgbrighter");
+            langlabel.Content = Hiro_Utils.Get_Translate("language");
+            moreandsoon.Content = Hiro_Utils.Get_Translate("morecome");
+            btn7.Content = Hiro_Utils.Get_Translate("lock");
+            btnx1.Content = Hiro_Utils.Get_Translate("proxybtn");
         }
 
         public void Load_Color()
@@ -609,11 +609,11 @@ namespace hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Transalte("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Transalte("allfiles") + "|*.*",
+                    Filter = Hiro_Utils.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
@@ -679,15 +679,15 @@ namespace hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Transalte("vidfiles") + 
+                    Filter = Hiro_Utils.Get_Translate("vidfiles") + 
                     "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;*.m4v;*.mkv;*.mov;"+
                     "*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;*.rec;*.rm;*.rmvb;"+
                     "*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
-                    + Hiro_Utils.Get_Transalte("allfiles") + "|*.*",
+                    + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle
+                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {

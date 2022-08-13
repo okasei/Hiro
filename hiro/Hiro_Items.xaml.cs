@@ -61,16 +61,16 @@ namespace hiro
 
         public void Load_Translate()
         {
-            btn1.Content = Hiro_Utils.Get_Transalte("inew");
-            btn2.Content = Hiro_Utils.Get_Transalte("iup");
-            btn3.Content = Hiro_Utils.Get_Transalte("idown");
-            btn4.Content = Hiro_Utils.Get_Transalte("ilaunch");
-            btn5.Content = Hiro_Utils.Get_Transalte("idelete");
-            btn6.Content = Hiro_Utils.Get_Transalte("imodify");
-            dgi.Columns[0].Header = Hiro_Utils.Get_Transalte("page");
-            dgi.Columns[1].Header = Hiro_Utils.Get_Transalte("id");
-            dgi.Columns[2].Header = Hiro_Utils.Get_Transalte("Name");
-            dgi.Columns[3].Header = Hiro_Utils.Get_Transalte("Command");
+            btn1.Content = Hiro_Utils.Get_Translate("inew");
+            btn2.Content = Hiro_Utils.Get_Translate("iup");
+            btn3.Content = Hiro_Utils.Get_Translate("idown");
+            btn4.Content = Hiro_Utils.Get_Translate("ilaunch");
+            btn5.Content = Hiro_Utils.Get_Translate("idelete");
+            btn6.Content = Hiro_Utils.Get_Translate("imodify");
+            dgi.Columns[0].Header = Hiro_Utils.Get_Translate("page");
+            dgi.Columns[1].Header = Hiro_Utils.Get_Translate("id");
+            dgi.Columns[2].Header = Hiro_Utils.Get_Translate("Name");
+            dgi.Columns[3].Header = Hiro_Utils.Get_Translate("Command");
         }
 
         public void Load_Position()
@@ -100,7 +100,7 @@ namespace hiro
             Hiro_Main.hiro_newitem.tb8.Text = "";
             Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
             Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("new");
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("new");
             Hiro_Main.current = Hiro_Main.hiro_newitem;
             Hiro_Main.Set_Label(Hiro_Main.newx);
 
@@ -241,7 +241,7 @@ namespace hiro
                 Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
                 Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
             }
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Transalte("mod");
+            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("mod");
             Hiro_Main.current = Hiro_Main.hiro_newitem;
             Hiro_Main.Set_Label(Hiro_Main.newx);
         }

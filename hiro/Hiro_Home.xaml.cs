@@ -50,23 +50,23 @@ namespace hiro
             afternoon = afternoon.Replace("[", "[,").Replace("]", ",]").Trim();
             evening = evening.Replace("[", "[,").Replace("]", ",]").Trim();
             night = night.Replace("[", "[,").Replace("]", ",]").Trim();
-            if (morning.IndexOf("," + hr + ",") != -1)
+            if (morning.IndexOf($",{hr},") != -1)
             {
                 Set_Labels("morning");
             }
-            else if (noon.IndexOf("," + hr + ",") != -1)
+            else if (noon.IndexOf($",{hr},") != -1)
             {
                 Set_Labels("noon");
             }
-            else if (afternoon.IndexOf("," + hr + ",") != -1)
+            else if (afternoon.IndexOf($",{hr},") != -1)
             {
                 Set_Labels("afternoon");
             }
-            else if (evening.IndexOf("," + hr + ",") != -1)
+            else if (evening.IndexOf($",{hr},") != -1)
             {
                 Set_Labels("evening");
             }
-            else if (night.IndexOf("," + hr + ",") != -1)
+            else if (night.IndexOf($",{hr},") != -1)
             {
                 Set_Labels("night");
             }
@@ -74,10 +74,10 @@ namespace hiro
 
         private void Set_Labels(string val)
         {
-            val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Transalte(val).Replace("%u", App.EnvironmentUsername) : Hiro_Utils.Get_Transalte(val + "cus").Replace("%u", App.Username);
+            val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Translate(val).Replace("%u", App.EnvironmentUsername) : Hiro_Utils.Get_Translate(val + "cus").Replace("%u", App.Username);
             if (!Hello.Text.Equals(val))
                 Hello.Text = val;
-            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Transalte("copyright")));
+            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Translate("copyright")));
             if (!Copyright.Text.Equals(val))
                 Copyright.Text = val;
         }

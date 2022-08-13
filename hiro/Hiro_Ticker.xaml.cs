@@ -55,11 +55,11 @@ namespace hiro
 
         internal void Load_Translate()
         {
-            Title = Hiro_Utils.Get_Transalte("httitle").Replace("%h", App.AppTitle);
-            maxbtn.ToolTip = Hiro_Utils.Get_Transalte("htup");
-            resbtn.ToolTip = Hiro_Utils.Get_Transalte("htdown");
-            minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
-            closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
+            Title = Hiro_Utils.Get_Translate("httitle").Replace("%h", App.AppTitle);
+            maxbtn.ToolTip = Hiro_Utils.Get_Translate("htup");
+            resbtn.ToolTip = Hiro_Utils.Get_Translate("htdown");
+            minbtn.ToolTip = Hiro_Utils.Get_Translate("min");
+            closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
         }
 
         public void HiHiro()

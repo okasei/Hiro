@@ -198,7 +198,7 @@ namespace hiro
         {
             var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
             StrFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, UserId, "Profile", string.Empty)));
-            Aite = Hiro_Utils.Read_Ini(StrFileName, "Config", "Name", Hiro_Utils.Get_Transalte("chatuser").Replace("%m", UserId));
+            Aite = Hiro_Utils.Read_Ini(StrFileName, "Config", "Name", Hiro_Utils.Get_Translate("chatuser").Replace("%m", UserId));
             Dispatcher.Invoke(() =>
             {
                 if (!Profile_Nickname.Content.Equals(Aite))
@@ -210,9 +210,9 @@ namespace hiro
                 Profile_Signature.Content = Hiro_Utils.Read_Ini(StrFileName, "Config", "Signature", string.Empty);
                 var psc = Profile_Signature.Content.ToString();
                 if (psc == null)
-                    Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
+                    Profile_Signature.Content = Hiro_Utils.Get_Translate("profilesign");
                 else if (psc.Trim().Equals(string.Empty))
-                    Profile_Signature.Content = Hiro_Utils.Get_Transalte("profilesign");
+                    Profile_Signature.Content = Hiro_Utils.Get_Translate("profilesign");
                 switch (Hiro_Utils.Read_Ini(StrFileName, "Config", "Avatar", "1"))
                 {
                     case "0":
@@ -354,7 +354,7 @@ namespace hiro
                             Dispatcher.Invoke(() =>
                             {
                                 Hiro_Main?.Set_Label(Hiro_Main.loginx);
-                                App.Notify(new(Hiro_Utils.Get_Transalte("lgexpired"), 2, Hiro_Utils.Get_Transalte("chat")));
+                                App.Notify(new(Hiro_Utils.Get_Translate("lgexpired"), 2, Hiro_Utils.Get_Translate("chat")));
                             });
                         }
                         else
@@ -372,7 +372,7 @@ namespace hiro
                     Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Update");
                     Dispatcher.Invoke(() =>
                     {
-                        AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnofetch"));
+                        AddErrorMsg(Hiro_Utils.Get_Translate("chatsys"), Hiro_Utils.Get_Translate("chatnofetch"));
                     });
                 }
             }).Start();
@@ -434,13 +434,13 @@ namespace hiro
                     };
                     var pre = icon[2].Replace("\\\\", "<hisplash>").Replace("\\n", Environment.NewLine).Replace("<hisplash>", "\\\\");
                     if (pre.Contains("[Hiro.Predefinited:LikeAvatar]"))
-                        pre = Hiro_Utils.Get_Transalte("avatarlike");
+                        pre = Hiro_Utils.Get_Translate("avatarlike");
                     if (pre.Contains("[Hiro.Predefinited:LikeProfile]"))
-                        pre = Hiro_Utils.Get_Transalte("profilelike");
+                        pre = Hiro_Utils.Get_Translate("profilelike");
                     if (pre.Contains("[Hiro.Predefinited:LikeName]"))
-                        pre = Hiro_Utils.Get_Transalte("namelike");
+                        pre = Hiro_Utils.Get_Translate("namelike");
                     if (pre.Contains("[Hiro.Predefinited:LikeSign]"))
-                        pre = Hiro_Utils.Get_Transalte("signlike");
+                        pre = Hiro_Utils.Get_Translate("signlike");
                     Run wrun = new()
                     {
                         Text = pre
@@ -464,7 +464,7 @@ namespace hiro
             catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Load");
-                AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), ex.Message);
+                AddErrorMsg(Hiro_Utils.Get_Translate("chatsys"), ex.Message);
             }
         }
 
@@ -493,24 +493,24 @@ namespace hiro
                     case 0:
                         break;
                     case 1:
-                        content = Hiro_Utils.Get_Transalte("msgnew").Replace("%u", user);
+                        content = Hiro_Utils.Get_Translate("msgnew").Replace("%u", user);
                         break;
                     case 2:
                         if(App.Locked)
-                            content = Hiro_Utils.Get_Transalte("msgnew").Replace("%u", user);
+                            content = Hiro_Utils.Get_Translate("msgnew").Replace("%u", user);
                         break;
                     default:
                         break;
                 }
                 var cont = content.Trim();
                 if (cont.Contains("[Hiro.Predefinited:LikeAvatar]"))
-                    content = Hiro_Utils.Get_Transalte("avatarlike");
+                    content = Hiro_Utils.Get_Translate("avatarlike");
                 if (cont.Contains("[Hiro.Predefinited:LikeProfile]"))
-                    content = Hiro_Utils.Get_Transalte("profilelike");
+                    content = Hiro_Utils.Get_Translate("profilelike");
                 if (cont.Contains("[Hiro.Predefinited:LikeName]"))
-                    content = Hiro_Utils.Get_Transalte("namelike");
+                    content = Hiro_Utils.Get_Translate("namelike");
                 if (cont.Contains("[Hiro.Predefinited:LikeSign]"))
-                    content = Hiro_Utils.Get_Transalte("signlike");
+                    content = Hiro_Utils.Get_Translate("signlike");
                 if (i != 0)
                     App.Notify(new(user + ": " + content, 2, user));
                 if(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
@@ -535,7 +535,7 @@ namespace hiro
                 if (!res.Equals("success"))
                     Dispatcher.Invoke(() =>
                     {
-                        AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatsenderror"));
+                        AddErrorMsg(Hiro_Utils.Get_Translate("chatsys"), Hiro_Utils.Get_Translate("chatsenderror"));
                     });
                 else if (res.Equals("IDENTIFY_ERROR"))
                 {
@@ -543,7 +543,7 @@ namespace hiro
                     Dispatcher.Invoke(() =>
                     {
                         Hiro_Main?.Set_Label(Hiro_Main.loginx);
-                        App.Notify(new(Hiro_Utils.Get_Transalte("lgexpired"), 2, Hiro_Utils.Get_Transalte("chat")));
+                        App.Notify(new(Hiro_Utils.Get_Translate("lgexpired"), 2, Hiro_Utils.Get_Translate("chat")));
                     });
                 }
                     
@@ -553,7 +553,7 @@ namespace hiro
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Send");
                 Dispatcher.Invoke(() =>
                 {
-                    AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatsenderror"));
+                    AddErrorMsg(Hiro_Utils.Get_Translate("chatsys"), Hiro_Utils.Get_Translate("chatsenderror"));
                 });
             }
             
@@ -574,7 +574,7 @@ namespace hiro
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatdeve"));
+                        AddErrorMsg(Hiro_Utils.Get_Translate("chatsys"), Hiro_Utils.Get_Translate("chatdeve"));
                     });
                 }
             }
@@ -583,13 +583,13 @@ namespace hiro
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Update.Nickname");
                 Dispatcher.Invoke(() =>
                 {
-                    AddErrorMsg(Hiro_Utils.Get_Transalte("chatsys"), Hiro_Utils.Get_Transalte("chatnonick"));
+                    AddErrorMsg(Hiro_Utils.Get_Translate("chatsys"), Hiro_Utils.Get_Translate("chatnonick"));
                 });
             }
         }
         public void Load_Translate()
         {
-            SendButton.Content = Hiro_Utils.Get_Transalte("chatsend");
+            SendButton.Content = Hiro_Utils.Get_Translate("chatsend");
         }
 
         public void Load_Position()
@@ -703,7 +703,7 @@ namespace hiro
         private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Clipboard.SetText(Profile_Mac.Content.ToString());
-            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Transalte("chatmcopy").Replace("%u", Aite) + ",2)", Hiro_Utils.Get_Transalte("chat"));
+            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate("chatmcopy").Replace("%u", Aite) + ",2)", Hiro_Utils.Get_Translate("chat"));
         }
 
         private void Profile_MouseEnter(object sender, MouseEventArgs e)

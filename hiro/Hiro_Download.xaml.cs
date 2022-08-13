@@ -79,14 +79,14 @@ namespace hiro
         }
         void Load_Translate()
         {
-            Title = Hiro_Utils.Get_Transalte("dltitle") + " - " + App.AppTitle;
-            ala_title.Content = Hiro_Utils.Get_Transalte("dltitle");
-            albtn_1.Content = Hiro_Utils.Get_Transalte("dlstart");
-            urllabel.Content = mode == 1 ? Hiro_Utils.Get_Transalte("dlupdate").Replace("%u", product) : Hiro_Utils.Get_Transalte("dllink");
-            pathlabel.Content = Hiro_Utils.Get_Transalte("dlpath");
-            Autorun.Content = Hiro_Utils.Get_Transalte("dlrun");
-            minbtn.ToolTip = Hiro_Utils.Get_Transalte("min");
-            closebtn.ToolTip = Hiro_Utils.Get_Transalte("close");
+            Title = Hiro_Utils.Get_Translate("dltitle") + " - " + App.AppTitle;
+            ala_title.Content = Hiro_Utils.Get_Translate("dltitle");
+            albtn_1.Content = Hiro_Utils.Get_Translate("dlstart");
+            urllabel.Content = mode == 1 ? Hiro_Utils.Get_Translate("dlupdate").Replace("%u", product) : Hiro_Utils.Get_Translate("dllink");
+            pathlabel.Content = Hiro_Utils.Get_Translate("dlpath");
+            Autorun.Content = Hiro_Utils.Get_Translate("dlrun");
+            minbtn.ToolTip = Hiro_Utils.Get_Translate("min");
+            closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
         }
         void Load_Position()
         {
@@ -124,7 +124,7 @@ namespace hiro
             //获取http下载路径
             stopflag = 0;
             pb.Value = 0;
-            albtn_1.Content = Hiro_Utils.Get_Transalte("dlend");
+            albtn_1.Content = Hiro_Utils.Get_Translate("dlend");
             textBoxHttpUrl.IsEnabled = false;
             SavePath.IsEnabled = false;
             if (!rurl.StartsWith("http://") && !rurl.StartsWith("https://"))
@@ -137,7 +137,7 @@ namespace hiro
                 }
                 else
                 {
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("syntax"), 2, Hiro_Utils.Get_Transalte("download")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("syntax"), 2, Hiro_Utils.Get_Translate("download")));
                     textBoxHttpUrl.Focus();//url地址栏获取焦点
                     Stop_Download(false);
                     return;
@@ -183,7 +183,7 @@ namespace hiro
             catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Download.Continue");
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
+                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("dlerror"), 2, Hiro_Utils.Get_Translate("download")));
                 Stop_Download(false);
                 return;
             }
@@ -242,7 +242,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     Hiro_Utils.LogError(ex, "Hiro.Exception.Download.Write");
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlerror"), 2, Hiro_Utils.Get_Transalte("download")));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("dlerror"), 2, Hiro_Utils.Get_Translate("download")));
                     successflag = false;
                     break;
                 }
@@ -261,7 +261,7 @@ namespace hiro
                 }
                 else
                 {
-                    ala_title.Content = progress + FormateSize(readLength + startpos) + "/" + Hiro_Utils.Get_Transalte("dlunknown");
+                    ala_title.Content = progress + FormateSize(readLength + startpos) + "/" + Hiro_Utils.Get_Translate("dlunknown");
                     Title = ala_title.Content.ToString() + " - " + App.AppTitle;
                     pb.IsIndeterminate = true;
                 }
@@ -341,15 +341,15 @@ namespace hiro
             Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             pb.IsIndeterminate = false;
             pb.Value = 0;
-            albtn_1.Content = Hiro_Utils.Get_Transalte("dlstart");
+            albtn_1.Content = Hiro_Utils.Get_Translate("dlstart");
             textBoxHttpUrl.IsEnabled = true;
             SavePath.IsEnabled = true;
-            ala_title.Content = progress + (success ? Hiro_Utils.Get_Transalte("dlsuccess") : Hiro_Utils.Get_Transalte("dltitle"));
+            ala_title.Content = progress + (success ? Hiro_Utils.Get_Translate("dlsuccess") : Hiro_Utils.Get_Translate("dltitle"));
             Title = ala_title.Content.ToString() + " - " + App.AppTitle;
             stopflag = 1;
             if (success)
             {
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("dlsuccess"), 2, Hiro_Utils.Get_Transalte("download")));
+                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("dlsuccess"), 2, Hiro_Utils.Get_Translate("download")));
                 current = -1;
                 listfile = "";
             }
@@ -380,7 +380,7 @@ namespace hiro
         }
         private void Albtn_1_Click(object sender, RoutedEventArgs e)
         {
-            if (albtn_1.Content.Equals(Hiro_Utils.Get_Transalte("dlstart")))
+            if (albtn_1.Content.Equals(Hiro_Utils.Get_Translate("dlstart")))
             {
                 if (current > 1)
                     progress = "[" + current.ToString() + "/?]";
@@ -437,13 +437,13 @@ namespace hiro
 
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
-            Autorun.Content = Hiro_Utils.Get_Transalte("dlopen");
+            Autorun.Content = Hiro_Utils.Get_Translate("dlopen");
             Hiro_Utils.Set_Control_Location(Autorun, "dlopen", bottom: true);
         }
 
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
-            Autorun.Content = Hiro_Utils.Get_Transalte("dlrun");
+            Autorun.Content = Hiro_Utils.Get_Translate("dlrun");
             Hiro_Utils.Set_Control_Location(Autorun, "dlrun", bottom: true);
         }
 

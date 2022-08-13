@@ -288,12 +288,12 @@ namespace hiro
                             if (FirstUse)
                             {
                                 FirstUse = false;
-                                Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + lang + "\\welcome.hws)", Hiro_Utils.Get_Transalte("infofirst").Replace("%h", AppTitle));
+                                Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + lang + "\\welcome.hws)", Hiro_Utils.Get_Translate("infofirst").Replace("%h", AppTitle));
                             }
                             if (autoexe)
                             {
                                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoExe", "1").Equals("2"))
-                                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Transalte("autoexe"));
+                                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Translate("autoexe"));
                             }
                             InitializeMethod();
                             Build_Socket();
@@ -349,8 +349,8 @@ namespace hiro
             {
                 mn?.AddToInfoCenter(
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
-                        + "\t" + Hiro_Utils.Get_Transalte("infocmd") + ":" + "\tnotify(" + i.msg + ")" + Environment.NewLine
-                        + "\t" + Hiro_Utils.Get_Transalte("infosource") + ":" + "\t" + i.title + Environment.NewLine);
+                        + "\t" + Hiro_Utils.Get_Translate("infocmd") + ":" + "\tnotify(" + i.msg + ")" + Environment.NewLine
+                        + "\t" + Hiro_Utils.Get_Translate("infosource") + ":" + "\t" + i.title + Environment.NewLine);
             }
             Hiro_Utils.LogtoFile("[NOTIFICATION]" + i.msg);
         }
@@ -397,7 +397,7 @@ namespace hiro
                     switch (action)
                     {
                         case "uok":
-                            Hiro_Utils.RunExe(url, Hiro_Utils.Get_Transalte("alarm"));
+                            Hiro_Utils.RunExe(url, Hiro_Utils.Get_Translate("alarm"));
                             break;
                         case "uskip":
                             break;
@@ -619,13 +619,13 @@ namespace hiro
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)
-                            .AddText(Hiro_Utils.Get_Transalte("alarmtitle"))
+                            .AddText(Hiro_Utils.Get_Translate("alarmtitle"))
                             .AddText(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                        .SetContent(Hiro_Utils.Get_Transalte("alarmok"))
+                                        .SetContent(Hiro_Utils.Get_Translate("alarmok"))
                                         .AddArgument("action", "ok"))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                        .SetContent(Hiro_Utils.Get_Transalte("alarmdelay"))
+                                        .SetContent(Hiro_Utils.Get_Translate("alarmdelay"))
                                         .AddArgument("action", "delay"))
                             .AddArgument("alarmid", (i - 1).ToString())
                         .Show();
@@ -643,8 +643,8 @@ namespace hiro
                         {
                             mn?.AddToInfoCenter(
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
-                            + "\t" + Hiro_Utils.Get_Transalte("infocmd") + ":" + "\t" + Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))) + Environment.NewLine
-                            + "\t" + Hiro_Utils.Get_Transalte("infosource") + ":" + "\t" + Hiro_Utils.Get_Transalte("alarm") + Environment.NewLine);
+                            + "\t" + Hiro_Utils.Get_Translate("infocmd") + ":" + "\t" + Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))) + Environment.NewLine
+                            + "\t" + Hiro_Utils.Get_Translate("infosource") + ":" + "\t" + Hiro_Utils.Get_Translate("alarm") + Environment.NewLine);
                         }
                         switch (scheduleitems[i - 1].re)
                         {
@@ -663,7 +663,7 @@ namespace hiro
                                 Hiro_Utils.Write_Ini(sconfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                         }
-                        Hiro_Utils.RunExe(scheduleitems[i - 1].Command, Hiro_Utils.Get_Transalte("alarm"));
+                        Hiro_Utils.RunExe(scheduleitems[i - 1].Command, Hiro_Utils.Get_Translate("alarm"));
                     }
                 }
                 i++;
@@ -690,14 +690,14 @@ namespace hiro
             else if (qtitle != QQTitle && qtitle != null && !qtitle.Equals("QQ音乐") && !qtitle.Equals("桌面歌词"))
             {
                 QQTitle = qtitle;
-                Notify(new(Hiro_Utils.Get_Transalte("qqmusic").Replace("%m", qtitle), 2, AppTitle));
+                Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, AppTitle));
             }
             if (Initialize_Title(NeteasePtr, out string? ntitle) == 0)
                 NeteasePtr = Initialize_Ptr("cloudmusic");
             else if (ntitle != NeteaseTitle && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐") && !ntitle.Equals("桌面歌词"))
             {
                 NeteaseTitle = ntitle;
-                Notify(new(Hiro_Utils.Get_Transalte("netmusic").Replace("%m", ntitle), 2, AppTitle));
+                Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, AppTitle));
             }
             if (Initialize_Title(KuwoPtr, out string? kwtitle) == 0)
                 KuwoPtr = Initialize_Ptr("kwmusic");
@@ -712,7 +712,7 @@ namespace hiro
                     }
                 }
                 KuwoTitle = kwtitle;
-                Notify(new(Hiro_Utils.Get_Transalte("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, AppTitle));
+                Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, AppTitle));
             }
         }
 
@@ -765,7 +765,7 @@ namespace hiro
                         {
                             string? str = mu.Tag.ToString();
                             if (str != null)
-                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Utils.Get_Transalte("menu"));
+                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Utils.Get_Translate("menu"));
 
                         }
                         catch (Exception ex)
@@ -784,7 +784,7 @@ namespace hiro
                     };
                     if (page <= 0)
                         pre.IsEnabled = false;
-                    pre.Header = Hiro_Utils.Get_Transalte("menupre");
+                    pre.Header = Hiro_Utils.Get_Translate("menupre");
                     pre.Click += delegate
                     {
                         page--;
@@ -805,7 +805,7 @@ namespace hiro
                     };
                     if (page >= total - 1)
                         next.IsEnabled = false;
-                    next.Header = Hiro_Utils.Get_Transalte("menunext");
+                    next.Header = Hiro_Utils.Get_Translate("menunext");
                     next.Click += delegate
                     {
                         page++;
@@ -818,7 +818,7 @@ namespace hiro
                 {
                     MenuItem pageid = new();
                     pageid.IsEnabled = false;
-                    pageid.Header = Hiro_Utils.Get_Transalte("menunull");
+                    pageid.Header = Hiro_Utils.Get_Translate("menunull");
                     wnd.cm.Items.Add(pageid);
                 }
                 wnd.cm.Items.Add(new Separator());
@@ -826,20 +826,20 @@ namespace hiro
                 {
                     Background = new SolidColorBrush(Colors.Transparent)
                 };
-                show.Header = Hiro_Utils.Get_Transalte("menushow");
+                show.Header = Hiro_Utils.Get_Translate("menushow");
                 show.Click += delegate
                 {
-                    Hiro_Utils.RunExe("show()", Hiro_Utils.Get_Transalte("menu"));
+                    Hiro_Utils.RunExe("show()", Hiro_Utils.Get_Translate("menu"));
                 };
                 wnd.cm.Items.Add(show);
                 MenuItem exit = new()
                 {
                     Background = new SolidColorBrush(Colors.Transparent)
                 };
-                exit.Header = Hiro_Utils.Get_Transalte("menuexit");
+                exit.Header = Hiro_Utils.Get_Translate("menuexit");
                 exit.Click += delegate
                 {
-                    Hiro_Utils.RunExe("exit()", Hiro_Utils.Get_Transalte("menu"));
+                    Hiro_Utils.RunExe("exit()", Hiro_Utils.Get_Translate("menu"));
                 };
                 wnd.cm.Items.Add(exit);
                 foreach (var obj in wnd.cm.Items)
@@ -858,7 +858,7 @@ namespace hiro
             {
                 if (pn.MainWindowTitle.IndexOf("桌面歌词") != -1)
                 {
-                    Notify(new(Hiro_Utils.Get_Transalte("delyrics"), 2, AppTitle));
+                    Notify(new(Hiro_Utils.Get_Translate("delyrics"), 2, AppTitle));
                 }
                 return pn.MainWindowHandle;
             }

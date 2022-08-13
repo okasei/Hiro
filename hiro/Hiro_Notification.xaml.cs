@@ -23,7 +23,7 @@ namespace hiro
         public Hiro_Notification()
         {
             InitializeComponent();
-            Title = Hiro_Utils.Get_Transalte("notitle") + " - " + App.AppTitle;
+            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
             Load_Color();
             Hiro_Utils.Set_Control_Location(notinfo, "notify");
             Width = SystemParameters.PrimaryScreenWidth;

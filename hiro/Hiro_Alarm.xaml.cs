@@ -36,7 +36,7 @@ namespace hiro
             {
                 if (CustomedTitle.ToLower().StartsWith("http://") || CustomedTitle.ToLower().StartsWith("https://"))
                 {
-                    ala_title.Content = Hiro_Utils.Get_Transalte("msgload");
+                    ala_title.Content = Hiro_Utils.Get_Translate("msgload");
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
@@ -59,13 +59,13 @@ namespace hiro
                     ala_title.Content = CustomedTitle;
             }
             else
-                ala_title.Content = Hiro_Utils.Get_Transalte("alarmtitle");
+                ala_title.Content = Hiro_Utils.Get_Translate("alarmtitle");
             Title = ala_title.Content + " - " + App.AppTitle;
             if (CustomedContnet != null)
             {
                 if (CustomedContnet.ToLower().StartsWith("http://") || CustomedContnet.ToLower().StartsWith("https://"))
                 {
-                    sv.Content = Hiro_Utils.Get_Transalte("msgload");
+                    sv.Content = Hiro_Utils.Get_Translate("msgload");
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
@@ -122,24 +122,24 @@ namespace hiro
         {
             if (OneButtonOnly == 1)
             {
-                albtn_1.Content = Hiro_Utils.Get_Transalte("alarmone");
+                albtn_1.Content = Hiro_Utils.Get_Translate("alarmone");
                 albtn_2.Visibility = Visibility.Hidden;
                 albtn_3.Visibility = Visibility.Hidden;
                 Hiro_Utils.Set_Control_Location(albtn_1, "alarmone", bottom: true, right: true);
             }
             else if(OneButtonOnly == 2)
             {
-                albtn_1.Content = Hiro_Utils.Get_Transalte("updateok");
-                albtn_3.Content = Hiro_Utils.Get_Transalte("updateskip");
+                albtn_1.Content = Hiro_Utils.Get_Translate("updateok");
+                albtn_3.Content = Hiro_Utils.Get_Translate("updateskip");
                 albtn_2.Visibility = Visibility.Hidden;
                 Hiro_Utils.Set_Control_Location(albtn_1, "updateok", bottom: true, right: true);
                 Hiro_Utils.Set_Control_Location(albtn_3, "updateskip", bottom: true, right: true);
             }
             else
             {
-                albtn_1.Content = Hiro_Utils.Get_Transalte("alarmok");
-                albtn_2.Content = Hiro_Utils.Get_Transalte("alarmdelete");
-                albtn_3.Content = Hiro_Utils.Get_Transalte("alarmdelay");
+                albtn_1.Content = Hiro_Utils.Get_Translate("alarmok");
+                albtn_2.Content = Hiro_Utils.Get_Translate("alarmdelete");
+                albtn_3.Content = Hiro_Utils.Get_Translate("alarmdelay");
                 Hiro_Utils.Set_Control_Location(albtn_1, "alarmok", bottom: true, right: true);
                 Hiro_Utils.Set_Control_Location(albtn_2, "alarmdelete", bottom: true, right: true);
                 Hiro_Utils.Set_Control_Location(albtn_3, "alarmdelay", bottom: true, right: true);

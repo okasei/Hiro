@@ -61,20 +61,20 @@ namespace hiro
 
         public void Load_Translate()
         {
-            rbtn18.Content = Hiro_Utils.Get_Transalte("alarmonce");
-            rbtn19.Content = Hiro_Utils.Get_Transalte("alarmed");
-            rbtn20.Content = Hiro_Utils.Get_Transalte("alarmew");
-            rbtn21.Content = Hiro_Utils.Get_Transalte("alarmat");
-            scbtn_4.Content = Hiro_Utils.Get_Transalte("screset");
-            scbtn_5.Content = Hiro_Utils.Get_Transalte("scok");
-            scbtn_6.Content = Hiro_Utils.Get_Transalte("scclear");
-            scbtn_7.Content = Hiro_Utils.Get_Transalte("sccancel");
-            scbtn_8.Content = Hiro_Utils.Get_Transalte("sc15m");
-            scbtn_9.Content = Hiro_Utils.Get_Transalte("sc1h");
-            scbtn_10.Content = Hiro_Utils.Get_Transalte("sc1d");
-            sclabel1.Content = Hiro_Utils.Get_Transalte("scname");
-            sclabel2.Content = Hiro_Utils.Get_Transalte("sctime");
-            sclabel3.Content = Hiro_Utils.Get_Transalte("sccmd");
+            rbtn18.Content = Hiro_Utils.Get_Translate("alarmonce");
+            rbtn19.Content = Hiro_Utils.Get_Translate("alarmed");
+            rbtn20.Content = Hiro_Utils.Get_Translate("alarmew");
+            rbtn21.Content = Hiro_Utils.Get_Translate("alarmat");
+            scbtn_4.Content = Hiro_Utils.Get_Translate("screset");
+            scbtn_5.Content = Hiro_Utils.Get_Translate("scok");
+            scbtn_6.Content = Hiro_Utils.Get_Translate("scclear");
+            scbtn_7.Content = Hiro_Utils.Get_Translate("sccancel");
+            scbtn_8.Content = Hiro_Utils.Get_Translate("sc15m");
+            scbtn_9.Content = Hiro_Utils.Get_Translate("sc1h");
+            scbtn_10.Content = Hiro_Utils.Get_Translate("sc1d");
+            sclabel1.Content = Hiro_Utils.Get_Translate("scname");
+            sclabel2.Content = Hiro_Utils.Get_Translate("sctime");
+            sclabel3.Content = Hiro_Utils.Get_Translate("sccmd");
         }
 
         public void Load_Position()
@@ -182,7 +182,7 @@ namespace hiro
                 tb12.Text = "";
                 tb13.Text = "";
                 if (Hiro_Main != null)
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
+                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
                 Hiro_Main?.Set_Label(Hiro_Main.schedulex);
             }
             else
@@ -197,15 +197,15 @@ namespace hiro
                 {
                     if (day > 0)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else if (hour > 0)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                 }
                 Hiro_Main?.Set_Label(Hiro_Main.schedulex);

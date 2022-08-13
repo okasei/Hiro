@@ -64,14 +64,14 @@ namespace hiro
 
         public void Load_Translate()
         {
-            Internet_Title.Content = Hiro_Utils.Get_Transalte("proxytitle");
-            EnableProxy.Content = EnableProxy.IsChecked == true ? Hiro_Utils.Get_Transalte("proxyenable") : EnableProxy.IsChecked == null ? Hiro_Utils.Get_Transalte("proxyie") : Hiro_Utils.Get_Transalte("proxydisable");
-            ProxyAddress.Content = Hiro_Utils.Get_Transalte("proxyserver");
-            ProxyPort.Content = Hiro_Utils.Get_Transalte("proxyport");
-            ProxyUsername.Content = Hiro_Utils.Get_Transalte("proxyuser");
-            ProxyPwd.Content = Hiro_Utils.Get_Transalte("proxypwd");
-            IBtn_1.Content = Hiro_Utils.Get_Transalte("proxyok");
-            IBtn_2.Content = Hiro_Utils.Get_Transalte("proxycancel");
+            Internet_Title.Content = Hiro_Utils.Get_Translate("proxytitle");
+            EnableProxy.Content = EnableProxy.IsChecked == true ? Hiro_Utils.Get_Translate("proxyenable") : EnableProxy.IsChecked == null ? Hiro_Utils.Get_Translate("proxyie") : Hiro_Utils.Get_Translate("proxydisable");
+            ProxyAddress.Content = Hiro_Utils.Get_Translate("proxyserver");
+            ProxyPort.Content = Hiro_Utils.Get_Translate("proxyport");
+            ProxyUsername.Content = Hiro_Utils.Get_Translate("proxyuser");
+            ProxyPwd.Content = Hiro_Utils.Get_Translate("proxypwd");
+            IBtn_1.Content = Hiro_Utils.Get_Translate("proxyok");
+            IBtn_2.Content = Hiro_Utils.Get_Translate("proxycancel");
         }
 
         public void Load_Position()
@@ -92,7 +92,7 @@ namespace hiro
 
         private void EnableProxy_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            EnableProxy.Content = Hiro_Utils.Get_Transalte("proxyenable");
+            EnableProxy.Content = Hiro_Utils.Get_Translate("proxyenable");
             AddressBox.IsEnabled = true;
             PortBox.IsEnabled = true;
             UsernameBox.IsEnabled = true;
@@ -101,7 +101,7 @@ namespace hiro
 
         private void EnableProxy_Indeterminate(object sender, System.Windows.RoutedEventArgs e)
         {
-            EnableProxy.Content = Hiro_Utils.Get_Transalte("proxyie");
+            EnableProxy.Content = Hiro_Utils.Get_Translate("proxyie");
             AddressBox.IsEnabled = false;
             PortBox.IsEnabled = false;
             UsernameBox.IsEnabled = false;
@@ -110,7 +110,7 @@ namespace hiro
 
         private void EnableProxy_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            EnableProxy.Content = Hiro_Utils.Get_Transalte("proxydisable");
+            EnableProxy.Content = Hiro_Utils.Get_Translate("proxydisable");
             AddressBox.IsEnabled = false;
             PortBox.IsEnabled = false;
             UsernameBox.IsEnabled = false;
@@ -126,7 +126,7 @@ namespace hiro
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Username", AddressBox.Text);
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Username", UsernameBox.Text);
             Hiro_Utils.Write_Ini(App.dconfig, "Network", "Password", PwdBox.Password);
-            App.Notify(new(Hiro_Utils.Get_Transalte("restart"), 2, Hiro_Utils.Get_Transalte("proxyer")));
+            App.Notify(new(Hiro_Utils.Get_Translate("restart"), 2, Hiro_Utils.Get_Translate("proxyer")));
             Hiro_Main?.Set_Label(Hiro_Main.configx);
         }
 

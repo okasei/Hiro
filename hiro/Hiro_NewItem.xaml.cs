@@ -67,42 +67,42 @@ namespace hiro
             {
                 modibox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Transalte(arss)
+                    Content = Hiro_Utils.Get_Translate(arss)
                 });
             }
             keybox.Items.Add(new ComboBoxItem()
             {
-                Content = Hiro_Utils.Get_Transalte("novkey")
+                Content = Hiro_Utils.Get_Translate("novkey")
             });
             string[] crs = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
             foreach (var crss in crs)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Transalte("charkey").Replace("%c", crss)
+                    Content = Hiro_Utils.Get_Translate("charkey").Replace("%c", crss)
                 });
             }
             for (int nuss = 0; nuss < 10; nuss++)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Transalte("numkey").Replace("%n", nuss.ToString())
+                    Content = Hiro_Utils.Get_Translate("numkey").Replace("%n", nuss.ToString())
                 });
             }
             for (int nuss = 1; nuss < 13; nuss++)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Transalte("fnkey").Replace("%f", "F" + nuss.ToString())
+                    Content = Hiro_Utils.Get_Translate("fnkey").Replace("%f", "F" + nuss.ToString())
                 });
             }
             keybox.Items.Add(new ComboBoxItem()
             {
-                Content = Hiro_Utils.Get_Transalte("space")
+                Content = Hiro_Utils.Get_Translate("space")
             });
             keybox.Items.Add(new ComboBoxItem()
             {
-                Content = Hiro_Utils.Get_Transalte("esc")
+                Content = Hiro_Utils.Get_Translate("esc")
             });
             foreach (var obj in modibox.Items)
             {
@@ -124,21 +124,21 @@ namespace hiro
 
         public void Load_Translate()
         {
-            ntn1.Content = Hiro_Utils.Get_Transalte("filename");
-            ntn2.Content = Hiro_Utils.Get_Transalte("hide");
-            ntn3.Content = Hiro_Utils.Get_Transalte("unformat");
-            ntn4.Content = Hiro_Utils.Get_Transalte("ban");
-            ntn5.Content = Hiro_Utils.Get_Transalte("select");
-            ntn6.Content = Hiro_Utils.Get_Transalte("quot");
-            ntn7.Content = Hiro_Utils.Get_Transalte("explorer");
-            ntn8.Content = Hiro_Utils.Get_Transalte("openfile");
-            klabel.Content = Hiro_Utils.Get_Transalte("HotKey");
-            ntn9.Content = Hiro_Utils.Get_Transalte("reset");
-            ntnx.Content = Hiro_Utils.Get_Transalte("clear");
-            ntnx1.Content = Hiro_Utils.Get_Transalte("ok");
-            ntnx2.Content = Hiro_Utils.Get_Transalte("cancel");
-            glabel.Content = Hiro_Utils.Get_Transalte("itemname");
-            glabel2.Content = Hiro_Utils.Get_Transalte("cmd");
+            ntn1.Content = Hiro_Utils.Get_Translate("filename");
+            ntn2.Content = Hiro_Utils.Get_Translate("hide");
+            ntn3.Content = Hiro_Utils.Get_Translate("unformat");
+            ntn4.Content = Hiro_Utils.Get_Translate("ban");
+            ntn5.Content = Hiro_Utils.Get_Translate("select");
+            ntn6.Content = Hiro_Utils.Get_Translate("quot");
+            ntn7.Content = Hiro_Utils.Get_Translate("explorer");
+            ntn8.Content = Hiro_Utils.Get_Translate("openfile");
+            klabel.Content = Hiro_Utils.Get_Translate("HotKey");
+            ntn9.Content = Hiro_Utils.Get_Translate("reset");
+            ntnx.Content = Hiro_Utils.Get_Translate("clear");
+            ntnx1.Content = Hiro_Utils.Get_Translate("ok");
+            ntnx2.Content = Hiro_Utils.Get_Translate("cancel");
+            glabel.Content = Hiro_Utils.Get_Translate("itemname");
+            glabel2.Content = Hiro_Utils.Get_Translate("cmd");
         }
 
         public void Load_Position()
@@ -279,11 +279,11 @@ namespace hiro
         {
             var strFileName = "";
             Microsoft.Win32.OpenFileDialog ofd = new();
-            ofd.Filter = Hiro_Utils.Get_Transalte("allfiles") + "|*.*";
+            ofd.Filter = Hiro_Utils.Get_Translate("allfiles") + "|*.*";
             ofd.ValidateNames = true; // 验证用户输入是否是一个有效的Windows文件名
             ofd.CheckFileExists = true; //验证路径的有效性
             ofd.CheckPathExists = true;//验证路径的有效性
-            ofd.Title = Hiro_Utils.Get_Transalte("openfile") + " - " + App.AppTitle;
+            ofd.Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle;
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
                 strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串

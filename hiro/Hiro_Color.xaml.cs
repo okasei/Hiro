@@ -58,11 +58,11 @@ namespace hiro
 
         public void Load_Translate()
         {
-            color_title.Content = Hiro_Utils.Get_Transalte("cotitle");
-            color_ex.Content = Hiro_Utils.Get_Transalte("coex").Replace("\\n", Environment.NewLine);
-            cobtn1.Content = Hiro_Utils.Get_Transalte("cook");
-            cobtn2.Content = Hiro_Utils.Get_Transalte("cocancel");
-            cobtn3.Content = Hiro_Utils.Get_Transalte("coreset");
+            color_title.Content = Hiro_Utils.Get_Translate("cotitle");
+            color_ex.Content = Hiro_Utils.Get_Translate("coex").Replace("\\n", Environment.NewLine);
+            cobtn1.Content = Hiro_Utils.Get_Translate("cook");
+            cobtn2.Content = Hiro_Utils.Get_Translate("cocancel");
+            cobtn3.Content = Hiro_Utils.Get_Translate("coreset");
         }
 
         public void Load_Position()

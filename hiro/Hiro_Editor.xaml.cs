@@ -21,7 +21,7 @@ namespace hiro
             InitializeComponent();
             editpage = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "EditPage", "0"));
             Load_Position();
-            Title = Hiro_Utils.Get_Transalte("edititle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Translate("edititle") + " - " + App.AppTitle;
             Load();
             con.Focus();
             slider.Value = double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "EditOpacity", "1"));
@@ -44,7 +44,7 @@ namespace hiro
                     }
                     if (savetime < 5 && savetime > 1)
                     {
-                        var FinalText = Hiro_Utils.Get_Transalte("eready").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                        var FinalText = Hiro_Utils.Get_Translate("eready").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
                         if (!status.Content.Equals(FinalText))
                         {
                             status.Content = FinalText;
@@ -57,7 +57,7 @@ namespace hiro
                         saveflag = 0;
                     }
                 }
-                var StatusText = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                var StatusText = Hiro_Utils.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
                 if (saveflag != 0 || status.Content.Equals(StatusText)) 
                     return;
                 status.Content = StatusText;
@@ -95,7 +95,7 @@ namespace hiro
             }
             if (show)
             {
-                status.Content = Hiro_Utils.Get_Transalte("esaved").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()).Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
+                status.Content = Hiro_Utils.Get_Translate("esaved").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()).Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
                 saveflag = 1;
                 savetime = 9;
                 Update_Animation();
@@ -116,7 +116,7 @@ namespace hiro
                 con.Text = "";
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Editor.Read");
             }
-            status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = Hiro_Utils.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Update_Animation();
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "EditPage", editpage.ToString());
         }
@@ -145,7 +145,7 @@ namespace hiro
             con.SetValue(TopProperty, 0.0);
             con.Width = SystemParameters.PrimaryScreenWidth;
             con.Height = SystemParameters.PrimaryScreenHeight * 6 / 10 - previous.Margin.Bottom - previous.Height - 10;
-            status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = Hiro_Utils.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Loadbgi();
         }
         private void Run_In()
@@ -280,7 +280,7 @@ namespace hiro
         {
             saveflag = 1;
             savetime = 15;
-            status.Content = Hiro_Utils.Get_Transalte("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = Hiro_Utils.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
         }
 
         private void Edi_Deactivated(object sender, EventArgs e)

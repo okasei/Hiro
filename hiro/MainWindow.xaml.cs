@@ -51,13 +51,13 @@ namespace hiro
                         case Windows.System.Power.EnergySaverStatus.On:
                             Dispatcher.Invoke(() =>
                             {
-                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("basaveron"), 2, Hiro_Utils.Get_Transalte("battery")));
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("basaveron"), 2, Hiro_Utils.Get_Translate("battery")));
                             });
                             break;
                         case Windows.System.Power.EnergySaverStatus.Disabled:
                             Dispatcher.Invoke(() =>
                             {
-                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("basaveroff"), 2, Hiro_Utils.Get_Transalte("battery")));
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("basaveroff"), 2, Hiro_Utils.Get_Translate("battery")));
                             });
                             break;
                         default:
@@ -84,9 +84,9 @@ namespace hiro
                     var low = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "lowpower", "[0,1,2,3,4,6,8,10,20,30]").Replace("[", "[,").Replace("]", ",]").Trim();
                     var notice = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "tippower", "").Replace("[", "[,").Replace("]", ",]").Trim();
                     if (low.IndexOf(p.ToString()) != -1)
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("powerlow").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("powerlow").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Translate("battery")));
                     else if (notice.IndexOf(p.ToString()) != -1)
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("powertip").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Transalte("battery")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("powertip").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Translate("battery")));
                 }
             }
             catch(Exception ex)
@@ -119,17 +119,17 @@ namespace hiro
                     {
                         if (profile.WlanConnectionProfileDetails.GetConnectedSsid().Equals(string.Empty))
                             return;
-                        ext = Hiro_Utils.Get_Transalte("netwlan").Replace("%s", profile.WlanConnectionProfileDetails.GetConnectedSsid());
+                        ext = Hiro_Utils.Get_Translate("netwlan").Replace("%s", profile.WlanConnectionProfileDetails.GetConnectedSsid());
                     }
                     else if (profile.IsWwanConnectionProfile)
                     {
                         if (profile.WwanConnectionProfileDetails.AccessPointName.Equals(string.Empty))
                             return;
-                        ext = Hiro_Utils.Get_Transalte("netwwan").Replace("%s", profile.WwanConnectionProfileDetails.AccessPointName);
+                        ext = Hiro_Utils.Get_Translate("netwwan").Replace("%s", profile.WwanConnectionProfileDetails.AccessPointName);
                     }
                     else
                     {
-                        ext = Hiro_Utils.Get_Transalte("neteth");
+                        ext = Hiro_Utils.Get_Translate("neteth");
                     }
                 }
                 catch(Exception ex)
@@ -152,16 +152,16 @@ namespace hiro
                 switch (ncl)
                 {
                     case Windows.Networking.Connectivity.NetworkConnectivityLevel.InternetAccess:
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("neton").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("neton").Replace("%s", ext), 2, Hiro_Utils.Get_Translate("net")));
                         break;
                     case Windows.Networking.Connectivity.NetworkConnectivityLevel.LocalAccess:
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("netlan").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("netlan").Replace("%s", ext), 2, Hiro_Utils.Get_Translate("net")));
                         break;
                     case Windows.Networking.Connectivity.NetworkConnectivityLevel.ConstrainedInternetAccess:
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("netlimit").Replace("%s", ext), 2, Hiro_Utils.Get_Transalte("net")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("netlimit").Replace("%s", ext), 2, Hiro_Utils.Get_Translate("net")));
                         break;
                     default:
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("netoff"), 2, Hiro_Utils.Get_Transalte("net")));
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("netoff"), 2, Hiro_Utils.Get_Translate("net")));
                         break;
                 };
             }));
@@ -194,11 +194,11 @@ namespace hiro
                         {
                             GetSystemPowerStatus(out SYSTEM_POWER_STATUS p);
                             if (p.ACLineStatus == 1 && p.BatteryFlag == 8)
-                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("bacharge"), 2, Hiro_Utils.Get_Transalte("battery")));
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("bacharge"), 2, Hiro_Utils.Get_Translate("battery")));
                             if (p.ACLineStatus == 1 && p.BatteryFlag != 8)
-                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("baconnect"), 2, Hiro_Utils.Get_Transalte("battery")));
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("baconnect"), 2, Hiro_Utils.Get_Translate("battery")));
                             if (p.ACLineStatus == 0)
-                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Transalte("baremove"), 2, Hiro_Utils.Get_Transalte("battery")));
+                                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("baremove"), 2, Hiro_Utils.Get_Translate("battery")));
                         }
                         catch(Exception ex)
                         {
@@ -210,22 +210,22 @@ namespace hiro
                 case 0x0219:
                     if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
                     {
-                        var mms = Hiro_Utils.Get_Transalte("deinfo") + " - ";
+                        var mms = Hiro_Utils.Get_Translate("deinfo") + " - ";
                         switch (wParam.ToInt32())
                         {
                             case 0x0018:
-                                mms += Hiro_Utils.Get_Transalte("deconfig");
+                                mms += Hiro_Utils.Get_Translate("deconfig");
                                 break;
                             case 0x8000:
-                                mms += Hiro_Utils.Get_Transalte("medconnect");
+                                mms += Hiro_Utils.Get_Translate("medconnect");
                                 break;
                             case 0x8004:
-                                mms += Hiro_Utils.Get_Transalte("medremove");
+                                mms += Hiro_Utils.Get_Translate("medremove");
                                 break;
                             default:
                                 return IntPtr.Zero;
                         }
-                        App.Notify(new Hiro_Notice(mms, 2, Hiro_Utils.Get_Transalte("device")));
+                        App.Notify(new Hiro_Notice(mms, 2, Hiro_Utils.Get_Translate("device")));
                     }
                     break;
                 case 0x0312:

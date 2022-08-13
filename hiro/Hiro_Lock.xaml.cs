@@ -45,11 +45,11 @@ namespace hiro
 
         public void Load_Translate()
         {
-            titlelabel.Content = Hiro_Utils.Get_Transalte("locked").Replace("%h", App.AppTitle);
-            InfoLabel.Content = Hiro_Utils.Get_Transalte("lockedinfo").Replace("%h", App.AppTitle);
-            InfoLabel2.Content = Hiro_Utils.Get_Transalte("lockedwait").Replace("%h", App.AppTitle);
-            Pwd_BtnB.Content = Hiro_Utils.Get_Transalte("lockback").Replace("%h", App.AppTitle);
-            Pwd_BtnE.Content = Hiro_Utils.Get_Transalte("lockenter").Replace("%h", App.AppTitle);
+            titlelabel.Content = Hiro_Utils.Get_Translate("locked").Replace("%h", App.AppTitle);
+            InfoLabel.Content = Hiro_Utils.Get_Translate("lockedinfo").Replace("%h", App.AppTitle);
+            InfoLabel2.Content = Hiro_Utils.Get_Translate("lockedwait").Replace("%h", App.AppTitle);
+            Pwd_BtnB.Content = Hiro_Utils.Get_Translate("lockback").Replace("%h", App.AppTitle);
+            Pwd_BtnE.Content = Hiro_Utils.Get_Translate("lockenter").Replace("%h", App.AppTitle);
         }
 
         public void Load_Position()
