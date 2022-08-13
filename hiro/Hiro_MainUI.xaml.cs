@@ -926,6 +926,7 @@ namespace hiro
         private void Minbtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             WindowState = WindowState.Minimized;
+            e.Handled = true;
         }
 
         private void Ui_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -987,6 +988,9 @@ namespace hiro
                         break;
                     case Hiro_Player h:
                         h.Loadbgi(direction);
+                        break;
+                    case Hiro_Ticker i:
+                        i.Loadbgi(direction);
                         break;
                 }
 
@@ -1061,6 +1065,9 @@ namespace hiro
                         break;
                     case Hiro_Player h:
                         Hiro_Utils.Set_Opacity(h.bgimage, h);
+                        break;
+                    case Hiro_Ticker i:
+                        Hiro_Utils.Set_Opacity(i.bgimage, i);
                         break;
                 }
                 if (hiro_profile != null)

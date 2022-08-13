@@ -231,17 +231,24 @@ namespace hiro
                 case 0x0312:
                     new System.Threading.Thread(() =>
                     {
-                        var indexid = wParam.ToInt32();
-                        for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
+                        try
                         {
-                            if (App.vs[vsi] == indexid)
+                            var indexid = wParam.ToInt32();
+                            for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
                             {
-                                Dispatcher.Invoke(delegate
+                                if (App.vs[vsi] == indexid)
                                 {
-                                    Hiro_Utils.RunExe(App.cmditems[App.vs[vsi + 1]].Command);
-                                });
-                                break;
+                                    Dispatcher.Invoke(delegate
+                                    {
+                                        Hiro_Utils.RunExe(App.cmditems[App.vs[vsi + 1]].Command);
+                                    });
+                                    break;
+                                }
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Hiro_Utils.LogError(ex, "Hiro.Hotkey.Run");
                         }
                     }).Start();
                     break;
@@ -285,6 +292,9 @@ namespace hiro
                         break;
                     case Hiro_Player h:
                         h.Load_Color();
+                        break;
+                    case Hiro_Ticker i:
+                        i.Load_Color();
                         break;
                 }
                 System.Windows.Forms.Application.DoEvents();

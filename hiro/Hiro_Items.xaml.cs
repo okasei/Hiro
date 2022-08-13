@@ -170,6 +170,11 @@ namespace hiro
         {
             btn5.IsEnabled = false;
             Hiro_Utils.Delay(200);
+            var vsi = Hiro_Utils.FindHotkeyById(dgi.SelectedIndex);
+            if (vsi > -1)
+            {
+                Hiro_Utils.UnregisterKey(vsi);
+            }
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
@@ -198,11 +203,6 @@ namespace hiro
                 if (App.page > total - 1 && App.page > 0)
                     App.page--;
                 App.Load_Menu();
-            }
-            var vsi = Hiro_Utils.FindHotkeyById(dgi.SelectedIndex);
-            if (vsi > -1)
-            {
-                Hiro_Utils.UnregisterKey(vsi);
             }
             btn5.IsEnabled = true;
             GC.Collect();

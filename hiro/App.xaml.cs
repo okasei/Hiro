@@ -75,7 +75,6 @@ namespace hiro
             InitializeInnerParameters();
             Initialize_Notify_Recall();
             InitializeStartParameters(e);
-            Build_Socket();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -137,7 +136,7 @@ namespace hiro
 
         }
 
-        private void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
+        private static void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
         {
                 System.Net.Sockets.Socket clientSocket = socketLister.Accept();
                 Hiro_Socket clientSession = new(clientSocket);
@@ -163,7 +162,7 @@ namespace hiro
                         ha.appID = Hiro_Utils.Read_Ini(recStr, "App", "ID", "null");
                         ha.appName = Hiro_Utils.Read_Ini(recStr, "App", "Name", "null");
                         ha.appPackage = Hiro_Utils.Read_Ini(recStr, "App", "Package", "null");
-                        Dispatcher.Invoke(delegate
+                        Application.Current.Dispatcher.Invoke(delegate
                         {
                             Hiro_Utils.RunExe(ha.msg, ha.appName);
                         });
@@ -182,7 +181,7 @@ namespace hiro
                 bw.RunWorkerAsync();
         }
 
-        private void Build_Socket()
+        private static void Build_Socket()
         {
             var port = Hiro_Utils.GetRandomUnusedPort();
             int MaxConnection = 69;
@@ -297,6 +296,7 @@ namespace hiro
                                     Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Transalte("autoexe"));
                             }
                             InitializeMethod();
+                            Build_Socket();
                         }
                         return;
                     }

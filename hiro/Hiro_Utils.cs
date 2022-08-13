@@ -1474,6 +1474,106 @@ namespace hiro
                     return;
                 }
                 #region 可能造成打扰的命令
+                if (path.ToLower().StartsWith("ticker("))
+                {
+                    Hiro_Ticker? ht = null;
+                    var adflag = false;
+                    if (parameter.Count < 1)
+                        return;
+                    foreach (var win in Application.Current.Windows)
+                    {
+                        if (win is Hiro_Ticker hwin)
+                        {
+                            if (hwin.id.Equals(parameter[0]))
+                            {
+                                ht = hwin;
+                                adflag = true;
+                            }
+                        }
+                    }
+                    switch (parameter.Count)
+                    {
+                        case 1:
+                            ht ??= new(parameter[0]);
+                            break;
+                        case 2:
+                            ht ??= new(parameter[0]);
+                            ht.format = parameter[1];
+                            ht.RefreshContent();
+                            break;
+                        case 3:
+                            var p3 = int.TryParse(parameter[2], out int pa3) ? pa3 : 0;
+                            ht ??= new(parameter[0]);
+                            ht.format = parameter[1];
+                            if (adflag)
+                                ht.OffsetNum(p3);
+                            else
+                                ht.current = p3;
+                            ht.RefreshContent();
+                            break;
+                        case 4:
+                            var p4 = int.TryParse(parameter[2], out int pa4) ? pa4 : 0;
+                            var p4a = int.TryParse(parameter[3], out int pa4a) ? pa4a : int.MaxValue;
+                            ht ??= new(parameter[0]);
+                            ht.format = parameter[1];
+                            if (adflag)
+                                ht.OffsetNum(p4a);
+                            else
+                                ht.current = p4;
+                            ht.RefreshContent();
+                            break;
+                        case 5:
+                            var p5 = int.TryParse(parameter[2], out int pa5) ? pa5 : 0;
+                            var p5a = int.TryParse(parameter[3], out int pa5a) ? pa5a : int.MaxValue;
+                            var p5b = int.TryParse(parameter[4], out int pa5b) ? pa5b : int.MinValue;
+                            ht ??= new(parameter[0]);
+                            ht.format = parameter[1];
+                            if (adflag)
+                                ht.OffsetNum(p5a);
+                            else
+                                ht.current = p5;
+                            ht.min = p5b;
+                            ht.RefreshContent();
+                            break;
+                        case > 5:
+                            var px = int.TryParse(parameter[2], out int pax) ? pax : 0;
+                            var pxa = int.TryParse(parameter[3], out int paxa) ? paxa : int.MaxValue;
+                            var pxb = int.TryParse(parameter[4], out int paxb) ? paxb : int.MinValue;
+                            var pxc = int.TryParse(parameter[5], out int paxc) ? paxc : int.MaxValue;
+                            ht ??= new(parameter[0]);
+                            ht.format = parameter[1];
+                            if (adflag)
+                                ht.OffsetNum(pxa);
+                            else
+                                ht.current = px;
+                            ht.min = pxb;
+                            ht.max = pxc;
+                            ht.RefreshContent();
+                            break;
+                    }
+                    ht ?.Show();
+                    return;
+                }
+                if (path.ToLower().StartsWith("tickero("))
+                {
+                    if (parameter.Count >= 2)
+                    {
+                        foreach (var win in Application.Current.Windows)
+                        {
+                            if (win is Hiro_Ticker hwin)
+                            {
+                                if (hwin.id.Equals(parameter[0]))
+                                {
+                                    int p = int.TryParse(parameter[1], out int pa) ? pa : 0;
+                                    hwin.OffsetNum(p);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    App.Notify(new(Get_Transalte("htnexist"), 2, Get_Transalte("htapp")));
+                    return;
+                }
                 if (path.ToLower().StartsWith("hiroad("))
                 {
                     source = Get_Transalte("update");
