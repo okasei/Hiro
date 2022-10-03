@@ -375,7 +375,10 @@ namespace hiro
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            wv2.Stop();
+            wv2.DataContext = null;
             wv2.Dispose();
+            e.Cancel = false;
         }
 
         private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

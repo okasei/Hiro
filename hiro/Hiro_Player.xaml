@@ -20,7 +20,7 @@
     <Grid Cursor="Arrow">
         <Grid  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <Label x:Name="bgimage" Width="{Binding ActualWidth,ElementName=window}" Height="{Binding ActualHeight,ElementName=window}" Margin="0,0,0,0" AllowDrop="True" Drop="Bgimage_Drop" MouseLeftButtonDown="Bgimage_MouseLeftButtonDown" MouseDoubleClick="Bgimage_MouseDoubleClick"/>
-            <Image x:Name="Player_Container" AllowDrop="True" Drop="Player_Container_Drop" MouseLeftButtonDown="Player_Container_MouseLeftButtonDown"></Image>
+            <Image x:Name="Player_Container" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AllowDrop="True" Drop="Player_Container_Drop" MouseLeftButtonDown="Player_Container_MouseLeftButtonDown"></Image>
             <Label x:Name="Player_Cover" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseDoubleClick="Player_Cover_MouseDoubleClick" AllowDrop="True" Drop="Player_Cover_Drop" KeyDown="Player_Cover_KeyDown" MouseDown="Player_Cover_MouseDown"></Label>
             <Grid x:Name="Controller" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,5" Height="20" Visibility="Visible">
                 <Label x:Name="Ctrl_Bg" Background="{DynamicResource AppAccentDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>

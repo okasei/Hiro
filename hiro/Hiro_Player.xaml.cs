@@ -490,7 +490,6 @@ namespace hiro
                 ResizeMode = ResizeMode.CanResize;
                 Width = mSize.Width;
                 Height = mSize.Height;
-                Chrome.ResizeBorderThickness = new(0);
                 Chrome.CornerRadius = new(0);
                 Chrome.NonClientFrameEdges = (System.Windows.Shell.NonClientFrameEdges)13;
                 Chrome.GlassFrameThickness = new(0, 1, 0, 0);
@@ -509,7 +508,6 @@ namespace hiro
                 WindowState = WindowState.Normal;
                 Width = SystemParameters.PrimaryScreenWidth;
                 Height = SystemParameters.PrimaryScreenHeight;
-                Chrome.ResizeBorderThickness = new(0);
                 Chrome.CornerRadius = new(0);
                 Chrome.NonClientFrameEdges = 0;
                 Chrome.GlassFrameThickness = new(0);

@@ -22,6 +22,8 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using System.Net;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace hiro
 {
@@ -1880,7 +1882,7 @@ namespace hiro
                     App.ls.Show();
                     return;
                 }
-                if (path.ToLower().StartsWith("auth()"))
+                if (path.ToLower().StartsWith("auth("))
                 {
                     BackgroundWorker sc = new();
                     BackgroundWorker fa = new();
@@ -1890,6 +1892,15 @@ namespace hiro
                         {
                             App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion;
                             App.Locked = false;
+                        }
+                        if (parameter.Count >= 1)
+                        {
+                            foreach(var pr in parameter)
+                            {
+                                if (pr.Equals(string.Empty) || pr.Trim().Equals(string.Empty))
+                                    continue;
+                                RunExe(pr,source);
+                            }
                         }
                     };
                     fa.RunWorkerCompleted += delegate
@@ -2445,7 +2456,7 @@ namespace hiro
                     RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
                 };
                 Storyboard? sb = new ();
-                DoubleAnimation da = new()
+                DoubleAnimation? da = new()
                 {
                     From = App.blurradius,
                     To = 0.0,
@@ -2459,6 +2470,7 @@ namespace hiro
                     ct.Effect = null;
                     if (bw != null)
                         bw.RunWorkerAsync();
+                    da = null;
                     sb = null;
                 };
                 sb.Begin();
@@ -2499,7 +2511,7 @@ namespace hiro
         public static Storyboard AddDoubleAnimaton(double? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, double? from = null)
         {
             sb ??= new();
-            DoubleAnimation da = new();
+            DoubleAnimation? da = new();
             if (from != null)
                 da.From = from;
             if (to != null)
@@ -2512,6 +2524,7 @@ namespace hiro
             sb.FillBehavior = FillBehavior.Stop;
             sb.Completed += delegate
             {
+                da = null;
                 sb = null;
             };
             return sb;
@@ -2522,7 +2535,7 @@ namespace hiro
         public static Storyboard AddThicknessAnimaton(Thickness? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Thickness? from = null,double DecelerationRatio = 0.9)
         {
             sb ??= new();
-            ThicknessAnimation da = new();
+            ThicknessAnimation? da = new();
             if (from != null)
                 da.From = from;
             if (to != null)
@@ -2535,6 +2548,7 @@ namespace hiro
             sb.FillBehavior = FillBehavior.Stop;
             sb.Completed += delegate
             {
+                da = null;
                 sb = null;
             };
             return sb;
@@ -2545,7 +2559,7 @@ namespace hiro
         public static Storyboard AddColorAnimaton(Color to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Color? from = null)
         {
             sb ??= new();
-            ColorAnimation da;
+            ColorAnimation? da;
             if (from != null)
                 da = new((Color)from, to, TimeSpan.FromMilliseconds(mstime));
             else
@@ -2557,6 +2571,7 @@ namespace hiro
             sb.FillBehavior = FillBehavior.Stop;
             sb.Completed += delegate
             {
+                da = null;
                 sb = null;
             };
             return sb;
@@ -2988,24 +3003,24 @@ namespace hiro
 
         public static void IntializeColorParameters()
         {
+            Color mAppAccentColor = (Color)ColorConverter.ConvertFromString("#00C4FF");
             if (!Read_Ini(App.dconfig, "Config", "LockColor", "default").Equals("default"))
             {
                 try
                 {
-                    App.AppAccentColor = (Color)ColorConverter.ConvertFromString(Read_Ini(App.dconfig, "Config", "LockColor", "#00C4FF"));
-
+                    mAppAccentColor = (Color)ColorConverter.ConvertFromString(Read_Ini(App.dconfig, "Config", "LockColor", "#00C4FF"));
                 }
                 catch (Exception ex)
                 {
                     LogError(ex, "Hiro.Exception.System.Color");
-                    App.AppAccentColor = (Color)ColorConverter.ConvertFromString("#00C4FF");
                 }
             }
             else
             {
-                App.AppAccentColor = GetThemeColor();
+                mAppAccentColor = GetThemeColor();
             }
-            App.AppForeColor = Get_ForeColor(App.AppAccentColor, Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1"));
+            App.AppAccentColor = mAppAccentColor;
+            App.AppForeColor = Get_ForeColor(mAppAccentColor, Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1"));
             LogtoFile("[HIROWEGO]Accent Color: " + App.AppAccentColor.ToString());
             LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
         }
