@@ -1829,10 +1829,11 @@ namespace hiro
                         switch (parameter.Count)
                         {
                             case 1:
+                            case 2:
                                 web = new(parameter[0]);
                                 break;
-                            case > 1:
-                                web = new(parameter[0], null, parameter[1]);
+                            case > 2:
+                                web = new(parameter[0], null, parameter[2]);
                             break;
                             default:
                                 web = new("https://www.rexio.cn/");
@@ -2678,7 +2679,7 @@ namespace hiro
         #endregion
 
         #region 检查更新
-        public static string GetWebContent(string url, bool save = false, String? savepath = null)
+        public static string GetWebContent(string url, bool save = false, string? savepath = null)
         {
             HttpRequestMessage request = new(HttpMethod.Get, url);
             request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");

@@ -1,8 +1,11 @@
-﻿using System;
+﻿using MS.WindowsAPICodePack.Internal;
+using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -20,65 +23,85 @@ namespace hiro
         private bool secure = false;
         internal int bflag = 0;
         private string FlowTitle = "";
-        public Hiro_Web(string? uri = null, string? title = null,string startUri = "<hiuser>")
+        private string startUri = "<hiuser>";
+        private string currentUrl = "hiro";
+        private string iconUrl = "/hiro_circle.ico";
+        public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();
+            if (!startUri.Equals("<hiuser>"))
+            {
+                uribtn.Visibility = Visibility.Visible;
+                uribtn.Content = startUri;
+            }
+            this.startUri = startUri;
+            Title = App.AppTitle;
             Load_Color();
             Load_Translate();
             Refreash_Layout();
-            var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\")));
-            wv2.EnsureCoreWebView2Async(env.Result);
-            try
+            if (uri != null && uri.ToLower().Equals("hiro://crash"))
             {
-                string edgever = Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString();
-                if (string.IsNullOrEmpty(edgever))
-                {
-                    Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("webnotinstall")},2)", Hiro_Utils.Get_Translate("web"));
-                    Close();
-                    return;
-                }
-                Hiro_Utils.LogtoFile($"Edge Webview2 Version: {edgever}");
-            }
-            catch (Exception ex)
-            {
-                Hiro_Utils.LogError(ex, "Hiro.Web.EdgeWebviewNotInstalled");
-                Close();
-                return;
-            }
-            if (uri != null && uri.ToLower().Equals("hiro://clear"))
-            {
-                Width = Height = 1;
-                ShowInTaskbar = false;
-                Margin = new(-1, -1, 0, 0);
-                WindowStyle = WindowStyle.None;
-                WindowStartupLocation = WindowStartupLocation.Manual;
+                CrashedGrid.Visibility = Visibility.Visible;
                 Show();
-                Hide();
-                wv2.CoreWebView2InitializationCompleted += ClearCache;
             }
             else
             {
-                if (uri != null)
+                var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\")));
+                wv2.EnsureCoreWebView2Async(env.Result);
+                CrashedGrid.Visibility = Visibility.Visible;
+                try
                 {
-                    try
+                    string edgever = Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString();
+                    if (string.IsNullOrEmpty(edgever))
                     {
-                        wv2.Source = new Uri(uri);
+                        Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("webnotinstall")},2)", Hiro_Utils.Get_Translate("web"));
+                        Close();
                     }
-                    catch
+                    else
                     {
-                        wv2.Source = new Uri($"http://{uri}");
+                        if (uri != null && uri.ToLower().Equals("hiro://clear"))
+                        {
+                            Width = Height = 1;
+                            ShowInTaskbar = false;
+                            Margin = new(-1, -1, 0, 0);
+                            WindowStyle = WindowStyle.None;
+                            WindowStartupLocation = WindowStartupLocation.Manual;
+                            Show();
+                            Hide();
+                            wv2.CoreWebView2InitializationCompleted += ClearCache;
+                        }
+                        else
+                        {
+                            if (uri != null)
+                            {
+                                if (uri.Trim().Equals(string.Empty))
+                                    uri = startUri.Equals("<hiuser>") ? "https://rexio.cn/" : Hiro_Utils.Read_Ini(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\web.config")), "Web", "Home", "https://rexio.cn/");
+                                try
+                                {
+                                    wv2.Source = new Uri(uri);
+                                }
+                                catch
+                                {
+                                    wv2.Source = new Uri($"http://{uri}");
+                                }
+                            }
+                            Show();
+                            fixed_title = title;
+                            wv2.CoreWebView2InitializationCompleted += Wv2_CoreWebView2InitializationCompleted;
+                            Loaded += delegate
+                            {
+                                HiHiro();
+                            };
+                        }
                     }
-                    Show();
+                    Hiro_Utils.LogtoFile($"Edge Webview2 Version: {edgever}");
                 }
-                fixed_title = title;
-                wv2.CoreWebView2InitializationCompleted += Wv2_CoreWebView2InitializationCompleted;
-                Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
-                Loaded += delegate
+                catch (Exception ex)
                 {
-                    HiHiro();
-                };
+                    Hiro_Utils.LogError(ex, "Hiro.Web.EdgeWebviewNotInstalled");
+                    Close();
+                }
             }
-            
         }
 
         public void HiHiro()
@@ -89,14 +112,13 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(1, TitleGrid, sb, -50, null);
                 sb.Begin();
             }
-            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
         {
             string ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title)) 
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title))
                 return;
             FlowTitle = Title;
             System.Windows.Media.Animation.Storyboard sb = new();
@@ -107,6 +129,7 @@ namespace hiro
         private void ClearCache(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
         {
             wv2.CoreWebView2.CallDevToolsProtocolMethodAsync("Network.clearBrowserCache", "{}");
+            Hiro_Utils.RunExe("Delete(<hiapp>\\images\\web\\)", Hiro_Utils.Get_Translate("web"));
             App.Notify(new(Hiro_Utils.Get_Translate("webclear"), 2, Hiro_Utils.Get_Translate("Web")));
             Close();
         }
@@ -140,7 +163,7 @@ namespace hiro
             wv2.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
             //wv2.CoreWebView2.Settings.IsBuiltInErrorPageEnabled = false;
             wv2.CoreWebView2.Settings.IsStatusBarEnabled = false;
-            if (fixed_title == null) 
+            if (fixed_title == null)
                 URLGrid.Visibility = Visibility.Visible;
             if (fixed_title != null && !Topmost)
                 topbtn.Visibility = Visibility.Collapsed;
@@ -151,7 +174,7 @@ namespace hiro
             for (var index = 0; index < e.MenuItems.Count; index++)
             {
                 if (!e.MenuItems[index].Name.Equals("other") &&
-                    !e.MenuItems[index].Name.Equals("createQrCode")) 
+                    !e.MenuItems[index].Name.Equals("createQrCode"))
                     continue;
                 e.MenuItems.RemoveAt(index);
                 index--;
@@ -160,6 +183,7 @@ namespace hiro
 
         private void CoreWebView2_HistoryChanged(object? sender, object e)
         {
+            UpdateIcon();
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             var visual = PreBtn.Visibility;
             var visual2 = NextBtn.Visibility;
@@ -182,7 +206,9 @@ namespace hiro
         public void Load_Color()
         {
             Background = new SolidColorBrush(App.AppAccentColor);
+            CrashedButton.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 20));
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Hiro_Utils.Set_Bgimage(bgimage, this);
         }
@@ -248,8 +274,61 @@ namespace hiro
             }
         }
 
+        private void UpdateIcon()
+        {
+            var iconUri = wv2.CoreWebView2.FaviconUri;
+            if (iconUri != null && !iconUri.Trim().Equals(string.Empty) && !iconUri.Equals(this.iconUrl))
+            {
+                new System.Threading.Thread(() =>
+                {
+                    var output = Hiro_Utils.Path_Prepare("<hiapp>\\images\\web\\") + Guid.NewGuid() + ".hwico";
+                    Hiro_Utils.CreateFolder(output);
+                    var result = Hiro_Utils.GetWebContent(iconUri, true, output);
+                    if (!result.Equals("error"))
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            try
+                            {
+                                BitmapImage? bi = Hiro_Utils.GetBitmapImage(output);
+                                ImageBrush ib = new()
+                                {
+                                    Stretch = Stretch.UniformToFill,
+                                    ImageSource = bi
+                                };
+                                uicon.Source = bi;
+                            }
+                            catch(Exception ex)
+                            {
+
+                                Hiro_Utils.LogError(ex, "Hiro.Web.Favicon");
+                            }
+                            
+                        });
+                        try
+                        {
+                            System.IO.File.Delete(output);
+                        }
+                        catch { }
+                    }
+                    else
+                    {
+                        if (!this.iconUrl.Equals("/hiro_circle.ico"))
+                            Dispatcher.Invoke(() =>
+                            {
+                                uicon.Source = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
+                            });
+                    }
+                }).Start();
+            }
+            else
+                if (!this.iconUrl.Equals("/hiro_circle.ico"))
+                    uicon.Source = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
+        }
+
         private void CoreWebView2_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
+            UpdateIcon();
             var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
@@ -273,7 +352,9 @@ namespace hiro
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
+            UpdateIcon();
             var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
+            currentUrl = wv2.CoreWebView2.Source;
             Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", Hiro_Utils.Get_Translate("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && (!FlowTitle.Equals(Title) || URLBox.Visibility == Visibility.Visible))
             {
@@ -364,7 +445,7 @@ namespace hiro
                     wv2.Source = new(e.Uri);
                 else
                 {
-                    Hiro_Web web = new(e.Uri);
+                    Hiro_Web web = new(e.Uri, fixed_title, startUri);
                     web.WindowState = WindowState;
                     web.Show();
                     web.Refreash_Layout();
@@ -414,13 +495,18 @@ namespace hiro
             closebtn.Margin = WindowState == WindowState.Maximized ? new(0, -5, 0, 0) : new(0, -2, 0, 0);
             closebtn.Height = WindowState == WindowState.Maximized ? 30 : 32;
             BaseGrid.Margin = WindowState == WindowState.Maximized ? new(6) : new(0);
-            soundbtn.Margin = WindowState == WindowState.Maximized ? new(0,1, soundbtn.Margin.Right,0) : new(0, 0, soundbtn.Margin.Right, 0);
-            topbtn.Margin = WindowState == WindowState.Maximized ? new(0,1, topbtn.Margin.Right,0) : new(0, 0, topbtn.Margin.Right, 0);
+            soundbtn.Margin = WindowState == WindowState.Maximized ? new(0, 1, soundbtn.Margin.Right, 0) : new(0, 0, soundbtn.Margin.Right, 0);
+            uribtn.Margin = WindowState == WindowState.Maximized ? new(0, 1, uribtn.Margin.Right, 0) : new(0, 0, uribtn.Margin.Right, 0);
+            topbtn.Margin = WindowState == WindowState.Maximized ? new(0, 1, topbtn.Margin.Right, 0) : new(0, 0, topbtn.Margin.Right, 0);
             soundbtn.Height = WindowState == WindowState.Maximized ? 29 : 30;
+            uribtn.Height = WindowState == WindowState.Maximized ? 29 : 30;
             Hiro_Utils.Set_Control_Location(URLBtn, "websecure", location: false);
             Hiro_Utils.Set_Control_Location(URLBox, "weburl", location: false);
             Hiro_Utils.Set_Control_Location(PreBtn, "webpre", location: false);
             Hiro_Utils.Set_Control_Location(NextBtn, "webnext", location: false);
+            Hiro_Utils.Set_Control_Location(uribtn, "webspace", location: false);
+            Hiro_Utils.Set_Control_Location(CrashedLabel, "webcrashtip");
+            Hiro_Utils.Set_Control_Location(CrashedButton, "webcrashbtn");
             Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
         }
 
@@ -435,10 +521,13 @@ namespace hiro
             NextBtn.ToolTip = Hiro_Utils.Get_Translate("webnext");
             NextBtn.Content = Hiro_Utils.Get_Translate("webnextc").Replace("%s", "▶");
             URLBtn.Content = Hiro_Utils.Get_Translate("webinsecure");
+            CrashedLabel.Content = Hiro_Utils.Get_Translate("webcrashtip");
+            CrashedButton.Content = Hiro_Utils.Get_Translate("webcrashbtn");
             URLSign.Content = "\uF618";
             URLBtn.ToolTip = Hiro_Utils.Get_Translate("webinsecuretip");
             topbtn.ToolTip = Topmost ? Hiro_Utils.Get_Translate("webbottom") : Hiro_Utils.Get_Translate("webtop");
             soundbtn.ToolTip = Hiro_Utils.Get_Translate("webmute");
+            uribtn.ToolTip = Hiro_Utils.Get_Translate("webspace").Replace("%s", startUri);
         }
 
         private void Resbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -459,13 +548,13 @@ namespace hiro
             e.Handled = true;
         }
 
-        private void NextBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void NextBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             wv2.CoreWebView2.GoForward();
             e.Handled = true;
         }
 
-        private void URLBtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void URLBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             TitleLabel.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
             URLBox.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
@@ -487,50 +576,61 @@ namespace hiro
             switch (e.Key)
             {
                 case Key.Enter:
-                {
-                    switch (URLBox.Text.ToLower())
                     {
-                        case "topmost:on":
-                        case "topmost:true":
-                            Topmost = true;
-                            break;
-                        case "topmost:off":
-                        case "topmost:false":
-                            Topmost = false;
-                            break;
-                        case "mute:on":
-                        case "mute:true":
-                            wv2.CoreWebView2.IsMuted = true;
-                            break;
-                        case "mute:off":
-                        case "mute:false":
-                        case "fullscreen":
-                            wv2.CoreWebView2.IsMuted = false;
-                            break;
-                    }
+                        if (Keyboard.Modifiers == ModifierKeys.Control)
+                        {
+                            Hiro_Web web = new(URLBox.Text, fixed_title, startUri);
+                            web.WindowState = WindowState;
+                            web.Show();
+                            web.Refreash_Layout();
+                            e.Handled = true;
+                            return;
+                        }
+                        switch (URLBox.Text.ToLower())
+                        {
+                            case "topmost:on":
+                            case "topmost:true":
+                                Topmost = true;
+                                break;
+                            case "topmost:off":
+                            case "topmost:false":
+                                Topmost = false;
+                                break;
+                            case "mute:on":
+                            case "mute:true":
+                                wv2.CoreWebView2.IsMuted = true;
+                                break;
+                            case "mute:off":
+                            case "mute:false":
+                            case "fullscreen":
+                                wv2.CoreWebView2.IsMuted = false;
+                                break;
+                            default:
+                                if (fixed_title == null)
+                                    try
+                                    {
+                                        wv2.CoreWebView2.Navigate(URLBox.Text);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        try
+                                        {
+                                            wv2.CoreWebView2.Navigate($"http://{URLBox.Text}");
+                                        }
+                                        catch
+                                        {
+                                            Hiro_Utils.LogError(ex, "Hiro.Exception.Webview.URL");
+                                        }
+                                    }
+                                break;
+                        }
 
-                    URLBox.Visibility = Visibility.Collapsed;
-                    TitleLabel.Visibility = Visibility.Visible;
-                    if (fixed_title == null)
-                        try
-                        {
-                            wv2.CoreWebView2.Navigate(URLBox.Text);
-                        }
-                        catch (Exception ex)
-                        {
-                            try
-                            {
-                                wv2.CoreWebView2.Navigate($"http://{URLBox.Text}");
-                            }
-                            catch
-                            {
-                                Hiro_Utils.LogError(ex, "Hiro.Exception.Webview.URL");
-                            }
-                        }
-                    
-                    e.Handled = true;
-                    break;
-                }
+
+                        URLBox.Visibility = Visibility.Collapsed;
+                        TitleLabel.Visibility = Visibility.Visible;
+                        e.Handled = true;
+                        break;
+                    }
                 case Key.Escape:
                     URLBox.Visibility = Visibility.Collapsed;
                     TitleLabel.Visibility = Visibility.Visible;
@@ -544,7 +644,7 @@ namespace hiro
             Refreash_Layout();
         }
 
-        private void Soundbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Soundbtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             wv2.CoreWebView2.IsMuted = !wv2.CoreWebView2.IsMuted;
             soundbtn.Content = wv2.CoreWebView2.IsMuted ? "\uE198" : "\uE995";
@@ -580,6 +680,20 @@ namespace hiro
                     e.Handled = true;
                 }
             }
+        }
+
+        private void Uribtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.RunExe(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\EBWebView\\")), Hiro_Utils.Get_Translate("web"));
+        }
+
+        private void CrashedButton_Click(object sender, RoutedEventArgs e)
+        {
+            Hiro_Web web = new(currentUrl, fixed_title, startUri);
+            web.WindowState = WindowState;
+            web.Show();
+            web.Refreash_Layout();
+            Close();
         }
     }
 }

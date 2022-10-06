@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ABI.System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -133,8 +134,7 @@ namespace hiro
             }
             if (e.Key == Key.Enter)
             {
-                Hiro_Utils.RunExe(Hiro_Text.Text);
-                TryClose();
+                TryClose(Hiro_Text.Text);
                 e.Handled = true;
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.D9) && Keyboard.Modifiers == ModifierKeys.Shift)
@@ -168,18 +168,27 @@ namespace hiro
             Hiro_Text.CaretIndex = index + 1;
         }
 
-        private void TryClose()
+        private void TryClose(string? uri = null)
         {
             if (!load || cflag != 0)
                 return;
             cflag = 1;
+            Hiro_Utils.CancelWindowToForegroundWithAttachThreadInput(this);
+            Hiro_Utils.ReleaseCaptureImpl();
+            if (uri != null)
+            {
+                Hiro_Utils.RunExe(uri);
+            }
             Close();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Hiro_Utils.CancelWindowToForegroundWithAttachThreadInput(this);
-            Hiro_Utils.ReleaseCaptureImpl();
+            if (cflag == 0)
+            {
+                Hiro_Utils.CancelWindowToForegroundWithAttachThreadInput(this);
+                Hiro_Utils.ReleaseCaptureImpl();
+            }
         }
 
         private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

@@ -8,25 +8,52 @@
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
-        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"  MouseDown="TitleGrid_MouseDown" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown" Icon="/hiro_circle.ico">
+        Title="Hiro" Height="450" Width="800" Closing="Window_Closing" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"  MouseDown="TitleGrid_MouseDown" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown" Icon="{Binding Source, ElementName=uicon}">
     <WindowChrome.WindowChrome>
         <WindowChrome x:Name="Chrome"  GlassFrameThickness="0 1 0 0" NonClientFrameEdges="Left,Right,Bottom" CaptionHeight="0" UseAeroCaptionButtons="False"></WindowChrome>
     </WindowChrome.WindowChrome>
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
-        <Color x:Key="AppForeDimColor" A="1" B="1" G="1" ></Color>
+        <SolidColorBrush x:Key="AppAccentDim" Color="White"></SolidColorBrush>
     </Window.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Image x:Name="uicon" Visibility="Hidden" Source="/hiro_circle.ico"></Image>
         <Label x:Name="bgimage" Width="{Binding ActualWidth,ElementName=window}" Height="{Binding ActualHeight,ElementName=window}" Margin="0,0,0,0"/>
         <Grid x:Name="BaseGrid" MouseDown="TitleGrid_MouseDown">
             <Grid x:Name="WebGrid" Margin="0 32 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <wv2:WebView2 x:Name="wv2">
                 </wv2:WebView2>
+                <Grid x:Name="CrashedGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden">
+                    <Label x:Name="CrashedLabel" Content="Opoos! Webview crashed!" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="{Binding ActualHeight, ElementName=CrashedButton, Mode=OneWay}" Margin="0,10,0,0" Foreground="{DynamicResource AppFore}"/>
+                    <Button x:Name="CrashedButton" Content="Reload" HorizontalAlignment="Center" Cursor="Hand" Margin="0,120,0,0" Height="32" VerticalAlignment="Top" Click="CrashedButton_Click" Foreground="{DynamicResource AppFore}" BorderBrush="{DynamicResource AppFore}"/>
+                </Grid>
             </Grid>
             <Grid x:Name="TitleGrid" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <ProgressBar x:Name="wvpb" Background="Transparent" Foreground="{DynamicResource AppFore}" IsIndeterminate="True" Visibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5" BorderBrush="{x:Null}"/>
                 <DockPanel LastChildFill="True" >
                     <StackPanel x:Name="RightStack" DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+                        <Label x:Name="uribtn" Content="Default" Foreground="{DynamicResource AppFore}" Visibility="Collapsed" MouseLeftButtonDown="Uribtn_MouseLeftButtonDown" Padding="8,0,8,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="uribtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="uribtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
                         <Label x:Name="soundbtn" Content="&#xE995;" FontFamily="Segoe MDL2 Assets" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="35" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Soundbtn_MouseLeftButtonDown">
                             <Label.Triggers>
                                 <EventTrigger RoutedEvent="UIElement.MouseEnter">
