@@ -66,12 +66,6 @@ namespace hiro
 
         private void Hiro_We_Go(object sender, StartupEventArgs e)
         {
-            _ = new System.Threading.Mutex(true, "0x415417hiro", out bool ret);
-            if (!ret)
-            {
-                Hiro_Utils.RunExe("exit()");
-                return;
-            }
             InitializeInnerParameters();
             Initialize_Notify_Recall();
             InitializeStartParameters(e);
@@ -256,6 +250,12 @@ namespace hiro
                         wnd.Hide();
                         if (create)
                         {
+                            _ = new System.Threading.Mutex(true, "0x415417hiro", out bool ret);
+                            if (!ret)
+                            {
+                                Hiro_Utils.RunExe("exit()");
+                                return;
+                            }
                             mn = new();
                             if (silent)
                                 Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
