@@ -1,6 +1,4 @@
-﻿using MS.WindowsAPICodePack.Internal;
-using System;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -26,6 +24,8 @@ namespace hiro
         private string startUri = "<hiuser>";
         private string currentUrl = "hiro";
         private string iconUrl = "/hiro_circle.ico";
+        private ImageSource? savedicon = null;
+        private ImageSource? savedWebIcon = null;
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();
@@ -116,14 +116,7 @@ namespace hiro
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
         {
-            string ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
-            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title))
-                return;
-            FlowTitle = Title;
-            System.Windows.Media.Animation.Storyboard sb = new();
-            Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-            sb.Begin();
+            UpdateTitleLabel();
         }
 
         private void ClearCache(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
@@ -145,6 +138,7 @@ namespace hiro
 
         private void Wv2_CoreWebView2InitializationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
         {
+            savedicon = Icon;
             wv2.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
             wv2.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
             wv2.CoreWebView2.WindowCloseRequested += CoreWebView2_WindowCloseRequested;
@@ -223,7 +217,7 @@ namespace hiro
 
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
-            prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? Hiro_Utils.Get_Translate("webmusic") : "";
+            
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             var visual = soundbtn.Visibility;
             soundbtn.Visibility = wv2.CoreWebView2.IsDocumentPlayingAudio ? Visibility.Visible : Visibility.Collapsed;
@@ -233,15 +227,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(2, soundbtn, sb, -50, null);
                 sb.Begin();
             }
-            var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
-            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
-            {
-                FlowTitle = Title;
-                System.Windows.Media.Animation.Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-                sb.Begin();
-            }
+            UpdateTitleLabel(wv2.CoreWebView2.IsDocumentPlayingAudio);
         }
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
@@ -274,70 +260,106 @@ namespace hiro
             }
         }
 
+        private void SetIcon(BitmapImage bi)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ImageBrush ib = new()
+                {
+                    Stretch = Stretch.UniformToFill,
+                    ImageSource = bi
+                };
+                uicon.Source = bi;
+                Icon = bi;
+                savedWebIcon = bi;
+            });
+        }
+
+        private void SetSavedPrimitiveIcon()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (savedicon != null)
+                {
+                    uicon.Source = savedicon;
+                    Icon = savedicon;
+                }
+            });
+        }
+
         private void UpdateIcon()
         {
-            var iconUri = wv2.CoreWebView2.FaviconUri;
-            if (iconUri != null && !iconUri.Trim().Equals(string.Empty) && !iconUri.Equals(this.iconUrl))
+            if (WebGrid.Visibility != Visibility.Visible)
             {
-                new System.Threading.Thread(() =>
-                {
-                    var output = Hiro_Utils.Path_Prepare("<hiapp>\\images\\web\\") + Guid.NewGuid() + ".hwico";
-                    Hiro_Utils.CreateFolder(output);
-                    var result = Hiro_Utils.GetWebContent(iconUri, true, output);
-                    if (!result.Equals("error"))
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            try
-                            {
-                                BitmapImage? bi = Hiro_Utils.GetBitmapImage(output);
-                                ImageBrush ib = new()
-                                {
-                                    Stretch = Stretch.UniformToFill,
-                                    ImageSource = bi
-                                };
-                                uicon.Source = bi;
-                            }
-                            catch(Exception ex)
-                            {
-
-                                Hiro_Utils.LogError(ex, "Hiro.Web.Favicon");
-                            }
-                            
-                        });
-                        try
-                        {
-                            System.IO.File.Delete(output);
-                        }
-                        catch { }
-                    }
-                    else
-                    {
-                        if (!this.iconUrl.Equals("/hiro_circle.ico"))
-                            Dispatcher.Invoke(() =>
-                            {
-                                uicon.Source = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
-                            });
-                    }
-                }).Start();
+                SetSavedPrimitiveIcon();
             }
             else
-                if (!this.iconUrl.Equals("/hiro_circle.ico"))
-                    uicon.Source = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
+            {
+                var iconUri = wv2.CoreWebView2.FaviconUri;
+                if (iconUri != null && !iconUri.Trim().Equals(string.Empty))
+                {
+                    if (!iconUri.Equals(iconUrl))
+                    {
+                        new System.Threading.Thread(() =>
+                        {
+                            var output = Hiro_Utils.Path_Prepare("<hiapp>\\images\\web\\") + Guid.NewGuid() + ".hwico";
+                            Hiro_Utils.CreateFolder(output);
+                            var result = Hiro_Utils.GetWebContent(iconUri, true, output);
+                            if (!result.Equals("error"))
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    try
+                                    {
+                                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(output);
+                                        if (bi != null)
+                                        {
+                                            SetIcon(bi);
+                                            iconUrl = iconUri;
+                                        }
+                                        else
+                                        {
+                                            SetSavedPrimitiveIcon();
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Hiro_Utils.LogError(ex, "Hiro.Web.Favicon");
+                                    }
+
+                                });
+                                try
+                                {
+                                    System.IO.File.Delete(output);
+                                }
+                                catch { }
+                            }
+                            else
+                            {
+                                SetSavedPrimitiveIcon();
+                            }
+                        }).Start();
+                    }         
+                    else
+                    {
+                        if (savedWebIcon != null)
+                        {
+                            uicon.Source = savedWebIcon;
+                            Icon = savedWebIcon;
+                        }
+                    }
+                }
+                else
+                {
+                    SetSavedPrimitiveIcon();
+                }
+            }
         }
 
         private void CoreWebView2_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
             UpdateIcon();
-            var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
-            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && !FlowTitle.Equals(Title))
-            {
-                FlowTitle = Title;
-                System.Windows.Media.Animation.Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-                sb.Begin();
-            }
+            UpdateTitleLabel();
             URLBtn.Content = secure ? Hiro_Utils.Get_Translate("websecure") : Hiro_Utils.Get_Translate("webinsecure");
             URLSign.Content = secure ? "\uF61A" : "\uF618";
             URLBtn.ToolTip = secure ? Hiro_Utils.Get_Translate("websecuretip") : Hiro_Utils.Get_Translate("webinsecuretip");
@@ -353,23 +375,7 @@ namespace hiro
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
             UpdateIcon();
-            var ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
             currentUrl = wv2.CoreWebView2.Source;
-            Title = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", Hiro_Utils.Get_Translate("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && (!FlowTitle.Equals(Title) || URLBox.Visibility == Visibility.Visible))
-            {
-                FlowTitle = Title;
-                URLBox.Visibility = Visibility.Collapsed;
-                TitleLabel.Visibility = Visibility.Visible;
-                System.Windows.Media.Animation.Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-                sb.Begin();
-            }
-            else
-            {
-                URLBox.Visibility = Visibility.Collapsed;
-                TitleLabel.Visibility = Visibility.Visible;
-            }
             secure = true;
             Loading(true);
         }
@@ -401,12 +407,6 @@ namespace hiro
             {
                 URLBox.Visibility = Visibility.Collapsed;
                 TitleLabel.Visibility = Visibility.Visible;
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
-                {
-                    System.Windows.Media.Animation.Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-                    sb.Begin();
-                }
             }
         }
 
@@ -422,6 +422,7 @@ namespace hiro
                 wvpb.Visibility = Visibility.Collapsed;
                 Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             }
+            UpdateTitleLabel(state);
         }
         private void CoreWebView2_DownloadStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2DownloadStartingEventArgs e)
         {
@@ -652,6 +653,33 @@ namespace hiro
             e.Handled = true;
         }
 
+        private void UpdateTitleLabel(bool loading = false)
+        {
+            URLBox.Visibility = Visibility.Collapsed;
+            TitleLabel.Visibility = Visibility.Visible;
+            if (WebGrid.Visibility != Visibility.Visible)
+            {
+                TitleLabel.Text = App.AppTitle;
+            }
+            else
+            {
+                prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? Hiro_Utils.Get_Translate("webmusic") : "";
+                string ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
+                TitleLabel.Text = loading? ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", Hiro_Utils.Get_Translate("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle) : ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title))
+                {
+                    Title = TitleLabel.Text;
+                    return;
+                }
+                    
+                FlowTitle = Title;
+                System.Windows.Media.Animation.Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
+                sb.Begin();
+            }
+            Title = TitleLabel.Text;
+        }
+
         private void Topbtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Topmost = !Topmost;
@@ -665,6 +693,20 @@ namespace hiro
             if (e.KeyStates == Keyboard.GetKeyStates(Key.W) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 Close();
+                e.Handled = true;
+            }
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.Tab) && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (WebGrid.Visibility != Visibility.Visible)
+                {
+                    WebGrid.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    WebGrid.Visibility = Visibility.Hidden;
+                }
+                UpdateTitleLabel();
+                UpdateIcon();
                 e.Handled = true;
             }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.F11))

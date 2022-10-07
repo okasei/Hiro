@@ -1796,7 +1796,7 @@ namespace hiro
                 {
                     if (App.mn != null)
                     {
-                        RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",," + path + " utils)");
+                        RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",,\"" + path + "" + "\" utils)");
                     }
                     else
                     {
@@ -1809,66 +1809,73 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("web("))
                 {
-                    Hiro_Web web;
-                    string webpara = File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb") ? Read_Ini(parameter[0], "Web", "Parameters", "") : parameter.Count > 1 ? parameter[1] : "";
-                    if (File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb"))
+                    if (App.mn != null)
                     {
-                        string? title = null;
-                        if (!Read_Ini(parameter[0], "Web", "Title", string.Empty).Equals(string.Empty))
-                            title = Read_Ini(parameter[0], "Web", "Title", string.Empty).Replace("%b", " ");
-                        var uri = Read_Ini(parameter[0], "Web", "URI", "about:blank");
-                        var UPF = Read_Ini(parameter[0], "Web", "Folder", "<hiuser>");
-                        web = new(uri, title, UPF)
-                        {
-                            Height = Double.Parse(Read_Ini(parameter[0], "Web", "Height", "450")),
-                            Width = Double.Parse(Read_Ini(parameter[0], "Web", "Width", "800"))
-                        };
+                        RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",,\"" + path + "" +"\" utils)");
                     }
                     else
                     {
-                        switch (parameter.Count)
+                        Hiro_Web web;
+                        string webpara = File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb") ? Read_Ini(parameter[0], "Web", "Parameters", "") : parameter.Count > 1 ? parameter[1] : "";
+                        if (File.Exists(parameter[0]) && parameter[0].EndsWith(".hwb"))
                         {
-                            case 1:
-                            case 2:
-                                web = new(parameter[0]);
-                                break;
-                            case > 2:
-                                web = new(parameter[0], null, parameter[2]);
-                            break;
-                            default:
-                                web = new("https://www.rexio.cn/");
-                            break;
-                        } 
-                    }    
-                    if (webpara.IndexOf("s") != -1)
-                        web.self = true;
-                    if (webpara.IndexOf("-m") != -1)
-                    {
-                        web.maxbtn.Visibility = Visibility.Collapsed;
-                        web.ResizeMode = ResizeMode.CanMinimize;
+                            string? title = null;
+                            if (!Read_Ini(parameter[0], "Web", "Title", string.Empty).Equals(string.Empty))
+                                title = Read_Ini(parameter[0], "Web", "Title", string.Empty).Replace("%b", " ");
+                            var uri = Read_Ini(parameter[0], "Web", "URI", "about:blank");
+                            var UPF = Read_Ini(parameter[0], "Web", "Folder", "<hiuser>");
+                            web = new(uri, title, UPF)
+                            {
+                                Height = Double.Parse(Read_Ini(parameter[0], "Web", "Height", "450")),
+                                Width = Double.Parse(Read_Ini(parameter[0], "Web", "Width", "800"))
+                            };
+                        }
+                        else
+                        {
+                            switch (parameter.Count)
+                            {
+                                case 1:
+                                case 2:
+                                    web = new(parameter[0]);
+                                    break;
+                                case > 2:
+                                    web = new(parameter[0], null, parameter[2]);
+                                    break;
+                                default:
+                                    web = new("https://www.rexio.cn/");
+                                    break;
+                            }
+                        }
+                        if (webpara.IndexOf("s") != -1)
+                            web.self = true;
+                        if (webpara.IndexOf("-m") != -1)
+                        {
+                            web.maxbtn.Visibility = Visibility.Collapsed;
+                            web.ResizeMode = ResizeMode.CanMinimize;
+                        }
+                        if (webpara.IndexOf("-r") != -1)
+                        {
+                            web.maxbtn.Visibility = Visibility.Collapsed;
+                            web.minbtn.Visibility = Visibility.Collapsed;
+                            web.ResizeMode = ResizeMode.NoResize;
+                        }
+                        if (webpara.IndexOf("i") != -1)
+                            web.WindowState = WindowState.Minimized;
+                        else if (webpara.IndexOf("x") != -1)
+                            web.WindowState = WindowState.Maximized;
+                        if (webpara.IndexOf("-c") != -1)
+                            web.WindowStartupLocation = WindowStartupLocation.Manual;
+                        if (webpara.IndexOf("t") != -1)
+                        {
+                            web.Topmost = true;
+                            web.topbtn.Content = "\uE77A";
+                            web.topbtn.ToolTip = Get_Translate("webbottom");
+                        }
+                        if (webpara.IndexOf("b") != -1)
+                            web.URLGrid.Visibility = Visibility.Visible;
+                        web.Show();
+                        web.Refreash_Layout();
                     }
-                    if (webpara.IndexOf("-r") != -1)
-                    {
-                        web.maxbtn.Visibility = Visibility.Collapsed;
-                        web.minbtn.Visibility = Visibility.Collapsed;
-                        web.ResizeMode = ResizeMode.NoResize;
-                    }
-                    if (webpara.IndexOf("i") != -1)
-                        web.WindowState = WindowState.Minimized;
-                    else if (webpara.IndexOf("x") != -1)
-                        web.WindowState = WindowState.Maximized;
-                    if (webpara.IndexOf("-c") != -1)
-                        web.WindowStartupLocation = WindowStartupLocation.Manual;
-                    if (webpara.IndexOf("t") != -1)
-                    {
-                        web.Topmost = true;
-                        web.topbtn.Content = "\uE77A";
-                        web.topbtn.ToolTip = Get_Translate("webbottom");
-                    }
-                    if (webpara.IndexOf("b") != -1)
-                        web.URLGrid.Visibility = Visibility.Visible;
-                    web.Show();
-                    web.Refreash_Layout();
                     return;
                 }
                 if (path.ToLower().StartsWith("editor()"))
