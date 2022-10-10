@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Windows.AI.MachineLearning;
 
 namespace hiro
 {
@@ -20,12 +25,15 @@ namespace hiro
         private string prefix = "";
         private bool secure = false;
         internal int bflag = 0;
+        internal double UniversalLeft = 0;
         private string FlowTitle = "";
         private string startUri = "<hiuser>";
+        private string configPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\web.config"));
         private string currentUrl = "hiro";
         private string iconUrl = "/hiro_circle.ico";
         private ImageSource? savedicon = null;
         private ImageSource? savedWebIcon = null;
+        private ContextMenu? favMenu = null;
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();
@@ -36,8 +44,10 @@ namespace hiro
             }
             this.startUri = startUri;
             Title = App.AppTitle;
+            configPath = startUri.Equals("<hiuser>") ? Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\web.config")) : Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\web.config"));
             Load_Color();
             Load_Translate();
+            Load_Menu();
             Refreash_Layout();
             if (uri != null && uri.ToLower().Equals("hiro://crash"))
             {
@@ -75,7 +85,10 @@ namespace hiro
                             if (uri != null)
                             {
                                 if (uri.Trim().Equals(string.Empty))
-                                    uri = startUri.Equals("<hiuser>") ? "https://rexio.cn/" : Hiro_Utils.Read_Ini(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\web.config")), "Web", "Home", "https://rexio.cn/");
+                                {
+                                    uri = Hiro_Utils.Read_Ini(configPath, "Web", "Home", "https://rexio.cn/");
+                                }
+
                                 try
                                 {
                                     wv2.Source = new Uri(uri);
@@ -106,6 +119,7 @@ namespace hiro
 
         public void HiHiro()
         {
+            UpdateUniversalLeft();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
                 System.Windows.Media.Animation.Storyboard sb = new();
@@ -113,6 +127,207 @@ namespace hiro
                 sb.Begin();
             }
         }
+
+        private void Load_Menu()
+        {
+            favMenu?.Items.Clear();
+            favMenu ??= new()
+            {
+                CacheMode = null,
+                Foreground = new SolidColorBrush(App.AppForeColor),
+                Background = new SolidColorBrush(App.AppAccentColor),
+                BorderBrush = null,
+                Style = (Style)App.Current.Resources["HiroContextMenu"],
+                Padding = new(1, 10, 1, 10)
+            };
+            MenuItem addToFav = new()
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
+                Header = "AddToFav"
+            };
+            addToFav.Click += delegate
+            {
+                new System.Threading.Thread(() =>
+                {
+                    var i = 0;
+                    while (!Hiro_Utils.Read_Ini(configPath, "Fav" + i.ToString(), "Title", string.Empty).Equals(string.Empty))
+                    {
+                        i++;
+                    }
+                    Dispatcher.Invoke(() =>
+                    {
+                        Hiro_Utils.Write_Ini(configPath, "Fav" + i.ToString(), "Title", wv2.CoreWebView2.DocumentTitle);
+                        Hiro_Utils.Write_Ini(configPath, "Fav" + i.ToString(), "URL", wv2.CoreWebView2.Source);
+                        var ti = wv2.CoreWebView2.DocumentTitle;
+                        if (ti.Length > 10)
+                            ti = ti[..10] + "...";
+                        MenuItem fav = new()
+                        {
+                            Background = new SolidColorBrush(Colors.Transparent),
+                            Header = ti
+                        };
+                        fav.Click += delegate
+                        {
+                            Hiro_Web web = new(wv2.CoreWebView2.Source, fixed_title, startUri);
+                            web.WindowState = WindowState;
+                            web.Show();
+                            web.Refreash_Layout();
+                        };
+                        favMenu.Items.Add(fav);
+                        Label label = new Label();
+                        SetLabelProperty(label, wv2.CoreWebView2.DocumentTitle, wv2.CoreWebView2.Source);
+                        FavGridBase.Children.Add(label);
+                        var msize = new Size();
+                        Hiro_Utils.Get_Text_Visual_Width(label, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+                        UniversalLeft = UniversalLeft + msize.Width + 5;
+                        UpdateUniversalLeft();
+                    });
+                }).Start();
+            };
+            favMenu.Items.Add(addToFav);
+            var aflag = false;
+            var i = 0;
+
+            while (!Hiro_Utils.Read_Ini(configPath, "Fav" + i.ToString(), "Title", string.Empty).Trim().Equals(string.Empty))
+            {
+                var ti = Hiro_Utils.Read_Ini(configPath, "Fav" + i.ToString(), "Title", string.Empty);
+                if (ti.Length > 10)
+                    ti = ti[..10] + "...";
+                MenuItem fav = new()
+                {
+                    Background = new SolidColorBrush(Colors.Transparent),
+                    Header = ti
+                };
+                fav.ToolTip = Hiro_Utils.Read_Ini(configPath, "Fav" + i.ToString(), "URL", string.Empty);
+                fav.Click += delegate
+                {
+                    Hiro_Web web = new(fav.ToolTip.ToString(), fixed_title, startUri)
+                    {
+                        WindowState = WindowState
+                    };
+                    web.Show();
+                    web.Refreash_Layout();
+                };
+                if (aflag == false)
+                {
+                    favMenu.Items.Add(new Separator());
+                    aflag = true;
+                }
+                favMenu.Items.Add(fav);
+                Label label = new Label();
+                SetLabelProperty(label, Hiro_Utils.Read_Ini(configPath, "Fav" + i.ToString(), "Title", string.Empty), Hiro_Utils.Read_Ini(configPath, "Fav" + i.ToString(), "URL", string.Empty));
+                FavGridBase.Children.Add(label);
+                var msize = new Size();
+                Hiro_Utils.Get_Text_Visual_Width(label, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+                UniversalLeft = UniversalLeft + msize.Width + 5;
+                i++;
+            }
+        }
+
+        private void UpdateUniversalLeft()
+        {
+            FavGridBase.Width = UniversalLeft;
+            var toWidth = Width - PreBtn.ActualWidth - NextBtn.ActualWidth - 10 - URLGrid.ActualWidth - RightStack.ActualWidth;
+            if (FavGridBase.Margin.Left < 0)
+            {
+                FavPreBtn.Visibility = Visibility.Visible;
+                FavGridG.Margin = new(50, 0, 0, 0);
+                toWidth -= 50;
+            }
+            else
+            {
+                FavPreBtn.Visibility = Visibility.Collapsed;
+                FavGridG.Margin = new(0, 0, 0, 0);
+            }
+            if (FavPreBtn.Visibility == Visibility.Visible)
+            {
+                if (toWidth >= UniversalLeft + FavGridBase.Margin.Left)
+                {
+                    FavNextBtn.Visibility = Visibility.Collapsed;
+                    FavGridG.Width = toWidth;
+                }
+                else
+                {
+                    FavNextBtn.Visibility = Visibility.Visible;
+                    FavGridG.Width = toWidth - 50;
+                }
+            }
+            else
+            {
+                if (toWidth >= UniversalLeft)
+                {
+                    FavNextBtn.Visibility = Visibility.Collapsed;
+                    FavGridG.Width = toWidth;
+                }
+                else
+                {
+                    FavNextBtn.Visibility = Visibility.Visible;
+                    FavGridG.Width = toWidth - 50;
+                }
+            }
+        }
+
+        private void SetLabelProperty(Label label, string ti, string url)
+        {
+            label.SetBinding(ForegroundProperty, new Binding()
+            {
+                Source = FavExample,
+                Path = new("Foreground")
+            });
+            label.ToolTip = ti;
+            label.Background = new SolidColorBrush(Colors.Transparent);
+            label.VerticalAlignment = VerticalAlignment.Stretch;
+            label.HorizontalAlignment = HorizontalAlignment.Left;
+            label.Margin = new(UniversalLeft, 0, 0, 0);
+            label.MouseLeftButtonDown += delegate (object sender, MouseButtonEventArgs e)
+            {
+                Hiro_Web web = new(url, fixed_title, startUri);
+                web.WindowState = WindowState;
+                web.Show();
+                web.Refreash_Layout();
+                e.Handled = true;
+            };
+            label.MouseEnter += delegate (object sender, MouseEventArgs e)
+            {
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddColorAnimaton((Color)Resources["AppForeDimColor"], 250, label, "Background.Color", sb);
+                    sb.Completed += delegate
+                    {
+                        label.Background = new SolidColorBrush((Color)Resources["AppForeDimColor"]);
+                    };
+                    sb.Begin();
+                }
+                else
+                {
+                    label.Background = new SolidColorBrush((Color)Resources["AppForeDimColor"]);
+                }
+                
+                e.Handled = true;
+            };
+            label.MouseLeave += delegate (object sender, MouseEventArgs e)
+            {
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddColorAnimaton(Colors.Transparent, 250, label, "Background.Color", sb);
+                    sb.Completed += delegate
+                    {
+                        label.Background = new SolidColorBrush(Colors.Transparent);
+                    };
+                    sb.Begin();
+                }
+                else
+                {
+                    label.Background = new SolidColorBrush(Colors.Transparent);
+                }
+                
+                e.Handled = true;
+            };
+            label.Content = ti.Length > 10 ? ti[..10] + "..." : ti;
+        }
+
 
         private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
         {
@@ -217,17 +432,17 @@ namespace hiro
 
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
-            
+
             var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             var visual = soundbtn.Visibility;
             soundbtn.Visibility = wv2.CoreWebView2.IsDocumentPlayingAudio ? Visibility.Visible : Visibility.Collapsed;
             if (soundbtn.Visibility == Visibility.Visible && visual != soundbtn.Visibility && animation)
             {
-                System.Windows.Media.Animation.Storyboard sb = new();
+                Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(2, soundbtn, sb, -50, null);
                 sb.Begin();
             }
-            UpdateTitleLabel(wv2.CoreWebView2.IsDocumentPlayingAudio);
+            UpdateTitleLabel();
         }
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
@@ -339,7 +554,7 @@ namespace hiro
                                 SetSavedPrimitiveIcon();
                             }
                         }).Start();
-                    }         
+                    }
                     else
                     {
                         if (savedWebIcon != null)
@@ -555,23 +770,6 @@ namespace hiro
             e.Handled = true;
         }
 
-        private void URLBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            TitleLabel.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
-            URLBox.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-            URLBox.Text = wv2.CoreWebView2.Source;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
-            {
-                System.Windows.Media.Animation.Storyboard sb = new();
-                if (TitleLabel.Visibility == Visibility.Visible)
-                    Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-                else
-                    Hiro_Utils.AddPowerAnimation(1, URLBox, sb, -50, null);
-                sb.Begin();
-            }
-            e.Handled = true;
-        }
-
         private void URLBox_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -655,8 +853,6 @@ namespace hiro
 
         private void UpdateTitleLabel(bool loading = false)
         {
-            URLBox.Visibility = Visibility.Collapsed;
-            TitleLabel.Visibility = Visibility.Visible;
             if (WebGrid.Visibility != Visibility.Visible)
             {
                 TitleLabel.Text = App.AppTitle;
@@ -665,17 +861,23 @@ namespace hiro
             {
                 prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? Hiro_Utils.Get_Translate("webmusic") : "";
                 string ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
-                TitleLabel.Text = loading? ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", Hiro_Utils.Get_Translate("loading")).Replace("%p", prefix).Replace("%h", App.AppTitle) : ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", "").Replace("%p", prefix).Replace("%h", App.AppTitle);
+                string lo = loading ? Hiro_Utils.Get_Translate("loading") : "";
+                TitleLabel.Text = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", lo).Replace("%p", prefix).Replace("%h", App.AppTitle);
                 if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title))
                 {
                     Title = TitleLabel.Text;
                     return;
                 }
-                    
                 FlowTitle = Title;
-                System.Windows.Media.Animation.Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
-                sb.Begin();
+                if (FavGrid.Visibility != Visibility.Visible)
+                {
+                    URLBox.Visibility = Visibility.Collapsed;
+                    TitleLabel.Visibility = Visibility.Visible;
+                    Storyboard sb = new();
+                    Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
+                    sb.Begin();
+                }
+
             }
             Title = TitleLabel.Text;
         }
@@ -690,6 +892,11 @@ namespace hiro
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyStates == Keyboard.GetKeyStates(Key.D) && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (favMenu != null)
+                    favMenu.IsOpen = true;
+            }
             if (e.KeyStates == Keyboard.GetKeyStates(Key.W) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 Close();
@@ -726,7 +933,8 @@ namespace hiro
 
         private void Uribtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Hiro_Utils.RunExe(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\EBWebView\\")), Hiro_Utils.Get_Translate("web"));
+            Hiro_Utils.RunExe(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\EBWebView\\")), Hiro_Utils.Get_Translate("web"), false);
+            e.Handled = true;
         }
 
         private void CrashedButton_Click(object sender, RoutedEventArgs e)
@@ -736,6 +944,64 @@ namespace hiro
             web.Show();
             web.Refreash_Layout();
             Close();
+        }
+
+        private void URLSign_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == MouseButtonState.Pressed)
+            {
+                switch (e.ChangedButton)
+                {
+                    case MouseButton.Left:
+                        TitleLabel.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
+                        URLBox.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                        URLBox.Text = wv2.CoreWebView2.Source;
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        {
+                            System.Windows.Media.Animation.Storyboard sb = new();
+                            if (TitleLabel.Visibility == Visibility.Visible)
+                                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
+                            else
+                                Hiro_Utils.AddPowerAnimation(1, URLBox, sb, -50, null);
+                            sb.Begin();
+                        }
+                        e.Handled = true;
+                        break;
+
+                    case MouseButton.Right:
+                        TitleLabel.Visibility = FavGrid.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
+                        FavGrid.Visibility = FavGrid.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                        URLBox.Visibility = Visibility.Collapsed;
+                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        {
+                            System.Windows.Media.Animation.Storyboard sb = new();
+                            if (FavGrid.Visibility == Visibility.Visible)
+                                Hiro_Utils.AddPowerAnimation(1, FavGrid, sb, -50, null);
+                            else
+                                Hiro_Utils.AddPowerAnimation(1, TitleLabel, sb, -50, null);
+                            sb.Begin();
+                        }
+                        e.Handled = true;
+                        break;
+
+                }
+            }
+        }
+
+        private void FavPreBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var newLeft = FavGridBase.Margin.Left;
+            newLeft = newLeft + FavGridG.ActualWidth > 0 ? 0 : newLeft + FavGridG.ActualWidth;
+            FavGridBase.Margin = new Thickness(newLeft, 0, 0, 0);
+            UpdateUniversalLeft();
+        }
+
+        private void FavNextBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var newLeft = FavGridBase.Margin.Left;
+            newLeft = UniversalLeft + newLeft - FavGridG.ActualWidth > FavGridG.ActualWidth ? newLeft - FavGridG.ActualWidth : FavGridG.ActualWidth - UniversalLeft ;
+            FavGridBase.Margin = new Thickness(newLeft, 0, 0, 0);
+            UpdateUniversalLeft();
         }
     }
 }

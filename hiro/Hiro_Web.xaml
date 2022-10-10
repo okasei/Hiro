@@ -15,6 +15,7 @@
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccentDim" Color="White"></SolidColorBrush>
+        <Color x:Key="AppForeDimColor">White</Color>
     </Window.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Image x:Name="uicon" Visibility="Hidden" Source="/hiro_circle.ico"></Image>
@@ -258,11 +259,71 @@
                                     </BeginStoryboard>
                                 </EventTrigger>
                             </StackPanel.Triggers>
-                            <Label x:Name="URLSign" Content=" &#xF61A; " FontWeight="{Binding FontWeight, ElementName=URLBtn}" FontStyle="{Binding FontStyle, ElementName=URLBtn}" FontSize="{Binding FontSize, ElementName=URLBtn}" ToolTip="{Binding ToolTip, ElementName=URLBtn}" FontFamily="Segoe MDL2 Assets" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="Auto" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="URLBtn_MouseLeftButtonDown"/>
-                            <Label x:Name="URLBtn" Content="Secure" FontWeight="Normal" FontStyle="Normal" FontSize="12" ToolTip="Secure" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="Auto" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="URLBtn_MouseLeftButtonDown"/>
+                            <Label x:Name="URLSign" Content=" &#xF61A; " FontWeight="{Binding FontWeight, ElementName=URLBtn}" FontStyle="{Binding FontStyle, ElementName=URLBtn}" FontSize="{Binding FontSize, ElementName=URLBtn}" ToolTip="{Binding ToolTip, ElementName=URLBtn}" FontFamily="Segoe MDL2 Assets" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="Auto" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseDown="URLSign_MouseDown"/>
+                            <Label x:Name="URLBtn" Content="Secure" FontWeight="Normal" FontStyle="Normal" FontSize="12" ToolTip="Secure" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="Auto" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseDown="URLSign_MouseDown"/>
                         </StackPanel>
                         <Grid Width="5"/>
-                        <TextBox x:Name="URLBox" VerticalContentAlignment="Center" Margin="0,3,0,0" Visibility="Collapsed" Foreground="{DynamicResource AppFore}" FontStretch="{Binding FontStretch, ElementName=TitleLabel}" FontStyle="{Binding FontStyle, ElementName=TitleLabel}" FontWeight="{Binding FontWeight, ElementName=TitleLabel}" FontSize="{Binding FontSize, ElementName=TitleLabel}" FontFamily="{Binding FontFamily, ElementName=TitleLabel}" Width="{Binding ActualWidth, ElementName=window}" TextWrapping="NoWrap" KeyDown="URLBox_KeyDown"/>
+                        <Grid x:Name="FavGrid" Margin="0" Visibility="Collapsed" HorizontalAlignment="Stretch">
+                            <Grid x:Name="FavGridG" Visibility="Visible" VerticalAlignment="Stretch"  HorizontalAlignment="Left" Margin="0">
+                                <Grid x:Name="FavGridBase" Margin="0,0,0,0" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=FavGrid, Mode=OneWay}">
+                                </Grid>
+                            </Grid>
+                            <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0">
+                                <Label x:Name="FavPreBtn" Content="◀" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="50" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="FavPreBtn_MouseLeftButtonDown">
+                                    <Label.Triggers>
+                                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="FavPreBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="FavPreBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Grid>
+                            <Grid HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0">
+                                <Label x:Name="FavNextBtn" Content="▶" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="50" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="FavNextBtn_MouseLeftButtonDown">
+                                    <Label.Triggers>
+                                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="FavNextBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="FavNextBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Grid>
+                            <Label x:Name="FavExample" Foreground="{DynamicResource AppFore}" Visibility="Collapsed" RenderTransformOrigin="0.5,0.5">
+                                <Label.Background>
+                                    <SolidColorBrush Color="{DynamicResource AppForeDimColor}">
+                                    </SolidColorBrush>
+                                </Label.Background>
+                            </Label>
+                        </Grid>
+                        <TextBox x:Name="URLBox" VerticalContentAlignment="Center" Margin="0,3,0,0" Visibility="Collapsed" Foreground="{DynamicResource AppFore}" FontStretch="{Binding FontStretch, ElementName=TitleLabel}" FontStyle="{Binding FontStyle, ElementName=TitleLabel}" FontWeight="{Binding FontWeight, ElementName=TitleLabel}" FontSize="{Binding FontSize, ElementName=TitleLabel}" FontFamily="{Binding FontFamily, ElementName=TitleLabel}" TextWrapping="NoWrap" KeyDown="URLBox_KeyDown"/>
                         <TextBlock x:Name ="TitleLabel" FontSize="12" Text= "{Binding Title, ElementName=window}" Foreground="{DynamicResource AppFore}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, ElementName=TitleLabel}" HorizontalAlignment="Stretch"  />
                         <Grid Width="5"/>
                     </DockPanel>

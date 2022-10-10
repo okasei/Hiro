@@ -886,7 +886,7 @@ namespace hiro
         #endregion
 
         #region 运行文件
-        public static void RunExe(string RunPath, string? source = null)
+        public static void RunExe(string RunPath, string? source = null,bool autoClose = true)
         {
             var path = Path_Prepare_EX(Path_Prepare(RunPath));
             try
@@ -965,7 +965,10 @@ namespace hiro
                             }
                             catch (Exception ex)
                             {
-                                RunExe($"alarm({Get_Translate("error")},{ex})");
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    RunExe($"alarm({Get_Translate("error")},{ex})");
+                                });
                                 LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
                             }
                         };
@@ -1952,7 +1955,7 @@ namespace hiro
                 }
                 Run_Process(pinfo_, path, RunPath);
                 #endregion
-                if (App.mn == null)
+                if (App.mn == null && autoClose)
                     RunExe("exit()");
                 return;
             }

@@ -309,7 +309,7 @@ namespace hiro
                             var str = filec[current];
                             if (!str.ToLower().StartsWith("http://") && !str.ToLower().StartsWith("https://"))
                             {
-                                Hiro_Utils.RunExe(str);
+                                Hiro_Utils.RunExe(str, Hiro_Utils.Get_Translate("dltitle"), false);
                                 Autorun.IsChecked = false;
                             }
                             else
@@ -355,11 +355,11 @@ namespace hiro
             }
             if (success && Autorun.IsChecked == true)
             {
-                    Hiro_Utils.RunExe("explorer \"" + mSaveFileName + "\"");
+                    Hiro_Utils.RunExe("explorer \"" + mSaveFileName + "\"", Hiro_Utils.Get_Translate("dltitle"), false);
             }
             if (success && Autorun.IsChecked == null)
             {
-                Hiro_Utils.RunExe(mSaveFileName[..mSaveFileName.LastIndexOf("\\")]);
+                Hiro_Utils.RunExe(mSaveFileName[..mSaveFileName.LastIndexOf("\\")], Hiro_Utils.Get_Translate("dltitle"), false);
             }
             if (Autorun.IsEnabled == false)
             {
