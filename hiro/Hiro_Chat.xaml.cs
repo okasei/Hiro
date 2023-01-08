@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -516,7 +517,10 @@ namespace hiro
                 if(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
                     try
                     {
-                        System.Media.SoundPlayer sndPlayer = new(Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav"));
+                        var fileP = Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudioPath", string.Empty));
+                        if (!System.IO.File.Exists(fileP))
+                            fileP = Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
+                        System.Media.SoundPlayer sndPlayer = new(fileP);
                         sndPlayer.Play();
                     }
                     catch (Exception ex)

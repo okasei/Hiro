@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Windows;
 using System.Windows.Controls;
@@ -392,7 +393,6 @@ namespace hiro
 
         private void CoreWebView2_HistoryChanged(object? sender, object e)
         {
-            UpdateIcon();
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             var visual = PreBtn.Visibility;
             var visual2 = NextBtn.Visibility;
@@ -479,11 +479,6 @@ namespace hiro
         {
             Dispatcher.Invoke(() =>
             {
-                ImageBrush ib = new()
-                {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = bi
-                };
                 uicon.Source = bi;
                 Icon = bi;
                 savedWebIcon = bi;
@@ -589,7 +584,7 @@ namespace hiro
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
-            UpdateIcon();
+            SetSavedPrimitiveIcon();
             currentUrl = wv2.CoreWebView2.Source;
             secure = true;
             Loading(true);
@@ -944,6 +939,7 @@ namespace hiro
             web.Show();
             web.Refreash_Layout();
             Close();
+            e.Handled = true;
         }
 
         private void URLSign_MouseDown(object sender, MouseButtonEventArgs e)

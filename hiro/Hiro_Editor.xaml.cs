@@ -48,7 +48,6 @@ namespace hiro
                         if (!status.Content.Equals(FinalText))
                         {
                             status.Content = FinalText;
-                            Hiro_Utils.LogtoFile("1");
                             Update_Animation();
                         }
                     }
@@ -58,7 +57,7 @@ namespace hiro
                     }
                 }
                 var StatusText = Hiro_Utils.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
-                if (saveflag != 0 || status.Content.Equals(StatusText)) 
+                if (saveflag != 0 || status.Content.Equals(StatusText))
                     return;
                 status.Content = StatusText;
                 Update_Animation();
@@ -68,7 +67,7 @@ namespace hiro
 
         private void Update_Animation()
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1")) 
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(3, status, sb, -50, null);
@@ -77,7 +76,7 @@ namespace hiro
 
         public void Save(bool show = false)
         {
-            if(con.IsEnabled)
+            if (con.IsEnabled)
             {
                 try
                 {
@@ -91,7 +90,7 @@ namespace hiro
                     con.Text = "";
                     Hiro_Utils.LogError(ex, "Hiro.Exception.Editor.Write");
                 }
-                
+
             }
             if (show)
             {
@@ -99,7 +98,6 @@ namespace hiro
                 saveflag = 1;
                 savetime = 9;
                 Update_Animation();
-                Hiro_Utils.LogtoFile("3");
             }
             else
                 savetime = -1;
@@ -111,7 +109,7 @@ namespace hiro
             {
                 con.Text = System.IO.File.ReadAllText(path);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 con.Text = "";
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Editor.Read");
@@ -175,7 +173,7 @@ namespace hiro
                 Keyboard.Focus(con);
                 load = true;
             }
-            
+
         }
         private void Run_Out()
         {
@@ -184,7 +182,7 @@ namespace hiro
             runoutflag = 1;
             Save();
             con.IsEnabled = false;
-            if(!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450))
                 {
@@ -243,7 +241,8 @@ namespace hiro
                 Run_Out();
                 e.Handled = true;
             }
-            if (e.KeyStates == Keyboard.GetKeyStates(Key.X) && Keyboard.Modifiers == ModifierKeys.Alt)
+            if ((e.KeyStates == Keyboard.GetKeyStates(Key.W) && Keyboard.Modifiers == ModifierKeys.Alt)
+                || (e.KeyStates == Keyboard.GetKeyStates(Key.Up) && Keyboard.Modifiers == ModifierKeys.Alt))
             {
                 if (slider.Value < 0.95)
                     slider.Value += 0.05;
@@ -251,7 +250,8 @@ namespace hiro
                     slider.Value = 1;
                 e.Handled = true;
             }
-            if (e.KeyStates == Keyboard.GetKeyStates(Key.Z) && Keyboard.Modifiers == ModifierKeys.Alt)
+            if ((e.KeyStates == Keyboard.GetKeyStates(Key.S) && Keyboard.Modifiers == ModifierKeys.Alt)
+                || (e.KeyStates == Keyboard.GetKeyStates(Key.Down) && Keyboard.Modifiers == ModifierKeys.Alt))
             {
                 if (slider.Value > 0.05)
                     slider.Value -= 0.05;
@@ -259,12 +259,14 @@ namespace hiro
                     slider.Value = 0;
                 e.Handled = true;
             }
-            if (e.KeyStates == Keyboard.GetKeyStates(Key.Z) && Keyboard.Modifiers == ModifierKeys.Shift)
+            if ((e.KeyStates == Keyboard.GetKeyStates(Key.A) && Keyboard.Modifiers == ModifierKeys.Alt)
+                || (e.KeyStates == Keyboard.GetKeyStates(Key.Left) && Keyboard.Modifiers == ModifierKeys.Alt))
             {
                 PreviousPage();
                 e.Handled = true;
             }
-            if (e.KeyStates == Keyboard.GetKeyStates(Key.X) && Keyboard.Modifiers == ModifierKeys.Shift)
+            if ((e.KeyStates == Keyboard.GetKeyStates(Key.D) && Keyboard.Modifiers == ModifierKeys.Alt)
+                || (e.KeyStates == Keyboard.GetKeyStates(Key.Right) && Keyboard.Modifiers == ModifierKeys.Alt))
             {
                 NextPage();
                 e.Handled = true;
@@ -291,7 +293,7 @@ namespace hiro
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             Opacity = (float)slider.Value;
-            if(allow == 1)
+            if (allow == 1)
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "EditOpacity", slider.Value.ToString());
         }
 

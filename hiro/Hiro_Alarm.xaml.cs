@@ -92,7 +92,7 @@ namespace hiro
             }
             id = iid;
             Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-            if (!App.dflag) 
+            if (!App.dflag)
                 return;
             Hiro_Utils.LogtoFile("[ALARM]Title: " + sv.Content);
             var con = content.Content?.ToString();
@@ -127,7 +127,7 @@ namespace hiro
                 albtn_3.Visibility = Visibility.Hidden;
                 Hiro_Utils.Set_Control_Location(albtn_1, "alarmone", bottom: true, right: true);
             }
-            else if(OneButtonOnly == 2)
+            else if (OneButtonOnly == 2)
             {
                 albtn_1.Content = Hiro_Utils.Get_Translate("updateok");
                 albtn_3.Content = Hiro_Utils.Get_Translate("updateskip");
@@ -165,7 +165,7 @@ namespace hiro
             bflag = 0;
         }
         public void Load_Colors()
-        { 
+        {
             ala_title.Foreground = new SolidColorBrush(App.AppForeColor);
             content.Foreground = new SolidColorBrush(App.AppForeColor);
             albtn_1.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
@@ -211,24 +211,24 @@ namespace hiro
             switch (id)
             {
                 case -415:
-                {
-                    if (url != null)
-                        Hiro_Utils.RunExe(url);
-                    break;
-                }
-                case > -1:
-                {
-                    Hiro_Utils.OK_Alarm(App.aw[id].id);
-                    App.aw.RemoveAt(id);
-                    while (id < App.aw.Count)
                     {
-                        App.aw[id].win.id--;
-                        id++;
+                        if (url != null)
+                            Hiro_Utils.RunExe(url);
+                        break;
                     }
-                    id = -1;
-                    break;
-                }
-            }    
+                case > -1:
+                    {
+                        Hiro_Utils.OK_Alarm(App.aw[id].id);
+                        App.aw.RemoveAt(id);
+                        while (id < App.aw.Count)
+                        {
+                            App.aw[id].win.id--;
+                            id++;
+                        }
+                        id = -1;
+                        break;
+                    }
+            }
             flag = 0;
             Close();
         }

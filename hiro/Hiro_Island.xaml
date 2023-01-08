@@ -1,0 +1,21 @@
+﻿<Window x:Class="hiro.Hiro_Island"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:hiro"
+        mc:Ignorable="d"
+        Title="Hiro_Island" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Grid x:Name="BaseGrid">
+        <Border x:Name="BaseBorder" CornerRadius="25" Background="Black">
+        </Border>
+        <Grid x:Name="ContentGrid" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Visible">
+            <DockPanel x:Name="BasePanel" VerticalAlignment="Top" HorizontalAlignment="Left" LastChildFill="True">
+                <Image x:Name="BaseIcon" Margin="5" DockPanel.Dock="Left" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Source="/hiro.png" Stretch="Uniform">
+                </Image>
+                <Label x:Name="TitleLabel" Margin="5" DockPanel.Dock="Top" Content="Hello!" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16"/>
+                <Label x:Name="ContentLabel" Margin="5" DockPanel.Dock="Bottom" Content="This is a test msg!" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gray" MouseDoubleClick="Label_MouseDoubleClick_1"  FontSize="14"/>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Window>

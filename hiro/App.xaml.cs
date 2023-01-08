@@ -33,6 +33,7 @@ namespace hiro
         internal static MainWindow? wnd;
         internal static Hiro_MainUI? mn = null;
         internal static Hiro_Notification? noti = null;
+        internal static Hiro_Island? hisland = null;
         internal static Hiro_Editor? ed = null;
         internal static Hiro_LockScreen? ls = null;
         internal static List<Hiro_Notice> noticeitems = new();
@@ -132,57 +133,57 @@ namespace hiro
 
         private static void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
         {
-                System.Net.Sockets.Socket clientSocket = socketLister.Accept();
-                Hiro_Socket clientSession = new(clientSocket);
-                lock (clientSessionLock)
+            System.Net.Sockets.Socket clientSocket = socketLister.Accept();
+            Hiro_Socket clientSession = new(clientSocket);
+            lock (clientSessionLock)
+            {
+                if (!clientSessionTable.ContainsKey(clientSession.IP))
                 {
-                    if (!clientSessionTable.ContainsKey(clientSession.IP))
-                    {
-                        clientSessionTable.Add(clientSession.IP, clientSession);
-                    }
+                    clientSessionTable.Add(clientSession.IP, clientSession);
                 }
-                SocketConnection socketConnection = new(clientSocket);
-                socketConnection.ReceiveData();
-                socketConnection.DataReceiveCompleted += delegate
+            }
+            SocketConnection socketConnection = new(clientSocket);
+            socketConnection.ReceiveData();
+            socketConnection.DataReceiveCompleted += delegate
+            {
+                var recStr = Hiro_Utils.DeleteUnVisibleChar(Encoding.ASCII.GetString(socketConnection.msgBuffer));
+                var outputb = Convert.FromBase64String(recStr);
+                recStr = Encoding.Default.GetString(outputb);
+                recStr = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(recStr)).Trim();
+                if (System.IO.File.Exists(recStr))
                 {
-                    var recStr = Hiro_Utils.DeleteUnVisibleChar(Encoding.ASCII.GetString(socketConnection.msgBuffer));
-                    var outputb = Convert.FromBase64String(recStr);
-                    recStr = Encoding.Default.GetString(outputb);
-                    recStr = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(recStr)).Trim();
-                    if (System.IO.File.Exists(recStr))
+                    HiroApp ha = new();
+                    ha.msg = Hiro_Utils.Read_Ini(recStr, "App", "Msg", "nop");
+                    ha.appID = Hiro_Utils.Read_Ini(recStr, "App", "ID", "null");
+                    ha.appName = Hiro_Utils.Read_Ini(recStr, "App", "Name", "null");
+                    ha.appPackage = Hiro_Utils.Read_Ini(recStr, "App", "Package", "null");
+                    Application.Current.Dispatcher.Invoke(delegate
                     {
-                        HiroApp ha = new();
-                        ha.msg = Hiro_Utils.Read_Ini(recStr, "App", "Msg", "nop");
-                        ha.appID = Hiro_Utils.Read_Ini(recStr, "App", "ID", "null");
-                        ha.appName = Hiro_Utils.Read_Ini(recStr, "App", "Name", "null");
-                        ha.appPackage = Hiro_Utils.Read_Ini(recStr, "App", "Package", "null");
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            Hiro_Utils.RunExe(ha.msg, ha.appName);
-                        });
-                        Hiro_Utils.LogtoFile("[SERVER]" + ha.ToString());
-                    }
-                    else
-                    {
-                        Hiro_Utils.LogtoFile("[SERVER]" + recStr);
-                    }
-                };
-                System.ComponentModel.BackgroundWorker bw = new();
-                bw.DoWork += delegate
+                        Hiro_Utils.RunExe(ha.msg, ha.appName);
+                    });
+                    Hiro_Utils.LogtoFile("[SERVER]" + ha.ToString());
+                }
+                else
                 {
-                    Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
-                };
-                bw.RunWorkerAsync();
+                    Hiro_Utils.LogtoFile("[SERVER]" + recStr);
+                }
+            };
+            System.ComponentModel.BackgroundWorker bw = new();
+            bw.DoWork += delegate
+            {
+                Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
+            };
+            bw.RunWorkerAsync();
         }
 
         private static void Build_Socket()
         {
             var port = Hiro_Utils.GetRandomUnusedPort();
             int MaxConnection = 69;
-            System.Collections.Hashtable clientSessionTable = new ();
+            System.Collections.Hashtable clientSessionTable = new();
             object clientSessionLock = new();
-            System.Net.IPEndPoint localEndPoint = new (System.Net.IPAddress.Any, port);
-            System.Net.Sockets.Socket socketLister = new (System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+            System.Net.IPEndPoint localEndPoint = new(System.Net.IPAddress.Any, port);
+            System.Net.Sockets.Socket socketLister = new(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
             socketLister.Bind(localEndPoint);
             Hiro_Utils.Write_Ini(dconfig, "Config", "Port", port.ToString());
             try
@@ -201,17 +202,17 @@ namespace hiro
             }
         }
 
-            private static void InitializeStartParameters(StartupEventArgs e)
+        private static void InitializeStartParameters(StartupEventArgs e)
+        {
+            switch (e.Args.Length)
             {
-                switch (e.Args.Length)
-                {
-                    case >= 1 when e.Args[0].ToLower().Equals("autostart_on"):
-                        Hiro_Utils.Set_Autorun(true);
-                        goto Executed;
-                    case >= 1 when e.Args[0].ToLower().Equals("autostart_off"):
-                        Hiro_Utils.Set_Autorun(false);
-                        goto Executed;
-                    default:
+                case >= 1 when e.Args[0].ToLower().Equals("autostart_on"):
+                    Hiro_Utils.Set_Autorun(true);
+                    goto Executed;
+                case >= 1 when e.Args[0].ToLower().Equals("autostart_off"):
+                    Hiro_Utils.Set_Autorun(false);
+                    goto Executed;
+                default:
                     {
                         bool silent = false;
                         bool create = true;
@@ -238,8 +239,8 @@ namespace hiro
                                         autoexe |= false;
                                         continue;
                                     default:
-                                            Hiro_Utils.IntializeColorParameters();
-                                            Hiro_Utils.RunExe(para, "Windows");
+                                        Hiro_Utils.IntializeColorParameters();
+                                        Hiro_Utils.RunExe(para, "Windows");
                                         return;
                                 }
                             }
@@ -282,7 +283,7 @@ namespace hiro
                                     }
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
-                                    
+
                                 }).Start();
                             }
                             if (FirstUse)
@@ -300,11 +301,11 @@ namespace hiro
                         }
                         return;
                     }
-                }
-            Executed:
-                Hiro_Utils.RunExe("exit()");
-                return;
             }
+        Executed:
+            Hiro_Utils.RunExe("exit()");
+            return;
+        }
 
         public static void Notify(Hiro_Notice i)
         {
@@ -324,6 +325,15 @@ namespace hiro
                 .AddText(title)
                 .AddText(i.msg.Replace("\\n", Environment.NewLine))
                 .Show();
+                }
+                else if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("2"))
+                {
+                    noticeitems.Add(i);
+                    if (hisland == null)
+                    {
+                        hisland = new();
+                        hisland.Show();
+                    }
                 }
                 else
                 {
@@ -462,11 +472,11 @@ namespace hiro
             System.IO.DirectoryInfo di = new(CurrentDirectory + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
             {
-                if(fi.Name.ToLower().EndsWith(".hlp"))
+                if (fi.Name.ToLower().EndsWith(".hlp"))
                 {
                     string langname = Hiro_Utils.Read_Ini(fi.FullName, "Translate", "Lang", "null");
                     string name = fi.Name.Replace(".hlp", "");
-                    if(!langname.Equals("null"))
+                    if (!langname.Equals("null"))
                     {
                         la.Add(new Language(name, langname));
                     }
@@ -576,7 +586,7 @@ namespace hiro
                 }
                 if (AutoChat && Logined == true)
                 {
-                    if(mn.hiro_chat == null)
+                    if (mn.hiro_chat == null)
                     {
                         Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
                         mn.hiro_chat ??= new(mn);
@@ -591,7 +601,7 @@ namespace hiro
                             ChatCD = 5;
                         }
                     }
-                    
+
                 }
             }
             var tim = Hiro_Utils.Read_Ini(LangFilePath, "local", "locktime", "HH:mm");
@@ -727,7 +737,7 @@ namespace hiro
                     Foreground = new SolidColorBrush(AppForeColor),
                     Background = new SolidColorBrush(AppAccentColor),
                     BorderBrush = null,
-                    Style = (Style) Current.Resources["HiroContextMenu"],
+                    Style = (Style)Current.Resources["HiroContextMenu"],
                     Padding = new(1, 10, 1, 10)
                 };
                 var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;

@@ -157,6 +157,7 @@ namespace hiro
         private void Closebtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Close();
+            e.Handled = true;
         }
 
         private void minbtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

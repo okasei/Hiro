@@ -37,7 +37,8 @@ namespace hiro
         private string co;
         private string hk;
 
-        public int Page {
+        public int Page
+        {
             get { return p; }
             set
             {
@@ -45,7 +46,8 @@ namespace hiro
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Page)));
             }
         }
-        public int Id {
+        public int Id
+        {
             get { return i; }
             set
             {
@@ -53,14 +55,15 @@ namespace hiro
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
             }
         }
-        public string Name { 
-            get { return na; } 
-            set 
-            { 
+        public string Name
+        {
+            get { return na; }
+            set
+            {
                 na = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
-}
+        }
         public string Command
         {
             get { return co; }
@@ -206,7 +209,7 @@ namespace hiro
         public string? title;
         public string msg;
         public int time;
-        public Hiro_Notice(string ms = "NULL", int ti = 1,string? tit = null)
+        public Hiro_Notice(string ms = "NULL", int ti = 1, string? tit = null)
         {
             msg = ms;
             time = ti;
@@ -456,12 +459,13 @@ namespace hiro
                             sb = null;
                         };
                         sb.Begin();
-                    }catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         LogError(ex, "Hiro.Exception.Animation");
                         sender.Background = new SolidColorBrush(App.AppAccentColor);
                     }
-                    
+
                 }
                 else
                     sender.Background = new SolidColorBrush(App.AppAccentColor);
@@ -506,7 +510,7 @@ namespace hiro
                 win.Background = new SolidColorBrush(bg);
             sender.OpacityMask = new SolidColorBrush(dest);
         }
-        public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false,bool location = true, bool animation = false,double animationTime = 150)
+        public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false, bool location = true, bool animation = false, double animationTime = 150)
         {
             if (extra == false || path == null || !File.Exists(path))
                 path = App.LangFilePath;
@@ -601,7 +605,7 @@ namespace hiro
 
         }
 
-        public static void Set_Mac_Location(Control mac,string mval, Control name, bool animation = false, double animationTime = 150)
+        public static void Set_Mac_Location(Control mac, string mval, Control name, bool animation = false, double animationTime = 150)
         {
             try
             {
@@ -723,7 +727,7 @@ namespace hiro
                             };
                             sb.Begin();
                         });
-                        
+
                     }
 
                 }
@@ -886,7 +890,7 @@ namespace hiro
         #endregion
 
         #region 运行文件
-        public static void RunExe(string RunPath, string? source = null,bool autoClose = true)
+        public static void RunExe(string RunPath, string? source = null, bool autoClose = true)
         {
             var path = Path_Prepare_EX(Path_Prepare(RunPath));
             try
@@ -1468,7 +1472,7 @@ namespace hiro
                     RunExe(path, source);
                     return;
                 }
-                if (path.ToLower() == "nop" || path.ToLower() == "nop()")   return;
+                if (path.ToLower() == "nop" || path.ToLower() == "nop()") return;
                 #endregion
                 if ((disturb == 1 && IsForegroundFullScreen()) || disturb == 0)
                 {
@@ -1476,6 +1480,16 @@ namespace hiro
                     return;
                 }
                 #region 可能造成打扰的命令
+                if (path.ToLower().Equals("island") || path.ToLower().Equals("island()"))
+                {
+                    new Hiro_Island().Show();
+                    return;
+                }
+                if (path.ToLower().Equals("idtracer") || path.ToLower().Equals("idtracer()"))
+                {
+                    new Hiro_ID().Show();
+                    return;
+                }
                 if (path.ToLower().StartsWith("ticker("))
                 {
                     Hiro_Ticker? ht = null;
@@ -1553,10 +1567,10 @@ namespace hiro
                             ht.RefreshContent();
                             break;
                     }
-                    ht ?.Show();
+                    ht?.Show();
                     return;
                 }
-                
+
                 if (path.ToLower().StartsWith("hiroad("))
                 {
                     source = Get_Translate("update");
@@ -1640,7 +1654,7 @@ namespace hiro
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddText(Get_Translate("alarmtitle"))
-                            .AddText(parameter[0].Replace("\\n", Environment.NewLine).Replace("<br>",Environment.NewLine))
+                            .AddText(parameter[0].Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(Get_Translate("alarmone")))
                             .Show();
@@ -1814,7 +1828,7 @@ namespace hiro
                 {
                     if (App.mn != null)
                     {
-                        RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",,\"" + path + "" +"\" utils)");
+                        RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",,\"" + path + "" + "\" utils)");
                     }
                     else
                     {
@@ -1906,11 +1920,11 @@ namespace hiro
                         }
                         if (parameter.Count >= 1)
                         {
-                            foreach(var pr in parameter)
+                            foreach (var pr in parameter)
                             {
                                 if (pr.Equals(string.Empty) || pr.Trim().Equals(string.Empty))
                                     continue;
-                                RunExe(pr,source);
+                                RunExe(pr, source);
                             }
                         }
                     };
@@ -1924,7 +1938,7 @@ namespace hiro
                 }
                 if (path.ToLower().StartsWith("hirowego()") || path.ToLower().StartsWith("finder()") || path.ToLower().StartsWith("start()"))
                 {
-                    if(App.ls == null)
+                    if (App.ls == null)
                     {
                         Hiro_Finder hf = new();
                         hf.Show();
@@ -2058,7 +2072,7 @@ namespace hiro
                 catch (Exception ex)
                 {
                     LogError(ex, $"Hiro.Exception.FindItemByName");
-                }   
+                }
             }
             return null;
         }
@@ -2198,7 +2212,7 @@ namespace hiro
                         break;
                     }
                 }
-                if(null == ra)
+                if (null == ra)
                 {
                     App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcnull"), 2, Get_Translate("wifi")));
                     return;
@@ -2466,7 +2480,7 @@ namespace hiro
                     Radius = App.blurradius,
                     RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
                 };
-                Storyboard? sb = new ();
+                Storyboard? sb = new();
                 DoubleAnimation? da = new()
                 {
                     From = App.blurradius,
@@ -2490,7 +2504,7 @@ namespace hiro
             {
                 if (bw != null)
                     bw.RunWorkerAsync();
-            }    
+            }
         }
         private static void Set_Animation_Label(double rd, Control label, Window win)
         {
@@ -2519,7 +2533,7 @@ namespace hiro
         #endregion
 
         #region 添加double动画
-        public static Storyboard AddDoubleAnimaton(double? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, double? from = null)
+        public static Storyboard AddDoubleAnimaton(double? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, double? from = null, double decelerationRatio = 0.9)
         {
             sb ??= new();
             DoubleAnimation? da = new();
@@ -2528,13 +2542,12 @@ namespace hiro
             if (to != null)
                 da.To = to;
             da.Duration = TimeSpan.FromMilliseconds(mstime);
-            da.DecelerationRatio = 0.9;
+            da.DecelerationRatio = decelerationRatio;
             Storyboard.SetTarget(da, value);
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
             sb.FillBehavior = FillBehavior.Stop;
-            sb.Completed += delegate
-            {
+            sb.Completed += (sender, args) => { 
                 da = null;
                 sb = null;
             };
@@ -2543,7 +2556,7 @@ namespace hiro
         #endregion
 
         #region 添加thickness动画
-        public static Storyboard AddThicknessAnimaton(Thickness? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Thickness? from = null,double DecelerationRatio = 0.9)
+        public static Storyboard AddThicknessAnimaton(Thickness? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Thickness? from = null, double DecelerationRatio = 0.9)
         {
             sb ??= new();
             ThicknessAnimation? da = new();
@@ -2551,7 +2564,7 @@ namespace hiro
                 da.From = from;
             if (to != null)
                 da.To = to;
-                da.Duration = TimeSpan.FromMilliseconds(mstime);
+            da.Duration = TimeSpan.FromMilliseconds(mstime);
             da.DecelerationRatio = DecelerationRatio;
             Storyboard.SetTarget(da, value);
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
@@ -2998,7 +3011,7 @@ namespace hiro
                 return false;
             }
             return true;
-            
+
         }
         #endregion
 
@@ -3444,7 +3457,7 @@ namespace hiro
         #endregion
 
         #region 个人资料操作
-        public static string Login(string account, string pwd,bool token = false, string? saveto = null)
+        public static string Login(string account, string pwd, bool token = false, string? saveto = null)
         {
             var url = "https://id.rexio.cn/login.php";
             try
@@ -3457,8 +3470,8 @@ namespace hiro
                 byte[] eof = Encoding.UTF8.GetBytes(
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"account\"" + Enter + Enter + "" + account + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"pwd\"" + Enter + Enter + "" + pwd + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"lang\"" + Enter + Enter + "" + App.lang + "" + Enter + "--" + boundary + "--"+
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + t + "" + Enter + "--" + boundary + "--" 
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"lang\"" + Enter + Enter + "" + App.lang + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + t + "" + Enter + "--" + boundary + "--"
                     );
                 byte[] ndata = new byte[eof.Length];
                 eof.CopyTo(ndata, 0);
@@ -3596,10 +3609,10 @@ namespace hiro
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"name\"" + Enter + Enter + "" + name + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"sign\"" + Enter + Enter + "" + signature + "" + Enter + "--" + boundary + "--" + 
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + avatar + "" + Enter + "--" + boundary + "--" + 
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + iavatar + "" + Enter + "--" + boundary + "--" + 
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + back + "" + Enter + "--" + boundary + "--" + 
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"sign\"" + Enter + Enter + "" + signature + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + avatar + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + iavatar + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + back + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"method\"" + Enter + Enter + "" + method + "" + Enter + "--" + boundary + "--"
                     );
                 HttpRequestMessage request = new(HttpMethod.Post, url);
@@ -3685,7 +3698,7 @@ namespace hiro
                         }
                         Write_Ini(App.dconfig, "Config", "CustomUser", "2");
                         Write_Ini(App.dconfig, "Config", "CustomName", Read_Ini(saveto, "Profile", "Name", string.Empty));
-                        Write_Ini(App.dconfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty)); 
+                        Write_Ini(App.dconfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty));
                         Write_Ini(App.dconfig, "Config", "UserAvatarStyle", Read_Ini(saveto, "Profile", "Avatar", "1"));
                         App.Username = Read_Ini(saveto, "Profile", "Name", string.Empty);
                         App.CustomUsernameFlag = 1;
@@ -3736,7 +3749,7 @@ namespace hiro
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"to\"" + Enter + Enter + "" + to + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"content\"" + Enter + Enter + "" + content + "" + Enter + "--" + boundary + "--" 
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"content\"" + Enter + Enter + "" + content + "" + Enter + "--" + boundary + "--"
                     );
                 byte[] ndata = new byte[eof.Length];
                 eof.CopyTo(ndata, 0);
@@ -3841,7 +3854,7 @@ namespace hiro
         #region 非占用读取图片
         public static BitmapImage? GetBitmapImage(string fileName)
         {
-            if (File.Exists(fileName) == false) 
+            if (File.Exists(fileName) == false)
                 return null;
             BitmapImage bitmapimage = new();
             bitmapimage.BeginInit();

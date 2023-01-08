@@ -7,6 +7,8 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Text;
 using System.Windows.Media.Animation;
+using System.Diagnostics;
+using System.Threading;
 
 namespace hiro
 {
@@ -510,7 +512,7 @@ namespace hiro
                 Height = SystemParameters.PrimaryScreenHeight;
                 Chrome.CornerRadius = new(0);
                 Chrome.NonClientFrameEdges = 0;
-                Chrome.GlassFrameThickness = new(0);
+                Chrome.GlassFrameThickness = new(2);
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Video.FullScreen = true;
