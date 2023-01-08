@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,6 +68,7 @@ namespace hiro
             former_CD = CD;
             Loaded += delegate
             {
+                Load_Color();
                 Island_In();
                 timer = new()
                 {
@@ -79,6 +81,29 @@ namespace hiro
                 App.noticeitems.RemoveAt(0);
                 notifications.RemoveAt(0);
             };
+        }
+
+        public void Load_Color()
+        {
+            TitleLabel.Foreground = new SolidColorBrush(App.AppForeColor);
+            ContentLabel.Foreground = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 160));
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            {
+                Storyboard? sc = new();
+                Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, BaseBorder, "Background.Color", sc);
+                sc.Completed += delegate
+                {
+                    BaseBorder.Background = new SolidColorBrush(App.AppAccentColor);
+                    sc = null;
+                };
+                sc.Begin();
+            }
+            else
+            {
+                BaseBorder.Background = new SolidColorBrush(App.AppAccentColor);
+            }
+            Hiro_Utils.Set_Control_Location(TitleLabel, "noticetitle", location: false);
+            Hiro_Utils.Set_Control_Location(content, "noticecontent", location: false);
         }
 
         private void TimerTick()
@@ -153,10 +178,10 @@ namespace hiro
             former_left = SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2;
 
             Storyboard sb = new();
-            sb = Hiro_Utils.AddDoubleAnimaton(50, 600, this, TopProperty.Name, sb, -former_height);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_left, 600, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_width, 600, BaseGrid, "Width", sb, 1);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_height, 600, BaseGrid, "Height", sb, 1);
+            sb = Hiro_Utils.AddDoubleAnimaton(50, 850, this, TopProperty.Name, sb, -former_height, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(former_left, 850, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(former_width, 850, BaseGrid, "Width", sb, 1, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(former_height, 850, BaseGrid, "Height", sb, 1, 0.7);
             sb.Completed += delegate
             {
                 Canvas.SetTop(this, 50);
@@ -172,10 +197,10 @@ namespace hiro
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
             Storyboard sb = new();
-            sb = Hiro_Utils.AddDoubleAnimaton(-h, 600, this, TopProperty.Name, sb, 50);
-            sb = Hiro_Utils.AddDoubleAnimaton(SystemParameters.FullPrimaryScreenWidth / 2, 600, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2);
-            sb = Hiro_Utils.AddDoubleAnimaton(1, 600, BaseGrid, "Width", sb, former_width, 0.4);
-            sb = Hiro_Utils.AddDoubleAnimaton(1, 600, BaseGrid, "Height", sb, former_height, 0.4);
+            sb = Hiro_Utils.AddDoubleAnimaton(-h, 700, this, TopProperty.Name, sb, 50, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(SystemParameters.FullPrimaryScreenWidth / 2, 700, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Width", sb, former_width, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Height", sb, former_height, 0.7);
             sb.Completed += delegate
             {
                 Visibility = Visibility.Hidden;
@@ -208,15 +233,15 @@ namespace hiro
             var h = ContentGrid.ActualHeight;
             var offset = Math.Min(w * 0.1, 50);
             var sb = new Storyboard();
-            sb = Hiro_Utils.AddDoubleAnimaton(former_left + offset, 180, this, LeftProperty.Name, sb, former_left, 0.7);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_width - offset * 2, 180, BaseGrid, "Width", sb, former_width, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(former_left + offset, 300, this, LeftProperty.Name, sb, former_left);
+            sb = Hiro_Utils.AddDoubleAnimaton(former_width - offset * 2, 180, BaseGrid, "Width", sb, former_width);
             sb.Completed += delegate
             {
                 former_left = SystemParameters.FullPrimaryScreenWidth / 2 - w / 2;
                 var sb = new Storyboard();
-                sb = Hiro_Utils.AddDoubleAnimaton(former_left, 180, this, LeftProperty.Name, sb, null, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(w + ContentGrid.Margin.Left * 2, 180, BaseGrid, "Width", sb, null, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(h + ContentGrid.Margin.Top * 2, 180, BaseGrid, "Height", sb, null, 0.7);
+                sb = Hiro_Utils.AddDoubleAnimaton(former_left, 300, this, LeftProperty.Name, sb, null);
+                sb = Hiro_Utils.AddDoubleAnimaton(w + ContentGrid.Margin.Left * 2, 300, BaseGrid, "Width", sb, null);
+                sb = Hiro_Utils.AddDoubleAnimaton(h + ContentGrid.Margin.Top * 2, 300, BaseGrid, "Height", sb, null);
                 sb.Completed += delegate
                 {
                     SetAutoSize(BaseGrid);

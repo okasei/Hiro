@@ -133,7 +133,6 @@ namespace hiro
             {
                 Background = new SolidColorBrush(App.AppAccentColor);
             }
-
         }
 
         private void Next_Msg()

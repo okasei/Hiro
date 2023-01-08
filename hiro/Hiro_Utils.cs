@@ -2542,7 +2542,7 @@ namespace hiro
         #endregion
 
         #region 添加double动画
-        public static Storyboard AddDoubleAnimaton(double? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, double? from = null, double decelerationRatio = 0.9)
+        public static Storyboard AddDoubleAnimaton(double? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, double? from = null, double decelerationRatio = 0.9, double accelerationRatio = 0)
         {
             sb ??= new();
             DoubleAnimation? da = new();
@@ -2552,6 +2552,7 @@ namespace hiro
                 da.To = to;
             da.Duration = TimeSpan.FromMilliseconds(mstime);
             da.DecelerationRatio = decelerationRatio;
+            da.AccelerationRatio = accelerationRatio;
             Storyboard.SetTarget(da, value);
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
