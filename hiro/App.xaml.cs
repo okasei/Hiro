@@ -775,7 +775,7 @@ namespace hiro
                         {
                             string? str = mu.Tag.ToString();
                             if (str != null)
-                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Utils.Get_Translate("menu"));
+                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Utils.Get_Translate("menusource").Replace("%t", cmditems[int.Parse(str) - 1].Name));
 
                         }
                         catch (Exception ex)

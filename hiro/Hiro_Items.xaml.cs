@@ -253,7 +253,7 @@ namespace hiro
             btn4.IsEnabled = true;
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
-                Hiro_Utils.RunExe(App.cmditems[dgi.SelectedIndex].Command, App.AppTitle);
+                Hiro_Utils.RunExe(App.cmditems[dgi.SelectedIndex].Command, App.cmditems[dgi.SelectedIndex].Name);
             }
         }
     }
