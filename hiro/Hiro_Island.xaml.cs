@@ -27,13 +27,44 @@ namespace hiro
         internal double former_height = 0;
         internal int CD = 2;
         internal DispatcherTimer timer;
+        internal List<string> notifications = new();
+        internal int former_count = 0;
+        internal string former_title = string.Empty;
+        internal int former_CD = 2;
         public Hiro_Island()
         {
             InitializeComponent();
+            ContentLabel.MaxWidth = SystemParameters.FullPrimaryScreenWidth * 4 / 5;
             Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
-            ContentLabel.Content = App.noticeitems[0].msg;
+            var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+            if (t.IndexOf(Environment.NewLine) != -1)
+            {
+                notifications = t.Replace("<nop>", "").Split(Environment.NewLine).ToList();
+                for (int i = 0; i < notifications.Count; i++)
+                {
+                    if (notifications[i].Replace(" ", "").Equals(string.Empty))
+                    {
+                        notifications.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            else
+                notifications = new()
+                {
+                    t
+                };
+            former_count = notifications.Count;
+            ContentLabel.Text = notifications[0];
             TitleLabel.Content = App.noticeitems[0].title;
+            if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
+                TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
+            if (TitleLabel.Content != null)
+                former_title = TitleLabel.Content.ToString();
+            if (former_count > 1)
+                TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
             CD = App.noticeitems[0].time;
+            former_CD = CD;
             Loaded += delegate
             {
                 Island_In();
@@ -46,6 +77,7 @@ namespace hiro
                     TimerTick();
                 };
                 App.noticeitems.RemoveAt(0);
+                notifications.RemoveAt(0);
             };
         }
 
@@ -54,22 +86,23 @@ namespace hiro
             CD--;
             if (CD <= 0)
             {
-                if (App.noticeitems.Count < 1)
-                {
-                    Island_Out();
-                    App.hisland = null;
-                }
-                else
-                {
-                    CD = App.noticeitems[0].time;
-                    NextNotification();
-                }
+                NextNotification();
             }
         }
 
         private void NextNotification()
         {
-            if (App.noticeitems.Count < 1)
+            if (notifications.Count > 0)
+            {
+                ContentLabel.Text = notifications[0];
+                CD = former_CD;
+                if (former_count > 1)
+                    TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
+                notifications.RemoveAt(0);
+                SetAutoSize(ContentGrid);
+                Island_Switch();
+            }
+            else if (App.noticeitems.Count < 1)
             {
                 Island_Out();
                 timer.Stop();
@@ -77,9 +110,37 @@ namespace hiro
             }
             else
             {
-                ContentLabel.Content = App.noticeitems[0].msg;
+                CD = App.noticeitems[0].time;
+                former_CD = CD;
+                var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+                if (t.IndexOf(Environment.NewLine) != -1)
+                {
+                    notifications = t.Replace("<nop>", "").Split(Environment.NewLine).ToList();
+                    for (int i = 0; i < notifications.Count; i++)
+                    {
+                        if (notifications[i].Replace(" ", "").Equals(string.Empty))
+                        {
+                            notifications.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+                else
+                    notifications = new()
+                {
+                    t
+                };
+                former_count = notifications.Count;
+                ContentLabel.Text = notifications[0];
                 TitleLabel.Content = App.noticeitems[0].title;
+                if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
+                    TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
+                if (TitleLabel.Content != null)
+                    former_title = TitleLabel.Content.ToString();
+                if (former_count > 1)
+                    TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
                 App.noticeitems.RemoveAt(0);
+                notifications.RemoveAt(0);
                 SetAutoSize(ContentGrid);
                 Island_Switch();
             }

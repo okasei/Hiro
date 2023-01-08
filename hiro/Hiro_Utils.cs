@@ -24,6 +24,7 @@ using System.Drawing.Imaging;
 using System.Net;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
+using Windows.System.RemoteSystems;
 
 namespace hiro
 {
@@ -1791,7 +1792,13 @@ namespace hiro
                                 };
                                 bw.RunWorkerCompleted += delegate
                                 {
-                                    RunExe("notify(" + titile + "," + duration.ToString() + ")", source);
+                                    if (source == null && parameter.Count > 2)
+                                    {
+                                        RunExe("notify(" + titile + "," + duration.ToString() + ")", parameter[2]);
+                                        LogtoFile(parameter[2]);
+                                    }
+                                    else
+                                        RunExe("notify(" + titile + "," + duration.ToString() + ")", source);
                                 };
                                 bw.RunWorkerAsync();
                                 return;
@@ -1805,8 +1812,10 @@ namespace hiro
                             LogError(ex, $"Hiro.Exception.Run.Notification{Environment.NewLine}Path: {path}");
                         }
                     }
+                    if (source == null && parameter.Count > 2)
+                        source = parameter[2];
                     duration = duration <= 0 ? 2 : duration;
-                    App.Notify(new(titile, duration));
+                    App.Notify(new(titile, duration, source));
                     return;
                 }
                 if (path.ToLower().StartsWith("play("))
@@ -2547,7 +2556,8 @@ namespace hiro
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
             sb.FillBehavior = FillBehavior.Stop;
-            sb.Completed += (sender, args) => { 
+            sb.Completed += (sender, args) =>
+            {
                 da = null;
                 sb = null;
             };

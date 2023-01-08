@@ -13,8 +13,10 @@
             <DockPanel x:Name="BasePanel" VerticalAlignment="Top" HorizontalAlignment="Left" LastChildFill="True">
                 <Image x:Name="BaseIcon" Margin="5" DockPanel.Dock="Left" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Source="/hiro.png" Stretch="Uniform">
                 </Image>
-                <Label x:Name="TitleLabel" Margin="5" DockPanel.Dock="Top" Content="Hello!" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16"/>
-                <Label x:Name="ContentLabel" Margin="5" DockPanel.Dock="Bottom" Content="This is a test msg!" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gray" MouseDoubleClick="Label_MouseDoubleClick_1"  FontSize="14"/>
+                <Label x:Name="TitleLabel" Margin="5,5,5,0" DockPanel.Dock="Top" Content="Hello!" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16"/>
+                <Label x:Name="content" Margin="5,0,5,5" DockPanel.Dock="Bottom" FontFamily="Segoe UI" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"  HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gray" MouseDoubleClick="Label_MouseDoubleClick_1"  FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <TextBlock x:Name="ContentLabel" Text="New message arrived." TextWrapping="Wrap"/>
+                </Label>
             </DockPanel>
         </Grid>
     </Grid>

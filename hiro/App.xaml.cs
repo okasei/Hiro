@@ -700,14 +700,14 @@ namespace hiro
             else if (qtitle != QQTitle && qtitle != null && !qtitle.Equals("QQ音乐") && !qtitle.Equals("桌面歌词"))
             {
                 QQTitle = qtitle;
-                Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, AppTitle));
+                Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Utils.Get_Translate("music")));
             }
             if (Initialize_Title(NeteasePtr, out string? ntitle) == 0)
                 NeteasePtr = Initialize_Ptr("cloudmusic");
             else if (ntitle != NeteaseTitle && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐") && !ntitle.Equals("桌面歌词"))
             {
                 NeteaseTitle = ntitle;
-                Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, AppTitle));
+                Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Utils.Get_Translate("music")));
             }
             if (Initialize_Title(KuwoPtr, out string? kwtitle) == 0)
                 KuwoPtr = Initialize_Ptr("kwmusic");
@@ -722,7 +722,7 @@ namespace hiro
                     }
                 }
                 KuwoTitle = kwtitle;
-                Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, AppTitle));
+                Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Utils.Get_Translate("music")));
             }
         }
 
