@@ -17,7 +17,7 @@ namespace hiro
     {
         internal Page? current = null;
         private Label? selected = null;
-        private int bflag = 0;        
+        private int bflag = 0;
         internal int touch = 0;
         internal Hiro_Home? hiro_home = null;
         internal Hiro_Items? hiro_items = null;
@@ -86,7 +86,8 @@ namespace hiro
                     if (obj == null)
                     {
                         hiro_provider.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "--input-repeat=65535" });
-                        vlcPlayer.Dispatcher.Invoke(() => {
+                        vlcPlayer.Dispatcher.Invoke(() =>
+                        {
                             vlcPlayer.SetBinding(Image.SourceProperty,
                             new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
                         });
@@ -251,14 +252,17 @@ namespace hiro
 
         public void AddToInfoCenter(string text)
         {
-            infotext.AppendText(text);
-            infolabel.Visibility = Visibility.Visible;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            Dispatcher.Invoke(() =>
             {
-                Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, infolabel, sb, -50, null);
-                sb.Begin();
-            }
+                infotext.AppendText(text);
+                infolabel.Visibility = Visibility.Visible;
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddPowerAnimation(0, infolabel, sb, -50, null);
+                    sb.Begin();
+                }
+            });
         }
 
         public void InitializeUIWindow()
@@ -269,7 +273,7 @@ namespace hiro
                 versionlabel.Content = Hiro_Resources.ApplicationVersion;
             Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
-        
+
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
             var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
@@ -339,7 +343,7 @@ namespace hiro
             #region 颜色
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
-            Resources["AppForeDimColor"] =Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
+            Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             Resources["InfoAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 200));
             #endregion
@@ -427,49 +431,49 @@ namespace hiro
                 switch (double.Parse(re))
                 {
                     case -1.0:
-                    {
-                        DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                        DateTime now = DateTime.Now;
-                        TimeSpan ts = dt - now;
-                        while (ts.TotalMinutes < 0)
                         {
-                            dt = dt.AddDays(1.0);
-                            ts = dt - now;
+                            DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                            DateTime now = DateTime.Now;
+                            TimeSpan ts = dt - now;
+                            while (ts.TotalMinutes < 0)
+                            {
+                                dt = dt.AddDays(1.0);
+                                ts = dt - now;
+                            }
+                            ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                            Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
+                            break;
                         }
-                        ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                        Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
-                        break;
-                    }
                     case 0.0:
-                    {
-                        DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                        DateTime now = DateTime.Now;
-                        TimeSpan ts = dt - now;
-                        while (ts.TotalMinutes < 0)
                         {
-                            dt = dt.AddDays(7.0);
-                            ts = dt - now;
+                            DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                            DateTime now = DateTime.Now;
+                            TimeSpan ts = dt - now;
+                            while (ts.TotalMinutes < 0)
+                            {
+                                dt = dt.AddDays(7.0);
+                                ts = dt - now;
+                            }
+                            ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                            Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
+                            break;
                         }
-                        ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                        Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
-                        break;
-                    }
                     case -2.0:
                         break;
                     default:
-                    {
-                        DateTime dt = Convert.ToDateTime(ti, dtFormat);
-                        DateTime now = DateTime.Now;
-                        TimeSpan ts = dt - now;
-                        while (ts.TotalMinutes < 0)
                         {
-                            dt = dt.AddDays(double.Parse(re));
-                            ts = dt - now;
+                            DateTime dt = Convert.ToDateTime(ti, dtFormat);
+                            DateTime now = DateTime.Now;
+                            TimeSpan ts = dt - now;
+                            while (ts.TotalMinutes < 0)
+                            {
+                                dt = dt.AddDays(double.Parse(re));
+                                ts = dt - now;
+                            }
+                            ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                            Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
+                            break;
                         }
-                        ti = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                        Hiro_Utils.Write_Ini(inipath, i.ToString(), "Time", ti);
-                        break;
-                    }
                 }
                 App.scheduleitems.Add(new Scheduleitem(i, na, ti, co, double.Parse(re)));
                 i++;
@@ -615,9 +619,9 @@ namespace hiro
                     extend_background.Visibility = Visibility.Hidden;
                     Update_VlcPlayer_Status();
                 }
-                
+
             }
-            else if(infocenter.Visibility == Visibility.Visible)
+            else if (infocenter.Visibility == Visibility.Visible)
             {
                 if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
                 {
@@ -794,7 +798,7 @@ namespace hiro
                     };
                     fa.RunWorkerCompleted += delegate
                     {
-                        if (App.mn == null) 
+                        if (App.mn == null)
                             return;
                         App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion + (App.Locked ? " 🔒" : "");
                         App.mn.Set_Label(selected ?? homex);
@@ -1000,7 +1004,7 @@ namespace hiro
             System.ComponentModel.BackgroundWorker bw = new();
             bw.RunWorkerCompleted += delegate
             {
-                if (current is not Hiro_Config hc) 
+                if (current is not Hiro_Config hc)
                     return;
                 hc.blureff.IsEnabled = false;
                 hc.rbtn14.IsEnabled = true;
@@ -1080,7 +1084,7 @@ namespace hiro
 
         private void Schedulex_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (!App.dflag) 
+            if (!App.dflag)
                 return;
             DateTime dt = DateTime.Now.AddSeconds(5);
             for (int i = 0; i < 1; i++)
@@ -1125,7 +1129,7 @@ namespace hiro
         {
             Extend_Animation();
             touch++;
-            Hiro_Utils.RunExe("notify(https://hiro.rexio.cn/Update/hiro.php?r=touch&t=" + touch.ToString() + "&lang=" + App.lang + ",2)");
+            Hiro_Utils.RunExe($"notify(https://hiro.rexio.cn/Update/hiro.php?r=touch&t={touch}&lang={App.lang},2,{App.AppTitle})", App.AppTitle);
         }
 
         internal void Hiro_We_Extend()
@@ -1188,7 +1192,7 @@ namespace hiro
             {
                 infocenter.Opacity = 1;
                 infocenter.IsEnabled = true;
-            }  
+            }
         }
         private void Versionlabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -1250,7 +1254,7 @@ namespace hiro
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
                     Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
             }
-                
+
             Update_VlcPlayer_Status();
         }
 
@@ -1276,7 +1280,7 @@ namespace hiro
 
         private void Frame_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            if (!frame.CanGoBack) 
+            if (!frame.CanGoBack)
                 return;
             var rb = frame.RemoveBackEntry();
             while (rb != null)

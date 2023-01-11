@@ -321,38 +321,44 @@ namespace hiro
                     os = os[..os.IndexOf(".")];
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                 {
-                    new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                .AddText(title)
-                .AddText(i.msg.Replace("\\n", Environment.NewLine))
-                .Show();
+                    Hiro_Utils.HiroInvoke(() =>
+                    {
+                        new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                                        .AddText(title)
+                                        .AddText(i.msg.Replace("\\n", Environment.NewLine))
+                                        .Show();
+                    });
+                    
                 }
                 else if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("2"))
                 {
                     noticeitems.Add(i);
-                    if (hisland == null)
+                    Hiro_Utils.HiroInvoke(() =>
                     {
-                        hisland = new();
+                        hisland ??= new();
                         hisland.Show();
-                    }
+                    });
                 }
                 else
                 {
                     noticeitems.Add(i);
-                    if (noti == null)
+                    Hiro_Utils.HiroInvoke(() =>
                     {
-                        noti = new();
-                        noti.Show();
-                    }
-                    else
-                    {
-                        if (noti.flag[0] == 2)
+                        if (noti == null)
                         {
-                            noti.flag[0] = 0;
-                            noti.timer.Interval = new TimeSpan(10000000);
-                            noti.timer.Start();
+                            noti = new();
+                            noti.Show();
                         }
-
-                    }
+                        else
+                        {
+                            if (noti.flag[0] == 2)
+                            {
+                                noti.flag[0] = 0;
+                                noti.timer.Interval = new TimeSpan(10000000);
+                                noti.timer.Start();
+                            }
+                        }
+                    });
                 }
             }
             else

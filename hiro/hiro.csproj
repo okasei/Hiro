@@ -7,12 +7,12 @@
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>hiro_circle.ico</ApplicationIcon>
-    <Copyright>Copyright© 2022 N+ Hiro</Copyright>
+    <Copyright>Copyright© 2023 N+ Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.2.5</FileVersion>
-    <AssemblyVersion>2.2.5</AssemblyVersion>
-    <Version>2.2.5</Version>
+    <FileVersion>2.2.8</FileVersion>
+    <AssemblyVersion>2.2.8</AssemblyVersion>
+    <Version>2.2.8</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
