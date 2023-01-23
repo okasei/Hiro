@@ -297,6 +297,9 @@ namespace hiro
                     case Hiro_Ticker i:
                         i.Load_Color();
                         break;
+                    case Hiro_Encrypter j:
+                        j.Load_Colors();
+                        break;
                 }
                 System.Windows.Forms.Application.DoEvents();
             }

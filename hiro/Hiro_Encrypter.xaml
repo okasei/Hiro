@@ -1,0 +1,74 @@
+﻿<Window x:Class="hiro.Hiro_Encrypter"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:hiro"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        materialDesign:ShadowAssist.CacheMode="{x:Null}"
+        Title="alarm" Height="320" Width="800" ResizeMode="CanMinimize" WindowStyle="None" Icon="/hiro_circle.ico" WindowStartupLocation="Manual" Closing="Window_Closing">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <Color x:Key="AppForeDimColor" A="1" B="1" G="1" ></Color>
+    </Window.Resources>
+    <Grid x:Name="alarmgrid" MouseLeftButtonDown="Alarmgrid_MouseLeftButtonDown">
+        <Label x:Name="bgimage" Foreground="{DynamicResource AppFore}" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
+        <Label x:Name="borderlabel" BorderBrush="{DynamicResource AppFore}"  Foreground="{DynamicResource AppFore}" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
+        <Label x:Name="EncryptTitle" Content="Time Up!" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="20" FontWeight="Bold" Style="{DynamicResource HiroLabel}" MouseLeftButtonDown="EncryptTitle_MouseLeftButtonDown"/>
+        <Label x:Name="DecryptTitle" Content="Time Up!" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="20" FontWeight="Bold" Style="{DynamicResource HiroLabel}" MouseLeftButtonDown="DecryptTitle_MouseLeftButtonDown"/>
+        <Button x:Name="albtn_1" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Content="Pause" HorizontalAlignment="Right" Margin="0,0,10,10" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="1" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" Background="{DynamicResource AppAccent}" Padding="2,2,2,2" Height="25" VerticalAlignment="Bottom" Cursor="Hand" Click="Albtn_1_Click"/>
+        <TextBox x:Name="FilePath" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="50,105,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="665" Height="32" Cursor="IBeam" MouseDoubleClick="FilePath_MouseDoubleClick" Drop="FilePath_Drop" DragEnter="FilePath_DragEnter" AllowDrop="True"/>
+        <PasswordBox x:Name="PwdPath" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="50,173,0,0" VerticalAlignment="Top" Width="665" Height="32" MouseDoubleClick="PwdPath_MouseDoubleClick" LostFocus="PwdPath_LostFocus"/>
+        <ProgressBar x:Name="pb" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Height="3" Margin="50,255,0,0" VerticalAlignment="Top" Width="665" BorderBrush="#0067DAFF" Background="Transparent"/>
+        <Label x:Name="minbtn" Content="—" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Right" Margin="0,0,60,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Label.Triggers>
+        </Label>
+        <Label x:Name="closebtn" Content="×" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000" FontFamily="Yu Mincho" FontWeight="Bold" Width="50" Height="30" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown" >
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="Red" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Label.Triggers>
+        </Label>
+        <Label x:Name="FileLabel" Content="Time Up!" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" MouseDoubleClick="FileLabel_MouseDoubleClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}"/>
+        <Label x:Name="PwdLabel" Content="Time Up!" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}" MouseDoubleClick="PwdLabel_MouseDoubleClick"/>
+        <Label x:Name="SeePwd" Visibility="Hidden" Content="Time Up!" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="14" FontWeight="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{DynamicResource HiroLabel}" MouseLeftButtonDown="SeePwd_MouseLeftButtonDown"/>
+        <CheckBox x:Name="Autorun" Foreground="{DynamicResource AppFore}" Content="Run When Completed" IsThreeState="True" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" VerticalContentAlignment="Bottom" Width="200" Height="35" Unchecked="Autorun_Unchecked" Indeterminate="Autorun_Indeterminate"/>
+    </Grid>
+</Window>

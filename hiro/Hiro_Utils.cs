@@ -26,6 +26,7 @@ using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Windows.System.RemoteSystems;
 using System.Reflection;
+using System.Security.Cryptography;
 
 namespace hiro
 {
@@ -921,6 +922,8 @@ namespace hiro
                     int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
                     if (File.Exists(path) && path.ToLower().EndsWith(".hiro"))
                         path = $"seq({path})";
+                    if (File.Exists(path) && path.ToLower().EndsWith(".hef"))
+                        path = $"decrypt({path})";
                     #region 不会造成打扰的命令
                     if (path.ToLower().Equals("memory()"))
                     {
@@ -1327,10 +1330,9 @@ namespace hiro
                                 App.mn.stack.Visibility = Visibility.Hidden;
                                 App.mn.Visibility = Visibility.Hidden;
                                 App.mn.Update_VlcPlayer_Status();
-                                return;
                             }
                         });
-
+                        return;
                     }
                     if (path.ToLower().StartsWith("menu()"))
                     {
@@ -1522,6 +1524,106 @@ namespace hiro
                         return;
                     }
                     #region 可能造成打扰的命令
+                    if (path.ToLower().Equals("decrypt"))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            new Hiro_Encrypter(1).Show();
+                        });
+                        return;
+                    }
+                    if (path.ToLower().StartsWith("decrypt("))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            string? p = null;
+                            string? k = null;
+                            if (parameter.Count > 0)
+                            {
+                                p = parameter[0];
+                            }
+                            if (parameter.Count > 1)
+                            {
+                                k = parameter[1];
+                            }
+                            new Hiro_Encrypter(1, p, k).Show();
+                        });
+                        return;
+                    }
+                    if (path.ToLower().StartsWith("decrypto("))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            string? p = null;
+                            string? k = null;
+                            if (parameter.Count > 1)
+                            {
+                                p = parameter[0];
+                                k = parameter[1];
+                                var he = new Hiro_Encrypter(1, p, k, true);
+                                if (parameter.Count > 2)
+                                {
+                                    var pa = parameter[2].Trim().ToLower();
+                                    if (pa.Equals("r") || pa.Equals("run") || pa.Equals("1"))
+                                        he.Autorun.IsChecked = true;
+                                    if (pa.Equals("l") || pa.Equals("locate") || pa.Equals("2"))
+                                        he.Autorun.IsChecked = null;
+                                }
+                                he.StartDecrypt(p, k);
+                            }
+                        });
+                        return;
+                    }
+                    if (path.ToLower().Equals("encrypt"))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            new Hiro_Encrypter(0).Show();
+                        });
+                        return;
+                    }
+                    if (path.ToLower().StartsWith("encrypt("))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            string? p = null;
+                            string? k = null;
+                            if (parameter.Count > 0)
+                            {
+                                p = parameter[0];
+                            }
+                            if (parameter.Count > 1)
+                            {
+                                k = parameter[1];
+                            }
+                            new Hiro_Encrypter(0, p, k).Show();
+                        });
+                        return;
+                    }
+                    if (path.ToLower().StartsWith("encrypto("))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            string? p = null;
+                            string? k = null;
+                            if (parameter.Count > 1)
+                            {
+                                p = parameter[0];
+                                k = parameter[1];
+                                var he = new Hiro_Encrypter(1, p, k, true);
+                                if (parameter.Count > 2)
+                                {
+                                    var pa = parameter[2].Trim().ToLower();
+                                    if (pa.Equals("r") || pa.Equals("run") || pa.Equals("1"))
+                                        he.Autorun.IsChecked = true;
+                                    if (pa.Equals("l") || pa.Equals("locate") || pa.Equals("2"))
+                                        he.Autorun.IsChecked = null;
+                                }
+                                he.StartEncrypt(p, k);
+                            }
+                        });
+                        return;
+                    }
                     if (path.ToLower().Equals("island") || path.ToLower().Equals("island()"))
                     {
                         HiroInvoke(() =>
@@ -1886,7 +1988,7 @@ namespace hiro
                                     };
                                     bw.RunWorkerCompleted += delegate
                                     {
-                                        if (source == null && parameter.Count > 2)
+                                        if (parameter.Count > 2)
                                         {
                                             RunExe("notify(" + titile + "," + duration.ToString() + ")", parameter[2]);
                                             LogtoFile(parameter[2]);
@@ -1906,7 +2008,7 @@ namespace hiro
                                 LogError(ex, $"Hiro.Exception.Run.Notification{Environment.NewLine}Path: {path}");
                             }
                         }
-                        if (source == null && parameter.Count > 2)
+                        if (parameter.Count > 2)
                             source = parameter[2];
                         duration = duration <= 0 ? 2 : duration;
                         App.Notify(new(titile, duration, source));
@@ -4055,6 +4157,63 @@ namespace hiro
         }
 
         #endregion
+
+        #endregion
+
+        #region 加密解密
+
+        /// <summary>
+        /// 加密
+        /// </summary>
+        /// <param name="array">要加密的 byte[] 数组</param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static byte[] Encrypt(byte[] array, string key)
+        {
+            key = GetStringMD5(key);
+            byte[] keyArray = Encoding.UTF8.GetBytes(key);
+            Aes rDel = Aes.Create();
+            rDel.Key = keyArray;
+            rDel.Mode = CipherMode.ECB;
+            rDel.Padding = PaddingMode.PKCS7;
+            ICryptoTransform cTransform = rDel.CreateEncryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(array, 0, array.Length);
+            return resultArray;
+        }
+
+        private static string GetStringMD5(string str)
+        {
+            MD5 md5Hasher = MD5.Create();
+            byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(str));
+            StringBuilder sBuilder = new();
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+            return sBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 解密
+        /// </summary>
+        /// <param name="array">要解密的 byte[] 数组</param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static byte[] Decrypt(byte[] array, string key)
+        {
+            key = GetStringMD5(key);
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes(key);
+            Aes rDel = Aes.Create();
+            rDel.Key = keyArray;
+            rDel.Mode = CipherMode.ECB;
+            rDel.Padding = PaddingMode.PKCS7;
+
+            ICryptoTransform cTransform = rDel.CreateDecryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(array, 0, array.Length);
+
+            return resultArray;
+        }
+
 
         #endregion
 
