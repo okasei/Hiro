@@ -27,6 +27,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Windows.System.RemoteSystems;
 using System.Reflection;
 using System.Security.Cryptography;
+using ABI.Windows.ApplicationModel.Activation;
 
 namespace hiro
 {
@@ -899,6 +900,14 @@ namespace hiro
             Application.Current.Dispatcher.Invoke(callback);
         }
 
+        private static bool isMediaFile(string file)
+        {
+            var ext = $",{Path.GetExtension(file).ToLower()},";
+            var aext = ",.3g2,.3gp,.3gp2,.3gpp,.amv,.asf,.avi,.bik,.crf,.dav,.divx,.drc,.dv,.dvr-ms,.evo,.f4v,.flv,.gvi,.gxf,.m1v,.m2v,.m2t,.m2ts,.m4v,.mkv,.mov,.mp2,.mp2v,.mp4,.mp4v,.mpe,.mpeg,.mpeg1,.mpeg2,.mpeg4,.mpg,.mpv2,.mts,.mtv,.mxf,.mxg,.nsv,.nuv,.ogm,.ogv,.ogx,.ps,.rec,.rm,.rmvb,.rpl,.thp,.tod,.tp,.ts,.tts,.txd,.vob,.vro,.webm,.wm,.wmv,.wtv,.xesc,.3ga,.669,.a52,.aac,.ac3,.adt,.adts,.aif,.aifc,.aiff,.amb,.amr,.aob,.ape,.au,.awb,.caf,.dts,.flac,.it,.kar,.m4a,.m4b,.m4p,.m5p,.mid,.mka,.mlp,.mod,.mpa,.mp1,.mp2,.mp3,.mpc,.mpga,.mus,.oga,.ogg,.oma,.opus,.qcp,.ra,.rmi,.s3m,.sid,.spx,.tak,.thd,.tta,.voc,.vqf,.w64,.wav,.wma,.wv,.xa,.xm,";
+            return aext.IndexOf(ext) != -1;
+        }
+
+
         public static void RunExe(string RunPath, string? source = null, bool autoClose = true)
         {
             new System.Threading.Thread(() =>
@@ -920,10 +929,30 @@ namespace hiro
                         }
                     }
                     int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
-                    if (File.Exists(path) && path.ToLower().EndsWith(".hiro"))
-                        path = $"seq({path})";
-                    if (File.Exists(path) && path.ToLower().EndsWith(".hef"))
-                        path = $"decrypt({path})";
+                    if (File.Exists(path))
+                    {
+                        if (isMediaFile(path))
+                        {
+                            LogtoFile("[RUN]Media file detected");
+                            path = $"play(\"{path}\")";
+                            parameter = HiroCmdParse(path);
+                        }
+                        else
+                        {
+                            if (path.ToLower().EndsWith(".hiro"))
+                            {
+                                LogtoFile("[RUN]Hiro file detected");
+                                path = $"seq(\"{path}\")";
+                                parameter = HiroCmdParse(path);
+                            }
+                            else if (path.ToLower().EndsWith(".hef"))
+                            {
+                                LogtoFile("[RUN]Encrypted file detected");
+                                path = $"decrypt(\"{path}\")";
+                                parameter = HiroCmdParse(path);
+                            }
+                        }
+                    }
                     #region 不会造成打扰的命令
                     if (path.ToLower().Equals("memory()"))
                     {
@@ -2018,7 +2047,7 @@ namespace hiro
                     {
                         if (App.mn != null)
                         {
-                            RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",,\"" + path + "" + "\" utils)");
+                            RunExe("run(\"" + Hiro_Resources.ApplicationPath + "\",,\"" + path + "" + "\" utils)");
                         }
                         else
                         {
@@ -2179,12 +2208,15 @@ namespace hiro
                         UseShellExecute = true,
                         FileName = FileName_,
                     };
+                    if (App.dflag)
+                        LogtoFile("[DEBUG]FileName " + FileName_);
                     if (parameter_.Count > 1)
                     {
-                        pinfo_.Arguments = parameter_[1];
+                        pinfo_.Arguments = "\"" + parameter_[1] + "\"";
+                        LogtoFile("[DEBUG]Argument " + parameter_[1]);
                         for (var j = 2; j < parameter_.Count; j++)
                         {
-                            pinfo_.Arguments += " " + parameter_[j];
+                            pinfo_.Arguments += " " + "\"" + parameter_[j] + "\"";
                             if (App.dflag)
                                 LogtoFile("[DEBUG]Argument " + parameter_[j]);
                         }
@@ -4162,6 +4194,37 @@ namespace hiro
 
         #region 加密解密
 
+        internal static int GetNumInt(byte[] b)
+        {
+            var str = Encoding.UTF8.GetString(b, 0, 8);
+            return Convert.ToInt32(str, 16);
+        }
+
+        internal static byte[] GetNumBytes(int length)
+        {
+            var str = length.ToString("X8");
+            return Encoding.UTF8.GetBytes(str);
+        }
+
+        public static byte[] EncryptFile(byte[] array, string key, string filename)
+        {
+            return GetEncryptPrefix(filename).Concat(Encrypt(array, key)).ToArray();
+        }
+
+        private static byte[] GetEncryptPrefix(string filename)
+        {
+            return GetNumBytes(filename.Length).Concat(Encoding.UTF8.GetBytes(filename)).ToArray();
+        }
+
+        public static byte[] DecryptFile(byte[] array, string key, out string filename)
+        {
+            var len = GetNumInt(array.Take(8).ToArray());
+            array = array.Skip(8).ToArray();
+            filename = Encoding.UTF8.GetString(array.Take(len).ToArray());
+            array = array.Skip(len).ToArray();
+            return Decrypt(array, key);
+        }
+
         /// <summary>
         /// 加密
         /// </summary>
@@ -4210,7 +4273,6 @@ namespace hiro
 
             ICryptoTransform cTransform = rDel.CreateDecryptor();
             byte[] resultArray = cTransform.TransformFinalBlock(array, 0, array.Length);
-
             return resultArray;
         }
 

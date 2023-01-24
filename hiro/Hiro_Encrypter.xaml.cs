@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -16,6 +17,7 @@ namespace hiro
         internal int bflag = 0;
         internal Thread? th = null;
         internal string pwd = string.Empty;
+        internal string fpath = string.Empty;
         internal bool oflag = false;
         public Hiro_Encrypter(int mode = 0, string? file = null, string? pwd = null, bool flag = false)
         {
@@ -220,7 +222,7 @@ namespace hiro
             }
             try
             {
-                File.WriteAllBytes(path + ".hef", Hiro_Utils.Encrypt(File.ReadAllBytes(path), key));
+                File.WriteAllBytes(path + ".hef", Hiro_Utils.EncryptFile(File.ReadAllBytes(path).ToArray(), key, Path.GetFileName(path)));
             }
             catch (Exception ex)
             {
@@ -238,23 +240,22 @@ namespace hiro
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
                 return null;
             }
-            var ext = Path.GetExtension(path);
-            var dir = Path.GetDirectoryName(path);
-            var file = Path.GetFileNameWithoutExtension(path);
-            if (ext.Equals(".hef"))
-            {
-                ext = Path.GetExtension(path + "\\" + file);
-                file = Path.GetFileNameWithoutExtension(path + "\\" + file);
-            }
-            var ofile = dir + "\\" + file + "_" + Hiro_Utils.Get_Translate("endefilename") + ext;
-            if (File.Exists(ofile))
-            {
-                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enfileexist")},2)", appname, false);
-                return null;
-            }
             try
             {
-                File.WriteAllBytes(ofile, Hiro_Utils.Decrypt(File.ReadAllBytes(path), key));
+                var filename = string.Empty;
+                var b = Hiro_Utils.DecryptFile(File.ReadAllBytes(path), key, out filename);
+                var dir = Path.GetDirectoryName(fpath);
+                var fi = Path.GetFileNameWithoutExtension(dir + "\\" + filename);
+                var ext = Path.GetExtension(dir + "\\" + filename);
+                var num = -1;
+                filename = fi;
+                while (File.Exists($"{dir}\\{filename}{ext}"))
+                {
+                    num++;
+                    filename = $"{fi}({num})";
+                }
+                fpath = $"{dir}\\{filename}{ext}";
+                File.WriteAllBytes(fpath, b);
             }
             catch (Exception ex)
             {
@@ -290,14 +291,11 @@ namespace hiro
                     EncryptTitle.IsEnabled = false;
                     DecryptTitle.IsEnabled = false;
                     albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencryptc") : Hiro_Utils.Get_Translate("endecryptc");
+                    fpath = FilePath.Text;
                     th = new(() =>
                     {
-                        var p = string.Empty;
+                        var p = fpath;
                         var k = pwd;
-                        Dispatcher.Invoke(() =>
-                        {
-                            p = FilePath.Text;
-                        });
                         bool? r;
                         if (mode == 0)
                             r = StartEncrypt(p, k);
@@ -308,9 +306,9 @@ namespace hiro
                             Dispatcher.Invoke(() =>
                             {
                                 if (Autorun.IsChecked == true)
-                                    Hiro_Utils.RunExe("explorer \"" + p + "\"", mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
+                                    Hiro_Utils.RunExe("explorer \"" + fpath + "\"", mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
                                 if (Autorun.IsChecked == null)
-                                    Hiro_Utils.RunExe(p[..p.LastIndexOf("\\")], mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
+                                    Hiro_Utils.RunExe(fpath[..fpath.LastIndexOf("\\")], mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
                                 if (oflag)
                                 {
                                     Close();
@@ -389,11 +387,16 @@ namespace hiro
 
         private void FilePath_Drop(object sender, DragEventArgs e)
         {
+            DealDragEventArgs(e);
+        }
+
+        private void DealDragEventArgs(DragEventArgs e)
+        {
             var data = e.Data;
             var formats = data.GetData(DataFormats.FileDrop).GetType().ToString();
             if (formats.Equals("System.String[]"))
             {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String[];
+                var info = e.Data.GetData(DataFormats.FileDrop) as string[];
                 if (info != null && info.Length > 0)
                 {
                     FilePath.Text = info[0];
@@ -401,25 +404,15 @@ namespace hiro
             }
             else if (formats.Equals("System.String"))
             {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String;
+                var info = e.Data.GetData(DataFormats.FileDrop) as string;
                 if (info != null)
-                {
                     FilePath.Text = info;
-                }
             }
         }
 
-        private void FilePath_DragEnter(object sender, DragEventArgs e)
+        private void alarmgrid_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effects = DragDropEffects.Copy;
-            }
-            else
-            {
-                Hiro_Utils.LogtoFile(e.Data.GetFormats()[0].ToString());
-                e.Effects = DragDropEffects.None;
-            }
+            DealDragEventArgs(e);
         }
     }
 
