@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace hiro
         internal int former_count = 0;
         internal string former_title = string.Empty;
         internal int former_CD = 2;
+        internal Action? act = null;
         public Hiro_Island()
         {
             InitializeComponent();
@@ -58,6 +60,15 @@ namespace hiro
             former_count = notifications.Count;
             ContentLabel.Text = notifications[0];
             TitleLabel.Content = App.noticeitems[0].title;
+            act = App.noticeitems[0].act;
+            if (act != null)
+            {
+                ContentGrid.Cursor = Cursors.Hand;
+            }
+            else
+            {
+                ContentGrid.Cursor = null;
+            }
             if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
                 TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
             if (TitleLabel.Content != null)
@@ -158,6 +169,15 @@ namespace hiro
                 former_count = notifications.Count;
                 ContentLabel.Text = notifications[0];
                 TitleLabel.Content = App.noticeitems[0].title;
+                act = App.noticeitems[0].act;
+                if (act != null)
+                {
+                    ContentGrid.Cursor = Cursors.Hand;
+                }
+                else
+                {
+                    ContentGrid.Cursor = null;
+                }
                 if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
                     TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
                 if (TitleLabel.Content != null)
@@ -261,6 +281,30 @@ namespace hiro
         private void Label_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
         {
             NextNotification();
+        }
+
+        private void TitleLabel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (act != null)
+                act.Invoke();
+            act = null;
+            ContentGrid.Cursor = null;
+        }
+
+        private void Content_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (act != null)
+                act.Invoke();
+            act = null;
+            ContentGrid.Cursor = null;
+        }
+
+        private void BaseIconBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (act != null)
+                act.Invoke();
+            act = null;
+            ContentGrid.Cursor = null;
         }
     }
 }

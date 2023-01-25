@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -31,8 +32,11 @@ namespace hiro
             }
             if (file != null)
                 FilePath.Text = file;
-            if (pwd != null)
+            if (pwd != null&&!pwd.Equals(string.Empty))
+            {
                 PwdPath.Password = pwd;
+                HidePwd();
+            }
             SourceInitialized += OnSourceInitialized;
             Load_Colors();
             Load_Position();
@@ -52,6 +56,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(2, closebtn, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(0, Autorun, sb, -50, null);
+                Hiro_Utils.AddPowerAnimation(0, Autodelete, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, albtn_1, sb, -50, null);
                 sb.Begin();
             }
@@ -94,6 +99,7 @@ namespace hiro
                 Autorun.Content = Hiro_Utils.Get_Translate("enrun");
             else
                 Autorun.Content = Hiro_Utils.Get_Translate("enopen");
+            Autodelete.Content = Hiro_Utils.Get_Translate("endelete");
             minbtn.ToolTip = Hiro_Utils.Get_Translate("min");
             closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
         }
@@ -118,9 +124,16 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(FilePath, "enfbox");
             Hiro_Utils.Set_Control_Location(PwdPath, "enpbox");
             if (Autorun.IsChecked != null)
+            {
                 Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true);
+                Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true);
+            }
             else
+            {
                 Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true);
+                Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true);
+            }
+            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true);
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
@@ -206,6 +219,64 @@ namespace hiro
             SeePwd.Visibility = Visibility.Hidden;
             PwdPath.Focus();
         }
+        internal void StartEncryptThread(string path, string key)
+        {
+            new Thread(() =>
+            {
+                StartEncrypt(path, key);
+            }).Start();
+        }
+        internal void StartDecryptThread(string path, string key)
+        {
+            new Thread(() =>
+            {
+                StartDecrypt(path, key);
+            }).Start();
+        }
+
+        internal void EncryptDirectory(string path, string key)
+        {
+            var appname = mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp");
+            if (Directory.Exists(path))
+            {
+                DirectoryInfo directory = new DirectoryInfo(path);
+                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                var fileList = files.Select(s => s.FullName).ToList();
+                foreach (var file in fileList)
+                {
+                    StartEncrypt(file, key);
+                }
+            }
+            else
+            {
+                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
+                if (oflag)
+                    Close();
+                return;
+            }
+        }
+
+        internal void DecryptDirectory(string path, string key)
+        {
+            var appname = mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp");
+            if (Directory.Exists(path))
+            {
+                DirectoryInfo directory = new DirectoryInfo(path);
+                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                var fileList = files.Select(s => s.FullName).ToList();
+                foreach (var file in fileList)
+                {
+                    StartDecrypt(file, key);
+                }
+            }
+            else
+            {
+                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
+                if (oflag)
+                    Close();
+                return;
+            }
+        }
 
         internal bool? StartEncrypt(string path, string key)
         {
@@ -213,23 +284,40 @@ namespace hiro
             if (!File.Exists(path))
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
+                if (oflag)
+                    Close();
                 return null;
             }
             if (File.Exists(path + ".hef"))
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enfileexist")},2)", appname, false);
+                if (oflag)
+                    Close();
                 return null;
             }
             try
             {
                 File.WriteAllBytes(path + ".hef", Hiro_Utils.EncryptFile(File.ReadAllBytes(path).ToArray(), key, Path.GetFileName(path)));
+                if (Autodelete.IsChecked == true)
+                    try
+                    {
+                        File.Delete(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Encrypt.Delete");
+                    }
             }
             catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Encrypt");
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enerror")},2)", appname, false);
+                if (oflag)
+                    Close();
                 return false;
             }
+            if (oflag)
+                Close();
             return true;
         }
         internal bool? StartDecrypt(string path, string key)
@@ -238,6 +326,8 @@ namespace hiro
             if (!File.Exists(path))
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
+                if (oflag)
+                    Close();
                 return null;
             }
             try
@@ -256,13 +346,26 @@ namespace hiro
                 }
                 fpath = $"{dir}\\{filename}{ext}";
                 File.WriteAllBytes(fpath, b);
+                if (Autodelete.IsChecked == true)
+                    try
+                    {
+                        File.Delete(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Utils.LogError(ex, "Hiro.Exception.Decrypt.Delete");
+                    }
             }
             catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Decrypt");
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("deerror")},2)", appname, false);
+                if (oflag)
+                    Close();
                 return false;
             }
+            if (oflag)
+                Close();
             return true;
         }
 
@@ -282,7 +385,44 @@ namespace hiro
             }
             else
             {
-                if (!FilePath.Text.Equals(string.Empty) && !pwd.Equals(string.Empty))
+                if (Directory.Exists(FilePath.Text) && !pwd.Equals(string.Empty))
+                {
+                    pb.Visibility = Visibility.Visible;
+                    FilePath.IsEnabled = false;
+                    PwdPath.IsEnabled = false;
+                    Autorun.IsEnabled = false;
+                    EncryptTitle.IsEnabled = false;
+                    DecryptTitle.IsEnabled = false;
+                    fpath = FilePath.Text;
+                    albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencryptc") : Hiro_Utils.Get_Translate("endecryptc");
+                    th = new(() =>
+                    {
+                        var p = fpath;
+                        var k = pwd;
+                        bool? r;
+                        if (mode == 0)
+                            EncryptDirectory(p, k);
+                        else
+                            DecryptDirectory(p, k);
+                        th = null;
+                        Dispatcher.Invoke(() =>
+                        {
+                            if (mode == 0)
+                                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("ensuccess")},2)", Hiro_Utils.Get_Translate("enapp"), false);
+                            else
+                                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("desuccess")},2)", Hiro_Utils.Get_Translate("deapp"), false);
+                            pb.Visibility = Visibility.Hidden;
+                            FilePath.IsEnabled = true;
+                            PwdPath.IsEnabled = true;
+                            Autorun.IsEnabled = true;
+                            EncryptTitle.IsEnabled = true;
+                            DecryptTitle.IsEnabled = true;
+                            albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencrypt") : Hiro_Utils.Get_Translate("endecrypt");
+                        });
+                    });
+                    th.Start();
+                }
+                else if (!FilePath.Text.Equals(string.Empty) && !pwd.Equals(string.Empty))
                 {
                     pb.Visibility = Visibility.Visible;
                     FilePath.IsEnabled = false;
@@ -309,11 +449,6 @@ namespace hiro
                                     Hiro_Utils.RunExe("explorer \"" + fpath + "\"", mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
                                 if (Autorun.IsChecked == null)
                                     Hiro_Utils.RunExe(fpath[..fpath.LastIndexOf("\\")], mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
-                                if (oflag)
-                                {
-                                    Close();
-                                    return;
-                                }
                                 if (mode == 0)
                                     Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("ensuccess")},2)", Hiro_Utils.Get_Translate("enapp"), false);
                                 else
@@ -321,11 +456,6 @@ namespace hiro
                             });
                         Dispatcher.Invoke(() =>
                         {
-                            if (oflag)
-                            {
-                                Close();
-                                return;
-                            }
                             pb.Visibility = Visibility.Hidden;
                             FilePath.IsEnabled = true;
                             PwdPath.IsEnabled = true;
@@ -343,6 +473,11 @@ namespace hiro
 
         private void PwdPath_LostFocus(object sender, RoutedEventArgs e)
         {
+            HidePwd();
+        }
+
+        private void HidePwd()
+        {
             if (!pwd.Equals(string.Empty) || !PwdPath.Password.Equals(string.Empty))
             {
                 if (!PwdPath.Password.Equals(string.Empty))
@@ -350,6 +485,12 @@ namespace hiro
                 PwdPath.Password = string.Empty;
                 PwdPath.Visibility = Visibility.Hidden;
                 SeePwd.Visibility = Visibility.Visible;
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddPowerAnimation(1, SeePwd, sb, 50, null);
+                    sb.Begin();
+                }
             }
         }
 
@@ -376,12 +517,14 @@ namespace hiro
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enrun");
+            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true);
             Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true);
         }
 
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enopen");
+            Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true);
             Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true);
         }
 

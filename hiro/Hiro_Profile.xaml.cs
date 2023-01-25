@@ -42,6 +42,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(0, BaseGrid, sb, -100, null);
                 Hiro_Utils.AddPowerAnimation(1, btn10, sb, 50, null);
+                Hiro_Utils.AddPowerAnimation(1, btn11, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn9, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn8, sb, 50, null);
             }
@@ -140,6 +141,7 @@ namespace hiro
             btn8.Content = Hiro_Utils.Get_Translate("feedback");
             btn9.Content = Hiro_Utils.Get_Translate("whatsnew");
             btn10.Content = Hiro_Utils.Get_Translate("lgout");
+            btn11.Content = Hiro_Utils.Get_Translate("document");
             name_label.Content = Hiro_Utils.Get_Translate("namelabel");
             rbtn16.Content = Hiro_Utils.Get_Translate("namehiro");
             rbtn17.Content = Hiro_Utils.Get_Translate("namecus");
@@ -174,6 +176,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(btn8, "feedback");
             Hiro_Utils.Set_Control_Location(btn9, "whatsnew");
             Hiro_Utils.Set_Control_Location(btn10, "lgout");
+            Hiro_Utils.Set_Control_Location(btn11, "document");
             Hiro_Utils.Set_Control_Location(tb10, "hirotb");
             Hiro_Utils.Set_Control_Location(name_label, "namelabel");
             Hiro_Utils.Set_Control_Location(rbtn16, "namehiro");
@@ -206,7 +209,7 @@ namespace hiro
         private void Btn8_Click(object sender, RoutedEventArgs e)
         {
             btn8.IsEnabled = false;
-            Hiro_Main?.Set_Label(Hiro_Main.chatx);
+            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-fb",App.AppTitle);
             btn8.IsEnabled = true;
         }
 
@@ -870,6 +873,13 @@ namespace hiro
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "profileavatar", animation: animation, animationTime: 250);
             Hiro_Utils.Set_FrameworkElement_Location(Profile, "profilegrid", animation: animation, animationTime: 250);
             e.Handled = true;
+        }
+
+        private void Btn11_Click(object sender, RoutedEventArgs e)
+        {
+            btn11.IsEnabled = false;
+            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-doc", App.AppTitle);
+            btn11.IsEnabled = true;
         }
     }
 }

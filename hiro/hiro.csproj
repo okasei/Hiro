@@ -10,15 +10,18 @@
     <Copyright>Copyright© 2023 N+ Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.3.1</FileVersion>
-    <AssemblyVersion>2.3.1</AssemblyVersion>
-    <Version>2.3.1</Version>
+    <FileVersion>2.3.2</FileVersion>
+    <AssemblyVersion>2.3.2</AssemblyVersion>
+    <Version>2.3.2</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
     <StartupObject></StartupObject>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <BaseOutputPath></BaseOutputPath>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
       <WrapperTool>tlbimp</WrapperTool>

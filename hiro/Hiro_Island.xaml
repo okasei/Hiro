@@ -11,13 +11,13 @@
         </Border>
         <Grid x:Name="ContentGrid" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Visible">
             <DockPanel x:Name="BasePanel" VerticalAlignment="Top" HorizontalAlignment="Left" LastChildFill="True">
-                <Border x:Name="BaseIconBorder" Margin="5" CornerRadius="25" DockPanel.Dock="Left" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Border x:Name="BaseIconBorder" Margin="5" CornerRadius="25" DockPanel.Dock="Left" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" MouseLeftButtonUp="BaseIconBorder_MouseLeftButtonUp" Cursor="{Binding Cursor, ElementName=ContentGrid}" >
                     <Border.Background>
                         <ImageBrush x:Name="BaseIcon" Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
                     </Border.Background>
                 </Border>
-                <Label x:Name="TitleLabel" Margin="5,5,5,0" DockPanel.Dock="Top" Content="Hello!" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16"/>
-                <Label x:Name="content" Margin="5,0,5,5" DockPanel.Dock="Bottom" FontFamily="Segoe UI" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"  HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gray" MouseDoubleClick="Label_MouseDoubleClick_1"  FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <Label x:Name="TitleLabel" Margin="5,5,5,0" DockPanel.Dock="Top" Content="Hello!" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16" Cursor="{Binding Cursor, ElementName=ContentGrid}" MouseLeftButtonUp="TitleLabel_MouseLeftButtonUp"/>
+                <Label x:Name="content" Margin="5,0,5,5" DockPanel.Dock="Bottom" FontFamily="Segoe UI" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"  HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gray" MouseDoubleClick="Label_MouseDoubleClick_1"  FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Auto" Cursor="{Binding Cursor, ElementName=ContentGrid}" MouseLeftButtonUp="Content_MouseLeftButtonUp">
                     <TextBlock x:Name="ContentLabel" Text="New message arrived." TextWrapping="Wrap"/>
                 </Label>
             </DockPanel>

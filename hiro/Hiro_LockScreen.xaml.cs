@@ -161,17 +161,15 @@ namespace hiro
             if (authing)
                 return;
             authing = true;
-            System.ComponentModel.BackgroundWorker sc = new();
-            System.ComponentModel.BackgroundWorker fa = new();
-            sc.RunWorkerCompleted += delegate
+            Action sc = new(() =>
             {
                 Run_Out();
-            };
-            fa.RunWorkerCompleted += delegate
+            });
+            Action fa = new(() =>
             {
                 authing = false;
                 Activate();
-            };
+            });
             Hiro_Utils.Register(sc, fa, fa);
         }
         private void Ls_Loaded(object sender, RoutedEventArgs e)

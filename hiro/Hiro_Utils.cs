@@ -213,11 +213,13 @@ namespace hiro
         public string? title;
         public string msg;
         public int time;
-        public Hiro_Notice(string ms = "NULL", int ti = 1, string? tit = null)
+        public Action? act;
+        public Hiro_Notice(string ms = "NULL", int ti = 1, string? tit = null, Action? ac = null)
         {
             msg = ms;
             time = ti;
             title = tit;
+            act = ac;
         }
     }
     #endregion
@@ -927,6 +929,14 @@ namespace hiro
                             var ImgList = files.Select(s => s.FullName).ToList();
                             parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
                         }
+                        if (pi.ToLower().EndsWith("<xany>"))
+                        {
+                            pi = pi[..^6];
+                            DirectoryInfo directory = new DirectoryInfo(pi);
+                            var files = directory.GetFiles("*", SearchOption.AllDirectories);
+                            var ImgList = files.Select(s => s.FullName).ToList();
+                            parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                        }
                     }
                     int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
                     if (File.Exists(path))
@@ -979,21 +989,13 @@ namespace hiro
                     if (path.ToLower().StartsWith("save("))
                     {
                         source = Get_Translate("download");
-                        BackgroundWorker bw = new();
                         string result = "";
                         CreateFolder(parameter[1]);
-                        bw.DoWork += delegate
-                        {
-                            result = GetWebContent(parameter[0], true, parameter[1]);
-                        };
-                        bw.RunWorkerCompleted += delegate
-                        {
-                            if (result.ToLower().Equals("error"))
-                                App.Notify(new Hiro_Notice(Get_Translate("error"), 2, source));
-                            else
-                                App.Notify(new Hiro_Notice(Get_Translate("success"), 2, source));
-                        };
-                        bw.RunWorkerAsync();
+                        result = GetWebContent(parameter[0], true, parameter[1]);
+                        if (result.ToLower().Equals("error"))
+                            App.Notify(new Hiro_Notice(Get_Translate("error"), 2, source));
+                        else
+                            App.Notify(new Hiro_Notice(Get_Translate("success"), 2, source));
                         return;
                     }
                     if (path.ToLower().StartsWith("bingw("))
@@ -1004,37 +1006,29 @@ namespace hiro
                             request.Headers.Add("UserAgent", $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/{Hiro_Resources.ApplicationVersion}");
                             request.Content = new StringContent("");
                             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-                            BackgroundWorker bw = new();
-                            bw.DoWork += delegate
+                            if (App.hc == null)
+                                return;
+                            try
                             {
-                                if (App.hc == null)
-                                    return;
-                                try
-                                {
-                                    HttpResponseMessage response = App.hc.Send(request);
+                                HttpResponseMessage response = App.hc.Send(request);
 
-                                    if (response.Content != null)
-                                    {
-                                        Stream stream = response.Content.ReadAsStream();
-                                        System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
-                                        CreateFolder(parameter[0]);
-                                        image.Save(parameter[0]);
-                                    }
-                                }
-                                catch (Exception ex)
+                                if (response.Content != null)
                                 {
-                                    RunExe($"alarm({Get_Translate("error")},{ex})");
-                                    LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
+                                    Stream stream = response.Content.ReadAsStream();
+                                    System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
+                                    CreateFolder(parameter[0]);
+                                    image.Save(parameter[0]);
                                 }
-                            };
-                            bw.RunWorkerCompleted += delegate
+                            }
+                            catch (Exception ex)
                             {
-                                if (!File.Exists(parameter[0]))
-                                    App.Notify(new Hiro_Notice(Get_Translate("unknown"), 2, Get_Translate("wallpaper")));
-                                else
-                                    App.Notify(new Hiro_Notice(Get_Translate("wpsaved"), 2, Get_Translate("wallpaper")));
-                            };
-                            bw.RunWorkerAsync();
+                                RunExe($"alarm({Get_Translate("error")},{ex})");
+                                LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
+                            }
+                            if (!File.Exists(parameter[0]))
+                                App.Notify(new Hiro_Notice(Get_Translate("unknown"), 2, Get_Translate("wallpaper")));
+                            else
+                                App.Notify(new Hiro_Notice(Get_Translate("wpsaved"), 2, Get_Translate("wallpaper")));
                         }
                         else
                             App.Notify(new Hiro_Notice(Get_Translate("wpexist"), 2, Get_Translate("wallpaper")));
@@ -1271,63 +1265,48 @@ namespace hiro
                     if (path.ToLower().StartsWith("zip("))
                     {
                         CreateFolder(parameter[1]);
+                        System.IO.Compression.ZipFile.CreateFromDirectory(parameter[0], parameter[1]);
                         BackgroundWorker bw = new();
-                        bw.DoWork += delegate
+                        if (parameter.Count > 2)
                         {
-                            System.IO.Compression.ZipFile.CreateFromDirectory(parameter[0], parameter[1]);
-                        };
-                        bw.RunWorkerCompleted += delegate
+                            var para = parameter[2].ToLower();
+                            if (para.IndexOf("s") != -1)
+                                RunExe(parameter[1]);
+                            if (para.IndexOf("d") != -1)
+                                RunExe($"Delete({parameter[0]})");
+                        }
+                        if (parameter.Count > 3)
                         {
-                            if (parameter.Count > 2)
+                            string cmd = parameter[3];
+                            for (var i = 4; i < parameter.Count; i++)
                             {
-                                var para = parameter[2].ToLower();
-                                if (para.IndexOf("s") != -1)
-                                    RunExe(parameter[1]);
-                                if (para.IndexOf("d") != -1)
-                                    RunExe($"Delete({parameter[0]})");
+                                cmd += "," + parameter[i];
                             }
-                            if (parameter.Count > 3)
-                            {
-                                string cmd = parameter[3];
-                                for (var i = 4; i < parameter.Count; i++)
-                                {
-                                    cmd += "," + parameter[i];
-                                }
-                                RunExe(cmd, source);
-                            }
-                        };
-                        bw.RunWorkerAsync();
+                            RunExe(cmd, source);
+                        }
                         return;
                     }
                     if (path.ToLower().StartsWith("unzip("))
                     {
                         CreateFolder(parameter[1]);
-                        BackgroundWorker bw = new();
-                        bw.DoWork += delegate
+                        System.IO.Compression.ZipFile.ExtractToDirectory(parameter[0], parameter[1]);
+                        if (parameter.Count > 2)
                         {
-                            System.IO.Compression.ZipFile.ExtractToDirectory(parameter[0], parameter[1]);
-                        };
-                        bw.RunWorkerCompleted += delegate
+                            var para = parameter[2].ToLower();
+                            if (para.IndexOf("s") != -1)
+                                RunExe(parameter[1]);
+                            if (para.IndexOf("d") != -1)
+                                RunExe($"Delete({parameter[0]})");
+                        }
+                        if (parameter.Count > 3)
                         {
-                            if (parameter.Count > 2)
+                            string cmd = parameter[3];
+                            for (var i = 4; i < parameter.Count; i++)
                             {
-                                var para = parameter[2].ToLower();
-                                if (para.IndexOf("s") != -1)
-                                    RunExe(parameter[1]);
-                                if (para.IndexOf("d") != -1)
-                                    RunExe($"Delete({parameter[0]})");
+                                cmd += "," + parameter[i];
                             }
-                            if (parameter.Count > 3)
-                            {
-                                string cmd = parameter[3];
-                                for (var i = 4; i < parameter.Count; i++)
-                                {
-                                    cmd += "," + parameter[i];
-                                }
-                                RunExe(cmd, source);
-                            }
-                        };
-                        bw.RunWorkerAsync();
+                            RunExe(cmd, source);
+                        }
                         return;
                     }
                     if (path.ToLower().StartsWith("exit()"))
@@ -1553,6 +1532,21 @@ namespace hiro
                         return;
                     }
                     #region 可能造成打扰的命令
+                    if (path.ToLower().StartsWith("invoke("))
+                    {
+                        if (parameter.Count > 0)
+                        {
+                            var pa = parameter[0];
+                            if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
+                            {
+                                pa = GetWebContent(pa).Replace("\\n", string.Empty).Replace("<br>", string.Empty);
+                                if (App.dflag)
+                                    LogtoFile("[INVOKE]" + pa);
+                            }
+                            RunExe(pa, source, autoClose);
+                        }
+                        return;
+                    }
                     if (path.ToLower().Equals("decrypt"))
                     {
                         HiroInvoke(() =>
@@ -1575,7 +1569,22 @@ namespace hiro
                             {
                                 k = parameter[1];
                             }
-                            new Hiro_Encrypter(1, p, k).Show();
+                            var he = new Hiro_Encrypter(1, p, k);
+                            if (parameter.Count > 2)
+                            {
+                                var pa = parameter[2].Trim().ToLower();
+                                if (pa.Equals("r") || pa.Equals("run") || pa.Equals("1"))
+                                    he.Autorun.IsChecked = true;
+                                if (pa.Equals("l") || pa.Equals("locate") || pa.Equals("2"))
+                                    he.Autorun.IsChecked = null;
+                            }
+                            if (parameter.Count > 3)
+                            {
+                                var pa = parameter[3].Trim().ToLower();
+                                if (pa.Equals("d") || pa.Equals("delete") || pa.Equals("1"))
+                                    he.Autodelete.IsChecked = true;
+                            };
+                            he.Show();
                         });
                         return;
                     }
@@ -1598,7 +1607,13 @@ namespace hiro
                                     if (pa.Equals("l") || pa.Equals("locate") || pa.Equals("2"))
                                         he.Autorun.IsChecked = null;
                                 }
-                                he.StartDecrypt(p, k);
+                                if (parameter.Count > 3)
+                                {
+                                    var pa = parameter[3].Trim().ToLower();
+                                    if (pa.Equals("d") || pa.Equals("delete") || pa.Equals("1"))
+                                        he.Autodelete.IsChecked = true;
+                                }
+                                he.StartDecryptThread(p, k);
                             }
                         });
                         return;
@@ -1625,7 +1640,22 @@ namespace hiro
                             {
                                 k = parameter[1];
                             }
-                            new Hiro_Encrypter(0, p, k).Show();
+                            var he = new Hiro_Encrypter(0, p, k);
+                            if (parameter.Count > 2)
+                            {
+                                var pa = parameter[2].Trim().ToLower();
+                                if (pa.Equals("r") || pa.Equals("run") || pa.Equals("1"))
+                                    he.Autorun.IsChecked = true;
+                                if (pa.Equals("l") || pa.Equals("locate") || pa.Equals("2"))
+                                    he.Autorun.IsChecked = null;
+                            }
+                            if (parameter.Count > 3)
+                            {
+                                var pa = parameter[3].Trim().ToLower();
+                                if (pa.Equals("d") || pa.Equals("delete") || pa.Equals("1"))
+                                    he.Autodelete.IsChecked = true;
+                            };
+                            he.Show();
                         });
                         return;
                     }
@@ -1648,7 +1678,13 @@ namespace hiro
                                     if (pa.Equals("l") || pa.Equals("locate") || pa.Equals("2"))
                                         he.Autorun.IsChecked = null;
                                 }
-                                he.StartEncrypt(p, k);
+                                if (parameter.Count > 3)
+                                {
+                                    var pa = parameter[3].Trim().ToLower();
+                                    if (pa.Equals("d") || pa.Equals("delete") || pa.Equals("1"))
+                                        he.Autodelete.IsChecked = true;
+                                }
+                                he.StartEncryptThread(p, k);
                             }
                         });
                         return;
@@ -1785,7 +1821,7 @@ namespace hiro
                     }
                     if (path.ToLower().StartsWith("alarm("))
                     {
-                        var pa = parameter[0].ToLower();
+                        var pa = parameter[0];
                         var os = Get_OSVersion();
                         if (os.IndexOf(".") != -1)
                             os = os[..os.IndexOf(".")];
@@ -1794,37 +1830,15 @@ namespace hiro
                         {
                             if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
                             {
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    pa = $"\"{GetWebContent(pa)}\"";
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    var val = parameter.Count == 1 ? $"\"{pa}\"" : $"\"{pa}\",\"{parameter[1]}\"";
-                                    RunExe($"alarm({val})", source);
-                                };
-                                bw.RunWorkerAsync();
-                                return;
+                                pa = GetWebContent(pa);
                             }
                             if (parameter.Count > 1)
                             {
-                                var par = parameter[1].ToLower();
+                                var par = parameter[1];
 
                                 if ((par.ToLower().StartsWith("http://") || par.ToLower().StartsWith("https://")) && boo)
                                 {
-                                    BackgroundWorker bw = new();
-                                    bw.DoWork += delegate
-                                    {
-                                        par = $"\"{GetWebContent(par)}\"";
-                                    };
-                                    bw.RunWorkerCompleted += delegate
-                                    {
-                                        var val = $"\"{parameter[0]}\",\"{par}\"";
-                                        RunExe($"alarm({val})", source);
-                                    };
-                                    bw.RunWorkerAsync();
-                                    return;
+                                    par = GetWebContent(par).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
                                 }
                             }
                             if (parameter.Count > 1)
@@ -2010,26 +2024,23 @@ namespace hiro
                                 titile = parameter[0];
                                 if (titile.ToLower().StartsWith("http://") || titile.ToLower().StartsWith("https://"))
                                 {
-                                    BackgroundWorker bw = new();
-                                    bw.DoWork += delegate
+                                    titile = GetWebContent(titile).Replace("<br>", "\\n");
+                                }
+                                Action? act = null;
+                                if (parameter.Count > 3)
+                                {
+                                    var p3 = parameter[3];
+                                    act = new(() =>
                                     {
-                                        titile = "\"" + GetWebContent(titile).Replace("<br>", "\\n") + "\"";
-                                    };
-                                    bw.RunWorkerCompleted += delegate
-                                    {
-                                        if (parameter.Count > 2)
-                                        {
-                                            RunExe("notify(" + titile + "," + duration.ToString() + ")", parameter[2]);
-                                            LogtoFile(parameter[2]);
-                                        }
-                                        else
-                                            RunExe("notify(" + titile + "," + duration.ToString() + ")", source);
-                                    };
-                                    bw.RunWorkerAsync();
-                                    return;
+                                        RunExe(p3, parameter[2], false);
+                                    });
                                 }
                                 if (File.Exists(titile))
                                     titile = File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
+                                if (parameter.Count > 2)
+                                    source = parameter[2];
+                                duration = duration <= 0 ? 2 : duration;
+                                App.Notify(new(titile, duration, source, act));
                             }
                             catch (Exception ex)
                             {
@@ -2037,10 +2048,6 @@ namespace hiro
                                 LogError(ex, $"Hiro.Exception.Run.Notification{Environment.NewLine}Path: {path}");
                             }
                         }
-                        if (parameter.Count > 2)
-                            source = parameter[2];
-                        duration = duration <= 0 ? 2 : duration;
-                        App.Notify(new(titile, duration, source));
                         return;
                     }
                     if (path.ToLower().StartsWith("play("))
@@ -2148,9 +2155,7 @@ namespace hiro
                     }
                     if (path.ToLower().StartsWith("auth("))
                     {
-                        BackgroundWorker sc = new();
-                        BackgroundWorker fa = new();
-                        sc.RunWorkerCompleted += delegate
+                        Action sc = new(() =>
                         {
                             if (App.mn != null)
                             {
@@ -2169,15 +2174,15 @@ namespace hiro
                                     RunExe(pr, source);
                                 }
                             }
-                        };
-                        fa.RunWorkerCompleted += delegate
+                        });
+                        Action fa = new(() =>
                         {
                             HiroInvoke(() =>
                             {
                                 if (App.mn != null && App.Locked)
                                     App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion + " 🔒";
                             });
-                        };
+                        });
                         HiroInvoke(() =>
                         {
                             Register(sc, fa, fa);
@@ -2578,7 +2583,7 @@ namespace hiro
         #endregion
 
         #region Windows Hello
-        private async static void NewUser(String AccountId, BackgroundWorker success, BackgroundWorker falied, BackgroundWorker cancel)
+        private async static void NewUser(String AccountId, Action success, Action falied, Action cancel)
         {
             var keyCreationResult = await KeyCredentialManager.RequestCreateAsync(AccountId, KeyCredentialCreationOption.FailIfExists);
             if (keyCreationResult.Status == KeyCredentialStatus.CredentialAlreadyExists)
@@ -2587,11 +2592,11 @@ namespace hiro
                 UserConsentVerificationResult consentResult = await UserConsentVerifier.RequestVerificationAsync(AccountId);
                 if (consentResult.Equals(UserConsentVerificationResult.Verified))
                 {
-                    success.RunWorkerAsync();
+                    success.Invoke();
                 }
                 else
                 {
-                    falied.RunWorkerAsync();
+                    falied.Invoke();
                 }
             }
             else if (keyCreationResult.Status == KeyCredentialStatus.Success)
@@ -2604,21 +2609,21 @@ namespace hiro
 
                 if (keyAttestationResult.Status == KeyCredentialAttestationStatus.Success)
                 {
-                    success.RunWorkerAsync();
+                    success.Invoke();
                 }
                 else if (keyAttestationResult.Status == KeyCredentialAttestationStatus.TemporaryFailure)
                 {
-                    falied.RunWorkerAsync();
+                    falied.Invoke();
                 }
                 else if (keyAttestationResult.Status == KeyCredentialAttestationStatus.NotSupported)
                 {
-                    success.RunWorkerAsync();
+                    success.Invoke();
                 }
             }
             else if (keyCreationResult.Status == KeyCredentialStatus.UserCanceled ||
                 keyCreationResult.Status == KeyCredentialStatus.UserPrefersPassword)
             {
-                cancel.RunWorkerAsync();
+                cancel.Invoke();
             }
         }
         private async void DeleteUser(string AccountId)
@@ -2647,7 +2652,7 @@ namespace hiro
             //label5.Text = "Error Occurred.";
             return;
         }
-        public async static void Register(BackgroundWorker success, BackgroundWorker falied, BackgroundWorker cancel)
+        public async static void Register(Action success, Action falied, Action cancel)
         {
             var os = Get_OSVersion();
             if (os.IndexOf(".") != -1)
@@ -2657,7 +2662,7 @@ namespace hiro
                 var keyCredentialAvailable = await KeyCredentialManager.IsSupportedAsync();
                 if (!keyCredentialAvailable)
                 {
-                    success.RunWorkerAsync();
+                    success.Invoke();
                     return;
                 }
                 NewUser("N+@" + App.EnvironmentUsername, success, falied, cancel);
@@ -2665,7 +2670,7 @@ namespace hiro
             }
             else
             {
-                success.RunWorkerAsync();
+                success.Invoke();
                 return;
             }
         }
@@ -4208,21 +4213,26 @@ namespace hiro
 
         public static byte[] EncryptFile(byte[] array, string key, string filename)
         {
-            return GetEncryptPrefix(filename).Concat(Encrypt(array, key)).ToArray();
+            return Encrypt(GetEncryptPrefix(filename).Concat(array).ToArray(), key);
         }
 
         private static byte[] GetEncryptPrefix(string filename)
         {
-            return GetNumBytes(filename.Length).Concat(Encoding.UTF8.GetBytes(filename)).ToArray();
+            return GetNumBytes(Encoding.UTF8.GetBytes(filename).Length).Concat(Encoding.UTF8.GetBytes(filename)).ToArray();
         }
 
         public static byte[] DecryptFile(byte[] array, string key, out string filename)
         {
-            var len = GetNumInt(array.Take(8).ToArray());
-            array = array.Skip(8).ToArray();
-            filename = Encoding.UTF8.GetString(array.Take(len).ToArray());
-            array = array.Skip(len).ToArray();
-            return Decrypt(array, key);
+            var ret = Decrypt(array, key);
+            var len = GetNumInt(ret.Take(8).ToArray());
+            if (App.dflag)
+                LogtoFile("[DECRYPT]Length:" + len.ToString());
+            ret = ret.Skip(8).ToArray();
+            filename = Encoding.UTF8.GetString(ret.Take(len).ToArray());
+            if (App.dflag)
+                LogtoFile("[DECRYPT]Filename:" + filename);
+            ret = ret.Skip(len).ToArray();
+            return ret;
         }
 
         /// <summary>

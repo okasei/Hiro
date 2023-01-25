@@ -787,22 +787,20 @@ namespace hiro
             {
                 if (App.Locked)
                 {
-                    System.ComponentModel.BackgroundWorker sc = new();
-                    System.ComponentModel.BackgroundWorker fa = new();
-                    sc.RunWorkerCompleted += delegate
+                    Action sc = new(() =>
                     {
                         App.Locked = false;
                         if (App.mn != null)
                             App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion;
                         App.mn?.Set_Label(label);
-                    };
-                    fa.RunWorkerCompleted += delegate
+                    });
+                    Action fa = new(() =>
                     {
                         if (App.mn == null)
                             return;
                         App.mn.versionlabel.Content = Hiro_Resources.ApplicationVersion + (App.Locked ? " 🔒" : "");
                         App.mn.Set_Label(selected ?? homex);
-                    };
+                    });
                     Hiro_Utils.Register(sc, fa, fa);
                     return;
                 }

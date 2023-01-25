@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,6 +77,7 @@ namespace hiro
 
 
         }
+
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -225,19 +227,19 @@ namespace hiro
                                 {
                                     case "debug":
                                         dflag = true;
-                                        continue;
+                                        break;
                                     case "silent":
                                         silent = true;
-                                        continue;
+                                        break;
                                     case "utils":
                                         create = false;
-                                        continue;
+                                        break;
                                     case "update":
                                         autoexe = false;
-                                        continue;
+                                        break;
                                     case "pure":
-                                        autoexe |= false;
-                                        continue;
+                                        autoexe = false;
+                                        break;
                                     default:
                                         Hiro_Utils.IntializeColorParameters();
                                         Hiro_Utils.RunExe(para, "Windows");
@@ -326,9 +328,10 @@ namespace hiro
                         new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                                         .AddText(title)
                                         .AddText(i.msg.Replace("\\n", Environment.NewLine))
+                                        .AddArgument("category", "notification")
                                         .Show();
                     });
-                    
+
                 }
                 else if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("2"))
                 {
@@ -376,50 +379,66 @@ namespace hiro
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.OnActivated += toastArgs =>
             {
                 var args = Microsoft.Toolkit.Uwp.Notifications.ToastArguments.Parse(toastArgs.Argument);
-                var action = "null";
-                var url = "nop";
-                var id = -1;
+                var mo = 1;//0 for alarm 1 for notification
                 for (int i = 0; i < args.Count; i++)
                 {
-                    if (args.ElementAt(i).Key.Equals("action"))
-                        action = args.ElementAt(i).Value;
-                    if (args.ElementAt(i).Key.Equals("alarmid"))
-                        id = int.Parse(args.ElementAt(i).Value);
-                    if (args.ElementAt(i).Key.Equals("url"))
-                        url = args.ElementAt(i).Value;
-                }
-                if (!action.Equals("null") && !id.Equals("-1"))
-                {
-                    switch (action)
+                    if (args.ElementAt(i).Key.Equals("category") && args.ElementAt(i).Value.Equals("alarm"))
                     {
-                        case "delay":
-                            if (id > -1)
-                            {
-                                Hiro_Utils.Delay_Alarm(id);
-                            }
-                            break;
-                        case "ok":
-                            if (id > -1)
-                            {
-                                Hiro_Utils.OK_Alarm(id);
-                            }
-                            break;
-                        default:
-                            break;
+                        mo = 0;
+                        break;
                     }
                 }
-                if (!action.Equals("null") && !url.Equals("nop"))
+                if (mo == 0)
                 {
-                    switch (action)
+                    var action = "null";
+                    var url = "nop";
+                    var id = -1;
+                    for (int i = 0; i < args.Count; i++)
                     {
-                        case "uok":
-                            Hiro_Utils.RunExe(url, Hiro_Utils.Get_Translate("alarm"));
-                            break;
-                        case "uskip":
-                            break;
-                        default:
-                            break;
+                        if (args.ElementAt(i).Key.Equals("action"))
+                            action = args.ElementAt(i).Value;
+                        if (args.ElementAt(i).Key.Equals("alarmid"))
+                            id = int.Parse(args.ElementAt(i).Value);
+                        if (args.ElementAt(i).Key.Equals("url"))
+                            url = args.ElementAt(i).Value;
                     }
+                    if (!action.Equals("null") && !id.Equals("-1"))
+                    {
+                        switch (action)
+                        {
+                            case "delay":
+                                if (id > -1)
+                                {
+                                    Hiro_Utils.Delay_Alarm(id);
+                                }
+                                break;
+                            case "ok":
+                                if (id > -1)
+                                {
+                                    Hiro_Utils.OK_Alarm(id);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    if (!action.Equals("null") && !url.Equals("nop"))
+                    {
+                        switch (action)
+                        {
+                            case "uok":
+                                Hiro_Utils.RunExe(url, Hiro_Utils.Get_Translate("alarm"));
+                                break;
+                            case "uskip":
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                else if (mo == 1)
+                {
+                    ///TO-DO:目前不支持系统样式触发
                 }
             };
         }
@@ -644,6 +663,7 @@ namespace hiro
                                         .SetContent(Hiro_Utils.Get_Translate("alarmdelay"))
                                         .AddArgument("action", "delay"))
                             .AddArgument("alarmid", (i - 1).ToString())
+                            .AddArgument("category", "alarm")
                         .Show();
                         }
                         else

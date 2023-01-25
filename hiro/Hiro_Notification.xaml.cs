@@ -20,6 +20,7 @@ namespace hiro
         internal double ai = 0.01;
         internal bool[] animation = { true, false };
         internal Storyboard? sb = null;
+        internal Action? act = null;
         public Hiro_Notification()
         {
             InitializeComponent();
@@ -144,6 +145,11 @@ namespace hiro
                     msg = App.noticeitems[0].msg;
                     flag[1] = App.noticeitems[0].time;
                     flag[2] = flag[1];
+                    act = App.noticeitems[0].act;
+                    if (act != null)
+                        notinfo.Cursor = Cursors.Hand;
+                    else
+                        notinfo.Cursor = null;
                     App.noticeitems.RemoveAt(0);
                 }
                 else
@@ -253,6 +259,14 @@ namespace hiro
         private void Noti_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             App.noti = null;
+        }
+
+        private void Notinfo_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (act != null)
+                act.Invoke();
+            act = null;
+            notinfo.Cursor = null;
         }
     }
 }
