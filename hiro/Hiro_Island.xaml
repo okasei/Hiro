@@ -16,9 +16,9 @@
                         <ImageBrush x:Name="BaseIcon" Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
                     </Border.Background>
                 </Border>
-                <Label x:Name="TitleLabel" Margin="5,5,5,0" DockPanel.Dock="Top" Content="Hello!" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16" Cursor="{Binding Cursor, ElementName=ContentGrid}" MouseLeftButtonUp="TitleLabel_MouseLeftButtonUp"/>
+                <Label x:Name="TitleLabel" Margin="5,5,5,0" DockPanel.Dock="Top" Content="" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16" Cursor="{Binding Cursor, ElementName=ContentGrid}" MouseLeftButtonUp="TitleLabel_MouseLeftButtonUp"/>
                 <Label x:Name="content" Margin="5,0,5,5" DockPanel.Dock="Bottom" FontFamily="Segoe UI" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"  HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gray" MouseDoubleClick="Label_MouseDoubleClick_1"  FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Auto" Cursor="{Binding Cursor, ElementName=ContentGrid}" MouseLeftButtonUp="Content_MouseLeftButtonUp">
-                    <TextBlock x:Name="ContentLabel" Text="New message arrived." TextWrapping="Wrap"/>
+                    <TextBlock x:Name="ContentLabel" TextWrapping="Wrap"/>
                 </Label>
             </DockPanel>
         </Grid>

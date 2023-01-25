@@ -72,7 +72,7 @@ namespace hiro
             if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
                 TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
             if (TitleLabel.Content != null)
-                former_title = TitleLabel.Content.ToString();
+                former_title = TitleLabel.Content.ToString() ?? string.Empty;
             if (former_count > 1)
                 TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
             CD = App.noticeitems[0].time;
@@ -181,7 +181,7 @@ namespace hiro
                 if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
                     TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
                 if (TitleLabel.Content != null)
-                    former_title = TitleLabel.Content.ToString();
+                    former_title = TitleLabel.Content.ToString() ?? string.Empty;
                 if (former_count > 1)
                     TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
                 App.noticeitems.RemoveAt(0);
@@ -193,48 +193,68 @@ namespace hiro
 
         private void Island_In()
         {
+            SetAutoSize(BaseGrid);
             former_width = BaseGrid.ActualWidth;
             former_height = BaseGrid.ActualHeight;
             former_left = SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2;
-
-            Storyboard sb = new();
-            sb = Hiro_Utils.AddDoubleAnimaton(50, 850, this, TopProperty.Name, sb, -former_height, 0.7);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_left, 850, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2, 0.7);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_width, 850, BaseGrid, "Width", sb, 1, 0.7);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_height, 850, BaseGrid, "Height", sb, 1, 0.7);
-            sb.Completed += delegate
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                sb = Hiro_Utils.AddDoubleAnimaton(50, 850, this, TopProperty.Name, sb, -former_height, 0.7);
+                sb = Hiro_Utils.AddDoubleAnimaton(former_left, 850, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2, 0.7);
+                sb = Hiro_Utils.AddDoubleAnimaton(former_width, 850, BaseGrid, "Width", sb, 1, 0.7);
+                sb = Hiro_Utils.AddDoubleAnimaton(former_height, 850, BaseGrid, "Height", sb, 1, 0.7);
+                sb.Completed += delegate
+                {
+                    Canvas.SetTop(this, 50);
+                    Canvas.SetLeft(this, former_left);
+                    SetAutoSize(BaseGrid);
+                    timer.Start();
+                };
+                sb.Begin();
+            }
+            else
             {
                 Canvas.SetTop(this, 50);
                 Canvas.SetLeft(this, former_left);
                 SetAutoSize(BaseGrid);
                 timer.Start();
-            };
-            sb.Begin();
+            }
+            
         }
 
         private void Island_Out()
         {
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
-            Storyboard sb = new();
-            sb = Hiro_Utils.AddDoubleAnimaton(-h, 700, this, TopProperty.Name, sb, 50, 0.7);
-            sb = Hiro_Utils.AddDoubleAnimaton(SystemParameters.FullPrimaryScreenWidth / 2, 700, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2, 0.7);
-            sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Width", sb, former_width, 0.7);
-            sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Height", sb, former_height, 0.7);
-            sb.Completed += delegate
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            {
+                Storyboard sb = new();
+                sb = Hiro_Utils.AddDoubleAnimaton(-h, 700, this, TopProperty.Name, sb, 50, 0.7);
+                sb = Hiro_Utils.AddDoubleAnimaton(SystemParameters.FullPrimaryScreenWidth / 2, 700, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2, 0.7);
+                sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Width", sb, former_width, 0.7);
+                sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Height", sb, former_height, 0.7);
+                sb.Completed += delegate
+                {
+                    Visibility = Visibility.Hidden;
+                    new Thread(() =>
+                    {
+                        //weird...
+                        Thread.Sleep(100);
+                        Dispatcher.Invoke(() =>
+                        {
+                            Close();
+                        });
+                    }).Start();
+                };
+                sb.Begin();
+            }
+            else
             {
                 Visibility = Visibility.Hidden;
-                new Thread(() =>
-                {
-                    //weird...
-                    Thread.Sleep(100);
-                    Dispatcher.Invoke(() =>
-                    {
-                        Close();
-                    });
-                }).Start();
-            };
-            sb.Begin();
+                Close();
+            }
+                
         }
 
         private void SetAutoSize(FrameworkElement fe)
@@ -252,25 +272,35 @@ namespace hiro
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
             var offset = Math.Min(w * 0.1, 50);
-            var sb = new Storyboard();
-            sb = Hiro_Utils.AddDoubleAnimaton(former_left + offset, 300, this, LeftProperty.Name, sb, former_left);
-            sb = Hiro_Utils.AddDoubleAnimaton(former_width - offset * 2, 180, BaseGrid, "Width", sb, former_width);
-            sb.Completed += delegate
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
-                former_left = SystemParameters.FullPrimaryScreenWidth / 2 - w / 2;
                 var sb = new Storyboard();
-                sb = Hiro_Utils.AddDoubleAnimaton(former_left, 300, this, LeftProperty.Name, sb, null);
-                sb = Hiro_Utils.AddDoubleAnimaton(w + ContentGrid.Margin.Left * 2, 300, BaseGrid, "Width", sb, null);
-                sb = Hiro_Utils.AddDoubleAnimaton(h + ContentGrid.Margin.Top * 2, 300, BaseGrid, "Height", sb, null);
+                sb = Hiro_Utils.AddDoubleAnimaton(former_left + offset, 300, this, LeftProperty.Name, sb, former_left);
+                sb = Hiro_Utils.AddDoubleAnimaton(former_width - offset * 2, 180, BaseGrid, "Width", sb, former_width);
                 sb.Completed += delegate
                 {
-                    SetAutoSize(BaseGrid);
-                    former_width = BaseGrid.ActualWidth;
-                    former_height = BaseGrid.ActualHeight;
+                    former_left = SystemParameters.FullPrimaryScreenWidth / 2 - w / 2;
+                    var sb = new Storyboard();
+                    sb = Hiro_Utils.AddDoubleAnimaton(former_left, 300, this, LeftProperty.Name, sb, null);
+                    sb = Hiro_Utils.AddDoubleAnimaton(w + ContentGrid.Margin.Left * 2, 300, BaseGrid, "Width", sb, null);
+                    sb = Hiro_Utils.AddDoubleAnimaton(h + ContentGrid.Margin.Top * 2, 300, BaseGrid, "Height", sb, null);
+                    sb.Completed += delegate
+                    {
+                        SetAutoSize(BaseGrid);
+                        former_width = BaseGrid.ActualWidth;
+                        former_height = BaseGrid.ActualHeight;
+                    };
+                    sb.Begin();
                 };
                 sb.Begin();
-            };
-            sb.Begin();
+            }
+            else
+            {
+                SetAutoSize(BaseGrid);
+                former_width = BaseGrid.ActualWidth;
+                former_height = BaseGrid.ActualHeight;
+            }
+                
         }
 
         private void Label_MouseDoubleClick(object sender, MouseButtonEventArgs e)

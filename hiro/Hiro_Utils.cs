@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Animation;
+using Microsoft.WindowsAPICodePack;
 using Windows.Devices.WiFi;
 using Windows.Devices.Radios;
 using Windows.Security.Credentials;
@@ -2496,28 +2497,34 @@ namespace hiro
                         await adapter.ScanAsync();
                         if (adapter.NetworkReport.AvailableNetworks.Count > 0)
                         {
+                            if (App.dflag)
+                                LogtoFile($"adapter.NetworkReport.AvailableNetworks.Count {adapter.NetworkReport.AvailableNetworks.Count}");
                             var connect = true;
                             WiFiAvailableNetwork? savedan = null;
                             foreach (var an in adapter.NetworkReport.AvailableNetworks)
                             {
-                                if (Ssid != null && an.Ssid.ToLower().Equals(Ssid.ToLower()))
+                                if (Ssid != null && an.Ssid.Equals(Ssid))
                                 {
-                                    if (savedan == null || !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
+                                    if (savedan == null || !savedan.Ssid.Equals(Ssid))
                                     {
+                                        if (App.dflag)
+                                            LogtoFile($"Matched Wifi Detected {an.Ssid}");
                                         savedan = an;
                                         if (omit)
                                             break;
                                     }
                                     else
                                     {
+                                        if (App.dflag)
+                                            LogtoFile($"Multi Wifi Detected {an.Ssid}");
                                         connect = false;
                                         break;
                                     }
-                                    if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open") && savedan == null)
-                                        savedan = an;
                                 }
-                                else if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open"))
+                                else if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open") && savedan == null)
                                 {
+                                    if (App.dflag)
+                                        LogtoFile($"Open Wifi Detected {an.Ssid}");
                                     savedan = an;
                                     break;
                                 }
@@ -3691,7 +3698,7 @@ namespace hiro
             RECT rect = new();
             IntPtr hWnd = (IntPtr)GetForegroundWindow();
             GetWindowRect(new HandleRef(null, hWnd), ref rect);
-            return screen.Bounds.Width == (rect.right - rect.left) && screen.Bounds.Height == (rect.bottom - rect.top);
+            return screen != null && screen.Bounds.Width == (rect.right - rect.left) && screen.Bounds.Height == (rect.bottom - rect.top);
         }
         #endregion
 

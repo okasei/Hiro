@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
@@ -21,18 +21,6 @@
     <BaseOutputPath></BaseOutputPath>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <COMReference Include="IWshRuntimeLibrary">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
@@ -44,15 +32,17 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1619-prerelease" />
-    <PackageReference Include="Microsoft.WindowsAPICodePack-Core" Version="1.1.0.2" />
-    <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" />
     <PackageReference Include="Vlc.DotNet.Wpf" Version="3.1.0" />
+    <PackageReference Include="WindowsAPICodePack" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="CSVideoPlayer">
       <HintPath>CSVideoPlayer.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.IWshRuntimeLibrary">
+      <HintPath>Interop.IWshRuntimeLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 

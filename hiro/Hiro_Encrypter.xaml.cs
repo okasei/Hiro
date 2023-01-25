@@ -251,7 +251,7 @@ namespace hiro
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
                 if (oflag)
-                    Close();
+                    Dispatcher.Invoke(() => { Close(); });
                 return;
             }
         }
@@ -285,39 +285,54 @@ namespace hiro
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
                 if (oflag)
-                    Close();
+                    Dispatcher.Invoke(() =>
+                    {
+                        Close();
+                    });
                 return null;
             }
             if (File.Exists(path + ".hef"))
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enfileexist")},2)", appname, false);
                 if (oflag)
-                    Close();
+                    Dispatcher.Invoke(() =>
+                    {
+                        Close();
+                    });
                 return null;
             }
             try
             {
                 File.WriteAllBytes(path + ".hef", Hiro_Utils.EncryptFile(File.ReadAllBytes(path).ToArray(), key, Path.GetFileName(path)));
-                if (Autodelete.IsChecked == true)
-                    try
-                    {
-                        File.Delete(path);
-                    }
-                    catch (Exception ex)
-                    {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.Encrypt.Delete");
-                    }
+                Dispatcher.Invoke(() =>
+                {
+                    if (Autodelete.IsChecked == true)
+                        try
+                        {
+                            File.Delete(path);
+                        }
+                        catch (Exception ex)
+                        {
+                            Hiro_Utils.LogError(ex, "Hiro.Exception.Encrypt.Delete");
+                        }
+                });
             }
             catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Encrypt");
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enerror")},2)", appname, false);
                 if (oflag)
-                    Close();
+                    Dispatcher.Invoke(() =>
+                    {
+                        Close();
+                    });
                 return false;
             }
             if (oflag)
-                Close();
+                Dispatcher.Invoke(() =>
+                {
+                    Close();
+                });
             return true;
         }
         internal bool? StartDecrypt(string path, string key)
@@ -327,7 +342,10 @@ namespace hiro
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
                 if (oflag)
-                    Close();
+                    Dispatcher.Invoke(() =>
+                    {
+                        Close();
+                    });
                 return null;
             }
             try
@@ -346,26 +364,33 @@ namespace hiro
                 }
                 fpath = $"{dir}\\{filename}{ext}";
                 File.WriteAllBytes(fpath, b);
-                if (Autodelete.IsChecked == true)
-                    try
-                    {
-                        File.Delete(path);
-                    }
-                    catch (Exception ex)
-                    {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.Decrypt.Delete");
-                    }
+                Dispatcher.Invoke(() =>
+                {
+                    if (Autodelete.IsChecked == true)
+                        try
+                        {
+                            File.Delete(path);
+                        }
+                        catch (Exception ex)
+                        {
+                            Hiro_Utils.LogError(ex, "Hiro.Exception.Decrypt.Delete");
+                        }
+                });
+                
             }
             catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Decrypt");
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("deerror")},2)", appname, false);
                 if (oflag)
-                    Close();
+                    Dispatcher.Invoke(() =>
+                    {
+                        Close();
+                    });
                 return false;
             }
             if (oflag)
-                Close();
+                Dispatcher.Invoke(() => { Close(); });
             return true;
         }
 
@@ -399,7 +424,6 @@ namespace hiro
                     {
                         var p = fpath;
                         var k = pwd;
-                        bool? r;
                         if (mode == 0)
                             EncryptDirectory(p, k);
                         else
