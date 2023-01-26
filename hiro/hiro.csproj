@@ -83,6 +83,7 @@
 
   <ItemGroup>
     <None Remove="C:\Users\Rex\.nuget\packages\csvideoplayer\1.0.3\build\\..\CSVideoPlayer.License.txt" />
+    <None Remove="net7.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -94,6 +95,7 @@
     <Resource Include="hiro_circle.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="net7.png" />
   </ItemGroup>
 
   <ItemGroup>

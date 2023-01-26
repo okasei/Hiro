@@ -233,7 +233,7 @@ namespace hiro
                     var ti = wps[(wps.IndexOf("<title>") + "<title>".Length)..];
                     ti = ti[..ti.IndexOf("<")];
                     wps = wps[(wps.IndexOf("</head>") + "</head>".Length)..];
-                    Hiro_Utils.RunExe("alarm(" + ti + "," + wps.Replace("<br>", "\\n") + ")");
+                    Hiro_Utils.RunExe("alarm(\"" + ti + "\",\"" + wps.Replace("<br>", "\\n") + "\")");
                     whatsbw.Dispose();
                     whatsbw = null;
                 }

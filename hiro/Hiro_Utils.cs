@@ -1533,6 +1533,14 @@ namespace hiro
                         return;
                     }
                     #region 可能造成打扰的命令
+                    if(path.ToLower().Equals("hirotest()"))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            new Hiro_Test().Show();
+                        });
+                        return;
+                    }
                     if (path.ToLower().StartsWith("invoke("))
                     {
                         if (parameter.Count > 0)
@@ -1916,6 +1924,15 @@ namespace hiro
                             HiroInvoke(() =>
                             {
                                 App.mn.Set_Label(App.mn.configx);
+                            });
+                            return;
+                        }
+                        if (path.ToLower().StartsWith("chat()"))
+                        {
+                            RunExe("show()");
+                            HiroInvoke(() =>
+                            {
+                                App.mn.Set_Label(App.mn.chatx);
                             });
                             return;
                         }

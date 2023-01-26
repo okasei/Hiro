@@ -12,6 +12,7 @@ namespace hiro
         private Hiro_MainUI? Hiro_Main = null;
         private System.ComponentModel.BackgroundWorker? upbw = null;
         private string ups = "latest";
+        internal bool ischecking = false;
         public Hiro_About(Hiro_MainUI? Parent)
         {
             InitializeComponent();
@@ -26,7 +27,7 @@ namespace hiro
         public void HiHiro()
         {
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
-            if (!animation) 
+            if (!animation)
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
@@ -48,23 +49,35 @@ namespace hiro
 
         public void Load_Translate()
         {
-            chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
+            if (ischecking)
+                chk_btn.Content = Hiro_Utils.Get_Translate("checkcancel");
+            else
+                chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
         }
 
         public void Load_Position()
         {
             Hiro_Utils.Set_Control_Location(chk_btn, "checkup");
+            Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatar");
         }
 
         private void Avatar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-                Hiro_Main?.Hiro_We_Extend();
+            Hiro_Main?.Hiro_We_Extend();
         }
 
         private void Chk_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (chk_btn.Content.Equals(Hiro_Utils.Get_Translate("checkup")))
+            if (ischecking)
             {
+                ischecking = false;
+                chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
+                if (Hiro_Main != null)
+                    Hiro_Main.pb.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                ischecking = true;
                 chk_btn.Content = Hiro_Utils.Get_Translate("checkcancel");
                 if (Hiro_Main != null)
                     Hiro_Main.pb.Visibility = Visibility.Visible;
@@ -82,17 +95,11 @@ namespace hiro
                 };
                 upbw.RunWorkerAsync();
             }
-            else
-            {
-                chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
-                if (Hiro_Main != null)
-                    Hiro_Main.pb.Visibility = Visibility.Hidden;
-
-            }
         }
 
         public void Check_update()
         {
+            ischecking = false;
             chk_btn.Content = Hiro_Utils.Get_Translate("checkup");
             if (Hiro_Main != null)
                 Hiro_Main.pb.Visibility = Visibility.Hidden;
@@ -148,6 +155,26 @@ namespace hiro
                     break;
             }
 
+        }
+
+        private void Avatar_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            {
+                Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatarx", animation: true, animationTime: 250);
+                Hiro_Utils.Set_Control_Location(chk_btn, ischecking ? "checkcancelx" : "checkupx", animation: true, animationTime: 250);
+            }
+
+
+        }
+
+        private void Avatar_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            {
+                Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatar", animation: true, animationTime: 250);
+                Hiro_Utils.Set_Control_Location(chk_btn, ischecking ? "checkcancel" : "checkup", animation: true, animationTime: 250);
+            }
         }
     }
 }

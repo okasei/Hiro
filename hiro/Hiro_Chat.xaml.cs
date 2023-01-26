@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -293,7 +294,7 @@ namespace hiro
                         Hiro_Utils.Write_Ini(baseDir + hus + ".hus", "Config", "Signature", Hiro_Utils.Read_Ini(pformer, "Config", "Signature", string.Empty));
                     }
                     r = Hiro_Utils.Read_Ini(tmp, "Profile", "Avatar", string.Empty);
-                    if(!r.Equals(string.Empty))
+                    if (!r.Equals(string.Empty))
                     {
                         Hiro_Utils.Write_Ini(baseDir + hus + ".hus", "Config", "Avatar", r);
                         u = true;
@@ -314,7 +315,7 @@ namespace hiro
                         System.IO.File.Delete(baseDir + hus + ".hus");
                     }
                     baseDir = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\");
-                    while (System.IO.File.Exists(baseDir + hus + ".hap")) 
+                    while (System.IO.File.Exists(baseDir + hus + ".hap"))
                     {
                         hus = Guid.NewGuid();
                     }
@@ -366,7 +367,7 @@ namespace hiro
                             });
                         }
                     }
-                        
+
                 }
                 catch (Exception ex)
                 {
@@ -475,7 +476,7 @@ namespace hiro
                 return;
             var differ = con.StartsWith(ChatContentBak.Text) ? con[ChatContentBak.Text.Length..] : con;
             ChatContentBak.Text = con;
-            var all = differ.Split(new string[] { "\r\n", "\r", "\n" },StringSplitOptions.None);
+            var all = differ.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             foreach (var item in all)
             {
                 var index = item.IndexOf(",");
@@ -497,7 +498,7 @@ namespace hiro
                         content = Hiro_Utils.Get_Translate("msgnew").Replace("%u", user);
                         break;
                     case 2:
-                        if(App.Locked)
+                        if (App.Locked)
                             content = Hiro_Utils.Get_Translate("msgnew").Replace("%u", user);
                         break;
                     default:
@@ -513,8 +514,8 @@ namespace hiro
                 if (cont.Contains("[Hiro.Predefinited:LikeSign]"))
                     content = Hiro_Utils.Get_Translate("signlike");
                 if (i != 0)
-                    App.Notify(new(user + ": " + content, 2, user));
-                if(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
+                    App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); })));
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
                     try
                     {
                         var fileP = Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudioPath", string.Empty));
@@ -550,7 +551,7 @@ namespace hiro
                         App.Notify(new(Hiro_Utils.Get_Translate("lgexpired"), 2, Hiro_Utils.Get_Translate("chat")));
                     });
                 }
-                    
+
             }
             catch (Exception ex)
             {
@@ -560,7 +561,7 @@ namespace hiro
                     AddErrorMsg(Hiro_Utils.Get_Translate("chatsys"), Hiro_Utils.Get_Translate("chatsenderror"));
                 });
             }
-            
+
         }
         private void Hiro_Update_Name()
         {
@@ -582,7 +583,7 @@ namespace hiro
                     });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Update.Nickname");
                 Dispatcher.Invoke(() =>
@@ -619,6 +620,13 @@ namespace hiro
 
         private void Send(string text)
         {
+            if (text.ToLower().Equals("<test>"))
+            {
+                Paragraph para = new Paragraph();
+                Insert_Picture(para, new BitmapImage(new Uri(@"C:\Users\Rex\Pictures\net7.png", UriKind.RelativeOrAbsolute)));
+                ChatContent.Document.Blocks.Add(para);
+                return;
+            }
             if (text.ToLower().Equals("refreash"))
             {
                 SendContent.Clear();
@@ -659,7 +667,7 @@ namespace hiro
                 SendContent.SelectionStart = i + Environment.NewLine.Length;
                 e.Handled = true;
             }
-            else if(e.KeyStates == Keyboard.GetKeyStates(Key.Return))
+            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Return))
             {
                 Send(SendContent.Text);
                 SendContent.Clear();
@@ -734,6 +742,11 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "chatsign", animation: animation, animationTime: 250);
             Hiro_Utils.Set_Control_Location(Profile_Background, "chatback", animation: animation, animationTime: 250);
             e.Handled = true;
+        }
+
+        private void Insert_Picture(Paragraph pa, BitmapImage bi)
+        {
+            pa.Inlines.Add(new Image() { Source = bi, Stretch = Stretch.UniformToFill, Width = 80 });
         }
     }
 }
