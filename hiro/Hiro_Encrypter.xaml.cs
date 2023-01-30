@@ -250,8 +250,6 @@ namespace hiro
             else
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
-                if (oflag)
-                    Dispatcher.Invoke(() => { Close(); });
                 return;
             }
         }
@@ -272,8 +270,6 @@ namespace hiro
             else
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
-                if (oflag)
-                    Close();
                 return;
             }
         }
@@ -284,21 +280,11 @@ namespace hiro
             if (!File.Exists(path))
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
-                if (oflag)
-                    Dispatcher.Invoke(() =>
-                    {
-                        Close();
-                    });
                 return null;
             }
             if (File.Exists(path + ".hef"))
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enfileexist")},2)", appname, false);
-                if (oflag)
-                    Dispatcher.Invoke(() =>
-                    {
-                        Close();
-                    });
                 return null;
             }
             try
@@ -321,18 +307,8 @@ namespace hiro
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Encrypt");
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enerror")},2)", appname, false);
-                if (oflag)
-                    Dispatcher.Invoke(() =>
-                    {
-                        Close();
-                    });
                 return false;
             }
-            if (oflag)
-                Dispatcher.Invoke(() =>
-                {
-                    Close();
-                });
             return true;
         }
         internal bool? StartDecrypt(string path, string key)
@@ -341,11 +317,6 @@ namespace hiro
             if (!File.Exists(path))
             {
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("filenotexist")},2)", appname, false);
-                if (oflag)
-                    Dispatcher.Invoke(() =>
-                    {
-                        Close();
-                    });
                 return null;
             }
             try
@@ -382,19 +353,17 @@ namespace hiro
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Decrypt");
                 Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("deerror")},2)", appname, false);
-                if (oflag)
-                    Dispatcher.Invoke(() =>
-                    {
-                        Close();
-                    });
                 return false;
             }
-            if (oflag)
-                Dispatcher.Invoke(() => { Close(); });
             return true;
         }
 
         private void Albtn_1_Click(object sender, RoutedEventArgs e)
+        {
+            GoStart();
+        }
+
+        internal void GoStart()
         {
             if (th != null)
             {
@@ -429,6 +398,14 @@ namespace hiro
                         else
                             DecryptDirectory(p, k);
                         th = null;
+                        if (oflag)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                Close();
+                            });
+                            return;
+                        }
                         Dispatcher.Invoke(() =>
                         {
                             if (mode == 0)
@@ -473,13 +450,21 @@ namespace hiro
                                     Hiro_Utils.RunExe("explorer \"" + fpath + "\"", mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
                                 if (Autorun.IsChecked == null)
                                     Hiro_Utils.RunExe(fpath[..fpath.LastIndexOf("\\")], mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp"), false);
-                                if (mode == 0)
-                                    Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("ensuccess")},2)", Hiro_Utils.Get_Translate("enapp"), false);
-                                else
-                                    Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("desuccess")},2)", Hiro_Utils.Get_Translate("deapp"), false);
                             });
+                        if (oflag)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                Close();
+                            });
+                            return;
+                        }
                         Dispatcher.Invoke(() =>
                         {
+                            if (mode == 0)
+                                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("ensuccess")},2)", Hiro_Utils.Get_Translate("enapp"), false);
+                            else
+                                Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("desuccess")},2)", Hiro_Utils.Get_Translate("deapp"), false);
                             pb.Visibility = Visibility.Hidden;
                             FilePath.IsEnabled = true;
                             PwdPath.IsEnabled = true;

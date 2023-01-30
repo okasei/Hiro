@@ -29,6 +29,7 @@ using Windows.System.RemoteSystems;
 using System.Reflection;
 using System.Security.Cryptography;
 using ABI.Windows.ApplicationModel.Activation;
+using System.Security.RightsManagement;
 
 namespace hiro
 {
@@ -312,6 +313,15 @@ namespace hiro
             ret += re;
             return ret;
         }
+    }
+
+    #endregion
+
+    #region 自定义Image
+
+    public class HiroUIContainer : RichTextBox
+    {
+
     }
 
     #endregion
@@ -1622,7 +1632,7 @@ namespace hiro
                                     if (pa.Equals("d") || pa.Equals("delete") || pa.Equals("1"))
                                         he.Autodelete.IsChecked = true;
                                 }
-                                he.StartDecryptThread(p, k);
+                                he.GoStart();
                             }
                         });
                         return;
@@ -1693,7 +1703,7 @@ namespace hiro
                                     if (pa.Equals("d") || pa.Equals("delete") || pa.Equals("1"))
                                         he.Autodelete.IsChecked = true;
                                 }
-                                he.StartEncryptThread(p, k);
+                                he.GoStart();
                             }
                         });
                         return;
@@ -1893,63 +1903,70 @@ namespace hiro
                     {
                         if (path.ToLower().StartsWith("home()"))
                         {
-                            RunExe("show()");
                             HiroInvoke(() =>
                             {
+                                if (App.mn.Visibility != Visibility.Visible)
+                                    RunExe("show()");
                                 App.mn.Set_Label(App.mn.homex);
                             });
                             return;
                         }
                         if (path.ToLower().StartsWith("item()"))
                         {
-                            RunExe("show()");
                             HiroInvoke(() =>
                             {
+                                if (App.mn.Visibility != Visibility.Visible)
+                                    RunExe("show()");
                                 App.mn.Set_Label(App.mn.itemx);
                             });
                             return;
                         }
                         if (path.ToLower().StartsWith("schedule()"))
                         {
-                            RunExe("show()");
                             HiroInvoke(() =>
                             {
+                                if (App.mn.Visibility != Visibility.Visible)
+                                    RunExe("show()");
                                 App.mn.Set_Label(App.mn.schedulex);
                             });
                             return;
                         }
                         if (path.ToLower().StartsWith("config()"))
                         {
-                            RunExe("show()");
                             HiroInvoke(() =>
                             {
+                                if (App.mn.Visibility != Visibility.Visible)
+                                    RunExe("show()");
                                 App.mn.Set_Label(App.mn.configx);
                             });
                             return;
                         }
                         if (path.ToLower().StartsWith("chat()"))
                         {
-                            RunExe("show()");
                             HiroInvoke(() =>
                             {
+                                if (App.mn.Visibility != Visibility.Visible)
+                                    RunExe("show()");
                                 App.mn.Set_Label(App.mn.chatx);
                             });
                             return;
                         }
                         if (path.ToLower().StartsWith("me()"))
                         {
-                            RunExe("show()");
                             HiroInvoke(() =>
                             {
+                                if (App.mn.Visibility != Visibility.Visible)
+                                    RunExe("show()");
                                 App.mn.Set_Label(App.mn.profilex);
                             });
                             return;
                         }
                         if (path.ToLower().StartsWith("about()"))
                         {
-                            RunExe("show()");
                             HiroInvoke(() =>
                             {
+                                if (App.mn.Visibility != Visibility.Visible)
+                                    RunExe("show()");
                                 App.mn.Set_Label(App.mn.aboutx);
                             });
                             return;
@@ -2413,7 +2430,7 @@ namespace hiro
         }
 
         [DllImport("user32.dll")]
-        static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
+        public static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
 
         [DllImport("user32.dll")]
         static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);

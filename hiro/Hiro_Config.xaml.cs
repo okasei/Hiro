@@ -191,9 +191,6 @@ namespace hiro
             Thickness thickness = BaseGrid.Margin;
             thickness.Top = 0.0;
             BaseGrid.Margin = thickness;
-            configbar.Maximum = BaseGrid.Height - 420;
-            configbar.Value = 0.0;
-            configbar.ViewportSize = 420;
             foreach (var obj in langbox.Items)
             {
                 if (obj is ComboBoxItem mi)
@@ -201,12 +198,6 @@ namespace hiro
             }
         }
 
-        private void Configbar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            var thickness = BaseGrid.Margin;
-            thickness.Top = -configbar.Value;
-            BaseGrid.Margin = thickness;
-        }
 
         public void Load_Translate()
         {
@@ -490,11 +481,6 @@ namespace hiro
             }
         }
 
-        private void Configbar_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            configbar.Value += e.Delta * (configbar.Maximum - configbar.ViewportSize) / configbar.ViewportSize;
-        }
-
         private void Autorun_Checked(object sender, RoutedEventArgs e)
         {
             if (Autorun.Tag != null && Autorun.Tag.Equals("1") && Load)
@@ -744,11 +730,6 @@ namespace hiro
             {
                 Hiro_Main.Set_Label(Hiro_Main.proxyx);
             }
-        }
-
-        private void BaseGrid_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            configbar.Value += e.Delta * (configbar.Maximum - configbar.ViewportSize) / configbar.ViewportSize;
         }
 
         private void Bg_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

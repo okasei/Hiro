@@ -133,7 +133,7 @@ namespace hiro
 
                     }
                 }
-                catch (Exception _)
+                catch
                 {
 
                 }

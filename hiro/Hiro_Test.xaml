@@ -19,7 +19,7 @@
         <Grid x:Name="Emoji_Container" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,310,0,0" Width="800" Height="450">
             <Label Background="Coral" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0" Width="800" Height="450"/>
             <Label x:Name="FocusLabel" Background="AliceBlue" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-50,-50,0,0" Width="30" Height="30"/>
-            <Grid x:Name="Emoji_Platte" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0" Width="600" Height="450" MouseEnter="Emoji_Platte_MouseEnter" MouseLeave="Emoji_Platte_MouseLeave">
+            <Grid x:Name="Emoji_Platte" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0" Width="600" Height="450" MouseLeave="Emoji_Platte_MouseLeave">
             </Grid>
         </Grid>
         <RichTextBox x:Name="ChatContent" Margin="5,5,0,0" Width="700" Height="300" HorizontalAlignment="Left" FontFamily="Microsoft YaHei UI" FontSize="20" VerticalAlignment="Top" SelectionTextBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" VerticalScrollBarVisibility="Auto" IsReadOnly="False" HorizontalScrollBarVisibility="Auto" IsDocumentEnabled="True" IsManipulationEnabled="True" >

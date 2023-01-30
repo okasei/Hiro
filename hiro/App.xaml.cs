@@ -60,9 +60,11 @@ namespace hiro
         private static IntPtr? QQMusicPtr = null;
         private static IntPtr? NeteasePtr = null;
         private static IntPtr? KuwoPtr = null;
+        private static IntPtr? SpotifyPtr = null;
         private static string QQTitle = string.Empty;
         private static string NeteaseTitle = string.Empty;
         private static string KuwoTitle = string.Empty;
+        private static string SpotifyTitle = string.Empty;
         private static bool AutoChat = false;
         #endregion
 
@@ -749,6 +751,13 @@ namespace hiro
                 }
                 KuwoTitle = kwtitle;
                 Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Utils.Get_Translate("music")));
+            }
+            if (Initialize_Title(SpotifyPtr, out string? sptitle) == 0)
+                SpotifyPtr = Initialize_Ptr("Spotify");
+            else if (sptitle != SpotifyTitle && sptitle != null && !sptitle.Equals("Spotify") && !sptitle.Equals("Spotify Premium"))
+            {
+                SpotifyTitle = sptitle;
+                Notify(new(Hiro_Utils.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, Hiro_Utils.Get_Translate("music")));
             }
         }
 
