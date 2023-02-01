@@ -46,7 +46,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
             }
 
-            if (!animation) 
+            if (!animation)
                 return;
             Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
             sb.Begin();
@@ -62,7 +62,7 @@ namespace hiro
         {
             modibox.Items.Clear();
             keybox.Items.Clear();
-            string[] ars = { "nomodi", "altkey", "shiftkey", "ctrlkey", "winkey", "cakey", "cskey", "wakey", "wskey", "caskey", "waskey" };
+            string[] ars = { "nomodi", "altkey", "shiftkey", "ctrlkey", "winkey", "sakey", "cakey", "cskey", "wakey", "wskey", "wckey", "csakey", "wsakey", "wcakey", "wcsakey" };
             foreach (var arss in ars)
             {
                 modibox.Items.Add(new ComboBoxItem()
@@ -96,14 +96,14 @@ namespace hiro
                     Content = Hiro_Utils.Get_Translate("fnkey").Replace("%f", "F" + nuss.ToString())
                 });
             }
-            keybox.Items.Add(new ComboBoxItem()
+            string[] extras = { "space", "esc", "leftkey", "upkey", "rightkey", "downkey" };
+            foreach(var ext in extras)
             {
-                Content = Hiro_Utils.Get_Translate("space")
-            });
-            keybox.Items.Add(new ComboBoxItem()
-            {
-                Content = Hiro_Utils.Get_Translate("esc")
-            });
+                keybox.Items.Add(new ComboBoxItem()
+                {
+                    Content = Hiro_Utils.Get_Translate(ext)
+                });
+            }
             foreach (var obj in modibox.Items)
             {
                 if (obj is ComboBoxItem mi)
@@ -290,7 +290,7 @@ namespace hiro
 
             }
 
-            if (!System.IO.File.Exists(strFileName)) 
+            if (!System.IO.File.Exists(strFileName))
                 return;
             if (strFileName.ToLower().EndsWith(".lnk"))
             {
@@ -338,7 +338,7 @@ namespace hiro
             var hk = Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + Hiro_Utils.Index_vKey(true, keybox.SelectedIndex).ToString();
             if (ntn9.Visibility == Visibility.Hidden)
             {
-                var i = App.cmditems.Count + 1;
+                var i = App.cmditems.Count;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text, hk));
                 Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "Title", tb7.Text);
@@ -501,7 +501,7 @@ namespace hiro
                 modiname.Content = "";
                 return;
             }
-            if (modibox.Items.GetItemAt(modibox.SelectedIndex) is ComboBoxItem {Content: { }} cbi)
+            if (modibox.Items.GetItemAt(modibox.SelectedIndex) is ComboBoxItem { Content: { } } cbi)
             {
                 modiname.Content = cbi.Content.ToString();
             }
@@ -514,7 +514,7 @@ namespace hiro
                 keylabel.Content = "";
                 return;
             }
-            if (keybox.Items.GetItemAt(keybox.SelectedIndex) is ComboBoxItem {Content: { }} cbi)
+            if (keybox.Items.GetItemAt(keybox.SelectedIndex) is ComboBoxItem { Content: { } } cbi)
             {
                 keylabel.Content = cbi.Content.ToString();
             }

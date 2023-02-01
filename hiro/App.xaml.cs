@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -61,10 +62,12 @@ namespace hiro
         private static IntPtr? NeteasePtr = null;
         private static IntPtr? KuwoPtr = null;
         private static IntPtr? SpotifyPtr = null;
+        private static IntPtr? KugouPtr = null;
         private static string QQTitle = string.Empty;
         private static string NeteaseTitle = string.Empty;
         private static string KuwoTitle = string.Empty;
         private static string SpotifyTitle = string.Empty;
+        private static string KugouTitle = string.Empty;
         private static bool AutoChat = false;
         #endregion
 
@@ -723,23 +726,23 @@ namespace hiro
         {
             if (Initialize_Title(QQMusicPtr, out string? qtitle) == 0)
             {
-                QQMusicPtr = Initialize_Ptr("QQMusic");
+                Initialize_Ptr("QQMusic", 0);
             }
-            else if (qtitle != QQTitle && qtitle != null && !qtitle.Equals("QQ音乐") && !qtitle.Equals("桌面歌词"))
+            else if (qtitle != QQTitle && qtitle != null && !qtitle.Equals("QQ音乐"))
             {
                 QQTitle = qtitle;
                 Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Utils.Get_Translate("music")));
             }
             if (Initialize_Title(NeteasePtr, out string? ntitle) == 0)
-                NeteasePtr = Initialize_Ptr("cloudmusic");
-            else if (ntitle != NeteaseTitle && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐") && !ntitle.Equals("桌面歌词"))
+                Initialize_Ptr("cloudmusic", 1);
+            else if (ntitle != NeteaseTitle && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐"))
             {
                 NeteaseTitle = ntitle;
                 Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Utils.Get_Translate("music")));
             }
             if (Initialize_Title(KuwoPtr, out string? kwtitle) == 0)
-                KuwoPtr = Initialize_Ptr("kwmusic");
-            else if (kwtitle != KuwoTitle && kwtitle != null && !kwtitle.Equals("KwStartPageDlg") && !kwtitle.Equals("酷我音乐") && !kwtitle.Equals("桌面歌词"))
+                Initialize_Ptr("kwmusic", 2);
+            else if (kwtitle != KuwoTitle && kwtitle != null && !kwtitle.Equals("KwStartPageDlg") && !kwtitle.Equals("酷我音乐"))
             {
                 if (KuwoTitle.Length > 2)
                 {
@@ -751,6 +754,13 @@ namespace hiro
                 }
                 KuwoTitle = kwtitle;
                 Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Utils.Get_Translate("music")));
+            }
+            if (Initialize_Title(KugouPtr, out string? kgtitle) == 0)
+                Initialize_Ptr("KuGou", 3);
+            else if (kgtitle != KugouTitle && kgtitle != null && !kgtitle.Equals(string.Empty) && !kgtitle.Equals("酷狗音乐"))
+            {
+                KugouTitle = kgtitle;
+                Notify(new(Hiro_Utils.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, Hiro_Utils.Get_Translate("music")));
             }
             if (Initialize_Title(SpotifyPtr, out string? sptitle) == 0)
                 SpotifyPtr = Initialize_Ptr("Spotify");
@@ -898,14 +908,13 @@ namespace hiro
 
         private static IntPtr Initialize_Ptr(string ProcessName)
         {
-            var pns = System.Diagnostics.Process.GetProcessesByName(ProcessName);
+            var pns = Process.GetProcessesByName(ProcessName);
             foreach (var pn in pns)
             {
-                if (pn.MainWindowTitle.IndexOf("桌面歌词") != -1)
+                if (pn.MainWindowTitle.IndexOf("桌面歌词") == -1)
                 {
-                    Notify(new(Hiro_Utils.Get_Translate("delyrics"), 2, AppTitle));
+                    return pn.MainWindowHandle;
                 }
-                return pn.MainWindowHandle;
             }
             return IntPtr.Zero;
         }
@@ -922,6 +931,62 @@ namespace hiro
             Title = windowName.ToString().Trim();
             return Title.Length;
         }
+
+        [DllImport("user32.dll")] static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
+        [DllImport("user32.dll")] private static extern bool IsWindowVisible(int hWnd);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)] private static extern int GetWindowText(int hWnd, StringBuilder title, int size);
+
+
+        delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+
+
+        public static void Initialize_Ptr(string ProcessName, int category)
+        {
+            var pns = Process.GetProcessesByName(ProcessName);
+            foreach (var pn in pns)
+                foreach (ProcessThread processThread in pn.Threads)
+                {
+                    EnumThreadWindows(processThread.Id,
+                     (hWnd, lParam) =>
+                     {
+                         //Check if Window is Visible or not.
+                         if (!IsWindowVisible((int)hWnd))
+                             return true;
+
+                         //Get the Window's Title.
+                         StringBuilder title = new StringBuilder(256);
+                         _ = GetWindowText((int)hWnd, title, 256);
+
+                         //Check if Window has Title.
+                         if (title.Length == 0)
+                             return true;
+                         var t = title.ToString();
+                         if (!t.Equals(string.Empty) && !t.Contains("桌面歌词", StringComparison.CurrentCulture))
+                         {
+                             switch (category)
+                             {
+                                 case 0:
+                                     QQMusicPtr = hWnd;
+                                     break;
+                                 case 1:
+                                     NeteasePtr = hWnd;
+                                     break;
+                                 case 2:
+                                     KuwoPtr = hWnd;
+                                     break;
+                                 case 3:
+                                     KugouPtr = hWnd;
+                                     break;
+                                 default:
+                                     break;
+                             }
+                         }
+
+                         return true;
+                     }, IntPtr.Zero);
+                }
+        }
+
 
         #region 获取窗口标题
         [DllImport("user32")]

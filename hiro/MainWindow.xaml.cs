@@ -65,7 +65,7 @@ namespace hiro
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Power.StatusChanged");
             }
@@ -89,11 +89,11 @@ namespace hiro
                         App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("powertip").Replace("%p", p.ToString()), 2, Hiro_Utils.Get_Translate("battery")));
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Hiro_Utils.LogError(ex, "Hiro.Power.PercentChanged");
             }
-            
+
         }
 
         private void NetworkChange_NetworkAddressChanged(object? sender, EventArgs e)
@@ -107,7 +107,7 @@ namespace hiro
                 }
             }
 
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1")) 
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Verbose", "0").Equals("1"))
                 return;
             var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
             string ext = "";
@@ -132,7 +132,7 @@ namespace hiro
                         ext = Hiro_Utils.Get_Translate("neteth");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Hiro_Utils.LogError(ex, "Hiro.Exception.Wifi.Network");
                 }
@@ -200,11 +200,11 @@ namespace hiro
                             if (p.ACLineStatus == 0)
                                 App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("baremove"), 2, Hiro_Utils.Get_Translate("battery")));
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Hiro_Utils.LogError(ex, "Hiro.Power.Impl");
                         }
-                        
+
                     }
                     break;
                 case 0x0219:
@@ -229,19 +229,28 @@ namespace hiro
                     }
                     break;
                 case 0x0312:
+                    handled = true;
                     new System.Threading.Thread(() =>
                     {
                         try
                         {
                             var indexid = wParam.ToInt32();
+                            if (App.dflag)
+                                Hiro_Utils.LogtoFile($"[DEBUG]Hotkey Triggered as Number {indexid}");
                             for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
                             {
                                 if (App.vs[vsi] == indexid)
                                 {
+                                    var name = "***NOT INITIALIZED***";
+                                    var cmd = "<nop>";
                                     Dispatcher.Invoke(delegate
                                     {
-                                        Hiro_Utils.RunExe(App.cmditems[App.vs[vsi + 1]].Command);
+                                        name = App.cmditems[App.vs[vsi + 1]].Name;
+                                        cmd = App.cmditems[App.vs[vsi + 1]].Command;
                                     });
+                                    if (App.dflag)
+                                        Hiro_Utils.LogtoFile($"[DEBUG]Hotkey Corresponded Item {{ Name: {name} , Command: {cmd} }}");
+                                    Hiro_Utils.RunExe(cmd, name);
                                     break;
                                 }
                             }

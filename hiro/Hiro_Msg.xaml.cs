@@ -14,7 +14,7 @@ namespace hiro
     public partial class Hiro_Msg : Window
     {
         internal Hiro_Background? bg = null;
-        internal String? toolstr = null;
+        internal string? toolstr = null;
         internal int aflag = -1;
         internal int bflag = 0;
         public event EventHandler<EventArgs>? OKButtonPressed;

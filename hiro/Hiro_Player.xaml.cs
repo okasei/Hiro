@@ -9,6 +9,9 @@ using System.Text;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.Threading;
+using Windows.Media;
+using System.Collections.Generic;
+using System.IO;
 
 namespace hiro
 {
@@ -248,7 +251,7 @@ namespace hiro
 
         internal void Play(string uri)
         {
-            new System.Threading.Thread(() =>
+            new Thread(() =>
             {
                 if (hiro_provider != null)
                 {

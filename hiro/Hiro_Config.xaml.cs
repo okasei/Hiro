@@ -130,6 +130,7 @@ namespace hiro
             reverse_style.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1");
             tr_btn.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "TRBtn", "0").Equals("1");
             image_compress.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1");
+            UrlConfirmBox.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "URLConfirm", "0").Equals("1");
             Autorun.Tag = "1";
             Load = true;
         }
@@ -161,6 +162,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(reverse_style, "reversebox");
             Hiro_Utils.Set_Control_Location(tr_btn, "trbtnbox");
             Hiro_Utils.Set_Control_Location(image_compress, "imgzip");
+            Hiro_Utils.Set_Control_Location(UrlConfirmBox, "urlconfirm");
             Hiro_Utils.Set_Control_Location(Verbose, "verbosebox");
             Hiro_Utils.Set_Control_Location(animation, "anibox");
             Hiro_Utils.Set_Control_Location(lc_label, "leftclick");
@@ -229,6 +231,7 @@ namespace hiro
             reverse_style.Content = Hiro_Utils.Get_Translate("reversebox");
             tr_btn.Content = Hiro_Utils.Get_Translate("trbtnbox");
             image_compress.Content = Hiro_Utils.Get_Translate("imgzip");
+            UrlConfirmBox.Content = Hiro_Utils.Get_Translate("urlconfirm");
             Verbose.Content = Hiro_Utils.Get_Translate("verbosebox");
             animation.Content = Hiro_Utils.Get_Translate("anibox");
             lc_label.Content = Hiro_Utils.Get_Translate("leftclick");
@@ -790,6 +793,16 @@ namespace hiro
         private void Rbtn19_Checked(object sender, RoutedEventArgs e)
         {
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "2");
+        }
+
+        private void UrlConfirmBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "URLConfirm", "1");
+        }
+
+        private void UrlConfirmBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "URLConfirm", "0");
         }
     }
 }
