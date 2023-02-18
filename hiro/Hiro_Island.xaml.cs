@@ -98,8 +98,15 @@ namespace hiro
         {
             TitleLabel.Foreground = new SolidColorBrush(App.AppForeColor);
             ContentLabel.Foreground = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 160));
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("3"))
             {
+                BaseBorderBak.Visibility = Visibility.Visible;
+                BaseBorder.Background = Hiro_Utils.Set_Bgimage(BaseBorder.Background, this);
+                Hiro_Utils.Set_Foreground_Opacity(BaseBorderBak);
+            }
+            else if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            {
+                BaseBorderBak.Visibility = Visibility.Hidden;
                 Storyboard? sc = new();
                 Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, BaseBorder, "Background.Color", sc);
                 sc.Completed += delegate
@@ -111,6 +118,7 @@ namespace hiro
             }
             else
             {
+                BaseBorderBak.Visibility = Visibility.Hidden;
                 BaseBorder.Background = new SolidColorBrush(App.AppAccentColor);
             }
             Hiro_Utils.Set_Control_Location(TitleLabel, "noticetitle", location: false);
@@ -220,7 +228,7 @@ namespace hiro
                 SetAutoSize(BaseGrid);
                 timer.Start();
             }
-            
+
         }
 
         private void Island_Out()
@@ -254,7 +262,7 @@ namespace hiro
                 Visibility = Visibility.Hidden;
                 Close();
             }
-                
+
         }
 
         private void SetAutoSize(FrameworkElement fe)
@@ -300,7 +308,7 @@ namespace hiro
                 former_width = BaseGrid.ActualWidth;
                 former_height = BaseGrid.ActualHeight;
             }
-                
+
         }
 
         private void Label_MouseDoubleClick(object sender, MouseButtonEventArgs e)

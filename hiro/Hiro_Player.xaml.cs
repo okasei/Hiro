@@ -9,9 +9,6 @@ using System.Text;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.Threading;
-using Windows.Media;
-using System.Collections.Generic;
-using System.IO;
 
 namespace hiro
 {

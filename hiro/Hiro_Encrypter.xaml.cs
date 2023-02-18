@@ -32,7 +32,7 @@ namespace hiro
             }
             if (file != null)
                 FilePath.Text = file;
-            if (pwd != null&&!pwd.Equals(string.Empty))
+            if (pwd != null && !pwd.Equals(string.Empty))
             {
                 PwdPath.Password = pwd;
                 HidePwd();
@@ -208,8 +208,9 @@ namespace hiro
 
         private void PwdLabel_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (Clipboard.ContainsText())
-                PwdPath.Password = Clipboard.GetText();
+            var appname = mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp");
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "DefaultPwd", pwd);
+            Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enpwdsaved")},2)", appname, false);
         }
 
         private void SeePwd_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -347,7 +348,7 @@ namespace hiro
                             Hiro_Utils.LogError(ex, "Hiro.Exception.Decrypt.Delete");
                         }
                 });
-                
+
             }
             catch (Exception ex)
             {
@@ -360,6 +361,10 @@ namespace hiro
 
         private void Albtn_1_Click(object sender, RoutedEventArgs e)
         {
+            if (pwd.Equals(string.Empty))
+            {
+                pwd = Hiro_Utils.Read_Ini(App.dconfig, "Config", "DefaultPwd", string.Empty);
+            }
             GoStart();
         }
 
@@ -373,6 +378,8 @@ namespace hiro
                 FilePath.IsEnabled = true;
                 PwdPath.IsEnabled = true;
                 Autorun.IsEnabled = true;
+                Autodelete.IsEnabled = true;
+                SeePwd.IsEnabled = true;
                 EncryptTitle.IsEnabled = true;
                 DecryptTitle.IsEnabled = true;
                 albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencrypt") : Hiro_Utils.Get_Translate("endecrypt");
@@ -385,6 +392,8 @@ namespace hiro
                     FilePath.IsEnabled = false;
                     PwdPath.IsEnabled = false;
                     Autorun.IsEnabled = false;
+                    Autodelete.IsEnabled = false;
+                    SeePwd.IsEnabled = false;
                     EncryptTitle.IsEnabled = false;
                     DecryptTitle.IsEnabled = false;
                     fpath = FilePath.Text;
@@ -416,6 +425,8 @@ namespace hiro
                             FilePath.IsEnabled = true;
                             PwdPath.IsEnabled = true;
                             Autorun.IsEnabled = true;
+                            Autodelete.IsEnabled = true;
+                            SeePwd.IsEnabled = true;
                             EncryptTitle.IsEnabled = true;
                             DecryptTitle.IsEnabled = true;
                             albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencrypt") : Hiro_Utils.Get_Translate("endecrypt");
@@ -429,6 +440,8 @@ namespace hiro
                     FilePath.IsEnabled = false;
                     PwdPath.IsEnabled = false;
                     Autorun.IsEnabled = false;
+                    Autodelete.IsEnabled = false;
+                    SeePwd.IsEnabled = false;
                     EncryptTitle.IsEnabled = false;
                     DecryptTitle.IsEnabled = false;
                     albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencryptc") : Hiro_Utils.Get_Translate("endecryptc");
@@ -469,6 +482,8 @@ namespace hiro
                             FilePath.IsEnabled = true;
                             PwdPath.IsEnabled = true;
                             Autorun.IsEnabled = true;
+                            Autodelete.IsEnabled = true;
+                            SeePwd.IsEnabled = true;
                             EncryptTitle.IsEnabled = true;
                             DecryptTitle.IsEnabled = true;
                             albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencrypt") : Hiro_Utils.Get_Translate("endecrypt");

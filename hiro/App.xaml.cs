@@ -338,7 +338,7 @@ namespace hiro
                     });
 
                 }
-                else if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("2"))
+                else if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("2") || Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("3"))
                 {
                     noticeitems.Add(i);
                     Hiro_Utils.HiroInvoke(() =>
@@ -523,6 +523,7 @@ namespace hiro
                     Username = EnvironmentUsername;
                     break;
             }
+            Hiro_Utils.version = "v" + Hiro_Utils.Read_Ini(dconfig, "Config", "AppVer", "1");
             if (Hiro_Utils.Read_Ini(dconfig, "Config", "CustomNick", "1").Equals("2"))
                 AppTitle = Hiro_Utils.Read_Ini(dconfig, "Config", "CustomHIRO", "Hiro");
             if (Hiro_Utils.Read_Ini(dconfig, "Config", "TRBtn", "0").Equals("1"))

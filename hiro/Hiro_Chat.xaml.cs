@@ -952,6 +952,14 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 Hiro_Get_Chat();
                 return;
             }
+            if (text.ToLower().StartsWith("version:"))
+            {
+                Hiro_Utils.version = "v" + text[8..];
+                Hiro_Utils.LogtoFile("[INFO]Chat Version Updated " + "v" + text[8..]);
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AppVer", text[8..]);
+                Hiro_Get_Chat();
+                return;
+            }
             if (text.ToLower().StartsWith("talkto:"))
             {
                 UserId = text[7..];

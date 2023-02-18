@@ -103,6 +103,9 @@ namespace hiro
                 case "2":
                     rbtn19.IsChecked = true;
                     break;
+                case "3":
+                    rbtn20.IsChecked = true;
+                    break;
                 default:
                     rbtn17.IsChecked = true;
                     break;
@@ -159,6 +162,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(rbtn17, "noticenormal");
             Hiro_Utils.Set_Control_Location(rbtn18, "noticewin");
             Hiro_Utils.Set_Control_Location(rbtn19, "noticeisland");
+            Hiro_Utils.Set_Control_Location(rbtn20, "noticeimgland");
             Hiro_Utils.Set_Control_Location(reverse_style, "reversebox");
             Hiro_Utils.Set_Control_Location(tr_btn, "trbtnbox");
             Hiro_Utils.Set_Control_Location(image_compress, "imgzip");
@@ -228,6 +232,7 @@ namespace hiro
             rbtn17.Content = Hiro_Utils.Get_Translate("noticenormal");
             rbtn18.Content = Hiro_Utils.Get_Translate("noticewin");
             rbtn19.Content = Hiro_Utils.Get_Translate("noticeisland");
+            rbtn20.Content = Hiro_Utils.Get_Translate("noticeimgland");
             reverse_style.Content = Hiro_Utils.Get_Translate("reversebox");
             tr_btn.Content = Hiro_Utils.Get_Translate("trbtnbox");
             image_compress.Content = Hiro_Utils.Get_Translate("imgzip");
@@ -795,6 +800,11 @@ namespace hiro
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "2");
         }
 
+        private void Rbtn20_Checked(object sender, RoutedEventArgs e)
+        {
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "3");
+        }
+
         private void UrlConfirmBox_Checked(object sender, RoutedEventArgs e)
         {
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "URLConfirm", "1");
@@ -804,5 +814,6 @@ namespace hiro
         {
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "URLConfirm", "0");
         }
+
     }
 }

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Animation;
-using Microsoft.WindowsAPICodePack;
 using Windows.Devices.WiFi;
 using Windows.Devices.Radios;
 using Windows.Security.Credentials;
@@ -23,15 +22,7 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using System.Net;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-using Windows.System.RemoteSystems;
-using System.Reflection;
 using System.Security.Cryptography;
-using ABI.Windows.ApplicationModel.Activation;
-using System.Security.RightsManagement;
-using Windows.Media.Playback;
-using Windows.Media;
 
 namespace hiro
 {
@@ -332,6 +323,7 @@ namespace hiro
     {
 
         static int keyid = 0;
+        internal static string version = "v1";
 
         #region 自动生成
         public Hiro_Utils()
@@ -505,6 +497,52 @@ namespace hiro
                 bi.Freeze();
             }
         }
+        public static Brush Set_Bgimage(Brush sender, Control win, string? strFileName = null)
+        {
+            //Bgimage
+            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
+            if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
+            {
+                if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                {
+                    Storyboard? sb = new();
+                    try
+                    {
+                        sb = AddColorAnimaton(App.AppAccentColor, 150, sender, "Color", sb);
+                        sb.Completed += delegate
+                        {
+                            sender = new SolidColorBrush(App.AppAccentColor);
+                            sb = null;
+                        };
+                        sb.Begin();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(ex, "Hiro.Exception.Animation");
+                        sender = new SolidColorBrush(App.AppAccentColor);
+                    }
+
+                }
+                else
+                    sender = new SolidColorBrush(App.AppAccentColor);
+            }
+            else
+            {
+                BitmapImage bi = new();
+                bi.BeginInit();
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.UriSource = new Uri(strFileName);
+                ImageBrush ib = new()
+                {
+                    Stretch = Stretch.UniformToFill,
+                    ImageSource = bi
+                };
+                sender = ib;
+                bi.EndInit();
+                bi.Freeze();
+            }
+            return sender;
+        }
 
         public static void Set_Opacity(FrameworkElement sender, Control? win = null)
         {
@@ -528,6 +566,29 @@ namespace hiro
             if (win != null)
                 win.Background = new SolidColorBrush(bg);
             sender.OpacityMask = new SolidColorBrush(dest);
+        }
+        public static void Set_Foreground_Opacity(Border sender, Control? win = null)
+        {
+            if (!double.TryParse(Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
+                to = 255;
+            Color bg = Colors.White;
+            switch (to)
+            {
+                case > 255:
+                    to = 510 - to;
+                    bg = Colors.White;
+                    break;
+                case < 255:
+                    bg = Colors.Black;
+                    break;
+                default:
+                    break;
+            }
+            sender.Background = new SolidColorBrush(bg);
+            sender.Opacity = 1 - to / 255;
+            if (win != null)
+                win.Background = new SolidColorBrush(bg);
+            //sender.OpacityMask = new SolidColorBrush(dest);
         }
         public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false, bool location = true, bool animation = false, double animationTime = 150)
         {
@@ -2412,7 +2473,15 @@ namespace hiro
                 catch (Exception ex)
                 {
                     LogError(ex, $"Hiro.Exception.Run{Environment.NewLine}Path: {path}");
-                    App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, source));
+                    var nowin = true;
+                    HiroInvoke(() =>
+                    {
+                        nowin = Application.Current.Windows.Count <= 0;
+                    });
+                    if (App.mn == null && autoClose && nowin)
+                        RunExe("exit()");
+                    else
+                        App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, source));
                 }
             }).Start();
         }
@@ -2913,6 +2982,7 @@ namespace hiro
                 sb.Begin();
             }
         }
+
         public static void Blur_Out(Control ct, BackgroundWorker? bw = null)
         {
             if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
@@ -4024,6 +4094,7 @@ namespace hiro
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"type\"" + Enter + Enter + "" + type + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"md5\"" + Enter + Enter + "" + GetMD5(file).Replace("-", "") + "" + Enter + "--" + boundary + "--"
                     );
                 byte[] ndata = new byte[send.Length + bytebuffer.Length + eof.Length];
@@ -4070,6 +4141,7 @@ namespace hiro
                 byte[] send = Encoding.UTF8.GetBytes(
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"name\"" + Enter + Enter + "" + name + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"sign\"" + Enter + Enter + "" + signature + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + avatar + "" + Enter + "--" + boundary + "--" +
@@ -4138,7 +4210,8 @@ namespace hiro
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--"
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--"
                     );
                 HttpRequestMessage request = new(HttpMethod.Post, url);
                 request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
@@ -4174,8 +4247,8 @@ namespace hiro
                             File.Delete(Path_Prepare(usrAvatar));
                         if (File.Exists(Path_Prepare(usrBack)))
                             File.Delete(Path_Prepare(usrBack));
-                        GetWebContent(Read_Ini(saveto, "Profile", "Iavavtar", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + ".hap"), true, Path_Prepare(usrAvatar));
-                        GetWebContent(Read_Ini(saveto, "Profile", "Back", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + ".hpp"), true, Path_Prepare(usrBack));
+                        GetWebContent(Read_Ini(saveto, "Profile", "Iavavtar", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hap"), true, Path_Prepare(usrAvatar));
+                        GetWebContent(Read_Ini(saveto, "Profile", "Back", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hpp"), true, Path_Prepare(usrBack));
                         if (File.Exists(saveto))
                             File.Delete(saveto);
                         return "success";

@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="Hiro_Island" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
     <Grid x:Name="BaseGrid">
-        <Border x:Name="BaseBorder" CornerRadius="25" Background="Black">
-        </Border>
+        <Border x:Name="BaseBorder" CornerRadius="25" Background="Black"/>
+        <Border x:Name="BaseBorderBak" CornerRadius="25" Background="Black"/>
         <Grid x:Name="ContentGrid" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Visible">
             <DockPanel x:Name="BasePanel" VerticalAlignment="Top" HorizontalAlignment="Left" LastChildFill="True">
                 <Border x:Name="BaseIconBorder" Margin="5" CornerRadius="25" DockPanel.Dock="Left" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" MouseLeftButtonUp="BaseIconBorder_MouseLeftButtonUp" Cursor="{Binding Cursor, ElementName=ContentGrid}" >

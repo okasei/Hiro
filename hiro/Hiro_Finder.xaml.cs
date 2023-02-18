@@ -35,7 +35,7 @@ namespace hiro
                          break;
                  }
                  PlaceHolder.FontSize--;
-                 HiHiro(); 
+                 HiHiro();
              };
             Loaded += delegate
             {
@@ -94,10 +94,17 @@ namespace hiro
         {
             if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
                 PlaceHolder.Visibility = Visibility.Visible;
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1")) 
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
+            sb.Completed += delegate
+            {
+                if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
+                    PlaceHolder.Visibility = Visibility.Visible;
+                else
+                    PlaceHolder.Visibility = Visibility.Hidden;
+            };
             sb.Begin();
         }
 
@@ -117,10 +124,40 @@ namespace hiro
             if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
             {
                 PlaceHolder.Visibility = Visibility.Visible;
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                    return;
+                Storyboard sb = new();
+                Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
+                sb.Completed += delegate
+                {
+                    if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
+                        PlaceHolder.Visibility = Visibility.Visible;
+                    else
+                        PlaceHolder.Visibility = Visibility.Hidden;
+                };
+                sb.Begin();
             }
             else
             {
-                PlaceHolder.Visibility = Visibility.Hidden;
+
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                {
+                    PlaceHolder.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddDoubleAnimaton(0, 250, PlaceHolder, "Opacity", sb);
+                    sb.Completed += delegate
+                    {
+                        if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
+                            PlaceHolder.Visibility = Visibility.Visible;
+                        else
+                            PlaceHolder.Visibility = Visibility.Hidden;
+                    };
+                    sb.Begin();
+
+                }
             }
         }
 
@@ -157,7 +194,7 @@ namespace hiro
                 e.Handled = true;
             }
         }
-        
+
         private void Pair_Brackets(string brackets)
         {
             var index = Hiro_Text.CaretIndex;
