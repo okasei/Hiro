@@ -168,7 +168,7 @@ namespace hiro
 
         public void Load_Position()
         {
-            
+
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilename");
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesign");
             Hiro_Utils.Set_Control_Location(Profile_Mac, "profileid");
@@ -200,7 +200,7 @@ namespace hiro
             thickness.Top = 0.0;
             BaseGrid.Margin = thickness;
             configbar.Maximum = BaseGrid.Height - 420 > 0 ? BaseGrid.Height - 420 : 0;
-            configbar.Visibility = configbar.Maximum > 0 ? Visibility.Visible : Visibility.Hidden; 
+            configbar.Visibility = configbar.Maximum > 0 ? Visibility.Visible : Visibility.Hidden;
             configbar.Value = 0.0;
             configbar.ViewportSize = 420;
             Profile_Mac.Margin = new Thickness(Profile_Nickname.Margin.Left + Profile_Nickname.ActualWidth + 5, Profile_Nickname.Margin.Top + Profile_Nickname.ActualHeight - Profile_Mac.ActualHeight, 0, 0);
@@ -209,7 +209,7 @@ namespace hiro
         private void Btn8_Click(object sender, RoutedEventArgs e)
         {
             btn8.IsEnabled = false;
-            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-fb",App.AppTitle);
+            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-fb", App.AppTitle);
             btn8.IsEnabled = true;
         }
 
@@ -688,7 +688,7 @@ namespace hiro
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
                         Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", strFileName);
                     }
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -806,7 +806,7 @@ namespace hiro
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
                         Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", strFileName);
                     }
-                    
+
                 }
                 catch (Exception ex)
                 {

@@ -290,6 +290,8 @@ namespace hiro
                                     }
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
+                                    if (Logined == true)
+                                        Hiro_Utils.SyncProfile(LoginedUser, LoginedToken);
 
                                 }).Start();
                             }
