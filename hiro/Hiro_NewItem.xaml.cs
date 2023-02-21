@@ -338,7 +338,7 @@ namespace hiro
             var hk = Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + Hiro_Utils.Index_vKey(true, keybox.SelectedIndex).ToString();
             if (ntn9.Visibility == Visibility.Hidden)
             {
-                var i = App.cmditems.Count;
+                var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text, hk));
                 Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "Title", tb7.Text);
@@ -363,9 +363,9 @@ namespace hiro
             {
                 App.cmditems[index].Name = tb7.Text;
                 App.cmditems[index].Command = tb8.Text;
-                Hiro_Utils.Write_Ini(App.dconfig, index.ToString(), "Title", tb7.Text);
-                Hiro_Utils.Write_Ini(App.dconfig, index.ToString(), "Command", "(" + tb8.Text + ")");
-                Hiro_Utils.Write_Ini(App.dconfig, index.ToString(), "HotKey", hk);
+                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Title", tb7.Text);
+                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Command", "(" + tb8.Text + ")");
+                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "HotKey", hk);
                 if (!App.cmditems[index].HotKey.Equals(hk))
                 {
                     App.cmditems[index].HotKey = hk;
