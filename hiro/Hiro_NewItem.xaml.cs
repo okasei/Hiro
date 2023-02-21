@@ -363,9 +363,9 @@ namespace hiro
             {
                 App.cmditems[index].Name = tb7.Text;
                 App.cmditems[index].Command = tb8.Text;
-                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Title", tb7.Text);
-                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Command", "(" + tb8.Text + ")");
-                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "HotKey", hk);
+                Hiro_Utils.Write_Ini(App.dconfig, index.ToString(), "Title", tb7.Text);
+                Hiro_Utils.Write_Ini(App.dconfig, index.ToString(), "Command", "(" + tb8.Text + ")");
+                Hiro_Utils.Write_Ini(App.dconfig, index.ToString(), "HotKey", hk);
                 if (!App.cmditems[index].HotKey.Equals(hk))
                 {
                     App.cmditems[index].HotKey = hk;
