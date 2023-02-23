@@ -34,6 +34,7 @@ namespace hiro
         private string iconUrl = "/hiro_circle.ico";
         private ImageSource? savedicon = null;//Hiro Icon
         private ContextMenu? favMenu = null;
+        private bool iconLoaded = false;
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();
@@ -122,7 +123,7 @@ namespace hiro
             UpdateUniversalLeft();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
             {
-                System.Windows.Media.Animation.Storyboard sb = new();
+                Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, TitleGrid, sb, -50, null);
                 sb.Begin();
             }
@@ -392,6 +393,8 @@ namespace hiro
 
         private void CoreWebView2_HistoryChanged(object? sender, object e)
         {
+            iconLoaded = false;
+            SetSavedPrimitiveIcon();
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             var visual = PreBtn.Visibility;
             var visual2 = NextBtn.Visibility;
@@ -399,13 +402,13 @@ namespace hiro
             NextBtn.Visibility = wv2.CoreWebView2.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
             if (PreBtn.Visibility == Visibility.Visible && visual != PreBtn.Visibility && animation)
             {
-                System.Windows.Media.Animation.Storyboard sb = new();
+                Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, PreBtn, sb, -50, null);
                 sb.Begin();
             }
             if (NextBtn.Visibility == Visibility.Visible && visual2 != NextBtn.Visibility && animation)
             {
-                System.Windows.Media.Animation.Storyboard sb = new();
+                Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, NextBtn, sb, -50, null);
                 sb.Begin();
             }
@@ -499,10 +502,13 @@ namespace hiro
             if (WebGrid.Visibility != Visibility.Visible)
             {
                 SetSavedPrimitiveIcon();
+                iconLoaded = false;
             }
             else
             {
                 var iconUri = wv2.CoreWebView2.FaviconUri;
+                if (iconLoaded)
+                    return;
                 if (iconUri != null && !iconUri.Trim().Equals(string.Empty))
                 {
                     if (!iconUri.Equals(iconUrl))
@@ -523,10 +529,7 @@ namespace hiro
                                         {
                                             SetIcon(bi);
                                             iconUrl = iconUri;
-                                        }
-                                        else
-                                        {
-                                            SetSavedPrimitiveIcon();
+                                            iconLoaded = true;
                                         }
                                     }
                                     catch (Exception ex)
@@ -540,10 +543,6 @@ namespace hiro
                                     System.IO.File.Delete(output);
                                 }
                                 catch { }
-                            }
-                            else
-                            {
-                                SetSavedPrimitiveIcon();
                             }
                         }).Start();
                     }
@@ -787,12 +786,14 @@ namespace hiro
                                 if (fixed_title == null)
                                     try
                                     {
+                                        iconLoaded = false;
                                         wv2.CoreWebView2.Navigate(URLBox.Text);
                                     }
                                     catch (Exception ex)
                                     {
                                         try
                                         {
+                                            iconLoaded = false;
                                             wv2.CoreWebView2.Navigate($"http://{URLBox.Text}");
                                         }
                                         catch
