@@ -32,7 +32,7 @@ namespace hiro
         private string configPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\web.config"));
         private string currentUrl = "hiro";
         private string iconUrl = "/hiro_circle.ico";
-        private ImageSource? savedicon = null;
+        private ImageSource? savedicon = null;//Hiro Icon
         private ImageSource? savedWebIcon = null;
         private ContextMenu? favMenu = null;
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
@@ -480,7 +480,6 @@ namespace hiro
             Dispatcher.Invoke(() =>
             {
                 uicon.Source = bi;
-                Icon = bi;
                 savedWebIcon = bi;
             });
         }
@@ -492,7 +491,6 @@ namespace hiro
                 if (savedicon != null)
                 {
                     uicon.Source = savedicon;
-                    Icon = savedicon;
                 }
             });
         }
@@ -515,7 +513,7 @@ namespace hiro
                             var output = Hiro_Utils.Path_Prepare("<hiapp>\\images\\web\\") + Guid.NewGuid() + ".hwico";
                             Hiro_Utils.CreateFolder(output);
                             var result = Hiro_Utils.GetWebContent(iconUri, true, output);
-                            if (!result.Equals("error"))
+                            if (result.Equals("saved"))
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -555,7 +553,6 @@ namespace hiro
                         if (savedWebIcon != null)
                         {
                             uicon.Source = savedWebIcon;
-                            Icon = savedWebIcon;
                         }
                     }
                 }

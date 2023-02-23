@@ -3275,8 +3275,6 @@ namespace hiro
                 LogError(ex, $"Hiro.Exception.Web.HttpClient");
                 throw new Exception(ex.Message);
             }
-
-
         }
         #endregion
 
