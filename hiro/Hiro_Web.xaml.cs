@@ -33,7 +33,6 @@ namespace hiro
         private string currentUrl = "hiro";
         private string iconUrl = "/hiro_circle.ico";
         private ImageSource? savedicon = null;//Hiro Icon
-        private ImageSource? savedWebIcon = null;
         private ContextMenu? favMenu = null;
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
@@ -480,7 +479,6 @@ namespace hiro
             Dispatcher.Invoke(() =>
             {
                 uicon.Source = bi;
-                savedWebIcon = bi;
             });
         }
 
@@ -490,6 +488,7 @@ namespace hiro
             {
                 if (savedicon != null)
                 {
+                    iconUrl = "/hiro_circle.ico";
                     uicon.Source = savedicon;
                 }
             });
@@ -548,31 +547,19 @@ namespace hiro
                             }
                         }).Start();
                     }
-                    else
-                    {
-                        if (savedWebIcon != null)
-                        {
-                            uicon.Source = savedWebIcon;
-                        }
-                    }
-                }
-                else
-                {
-                    SetSavedPrimitiveIcon();
                 }
             }
         }
 
         private void CoreWebView2_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            UpdateIcon();
             UpdateTitleLabel();
             URLBtn.Content = secure ? Hiro_Utils.Get_Translate("websecure") : Hiro_Utils.Get_Translate("webinsecure");
             URLSign.Content = secure ? "\uF61A" : "\uF618";
             URLBtn.ToolTip = secure ? Hiro_Utils.Get_Translate("websecuretip") : Hiro_Utils.Get_Translate("webinsecuretip");
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && URLGrid.Visibility == Visibility.Visible)
             {
-                System.Windows.Media.Animation.Storyboard sb = new();
+                Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, URLGrid, sb, -50, null);
                 sb.Begin();
             }
@@ -581,7 +568,6 @@ namespace hiro
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
-            SetSavedPrimitiveIcon();
             currentUrl = wv2.CoreWebView2.Source;
             secure = true;
             Loading(true);
@@ -626,6 +612,7 @@ namespace hiro
             }
             else
             {
+                UpdateIcon();
                 wvpb.Visibility = Visibility.Collapsed;
                 Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             }
