@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace hiro
 {
@@ -20,6 +21,8 @@ namespace hiro
 
         public void InitializeInnerParameters()
         {
+            Hiro_Tray.TrayToolTipOpen += Hiro_Tray_TrayToolTipOpen;
+            Hiro_Tray.TrayToolTipClose += Hiro_Tray_TrayToolTipClose;
             Hiro_Tray.ToolTipText = App.AppTitle;
             Title = App.AppTitle;
             InitializeMethod();
@@ -37,6 +40,16 @@ namespace hiro
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Power");
             }
+        }
+
+        private void Hiro_Tray_TrayToolTipClose(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Hiro_Tray_TrayToolTipOpen(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         private void PowerManager_EnergySaverStatusChanged(object? sender, object e)
