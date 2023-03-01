@@ -483,18 +483,13 @@ namespace hiro
             }
             else
             {
-                BitmapImage bi = new();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.UriSource = new Uri(strFileName);
+                BitmapImage? bi = Hiro_Utils.GetBitmapImage(strFileName);
                 ImageBrush ib = new()
                 {
                     Stretch = Stretch.UniformToFill,
                     ImageSource = bi
                 };
                 sender.Background = ib;
-                bi.EndInit();
-                bi.Freeze();
             }
         }
         public static Brush Set_Bgimage(Brush sender, Control win, string? strFileName = null)
@@ -528,18 +523,13 @@ namespace hiro
             }
             else
             {
-                BitmapImage bi = new();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.UriSource = new Uri(strFileName);
+                BitmapImage? bi = Hiro_Utils.GetBitmapImage(strFileName);
                 ImageBrush ib = new()
                 {
                     Stretch = Stretch.UniformToFill,
                     ImageSource = bi
                 };
                 sender = ib;
-                bi.EndInit();
-                bi.Freeze();
             }
             return sender;
         }
@@ -2313,11 +2303,12 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("lockscr()"))
+                    if (path.ToLower().StartsWith("lockscr("))
                     {
+                        var location = parameter.Count > 0 && !parameter[0].Trim().Equals(string.Empty) ? parameter[0] : null;
                         HiroInvoke(() =>
                         {
-                            App.ls ??= new();
+                            App.ls ??= new(location);
                             App.ls.Show();
                         });
                         goto RunOK;
@@ -4392,7 +4383,21 @@ namespace hiro
             BitmapImage bitmapimage = new();
             bitmapimage.BeginInit();
             bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapimage.UriSource = new Uri(fileName);
+            switch (Read_Ini(App.dconfig, "Config", "ImageRead", "1"))
+            {
+                case "0":
+                    {
+                        bitmapimage.StreamSource = new MemoryStream(File.ReadAllBytes(fileName));
+                        break;
+                    }
+
+                default:
+                    {
+                        bitmapimage.UriSource = new Uri(fileName);
+                        break;
+                    }
+            }
+
             bitmapimage.EndInit();
             bitmapimage.Freeze();
             return bitmapimage;

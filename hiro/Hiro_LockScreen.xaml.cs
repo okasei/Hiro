@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,12 +11,14 @@ namespace hiro
 {
     public partial class Hiro_LockScreen : Window
     {
+        internal string? path = null;
         internal bool ca = true;
         internal bool exist = false;
         private bool authing = false;
-        public Hiro_LockScreen()
+        public Hiro_LockScreen(string? p)
         {
             InitializeComponent();
+            path = p;
             Title = Hiro_Utils.Get_Translate("locktitle") + " - " + App.AppTitle;
             Load_Colors();
             SetValue(Canvas.LeftProperty, 0.0);
@@ -26,86 +29,84 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(timelabel, "locktime", bottom: true);
             Hiro_Utils.Set_Control_Location(datelabel, "lockdate", bottom: true);
             Hiro_Utils.SetCursor(0);
-            var filep = App.CurrentDirectory + "\\system\\wallpaper\\" + DateTime.Now.ToString("yyyyMMdd") + ".jpg";
-            string wp = "";
-            if (!System.IO.File.Exists(filep))
-            { 
-                bgimage.Background = Background;
-                System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
-                request.Headers.Add("UserAgent", "Rex/2.1.0 (Hiro Inside)");
-                request.Content = new System.Net.Http.StringContent("");
-                request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
-                System.ComponentModel.BackgroundWorker bw = new();
-                bw.DoWork += delegate {
-                    try
-                    {
-                        if (App.hc == null)
-                            return;
-                        System.Net.Http.HttpResponseMessage response = App.hc.Send(request);
-                        if (response.Content != null)
-                        {
-                            System.IO.Stream stream = response.Content.ReadAsStream();
-                            System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
-                            image.Save(filep);
-                            return;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.LockScreen.Wallpaper");
-                    }
-                    StringBuilder wallPaperPath = new(200);
-                    if (Hiro_Utils.GetSystemParametersInfo(0x0073, 200, wallPaperPath, 0))
-                    {
-                        Hiro_Utils.LogtoFile(wallPaperPath.ToString());
-                        wp = wallPaperPath.ToString();
-                        exist = true;
-                        return;
-                    }
-                    if (App.mn != null)
-                    {
-                        bgimage.Background = App.mn.bgimage.Background;
-                        exist = true;
-                    }
-                };
-                bw.RunWorkerCompleted += delegate
-                {
-                    filep = System.IO.File.Exists(filep) ? filep : wp;
-                    if (!System.IO.File.Exists(filep)) 
-                        return;
-                    BitmapImage bi = new();
-                    bi.BeginInit();
-                    bi.CacheOption = BitmapCacheOption.OnLoad;
-                    bi.UriSource = new Uri(filep);
-                    ImageBrush ib = new()
-                    {
-                        Stretch = Stretch.UniformToFill,
-                        ImageSource = bi
-                    };
-                    bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
-                    bgimage.Background = ib;
-                    bi.EndInit();
-                    bi.Freeze();
-                    Hiro_Utils.Blur_Animation(0, animation, bgimage, this);
-                };
-                bw.RunWorkerAsync();
+            if (path != null)
+            {
+                SetAsLocalImage(path);
             }
             else
             {
-                BitmapImage bi = new();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.UriSource = new Uri(filep);
-                ImageBrush ib = new()
+                var filep = App.CurrentDirectory + "\\system\\wallpaper\\" + DateTime.Now.ToString("yyyyMMdd") + ".jpg";
+                string wp = "";
+                if (!System.IO.File.Exists(filep))
                 {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = bi
-                };
-                bgimage.Background = ib;
-                bi.EndInit();
-                bi.Freeze();
-                exist = true;
+                    bgimage.Background = Background;
+                    System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
+                    request.Headers.Add("UserAgent", "Rex/2.1.0 (Hiro Inside)");
+                    request.Content = new System.Net.Http.StringContent("");
+                    request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                    System.ComponentModel.BackgroundWorker bw = new();
+                    bw.DoWork += delegate
+                    {
+                        try
+                        {
+                            if (App.hc == null)
+                                return;
+                            System.Net.Http.HttpResponseMessage response = App.hc.Send(request);
+                            if (response.Content != null)
+                            {
+                                System.IO.Stream stream = response.Content.ReadAsStream();
+                                System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
+                                image.Save(filep);
+                                return;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Hiro_Utils.LogError(ex, "Hiro.Exception.LockScreen.Wallpaper");
+                        }
+                        StringBuilder wallPaperPath = new(200);
+                        if (Hiro_Utils.GetSystemParametersInfo(0x0073, 200, wallPaperPath, 0))
+                        {
+                            wp = wallPaperPath.ToString();
+                            exist = true;
+                            return;
+                        }
+                        if (App.mn != null)
+                        {
+                            bgimage.Background = App.mn.bgimage.Background;
+                            exist = true;
+                        }
+                    };
+                    bw.RunWorkerCompleted += delegate
+                    {
+                        filep = System.IO.File.Exists(filep) ? filep : wp;
+                        if (!System.IO.File.Exists(filep))
+                            return;
+                        SetAsLocalImage(filep);
+                        bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+                        Hiro_Utils.Blur_Animation(0, animation, bgimage, this);
+                    };
+                    bw.RunWorkerAsync();
+                }
+                else
+                {
+                    SetAsLocalImage(filep);
+                }
             }
+            
+        }
+
+        private void SetAsLocalImage(string path)
+        {
+            path = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(path));
+            BitmapImage? bi = Hiro_Utils.GetBitmapImage(path);
+            ImageBrush ib = new()
+            {
+                Stretch = Stretch.UniformToFill,
+                ImageSource = bi
+            };
+            bgimage.Background = ib;
+            exist = true;
         }
 
         public void Load_Colors()
@@ -117,7 +118,7 @@ namespace hiro
 
         private void Run_In()
         {
-            if(!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, 0, TimeSpan.FromMilliseconds(800));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;

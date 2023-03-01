@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -651,18 +652,13 @@ namespace hiro
                         img.Dispose();
                     Dispatcher.Invoke(() =>
                     {
-                        BitmapImage bi = new();
-                        bi.BeginInit();
-                        bi.CacheOption = BitmapCacheOption.OnLoad;
-                        bi.UriSource = new Uri(@strFileName);
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(@strFileName);
                         ImageBrush ib = new()
                         {
                             Stretch = Stretch.UniformToFill,
                             ImageSource = bi
                         };
                         Resources["Avatar"] = ib;
-                        bi.EndInit();
-                        bi.Freeze();
                     });
                     if (m || append)
                     {
@@ -769,18 +765,13 @@ namespace hiro
                         img.Dispose();
                     Dispatcher.Invoke(() =>
                     {
-                        BitmapImage bi = new();
-                        bi.BeginInit();
-                        bi.CacheOption = BitmapCacheOption.OnLoad;
-                        bi.UriSource = new Uri(@strFileName);
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(@strFileName);
                         ImageBrush ib = new()
                         {
                             Stretch = Stretch.UniformToFill,
                             ImageSource = bi
                         };
                         Profile_Background.Background = ib;
-                        bi.EndInit();
-                        bi.Freeze();
                     });
                     if (m || append)
                     {
