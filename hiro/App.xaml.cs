@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -55,6 +56,7 @@ namespace hiro
         internal static bool? Logined = false;
         internal static string LoginedUser = string.Empty;
         internal static string LoginedToken = string.Empty;
+        internal static System.Threading.Thread? serverThread = null;
         #endregion
 
         #region 私有参数
@@ -79,8 +81,6 @@ namespace hiro
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            new Hiro_Cropper().Show();
-
         }
 
 
@@ -138,9 +138,9 @@ namespace hiro
 
         }
 
-        private static void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
+        private static void Socket_Communication(Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
         {
-            System.Net.Sockets.Socket clientSocket = socketLister.Accept();
+            Socket clientSocket = socketLister.Accept();
             Hiro_Socket clientSession = new(clientSocket);
             lock (clientSessionLock)
             {
@@ -150,10 +150,9 @@ namespace hiro
                 }
             }
             SocketConnection socketConnection = new(clientSocket);
-            socketConnection.ReceiveData();
             socketConnection.DataReceiveCompleted += delegate
             {
-                var recStr = Hiro_Utils.DeleteUnVisibleChar(Encoding.ASCII.GetString(socketConnection.msgBuffer));
+                var recStr = Hiro_Utils.DeleteUnVisibleChar(socketConnection.receivedMsg);
                 var outputb = Convert.FromBase64String(recStr);
                 recStr = Encoding.Default.GetString(outputb);
                 recStr = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(recStr)).Trim();
@@ -174,13 +173,19 @@ namespace hiro
                 {
                     Hiro_Utils.LogtoFile("[SERVER]" + recStr);
                 }
+                StartServerListener(socketLister, clientSessionTable, clientSessionLock);
             };
-            System.ComponentModel.BackgroundWorker bw = new();
-            bw.DoWork += delegate
+            socketConnection.ReceiveData();
+        }
+
+        private static void StartServerListener(Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
+        {
+            serverThread?.Interrupt();
+            serverThread = new System.Threading.Thread(() =>
             {
                 Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
-            };
-            bw.RunWorkerAsync();
+            });
+            serverThread.Start();
         }
 
         private static void Build_Socket()
@@ -190,18 +195,13 @@ namespace hiro
             System.Collections.Hashtable clientSessionTable = new();
             object clientSessionLock = new();
             System.Net.IPEndPoint localEndPoint = new(System.Net.IPAddress.Any, port);
-            System.Net.Sockets.Socket socketLister = new(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+            Socket socketLister = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketLister.Bind(localEndPoint);
             Hiro_Utils.Write_Ini(dconfig, "Config", "Port", port.ToString());
             try
             {
                 socketLister.Listen(MaxConnection);
-                System.ComponentModel.BackgroundWorker bw = new();
-                bw.DoWork += delegate
-                {
-                    Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
-                };
-                bw.RunWorkerAsync();
+                StartServerListener(socketLister, clientSessionTable, clientSessionLock);
             }
             catch (Exception ex)
             {
