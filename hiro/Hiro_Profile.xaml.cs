@@ -487,16 +487,18 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
+                    var newStrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
+                    Hiro_Utils.CreateFolder(newStrFileName);
                     Point? pt = null;
                     if (Hiro_Main != null)
                     {
                         pt = new(Hiro_Main.Width, Hiro_Main.Height);
                     }
-                    var crop = new Hiro_Cropper(strFileName, strFileName, pt, (x) =>
+                    var crop = new Hiro_Cropper(strFileName, newStrFileName, pt, (x) =>
                     {
                         if (x == true)
                         {
-                            SetBackground(strFileName);
+                            SetBackground(newStrFileName);
                         }
                     });
                     crop.Show();
@@ -521,11 +523,13 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-                    new Hiro_Cropper(strFileName, strFileName, new Point(1, 1), (x) =>
+                    var newStrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
+                    Hiro_Utils.CreateFolder(newStrFileName);
+                    new Hiro_Cropper(strFileName, newStrFileName, new Point(1, 1), (x) =>
                     {
                         if (x == true)
                         {
-                            SetAvatar(strFileName);
+                            SetAvatar(newStrFileName);
                         }
                     }).Show();
                 }

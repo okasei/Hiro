@@ -20,6 +20,7 @@ namespace hiro
         internal string filePath = "";
         internal string saveTo = "";
         internal Point Picture = new Point(0, 0);
+        internal Point DPI = new Point(96, 96);
         internal Point? crop = null;
         internal Action<bool?>? Action = null;
         public Hiro_Cropper(string filePath, string saveto, Point? pt = null, Action<bool?>? action = null)
@@ -74,10 +75,12 @@ namespace hiro
         private void Load_Picture(string filePath)
         {
             this.filePath = filePath;
-            var a = new BitmapImage(new Uri(filePath, UriKind.Absolute));
+            //var a = new BitmapImage(new Uri(filePath, UriKind.Absolute));
+            var a = Hiro_Utils.GetBitmapImage(filePath);
             Original.Source = a;
+            DPI = new Point(a.DpiX, a.DpiY);
             Picture = new Point(a.Width, a.Height);
-            var resize = Math.Max(a.Width / Width, a.Height / Height);
+            double resize = Math.Max(a.Width / Width, a.Height / Height);
             Original.Width = a.Width / resize;
             Original.Height = a.Height / resize;
             if (crop != null)
@@ -236,20 +239,15 @@ namespace hiro
             }
         }
 
-        private bool isInBox(Thickness box, Point p)
-        {
-            return (p.X >= box.Left && p.X <= box.Left + box.Right && p.Y >= box.Top && p.Y <= box.Top + box.Bottom);
-        }
-
         private bool SaveCroppedImage(string savePath)
         {
             try
             {
+                double resize = Math.Max(Picture.X / Width, Picture.Y / Height);
                 ImageSource imageSource = Original.Source;
                 System.Drawing.Bitmap bitmap = ImageSourceToBitmap(imageSource);
                 BitmapSource bitmapSource = BitmapToBitmapImage(bitmap);
-                var resize = Math.Max(Original.ActualHeight / Picture.Y, Original.ActualWidth / Picture.X);
-                BitmapSource newBitmapSource = CutImage(bitmapSource, new Int32Rect(Convert.ToInt32(CropBorder.Margin.Left / resize), Convert.ToInt32(CropBorder.Margin.Top / resize), Convert.ToInt32(CropBorder.Width / resize), Convert.ToInt32(CropBorder.Height / resize)));
+                BitmapSource newBitmapSource = CutImage(bitmapSource, new Int32Rect(Convert.ToInt32(CropBorder.Margin.Left * resize * DPI.X / 96), Convert.ToInt32(CropBorder.Margin.Top * resize * DPI.Y / 96), Convert.ToInt32(CropBorder.Width * resize * DPI.X / 96), Convert.ToInt32(CropBorder.Height * resize * DPI.Y / 96)));
                 PngBitmapEncoder PBE = new PngBitmapEncoder();
                 PBE.Frames.Add(BitmapFrame.Create(newBitmapSource));
                 using (Stream stream = File.Create(Hiro_Utils.Path_Prepare(savePath)))

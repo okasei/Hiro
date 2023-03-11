@@ -620,7 +620,10 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;
-                    new Hiro_Cropper(strFileName, strFileName, new Point(550, 450), (x) =>
+                    var newStrFileName = strFileName;
+                    strFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + System.IO.Path.GetFileName(strFileName));
+                    Hiro_Utils.CreateFolder(strFileName);
+                    new Hiro_Cropper(newStrFileName, strFileName, new Point(550, 450), (x) =>
                     {
                         if (x == true)
                         {
