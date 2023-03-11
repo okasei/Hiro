@@ -620,61 +620,68 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;
-                }
-                if (System.IO.File.Exists(@strFileName))
-                {
-                    new System.Threading.Thread(() =>
+                    new Hiro_Cropper(strFileName, strFileName, new Point(550, 450), (x) =>
                     {
-                        try
+                        if (x == true)
                         {
-                            System.Drawing.Image img = System.Drawing.Image.FromFile(@strFileName);
-                            double w = img.Width;
-                            double h = img.Height;
-                            double ww = 550 * 2;
-                            double hh = 450 * 2;
-                            Dispatcher.Invoke(() =>
+                            if (System.IO.File.Exists(@strFileName))
                             {
-                                if (Hiro_Main != null)
+                                new System.Threading.Thread(() =>
                                 {
-                                    ww = Hiro_Main.Width * 2;
-                                    hh = Hiro_Main.Height * 2;
-                                }
-                            });
-                            if (ww < w && hh < h && Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
-                            {
-                                while (ww < w && hh < h)
-                                {
-                                    w /= 2;
-                                    h /= 2;
-                                }
-                                w *= 2;
-                                h *= 2;
-                                img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
-                                img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
-                                strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
-                                strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
-                                Hiro_Utils.CreateFolder(strFileName);
-                                if (System.IO.File.Exists(strFileName))
-                                    System.IO.File.Delete(strFileName);
-                                img.Save(strFileName);
+                                    try
+                                    {
+                                        System.Drawing.Image img = System.Drawing.Image.FromFile(@strFileName);
+                                        double w = img.Width;
+                                        double h = img.Height;
+                                        double ww = 550 * 2;
+                                        double hh = 450 * 2;
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            if (Hiro_Main != null)
+                                            {
+                                                ww = Hiro_Main.Width * 2;
+                                                hh = Hiro_Main.Height * 2;
+                                            }
+                                        });
+                                        if (ww < w && hh < h && Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
+                                        {
+                                            while (ww < w && hh < h)
+                                            {
+                                                w /= 2;
+                                                h /= 2;
+                                            }
+                                            w *= 2;
+                                            h *= 2;
+                                            img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
+                                            img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
+                                            strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
+                                            strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
+                                            Hiro_Utils.CreateFolder(strFileName);
+                                            if (System.IO.File.Exists(strFileName))
+                                                System.IO.File.Delete(strFileName);
+                                            img.Save(strFileName);
+                                        }
+                                        strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
+                                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "BackImage", strFileName);
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            if (Hiro_Main != null)
+                                            {
+                                                Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
+                                                Hiro_Main.Blurbgi(Convert.ToInt16(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+                                            }
+                                        });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Hiro_Utils.LogError(ex, "Hiro.Exception.Background.Image.Select");
+                                    }
+                                }).Start();
                             }
-                            strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                            Hiro_Utils.Write_Ini(App.dconfig, "Config", "BackImage", strFileName);
-                            Dispatcher.Invoke(() =>
-                            {
-                                if (Hiro_Main != null)
-                                {
-                                    Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
-                                    Hiro_Main.Blurbgi(Convert.ToInt16(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
-                                }
-                            });
                         }
-                        catch (Exception ex)
-                        {
-                            Hiro_Utils.LogError(ex, "Hiro.Exception.Background.Image.Select");
-                        }
-                    }).Start();
+                    }).Show();
                 }
+
             }
             else if (video_btn.IsChecked == true)
             {

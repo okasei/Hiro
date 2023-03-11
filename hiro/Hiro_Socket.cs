@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace hiro
 {
@@ -23,6 +24,7 @@ namespace hiro
     public class SocketConnection : IDisposable
     {
         public Byte[] msgBuffer = new byte[1024];
+        public String receivedMsg = string.Empty;
         private readonly Socket? _clientSocket = null;
         public Socket? ClientSocket
         {
@@ -107,13 +109,14 @@ namespace hiro
                     var REnd = ClientSocket.EndReceive(ar);
                     if (REnd > 0)
                     {
-                        var data = new byte[REnd];
-                        Array.Copy(msgBuffer, 0, data, 0, REnd);
+                        receivedMsg = Encoding.ASCII.GetString(msgBuffer);
                         OnDataReceiveCompleted(new());
-                        //ClientSocket.BeginReceive(msgBuffer, 0, msgBuffer.Length, 0, new AsyncCallback(ReceiveCallback), null);
                     }
                     else
+                    {
                         Dispose();
+                    }
+                        
                 }
                 else
                     Dispose();
@@ -126,6 +129,7 @@ namespace hiro
         protected virtual void OnDataReceiveCompleted(EventArgs e)
         {
             DataReceiveCompleted?.Invoke(this, e);
+            receivedMsg = string.Empty;
         }
 
         public event EventHandler<EventArgs>? DataReceiveCompleted;

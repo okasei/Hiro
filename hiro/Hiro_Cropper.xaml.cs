@@ -1,14 +1,10 @@
-﻿using Microsoft.VisualBasic.Devices;
-using System;
+﻿using System;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.UserDataTasks;
 
 namespace hiro
 {
@@ -21,23 +17,86 @@ namespace hiro
         internal int cropFlag = 0;
         internal Thickness originalThickness = new Thickness(0);
         internal Point originalSize = new Point(0, 0);
-        internal string filePath = "C:\\Users\\liuyulong02\\Downloads\\wallpaper\\Cascade\\contents\\images\\3840x2160.png";
+        internal string filePath = "";
+        internal string saveTo = "";
         internal Point Picture = new Point(0, 0);
-        public Hiro_Cropper()
+        internal Point? crop = null;
+        internal Action<bool?>? Action = null;
+        public Hiro_Cropper(string filePath, string saveto, Point? pt = null, Action<bool?>? action = null)
         {
             InitializeComponent();
+            crop = pt;
+            saveTo = saveto;
+            Action = action;
+            Load_Picture(filePath);
+            Load_Color();
+            Load_Translate();
+            SourceInitialized += OnSourceInitialized;
+        }
+
+
+        private void OnSourceInitialized(object? sender, EventArgs e)
+        {
+            var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
+            var hwnd = windowInteropHelper.Handle;
+            var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
+            source?.AddHook(WndProc);
+            WindowStyle = WindowStyle.None;
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            switch (msg)
+            {
+                case 0x0083://prevent system from drawing outline
+                    handled = true;
+                    break;
+                default:
+                    //Console.WriteLine("Msg: " + m.Msg + ";LParam: " + m.LParam + ";WParam: " + m.WParam + ";Result: " + m.Result);
+                    break;
+            }
+            return IntPtr.Zero;
+
+        }
+
+        internal void Load_Color()
+        {
+            Resources["AppAccent"] = new SolidColorBrush(App.AppAccentColor);
+            Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+        }
+
+        internal void Load_Translate()
+        {
+            OKBtn.ToolTip = Hiro_Utils.Get_Translate("ok");
+            CloseBtn.ToolTip = Hiro_Utils.Get_Translate("close");
+        }
+
+        private void Load_Picture(string filePath)
+        {
+            this.filePath = filePath;
             var a = new BitmapImage(new Uri(filePath, UriKind.Absolute));
             Original.Source = a;
             Picture = new Point(a.Width, a.Height);
-            // 切割图片
-
-
+            var resize = Math.Max(a.Width / Width, a.Height / Height);
+            Original.Width = a.Width / resize;
+            Original.Height = a.Height / resize;
+            if (crop != null)
+            {
+                var x = crop.Value.X;
+                var y = crop.Value.Y;
+                var w = Original.Width;
+                var h = Original.Height;
+                var resize2 = Math.Min(w / x, h / y);
+                CropBorder.Width = resize2 * x * 0.9;
+                CropBorder.Height = resize2 * y * 0.9;
+                CropBorder.Margin = new Thickness(Original.Margin.Left + Original.Width / 2 - CropBorder.Width / 2, Original.Margin.Top + Original.Height / 2 - CropBorder.Height / 2, 0, 0);
+            }
 
         }
 
         private void CropBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            original = System.Windows.Input.Mouse.GetPosition(this);
+            original = Mouse.GetPosition(CropGrid);
             originalThickness = CropBorder.Margin;
             originalSize = new(CropBorder.Width, CropBorder.Height);
             cropFlag = 1;
@@ -69,7 +128,7 @@ namespace hiro
 
         private void CropBorder_MouseMove(object sender, MouseEventArgs e)
         {
-            var diff = System.Windows.Input.Mouse.GetPosition(this);
+            var diff = System.Windows.Input.Mouse.GetPosition(CropGrid);
             var w = originalSize.X;
             var h = originalSize.Y;
             var m = originalThickness;
@@ -177,18 +236,32 @@ namespace hiro
             }
         }
 
-        private void SaveCroppedImage(string savePath)
+        private bool isInBox(Thickness box, Point p)
         {
-            ImageSource imageSource = Original.Source;
-            System.Drawing.Bitmap bitmap = ImageSourceToBitmap(imageSource);
-            BitmapSource bitmapSource = BitmapToBitmapImage(bitmap);
-            var resize = Math.Max(Original.ActualHeight / Picture.Y, Original.ActualWidth / Picture.X);
-            BitmapSource newBitmapSource = CutImage(bitmapSource, new Int32Rect(Convert.ToInt32(CropBorder.Margin.Left / resize), Convert.ToInt32(CropBorder.Margin.Top / resize), Convert.ToInt32(CropBorder.Width / resize), Convert.ToInt32(CropBorder.Height / resize)));
-            PngBitmapEncoder PBE = new PngBitmapEncoder();
-            PBE.Frames.Add(BitmapFrame.Create(newBitmapSource));
-            using (Stream stream = File.Create(Hiro_Utils.Path_Prepare(savePath)))
+            return (p.X >= box.Left && p.X <= box.Left + box.Right && p.Y >= box.Top && p.Y <= box.Top + box.Bottom);
+        }
+
+        private bool SaveCroppedImage(string savePath)
+        {
+            try
             {
-                PBE.Save(stream);
+                ImageSource imageSource = Original.Source;
+                System.Drawing.Bitmap bitmap = ImageSourceToBitmap(imageSource);
+                BitmapSource bitmapSource = BitmapToBitmapImage(bitmap);
+                var resize = Math.Max(Original.ActualHeight / Picture.Y, Original.ActualWidth / Picture.X);
+                BitmapSource newBitmapSource = CutImage(bitmapSource, new Int32Rect(Convert.ToInt32(CropBorder.Margin.Left / resize), Convert.ToInt32(CropBorder.Margin.Top / resize), Convert.ToInt32(CropBorder.Width / resize), Convert.ToInt32(CropBorder.Height / resize)));
+                PngBitmapEncoder PBE = new PngBitmapEncoder();
+                PBE.Frames.Add(BitmapFrame.Create(newBitmapSource));
+                using (Stream stream = File.Create(Hiro_Utils.Path_Prepare(savePath)))
+                {
+                    PBE.Save(stream);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Exception.Crop.Save");
+                return false;
             }
         }
         public static BitmapSource CutImage(BitmapSource bitmapSource, Int32Rect cut)
@@ -199,7 +272,6 @@ namespace hiro
             byte[] data = new byte[cut.Height * stride];
             //调用CopyPixels
             bitmapSource.CopyPixels(cut, data, stride, 0);
-
             return BitmapSource.Create(cut.Width, cut.Height, 0, 0, PixelFormats.Bgr32, null, data, stride);
         }
 
@@ -207,9 +279,7 @@ namespace hiro
         public static System.Drawing.Bitmap ImageSourceToBitmap(ImageSource imageSource)
         {
             BitmapSource m = (BitmapSource)imageSource;
-
             System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(m.PixelWidth, m.PixelHeight, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-
             BitmapData data = bmp.LockBits(
             new System.Drawing.Rectangle(System.Drawing.Point.Empty, bmp.Size), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
 
@@ -224,12 +294,9 @@ namespace hiro
             using (MemoryStream stream = new MemoryStream())
             {
                 bitmap.Save(stream, ImageFormat.Bmp);
-
                 stream.Position = 0;
                 BitmapImage result = new BitmapImage();
                 result.BeginInit();
-                // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
-                // Force the bitmap to load right now so we can dispose the stream.
                 result.CacheOption = BitmapCacheOption.OnLoad;
                 result.StreamSource = stream;
                 result.EndInit();
@@ -241,6 +308,19 @@ namespace hiro
 
         private void Mask_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+        }
+
+        private void CloseBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Action?.Invoke(null);
+            Close();
+        }
+
+        private void OKBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var res = SaveCroppedImage(saveTo);
+            Action?.Invoke(res);
+            Close();
         }
     }
 }

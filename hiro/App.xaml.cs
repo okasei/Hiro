@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -55,6 +57,8 @@ namespace hiro
         internal static bool? Logined = false;
         internal static string LoginedUser = string.Empty;
         internal static string LoginedToken = string.Empty;
+        internal static System.Threading.Thread? serverThread = null;
+        internal static int flashFlag = -1;
         #endregion
 
         #region 私有参数
@@ -79,8 +83,6 @@ namespace hiro
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            new Hiro_Cropper().Show();
-
         }
 
 
@@ -138,9 +140,9 @@ namespace hiro
 
         }
 
-        private static void Socket_Communication(System.Net.Sockets.Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
+        private static void Socket_Communication(Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
         {
-            System.Net.Sockets.Socket clientSocket = socketLister.Accept();
+            Socket clientSocket = socketLister.Accept();
             Hiro_Socket clientSession = new(clientSocket);
             lock (clientSessionLock)
             {
@@ -150,10 +152,9 @@ namespace hiro
                 }
             }
             SocketConnection socketConnection = new(clientSocket);
-            socketConnection.ReceiveData();
             socketConnection.DataReceiveCompleted += delegate
             {
-                var recStr = Hiro_Utils.DeleteUnVisibleChar(Encoding.ASCII.GetString(socketConnection.msgBuffer));
+                var recStr = Hiro_Utils.DeleteUnVisibleChar(socketConnection.receivedMsg);
                 var outputb = Convert.FromBase64String(recStr);
                 recStr = Encoding.Default.GetString(outputb);
                 recStr = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(recStr)).Trim();
@@ -172,15 +173,37 @@ namespace hiro
                 }
                 else
                 {
-                    Hiro_Utils.LogtoFile("[SERVER]" + recStr);
+                    var recStrs = recStr.Split("\t");
+                    if (recStrs.Length >= 4)
+                    {
+
+                        HiroApp ha = new();
+                        ha.msg = recStrs[3];
+                        ha.appID = recStrs[0];
+                        ha.appName = recStrs[2];
+                        ha.appPackage = recStrs[1];
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Hiro_Utils.RunExe(ha.msg, ha.appName);
+                        });
+                        Hiro_Utils.LogtoFile("[SERVER]" + ha.ToString());
+                    }
+                    else
+                        Hiro_Utils.LogtoFile("[SERVER]" + recStr);
                 }
+                StartServerListener(socketLister, clientSessionTable, clientSessionLock);
             };
-            System.ComponentModel.BackgroundWorker bw = new();
-            bw.DoWork += delegate
+            socketConnection.ReceiveData();
+        }
+
+        private static void StartServerListener(Socket socketLister, System.Collections.Hashtable clientSessionTable, object clientSessionLock)
+        {
+            serverThread?.Interrupt();
+            serverThread = new System.Threading.Thread(() =>
             {
                 Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
-            };
-            bw.RunWorkerAsync();
+            });
+            serverThread.Start();
         }
 
         private static void Build_Socket()
@@ -190,18 +213,13 @@ namespace hiro
             System.Collections.Hashtable clientSessionTable = new();
             object clientSessionLock = new();
             System.Net.IPEndPoint localEndPoint = new(System.Net.IPAddress.Any, port);
-            System.Net.Sockets.Socket socketLister = new(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+            Socket socketLister = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketLister.Bind(localEndPoint);
             Hiro_Utils.Write_Ini(dconfig, "Config", "Port", port.ToString());
             try
             {
                 socketLister.Listen(MaxConnection);
-                System.ComponentModel.BackgroundWorker bw = new();
-                bw.DoWork += delegate
-                {
-                    Socket_Communication(socketLister, clientSessionTable, clientSessionLock);
-                };
-                bw.RunWorkerAsync();
+                StartServerListener(socketLister, clientSessionTable, clientSessionLock);
             }
             catch (Exception ex)
             {
@@ -584,6 +602,7 @@ namespace hiro
 
         public static void TimerTick()
         {
+            #region Hello
             var hr = DateTime.Now.Hour;
             var morning = Hiro_Utils.Read_Ini(LangFilePath, "local", "morning", "[6,7,8,9,10]");
             var noon = Hiro_Utils.Read_Ini(LangFilePath, "local", "noon", "[11,12,13]");
@@ -617,6 +636,7 @@ namespace hiro
                 {
                     mn.Set_Home_Labels("night");
                 }
+                #endregion
                 if (AutoChat && Logined == true)
                 {
                     if (mn.hiro_chat == null)
@@ -717,6 +737,21 @@ namespace hiro
                 if (ColorCD == 0)
                     wnd?.Load_All_Colors();
                 ColorCD--;
+            }
+            switch (flashFlag)
+            {
+                case 0:
+                    if (wnd != null)
+                        wnd.Hiro_Tray.IconSource = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
+                    flashFlag = 1;
+                    break;
+                case 1:
+                    if (wnd != null)
+                        wnd.Hiro_Tray.IconSource = null;
+                    flashFlag = 0;
+                    break;
+                default:
+                    break;
             }
             //Music
             if (Hiro_Utils.Read_Ini(dconfig, "Config", "Verbose", "0").Equals("1"))

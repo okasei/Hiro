@@ -353,6 +353,12 @@ namespace hiro
                 App.wnd.cm.Foreground = new SolidColorBrush(App.AppForeColor);
                 App.wnd.cm.Background = new SolidColorBrush(App.AppAccentColor);
             }
+            if (App.wnd != null)
+            {
+                App.wnd.trayBorder.BorderBrush = new SolidColorBrush(App.AppAccentColor);
+                App.wnd.trayBorder.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 150));
+                App.wnd.trayText.Foreground = new SolidColorBrush(App.AppForeColor);
+            }
             Load_Labels(false);
             hiro_home?.Load_Color();
             hiro_items?.Load_Color();
