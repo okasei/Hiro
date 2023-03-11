@@ -5,10 +5,69 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
-        Title="Hiro_Croper" Height="450" Width="800">
+        Title="Hiro_Croper" Height="450" Width="800" WindowStyle="None" Background="#00000000" AllowsTransparency="True">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+    </Window.Resources>
     <Grid>
-        <Image x:Name="Original" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Border x:Name="CropBorder" BorderBrush="Cyan" BorderThickness="2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" ></Border>
-        <Label x:Name="Mask"  MouseDown="CropBorder_MouseDown" MouseUp="CropBorder_MouseUp" MouseMove="CropBorder_MouseMove" MouseDoubleClick="Mask_MouseDoubleClick"/>
+        <Label x:Name="BackgroundLabel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#96000000"></Label>
+        <Grid x:Name="CropGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image x:Name="Original" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Border x:Name="CropBorder" BorderBrush="{DynamicResource AppAccent}" BorderThickness="2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" ></Border>
+        </Grid>
+        <Label x:Name="Mask"  MouseDown="CropBorder_MouseDown" MouseUp="CropBorder_MouseUp" MouseMove="CropBorder_MouseMove"/>
+        <Label x:Name="OKBtn" HorizontalAlignment="Right" Margin="0,0,65,0" VerticalAlignment="Top" Background="#00000000" Width="55" Height="35" HorizontalContentAlignment="Center" FontSize="24" VerticalContentAlignment="Top" MouseLeftButtonDown="OKBtn_MouseLeftButtonDown" Visibility="Visible">
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="Green" 
+                                        Storyboard.TargetName="OKBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="OKBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Label.Triggers>
+            <Path Width="50" Height="30" StrokeThickness="1" Stroke="{DynamicResource AppFore}">
+                <Path.Data>
+                    <GeometryGroup>
+                        <EllipseGeometry Center="25,15" RadiusX="5" RadiusY="5" />
+                    </GeometryGroup>
+                </Path.Data>
+            </Path>
+        </Label>
+        <Label x:Name="CloseBtn" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Background="#00000000" Width="55" Height="35" HorizontalContentAlignment="Center" FontSize="24" VerticalContentAlignment="Top" MouseLeftButtonDown="CloseBtn_MouseLeftButtonDown" Visibility="Visible">
+            <Label.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="Red" 
+                                        Storyboard.TargetName="CloseBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="CloseBtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Label.Triggers>
+            <Path Width="50" Height="30" Data="M 18,11 27,20 M 18,20 27,11" Stroke="{DynamicResource AppFore}" StrokeThickness="1" />
+        </Label>
     </Grid>
 </Window>

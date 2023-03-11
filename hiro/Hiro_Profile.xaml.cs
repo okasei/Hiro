@@ -487,7 +487,19 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-                    SetBackground(strFileName);
+                    Point? pt = null;
+                    if (Hiro_Main != null)
+                    {
+                        pt = new(Hiro_Main.Width, Hiro_Main.Height);
+                    }
+                    var crop = new Hiro_Cropper(strFileName, strFileName, pt, (x) =>
+                    {
+                        if (x == true)
+                        {
+                            SetBackground(strFileName);
+                        }
+                    });
+                    crop.Show();
                 }
                 e.Handled = true;
             }
@@ -509,7 +521,13 @@ namespace hiro
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-                    SetAvatar(strFileName);
+                    new Hiro_Cropper(strFileName, strFileName, new Point(1, 1), (x) =>
+                    {
+                        if (x == true)
+                        {
+                            SetAvatar(strFileName);
+                        }
+                    }).Show();
                 }
                 e.Handled = true;
             }
@@ -738,7 +756,7 @@ namespace hiro
                             }
                         }
                         long len = 0;
-                        using (var stream = new System.IO.MemoryStream())
+                        using (var stream = new MemoryStream())
                         {
                             img.Save(stream, Hiro_Utils.GetImageFormat(img));
                             len = stream.Length;

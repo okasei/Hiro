@@ -12,6 +12,20 @@
         ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 
         Closing="Main_Closing" Icon="/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
     <Grid>
-        <tb:TaskbarIcon x:Name="Hiro_Tray" Visibility="Visible" IconSource="/hiro_circle.ico"></tb:TaskbarIcon>
+        <tb:TaskbarIcon x:Name="Hiro_Tray" Visibility="Visible" IconSource="/hiro_circle.ico">
+            <tb:TaskbarIcon.TrayToolTip>
+                <Border
+                    x:Name="trayBorder"
+                    Background="White"
+                    BorderBrush="Orange"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Opacity="0.8">
+                    <Grid>
+                        <TextBlock x:Name="trayText" HorizontalAlignment="Center" Foreground="Coral" VerticalAlignment="Center" Text="Hiro" FontFamily="Microsoft YaHei UI" FontSize="14" Padding="15,5,15,5"></TextBlock>
+                    </Grid>
+                </Border>
+            </tb:TaskbarIcon.TrayToolTip>
+        </tb:TaskbarIcon>
     </Grid>
 </Window>

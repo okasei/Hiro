@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -57,6 +58,7 @@ namespace hiro
         internal static string LoginedUser = string.Empty;
         internal static string LoginedToken = string.Empty;
         internal static System.Threading.Thread? serverThread = null;
+        internal static int flashFlag = -1;
         #endregion
 
         #region 私有参数
@@ -171,7 +173,23 @@ namespace hiro
                 }
                 else
                 {
-                    Hiro_Utils.LogtoFile("[SERVER]" + recStr);
+                    var recStrs = recStr.Split("\t");
+                    if (recStrs.Length >= 4)
+                    {
+
+                        HiroApp ha = new();
+                        ha.msg = recStrs[3];
+                        ha.appID = recStrs[0];
+                        ha.appName = recStrs[2];
+                        ha.appPackage = recStrs[1];
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Hiro_Utils.RunExe(ha.msg, ha.appName);
+                        });
+                        Hiro_Utils.LogtoFile("[SERVER]" + ha.ToString());
+                    }
+                    else
+                        Hiro_Utils.LogtoFile("[SERVER]" + recStr);
                 }
                 StartServerListener(socketLister, clientSessionTable, clientSessionLock);
             };
@@ -584,6 +602,7 @@ namespace hiro
 
         public static void TimerTick()
         {
+            #region Hello
             var hr = DateTime.Now.Hour;
             var morning = Hiro_Utils.Read_Ini(LangFilePath, "local", "morning", "[6,7,8,9,10]");
             var noon = Hiro_Utils.Read_Ini(LangFilePath, "local", "noon", "[11,12,13]");
@@ -617,6 +636,7 @@ namespace hiro
                 {
                     mn.Set_Home_Labels("night");
                 }
+                #endregion
                 if (AutoChat && Logined == true)
                 {
                     if (mn.hiro_chat == null)
@@ -717,6 +737,21 @@ namespace hiro
                 if (ColorCD == 0)
                     wnd?.Load_All_Colors();
                 ColorCD--;
+            }
+            switch (flashFlag)
+            {
+                case 0:
+                    if (wnd != null)
+                        wnd.Hiro_Tray.IconSource = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
+                    flashFlag = 1;
+                    break;
+                case 1:
+                    if (wnd != null)
+                        wnd.Hiro_Tray.IconSource = null;
+                    flashFlag = 0;
+                    break;
+                default:
+                    break;
             }
             //Music
             if (Hiro_Utils.Read_Ini(dconfig, "Config", "Verbose", "0").Equals("1"))

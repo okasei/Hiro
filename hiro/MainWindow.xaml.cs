@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -15,15 +17,13 @@ namespace hiro
         public MainWindow()
         {
             InitializeComponent();
-            System.Windows.Controls.Canvas.SetTop(this, -233);
-            System.Windows.Controls.Canvas.SetLeft(this, -233);
+            System.Windows.Controls.Canvas.SetTop(this, -23333);
+            System.Windows.Controls.Canvas.SetLeft(this, -23333);
         }
 
         public void InitializeInnerParameters()
         {
-            Hiro_Tray.TrayToolTipOpen += Hiro_Tray_TrayToolTipOpen;
-            Hiro_Tray.TrayToolTipClose += Hiro_Tray_TrayToolTipClose;
-            Hiro_Tray.ToolTipText = App.AppTitle;
+            trayText.Text = App.AppTitle;
             Title = App.AppTitle;
             InitializeMethod();
             SourceInitialized += OnSourceInitialized;
@@ -42,15 +42,6 @@ namespace hiro
             }
         }
 
-        private void Hiro_Tray_TrayToolTipClose(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Hiro_Tray_TrayToolTipOpen(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         private void PowerManager_EnergySaverStatusChanged(object? sender, object e)
         {
