@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
-        Title="Hiro_Croper" Height="450" Width="800" WindowStyle="None" Background="#00000000" AllowsTransparency="True">
+        Title="Hiro_Croper" Height="540" Width="960" ResizeMode="CanResize" WindowStyle="SingleBorderWindow"  Background="#FF000000" MouseLeave="Window_MouseLeave">
     <Window.Resources>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
@@ -14,7 +14,10 @@
         <Label x:Name="BackgroundLabel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#96000000"></Label>
         <Grid x:Name="CropGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Image x:Name="Original" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Border x:Name="CropBorder" BorderBrush="{DynamicResource AppAccent}" BorderThickness="2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" ></Border>
+            <Label x:Name="OriginalMask" Background="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.75" Width="{Binding Width, ElementName=Original}" Height="{Binding Height, ElementName=Original}" Margin="{Binding Margin, ElementName=Original}"/>
+            <Grid x:Name="CropBorder" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" ClipToBounds="True">
+                <Image x:Name="OriginalX" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            </Grid>
         </Grid>
         <Label x:Name="Mask"  MouseDown="CropBorder_MouseDown" MouseUp="CropBorder_MouseUp" MouseMove="CropBorder_MouseMove"/>
         <Label x:Name="MoveTitle" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="35" MouseDown="MoveTitle_MouseDown"></Label>

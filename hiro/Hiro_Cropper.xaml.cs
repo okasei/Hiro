@@ -33,6 +33,7 @@ namespace hiro
             Load_Color();
             Load_Translate();
             SourceInitialized += OnSourceInitialized;
+            Title = Hiro_Utils.Get_Translate("crop").Replace("%h", App.AppTitle);
         }
 
 
@@ -42,7 +43,7 @@ namespace hiro
             var hwnd = windowInteropHelper.Handle;
             var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
             source?.AddHook(WndProc);
-            WindowStyle = WindowStyle.None;
+            WindowStyle = WindowStyle.SingleBorderWindow;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -72,17 +73,25 @@ namespace hiro
             CloseBtn.ToolTip = Hiro_Utils.Get_Translate("close");
         }
 
+        private void SetOriginalX()
+        {
+            OriginalX.Margin = new Thickness(-CropBorder.Margin.Left, -CropBorder.Margin.Top, 0, 0);
+        }
+
         private void Load_Picture(string filePath)
         {
             this.filePath = filePath;
             //var a = new BitmapImage(new Uri(filePath, UriKind.Absolute));
             var a = Hiro_Utils.GetBitmapImage(filePath);
             Original.Source = a;
+            OriginalX.Source = a;
             DPI = new Point(a.DpiX, a.DpiY);
             Picture = new Point(a.Width, a.Height);
             double resize = Math.Max(a.Width / Width, a.Height / Height);
             Original.Width = a.Width / resize;
+            OriginalX.Width = a.Width / resize;
             Original.Height = a.Height / resize;
+            OriginalX.Height = a.Height / resize;
             if (crop != null)
             {
                 var x = crop.Value.X;
@@ -93,6 +102,7 @@ namespace hiro
                 CropBorder.Width = resize2 * x * 0.9;
                 CropBorder.Height = resize2 * y * 0.9;
                 CropBorder.Margin = new Thickness(Original.Margin.Left + Original.Width / 2 - CropBorder.Width / 2, Original.Margin.Top + Original.Height / 2 - CropBorder.Height / 2, 0, 0);
+                SetOriginalX();
             }
 
         }
@@ -237,6 +247,7 @@ namespace hiro
                         break;
                     }
             }
+            SetOriginalX();
         }
 
         private bool SaveCroppedImage(string savePath)
@@ -324,6 +335,13 @@ namespace hiro
         private void MoveTitle_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
+
+        private void Window_MouseLeave(object sender, MouseEventArgs e)
+        {
+            original = new Point(0, 0);
+            originalThickness = new(0);
+            cropFlag = 0;
         }
     }
 }
