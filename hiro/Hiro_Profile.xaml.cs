@@ -489,11 +489,7 @@ namespace hiro
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
                     var newStrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
                     Hiro_Utils.CreateFolder(newStrFileName);
-                    Point? pt = null;
-                    if (Hiro_Main != null)
-                    {
-                        pt = new(Hiro_Main.Width, Hiro_Main.Height);
-                    }
+                    Point pt = new(418, 235);
                     var crop = new Hiro_Cropper(strFileName, newStrFileName, pt, (x) =>
                     {
                         if (x == true)

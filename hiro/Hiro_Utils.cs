@@ -4565,6 +4565,16 @@ namespace hiro
 
         #endregion
 
+        #region 设置帧率
+        public static void SetFrame(int f)
+        {
+            Timeline.DesiredFrameRateProperty.OverrideMetadata(
+                typeof(Timeline),
+                new FrameworkPropertyMetadata { DefaultValue = f }
+                );
+        }
+        #endregion
+
     }
 
 

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace hiro
@@ -80,6 +81,7 @@ namespace hiro
             InitializeInnerParameters();
             Initialize_Notify_Recall();
             InitializeStartParameters(e);
+            Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "FPS", "60.0"))));
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;

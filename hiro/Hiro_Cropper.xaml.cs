@@ -320,5 +320,10 @@ namespace hiro
             Action?.Invoke(res);
             Close();
         }
+
+        private void MoveTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
     }
 }

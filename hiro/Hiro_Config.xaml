@@ -103,6 +103,12 @@
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="bg_brighter" Content="Brighter" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="360,64,0,0"/>
                     <RadioButton x:Name="video_btn" Content="Video" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="195,29,0,0"  Foreground ="{DynamicResource AppFore}" VerticalContentAlignment="Top" Checked="Video_btn_Checked"/>
                 </Grid>
+                <Grid x:Name="fr_grid" Margin="0,426,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
+                    <Label  Style="{DynamicResource HiroLabel}" x:Name="fr_label" Content="Frame" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="0,64,0,0"/>
+                    <Label Style="{DynamicResource HiroLabel}" x:Name="fr_name" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent"/>
+                    <ComboBox x:Name="fr_box" BorderBrush ="{DynamicResource AppFore}" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="70,5,0,0" VerticalAlignment="Top" Width="120" d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="24" SelectionChanged="Fr_box_SelectionChanged">
+                    </ComboBox>
+                </Grid>
                 <Grid x:Name="no_grid" Margin="4,314,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="no_label" Content="Select your favorable notification style" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="0,5,0,0"/>
                     <RadioButton x:Name="rbtn17" Content="Normal" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="0,29,0,0"  Foreground ="{DynamicResource AppFore}" VerticalContentAlignment="Top"  Checked="Rbtn17_Checked"/>

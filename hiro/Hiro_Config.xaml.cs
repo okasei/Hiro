@@ -48,11 +48,83 @@ namespace hiro
             langbox.ItemsSource = App.la;
             langbox.DisplayMemberPath = "Langname";
             langbox.SelectedValuePath = "Langname";
+            fr_box.Items.Clear();
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "1"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "2"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "3"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "15"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "30"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "45"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "60"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "75"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "90"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "120"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "144"
+            });
+            fr_box.Items.Add(new ComboBoxItem()
+            {
+                Foreground = new SolidColorBrush(Colors.Black),
+                Content = "240"
+            });
+            int frame = Convert.ToInt32(Hiro_Utils.Read_Ini(App.dconfig, "Config", "FPS", "60"));
+            for (int i = 0; i < fr_box.Items.Count; i++)
+            {
+                if (frame.ToString().Equals((fr_box.Items[i] as ComboBoxItem).Content.ToString()))
+                {
+                    fr_box.SelectedIndex = i;
+                    fr_name.Content = frame.ToString();
+                    break;
+                }
+            }
             for (int i = 0; i < App.la.Count; i++)
             {
                 if (App.lang.Equals(App.la[i].Name))
                 {
                     langbox.SelectedIndex = i;
+                    break;
                 }
             }
             tb1.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "LeftAction", "");
@@ -177,6 +249,9 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(bg_darker, "bgdarker");
             Hiro_Utils.Set_Control_Location(bg_brighter, "bgbrighter");
             Hiro_Utils.Set_Control_Location(bg_slider, "bgslider");
+            Hiro_Utils.Set_Control_Location(fr_label, "frame");
+            Hiro_Utils.Set_Control_Location(fr_box, "frbox");
+            Hiro_Utils.Set_Control_Location(fr_name, "frbox");
             Hiro_Utils.Set_Control_Location(langlabel, "language");
             Hiro_Utils.Set_Control_Location(langbox, "langbox");
             Hiro_Utils.Set_Control_Location(langname, "langbox");
@@ -194,10 +269,16 @@ namespace hiro
             Hiro_Utils.Set_FrameworkElement_Location(ar_grid, "autog");
             Hiro_Utils.Set_FrameworkElement_Location(bg_grid, "backg");
             Hiro_Utils.Set_FrameworkElement_Location(no_grid, "noticeg");
+            Hiro_Utils.Set_FrameworkElement_Location(fr_grid, "frameg");
             Thickness thickness = BaseGrid.Margin;
             thickness.Top = 0.0;
             BaseGrid.Margin = thickness;
             foreach (var obj in langbox.Items)
+            {
+                if (obj is ComboBoxItem mi)
+                    Hiro_Utils.Set_Control_Location(mi, "combo", location: false);
+            }
+            foreach (var obj in fr_box.Items)
             {
                 if (obj is ComboBoxItem mi)
                     Hiro_Utils.Set_Control_Location(mi, "combo", location: false);
@@ -246,6 +327,7 @@ namespace hiro
             bg_label.Content = Hiro_Utils.Get_Translate("background");
             bg_darker.Content = Hiro_Utils.Get_Translate("bgdarker");
             bg_brighter.Content = Hiro_Utils.Get_Translate("bgbrighter");
+            fr_label.Content = Hiro_Utils.Get_Translate("frame");
             langlabel.Content = Hiro_Utils.Get_Translate("language");
             moreandsoon.Content = Hiro_Utils.Get_Translate("morecome");
             btn7.Content = Hiro_Utils.Get_Translate("lock");
@@ -825,5 +907,15 @@ namespace hiro
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "URLConfirm", "0");
         }
 
+        private void Fr_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Load)
+            {
+                var fritems = new String[] { "1", "2", "3", "15", "30", "45", "60", "75", "90", "120", "144", "240" };
+                fr_name.Content = fritems[fr_box.SelectedIndex];
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "FPS", fritems[fr_box.SelectedIndex]);
+                App.Notify(new(Hiro_Utils.Get_Translate("restart"), 2, Hiro_Utils.Get_Translate("frame")));
+            }
+        }
     }
 }
