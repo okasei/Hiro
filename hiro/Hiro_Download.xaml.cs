@@ -439,13 +439,13 @@ namespace hiro
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("dlopen");
-            Hiro_Utils.Set_Control_Location(Autorun, "dlopen", bottom: true);
+            Hiro_Utils.Set_Control_Location(Autorun, "dlopen", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("dlrun");
-            Hiro_Utils.Set_Control_Location(Autorun, "dlrun", bottom: true);
+            Hiro_Utils.Set_Control_Location(Autorun, "dlrun", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

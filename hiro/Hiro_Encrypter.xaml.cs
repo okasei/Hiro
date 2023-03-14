@@ -110,13 +110,13 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(pb, "enprogress");
             if (mode == 0)
             {
-                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle1");
-                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle0");
+                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle1", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle0", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
             }
             else
             {
-                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle0");
-                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle1");
+                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle0", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle1", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
             }
             Hiro_Utils.Set_Control_Location(FileLabel, "enflabel");
             Hiro_Utils.Set_Control_Location(PwdLabel, "enplabel");
@@ -134,17 +134,17 @@ namespace hiro
                 Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true);
             }
             Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
-            {
-                Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(1, EncryptTitle, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, DecryptTitle, sb, -50, null);
-                sb.Begin();
-            }
             if (relocate)
             {
                 System.Windows.Controls.Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - this.Width / 2);
                 System.Windows.Controls.Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2);
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                {
+                    Storyboard sb = new();
+                    Hiro_Utils.AddPowerAnimation(1, EncryptTitle, sb, -50, null);
+                    Hiro_Utils.AddPowerAnimation(1, DecryptTitle, sb, -50, null);
+                    sb.Begin();
+                }
             }
         }
         public void Load_Colors()
@@ -541,15 +541,15 @@ namespace hiro
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enrun");
-            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true);
-            Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true);
+            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enopen");
-            Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true);
-            Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true);
+            Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void FilePath_Drop(object sender, DragEventArgs e)
