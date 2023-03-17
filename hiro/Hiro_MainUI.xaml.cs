@@ -222,7 +222,7 @@ namespace hiro
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("3"))
                 Update_VlcPlayer_Status();
             if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
-                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
             if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
             {
                 Set_Label(selected ?? homex);
@@ -967,42 +967,45 @@ namespace hiro
             Set_Label(schedulex);
         }
 
-        internal void Blurbgi(int direction)
+        internal void Blurbgi(int direction, bool all = true)
         {
             if (bflag == 1)
                 return;
             bflag = 1;
-            foreach (Window win in Application.Current.Windows)
+            if (all)
             {
-                switch (win)
+                foreach (Window win in Application.Current.Windows)
                 {
-                    case Hiro_Alarm a:
-                        a.Loadbgi(direction);
-                        break;
-                    case Hiro_Msg e:
-                        e.Loadbgi(direction);
-                        break;
-                    case Hiro_Sequence c:
-                        c.Loadbgi(direction);
-                        break;
-                    case Hiro_Download d:
-                        d.Loadbgi(direction);
-                        break;
-                    case Hiro_Web f:
-                        f.Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
-                        break;
-                    case Hiro_Finder g:
-                        g.Loadbgi(direction);
-                        break;
-                    case Hiro_Player h:
-                        h.Loadbgi(direction);
-                        break;
-                    case Hiro_Ticker i:
-                        i.Loadbgi(direction);
-                        break;
-                }
+                    switch (win)
+                    {
+                        case Hiro_Alarm a:
+                            a.Loadbgi(direction);
+                            break;
+                        case Hiro_Msg e:
+                            e.Loadbgi(direction);
+                            break;
+                        case Hiro_Sequence c:
+                            c.Loadbgi(direction);
+                            break;
+                        case Hiro_Download d:
+                            d.Loadbgi(direction);
+                            break;
+                        case Hiro_Web f:
+                            f.Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
+                            break;
+                        case Hiro_Finder g:
+                            g.Loadbgi(direction);
+                            break;
+                        case Hiro_Player h:
+                            h.Loadbgi(direction);
+                            break;
+                        case Hiro_Ticker i:
+                            i.Loadbgi(direction);
+                            break;
+                    }
 
-                System.Windows.Forms.Application.DoEvents();
+                    System.Windows.Forms.Application.DoEvents();
+                }
             }
             bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             System.ComponentModel.BackgroundWorker bw = new();
@@ -1256,7 +1259,7 @@ namespace hiro
             if (WindowState != WindowState.Minimized)
             {
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
-                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
             }
 
             Update_VlcPlayer_Status();
