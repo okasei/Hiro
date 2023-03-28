@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
@@ -10,8 +10,8 @@
     <Copyright>Copyright© 2023 N+ Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.3.3</FileVersion>
-    <AssemblyVersion>2.3.3</AssemblyVersion>
+    <FileVersion>2.3.4</FileVersion>
+    <AssemblyVersion>2.3.4</AssemblyVersion>
     <Version>2.3.3</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
