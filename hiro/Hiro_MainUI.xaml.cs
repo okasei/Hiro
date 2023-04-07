@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Vlc.DotNet.Wpf;
 using Vlc.DotNet.Core.Interops;
+using System.Windows.Automation.Peers;
 
 namespace hiro
 {
@@ -1222,6 +1223,12 @@ namespace hiro
                 vlcGrid.Height = Height;
                 try
                 {
+                    var media = hiro_provider?.MediaPlayer?.GetMedia();
+                    if (media == null)
+                        return;
+                    var t0 = media.Tracks;
+                    if (t0.Length == 0)
+                        return;
                     var track = hiro_provider?.MediaPlayer.GetMedia().Tracks[0].TrackInfo as VideoTrack;
                     if (track != null)
                     {
