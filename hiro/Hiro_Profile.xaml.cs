@@ -94,7 +94,7 @@ namespace hiro
             {
                 App.AppTitle = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
                 if (App.wnd != null)
-                    App.wnd.Hiro_Tray.ToolTipText = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
+                    App.wnd.trayText.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
             }
             msg_audio.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1");
             msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1");
@@ -261,7 +261,7 @@ namespace hiro
                 Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
-                App.wnd.Hiro_Tray.ToolTipText = App.AppTitle;
+                App.wnd.trayText.Text = App.AppTitle;
         }
         private void Rbtn17_Checked(object sender, RoutedEventArgs e)
         {
@@ -275,7 +275,7 @@ namespace hiro
                 Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
-                App.wnd.Hiro_Tray.ToolTipText = tb10.Text;
+                App.wnd.trayText.Text = tb10.Text;
         }
 
         private void Tb10_TextChanged(object sender, TextChangedEventArgs e)
@@ -290,8 +290,8 @@ namespace hiro
                     Hiro_Main.titlelabel.Content = App.AppTitle;
                     Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 }
-                if (App.wnd != null)
-                    App.wnd.Hiro_Tray.ToolTipText = tb10.Text;
+                if (App.wnd != null)    
+                    App.wnd.trayText.Text = tb10.Text;
             }
 
         }
