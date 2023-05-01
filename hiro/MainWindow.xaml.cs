@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -178,6 +179,7 @@ namespace hiro
             var source = System.Windows.Interop.HwndSource.FromHwnd(App.WND_Handle);
             source?.AddHook(WndProc);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main Window: AddHook WndProc");
+            AddClipboardFormatListener(App.WND_Handle);
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -231,6 +233,9 @@ namespace hiro
                         }
                         App.Notify(new Hiro_Notice(mms, 2, Hiro_Utils.Get_Translate("device")));
                     }
+                    break;
+                case 0x031D:
+                    //MessageBox.Show(Clipboard.GetDataObject().GetFormats()[0]);
                     break;
                 case 0x0312:
                     handled = true;
@@ -399,6 +404,7 @@ namespace hiro
             Hiro_Tray.Dispose();
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.Uninstall();
             Hiro_Utils.LogtoFile("[INFOMATION]Main UI: Closing " + e.GetType().ToString());
+            RemoveClipboardFormatListener(App.WND_Handle);
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)
@@ -421,6 +427,13 @@ namespace hiro
 
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpSystemPowerStatus);
+        #endregion
+
+        #region 监听剪辑版
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool AddClipboardFormatListener(IntPtr hWnd);
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool RemoveClipboardFormatListener(IntPtr hWnd);
         #endregion
     }
 }

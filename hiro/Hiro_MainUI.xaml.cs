@@ -34,6 +34,7 @@ namespace hiro
         internal Hiro_Chat? hiro_chat = null;
         internal Hiro_Login? hiro_login = null;
         internal VlcVideoSourceProvider? hiro_provider = null;
+        internal string vlcPath = "";
 
         public Hiro_MainUI()
         {
@@ -1045,7 +1046,13 @@ namespace hiro
             vlcGrid.Visibility = Visibility.Visible;
             bgimage.Visibility = Visibility.Hidden;
             bgimage.Background = new SolidColorBrush(App.AppAccentColor);
-            Create_Vlc();
+            var videoPath = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackVideo", "");
+            videoPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(videoPath));
+            if(videoPath != vlcPath)
+            {
+                vlcPath = videoPath;
+                Create_Vlc();
+            }
             Load_VlcPlayer();
         }
 
