@@ -1962,6 +1962,32 @@ namespace hiro
                         }
                         goto RunOK;
                     }
+                    if (path.ToLower().StartsWith("splash("))
+                    {
+                        var pa = parameter[0];
+                        HiroInvoke(() =>
+                        {
+                            if (parameter.Count > 1)
+                            {
+                                var tick = 0;
+                                if (!int.TryParse(parameter.Count >= 5 ? parameter[4] : "-1", out tick))
+                                    tick = -1;
+                                new Hiro_Splash(parameter[0], parameter[1],
+                                    parameter.Count >= 3 ? parameter[2] : Hiro_Utils.Get_Translate("spLoading"),
+                                    parameter.Count >= 4 ? parameter[3] : "",
+                                    tick,
+                                    parameter.Count >= 6 ? parameter[5].Equals("true", StringComparison.CurrentCultureIgnoreCase) : false,
+                                    parameter.Count >= 7 ? parameter[6].Equals("true", StringComparison.CurrentCultureIgnoreCase) : false,
+                                    parameter.Count >= 8 ? parameter[7].Equals("true", StringComparison.CurrentCultureIgnoreCase) : true,
+                                    parameter.Count >= 9 ? parameter[8] : "").Show();
+                            }
+                            else if (parameter.Count == 1)
+                                new Hiro_Splash(parameter[0]).Show();
+                            else
+                                new Hiro_Splash().Show();
+                        });
+                        goto RunOK;
+                    }
                     if (App.mn != null)
                     {
                         if (path.ToLower().StartsWith("home()"))

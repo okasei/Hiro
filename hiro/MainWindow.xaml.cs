@@ -318,6 +318,9 @@ namespace hiro
                     case Hiro_Encrypter j:
                         j.Load_Colors();
                         break;
+                    case Hiro_Splash k:
+                        k.Load_Color();
+                        break;
                 }
                 System.Windows.Forms.Application.DoEvents();
             }

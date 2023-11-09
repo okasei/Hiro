@@ -7,12 +7,12 @@
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>hiro_circle.ico</ApplicationIcon>
-    <Copyright>Copyright© 2023 N+ Hiro</Copyright>
+    <Copyright>Copyright© 2023 Soleil Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.3.4</FileVersion>
-    <AssemblyVersion>2.3.4</AssemblyVersion>
-    <Version>2.3.3</Version>
+    <FileVersion>2.3.5</FileVersion>
+    <AssemblyVersion>2.3.5</AssemblyVersion>
+    <Version>2.3.5</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
@@ -24,17 +24,17 @@
 
   <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-    <PackageReference Include="MaterialDesignColors" Version="2.1.2-ci148">
+    <PackageReference Include="MaterialDesignColors" Version="3.0.0-ci435">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="MaterialDesignThemes" Version="4.8.0-ci148">
+    <PackageReference Include="MaterialDesignThemes" Version="5.0.0-ci435">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1619-prerelease" />
-    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2194-prerelease" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
     <PackageReference Include="Vlc.DotNet.Wpf" Version="3.1.0" />
-    <PackageReference Include="WindowsAPICodePack" Version="7.0.1" />
+    <PackageReference Include="WindowsAPICodePack" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>

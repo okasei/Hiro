@@ -35,6 +35,7 @@ namespace hiro
         internal Hiro_Login? hiro_login = null;
         internal VlcVideoSourceProvider? hiro_provider = null;
         internal string vlcPath = "";
+        internal string currentBack = "";
 
         public Hiro_MainUI()
         {
@@ -208,6 +209,7 @@ namespace hiro
                         Dispatcher.Invoke(() =>
                         {
                             Hiro_Utils.Set_Bgimage(bgimage, this);
+                            currentBack = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackImage", "")));
                         });
                     }
                     catch (Exception ex)
@@ -332,6 +334,7 @@ namespace hiro
         {
             Hiro_Utils.IntializeColorParameters();
             Hiro_Utils.Set_Bgimage(bgimage, this);
+            currentBack = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackImage", "")));
             switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1"))
             {
                 case "1":
@@ -684,7 +687,15 @@ namespace hiro
             if (current is not Hiro_Home hh)
                 return;
             if (!hh.Hello.Text.Equals(val))
+            {
                 hh.Hello.Text = val;
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                {
+                    var sb = new Storyboard();
+                    Hiro_Utils.AddPowerAnimation(0, hh.Hello, sb);
+                    sb.Begin();
+                }
+            }
             val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Translate("copyright")));
             if (!hh.Copyright.Text.Equals(val))
                 hh.Copyright.Text = val;
@@ -784,6 +795,21 @@ namespace hiro
                 }
                 label.IsEnabled = true;
                 return;
+            }
+            else
+            {
+                var backg = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dconfig, "Background", label.Name, "")));
+                if (!System.IO.File.Exists(backg))
+                {
+                    backg = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackImage", "")));               
+                }
+                if (backg != currentBack)
+                {
+                    Hiro_Utils.Set_Bgimage(bgimage, this, backg);
+                    currentBack = backg;
+                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Background", "1").Equals("2"))
+                        Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
+                }
             }
             if (label == homex)
             {
@@ -1004,6 +1030,9 @@ namespace hiro
                         case Hiro_Ticker i:
                             i.Loadbgi(direction);
                             break;
+                        case Hiro_Splash j:
+                            j.Loadbgi(direction);
+                            break;
                     }
 
                     System.Windows.Forms.Application.DoEvents();
@@ -1048,7 +1077,7 @@ namespace hiro
             bgimage.Background = new SolidColorBrush(App.AppAccentColor);
             var videoPath = Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackVideo", "");
             videoPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(videoPath));
-            if(videoPath != vlcPath)
+            if (videoPath != vlcPath)
             {
                 vlcPath = videoPath;
                 Create_Vlc();

@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Web.WebView2.Core;
+using System;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,9 +15,6 @@ using Windows.AI.MachineLearning;
 
 namespace hiro
 {
-    /// <summary>
-    /// Web.xaml の相互作用ロジック
-    /// </summary>
     public partial class Hiro_Web : Window
     {
         internal bool self = false;
@@ -57,7 +56,10 @@ namespace hiro
             }
             else
             {
-                var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\")));
+                //Allow the webview to access Video and Audio
+                var options = new CoreWebView2EnvironmentOptions();
+                options.AdditionalBrowserArguments = "--enable-features=MediaCaptureAPI";
+                var env = Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(userDataFolder: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\")), options: options);
                 wv2.EnsureCoreWebView2Async(env.Result);
                 CrashedGrid.Visibility = Visibility.Visible;
                 try
@@ -304,7 +306,7 @@ namespace hiro
                 {
                     label.Background = new SolidColorBrush((Color)Resources["AppForeDimColor"]);
                 }
-                
+
                 e.Handled = true;
             };
             label.MouseLeave += delegate (object sender, MouseEventArgs e)
@@ -323,7 +325,7 @@ namespace hiro
                 {
                     label.Background = new SolidColorBrush(Colors.Transparent);
                 }
-                
+
                 e.Handled = true;
             };
             label.Content = ti.Length > 10 ? ti[..10] + "..." : ti;
@@ -369,8 +371,21 @@ namespace hiro
             wv2.CoreWebView2.IsDefaultDownloadDialogOpenChanged += CoreWebView2_IsDefaultDownloadDialogOpenChanged;
             wv2.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
             wv2.CoreWebView2.ContextMenuRequested += CoreWebView2_ContextMenuRequested;
+            wv2.CoreWebView2.FaviconChanged += (e, args) =>
+            {
+                UpdateIcon();
+            };
+            wv2.CoreWebView2.PermissionRequested += (obj, args) =>
+            {
+                if (args.PermissionKind == CoreWebView2PermissionKind.Camera || args.PermissionKind == CoreWebView2PermissionKind.Microphone)
+                {
+                    args.State = CoreWebView2PermissionState.Allow;
+                    args.Handled = true;
+                }
+            };
             //wv2.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-            wv2.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
+            wv2.CoreWebView2.Settings.IsGeneralAutofillEnabled = true;
+            wv2.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
             //wv2.CoreWebView2.Settings.IsBuiltInErrorPageEnabled = false;
             wv2.CoreWebView2.Settings.IsStatusBarEnabled = false;
             if (fixed_title == null)
@@ -567,6 +582,16 @@ namespace hiro
 
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
+            var blockSite = Hiro_Utils.Read_Ini(configPath, "Settings", "BlockSite", string.Empty);
+            foreach (var block in blockSite.Split(";"))
+            {
+                if (Regex.IsMatch(e.Uri, block))
+                {
+                    Hiro_Utils.LogtoFile($"Pattern {block} Blocked Site: {e.Uri}");
+                    e.Cancel = true;
+                    return;
+                }
+            }
             currentUrl = wv2.CoreWebView2.Source;
             secure = true;
             Loading(true);
@@ -592,6 +617,16 @@ namespace hiro
 
         private void CoreWebView2_FrameNavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
+            var blockSite = Hiro_Utils.Read_Ini(configPath, "Settings", "BlockSite", string.Empty);
+            foreach (var block in blockSite.Split(";"))
+            {
+                if (Regex.IsMatch(e.Uri, block))
+                {
+                    Hiro_Utils.LogtoFile($"Pattern {block} Blocked Frame: {e.Uri}");
+                    e.Cancel = true;
+                    return;
+                }
+            }
             if (e.Uri.ToLower().StartsWith("http://"))
                 secure = false;
             Loading(true);
@@ -611,7 +646,6 @@ namespace hiro
             }
             else
             {
-                UpdateIcon();
                 wvpb.Visibility = Visibility.Collapsed;
                 Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             }
@@ -980,7 +1014,7 @@ namespace hiro
         private void FavNextBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var newLeft = FavGridBase.Margin.Left;
-            newLeft = UniversalLeft + newLeft - FavGridG.ActualWidth > FavGridG.ActualWidth ? newLeft - FavGridG.ActualWidth : FavGridG.ActualWidth - UniversalLeft ;
+            newLeft = UniversalLeft + newLeft - FavGridG.ActualWidth > FavGridG.ActualWidth ? newLeft - FavGridG.ActualWidth : FavGridG.ActualWidth - UniversalLeft;
             FavGridBase.Margin = new Thickness(newLeft, 0, 0, 0);
             UpdateUniversalLeft();
         }

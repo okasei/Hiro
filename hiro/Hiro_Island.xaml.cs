@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Security.Cryptography;
@@ -37,6 +38,13 @@ namespace hiro
         public Hiro_Island()
         {
             InitializeComponent();
+            var icon = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomizeIcon", "");
+            icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
+            if (File.Exists(icon))
+            {
+                BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                BaseIcon.ImageSource = bi;
+            }
             ContentLabel.MaxWidth = SystemParameters.FullPrimaryScreenWidth * 4 / 5;
             Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
             var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
