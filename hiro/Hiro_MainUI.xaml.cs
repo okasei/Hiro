@@ -801,7 +801,7 @@ namespace hiro
                 var backg = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dconfig, "Background", label.Name, "")));
                 if (!System.IO.File.Exists(backg))
                 {
-                    backg = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackImage", "")));               
+                    backg = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dconfig, "Config", "BackImage", "")));
                 }
                 if (backg != currentBack)
                 {

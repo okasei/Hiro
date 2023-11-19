@@ -10,9 +10,9 @@
     <Copyright>Copyright© 2023 Soleil Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.3.5</FileVersion>
-    <AssemblyVersion>2.3.5</AssemblyVersion>
-    <Version>2.3.5</Version>
+    <FileVersion>2.3.6</FileVersion>
+    <AssemblyVersion>2.3.6</AssemblyVersion>
+    <Version>2.3.6</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
@@ -20,6 +20,7 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <BaseOutputPath></BaseOutputPath>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <ApplicationManifest>package.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -83,7 +84,6 @@
 
   <ItemGroup>
     <None Remove="C:\Users\Rex\.nuget\packages\csvideoplayer\1.0.3\build\\..\CSVideoPlayer.License.txt" />
-    <None Remove="net7.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,7 +95,6 @@
     <Resource Include="hiro_circle.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="net7.png" />
   </ItemGroup>
 
   <ItemGroup>

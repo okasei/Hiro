@@ -12,6 +12,10 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Windows.Foundation.Metadata;
+using Windows.UI.Notifications;
+using Windows.UI.Notifications.Management;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace hiro
 {
@@ -39,6 +43,7 @@ namespace hiro
         internal static Hiro_MainUI? mn = null;
         internal static Hiro_Notification? noti = null;
         internal static Hiro_Island? hisland = null;
+        internal static Hiro_Box? hiBox = null;
         internal static Hiro_Editor? ed = null;
         internal static Hiro_LockScreen? ls = null;
         internal static List<Hiro_Notice> noticeitems = new();
@@ -60,33 +65,59 @@ namespace hiro
         internal static string LoginedToken = string.Empty;
         internal static System.Threading.Thread? serverThread = null;
         internal static int flashFlag = -1;
+        internal static int[] notificationNums = { -1, -1 };
+        private static UserNotificationListener? listener = null;
         #endregion
 
         #region 私有参数
-        private static IntPtr? QQMusicPtr = null;
-        private static IntPtr? NeteasePtr = null;
-        private static IntPtr? KuwoPtr = null;
-        private static IntPtr? SpotifyPtr = null;
-        private static IntPtr? KugouPtr = null;
-        private static string QQTitle = string.Empty;
-        private static string NeteaseTitle = string.Empty;
-        private static string KuwoTitle = string.Empty;
-        private static string SpotifyTitle = string.Empty;
-        private static string KugouTitle = string.Empty;
+        //QQ,Netease,Kuwo,Spotify,Kugou
+        private static IntPtr?[] Ptrs = { null, null, null, null, null, null };
+        private static string[] musicTitles = { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         private static bool AutoChat = false;
         #endregion
 
-        private void Hiro_We_Go(object sender, StartupEventArgs e)
+        private async void Hiro_We_Go(object sender, StartupEventArgs e)
         {
             InitializeInnerParameters();
             Initialize_Notify_Recall();
             InitializeStartParameters(e);
+            Initialize_NotificationListener();
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "FPS", "60"))));
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
+        async private void Initialize_NotificationListener()
+        {
+            if (Hiro_Utils.Read_Ini(dconfig, "Config", "MonitorSys", "1").Equals("1") && ApiInformation.IsTypePresent("Windows.UI.Notifications.Management.UserNotificationListener"))
+            {
+                if (Hiro_Utils.Read_Ini(dconfig, "Config", "Toast", "0").Equals("1"))
+                    Hiro_Utils.Write_Ini(dconfig, "Config", "Toast", "0");
+                listener = UserNotificationListener.Current;
+                // And request access to the user's notifications (must be called from UI thread)
+                UserNotificationListenerAccessStatus accessStatus = await listener.RequestAccessAsync();
+                switch (accessStatus)
+                {
+                    case UserNotificationListenerAccessStatus.Allowed:
+                        {
+                            listener = UserNotificationListener.Current;
+                            Hiro_Utils.LogtoFile("[INFO]Notification Listener Enabled");
+                            break;
+                        }
+                    case UserNotificationListenerAccessStatus.Denied:
+                        Hiro_Utils.LogtoFile("[INFO]Notification Listener Disabled");
+                        break;
+                    case UserNotificationListenerAccessStatus.Unspecified:
+                        Hiro_Utils.LogtoFile("[INFO]Notification Listener Unspecified");
+                        break;
+                }
+            }
+            else
+            {
+                Hiro_Utils.LogtoFile("Notification Listener Not Supported");
+            }
+        }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -367,6 +398,15 @@ namespace hiro
                     {
                         hisland ??= new();
                         hisland.Show();
+                    });
+                }
+                else if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("4"))
+                {
+                    noticeitems.Add(i);
+                    Hiro_Utils.HiroInvoke(() =>
+                    {
+                        hiBox ??= new();
+                        hiBox.Show();
                     });
                 }
                 else
@@ -760,53 +800,103 @@ namespace hiro
             {
                 Music_Tick();
             }
+            if (listener != null)
+            {
+                Notification_Tick();
+            }
+        }
+
+        async private static void Notification_Tick()
+        {
+            try
+            {
+
+                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "0");
+                var a = Hiro_Utils.Read_Ini(dconfig, "Config", "MonitorSysPara", "0").Trim();
+                if (a.Equals("1") || a.Equals("0"))
+                    notificationNums[0] = Do_Notifications(notificationNums[0], await listener?.GetNotificationsAsync(NotificationKinds.Unknown));
+                if (a.Equals("2") || a.Equals("0"))
+                    notificationNums[1] = Do_Notifications(notificationNums[1], await listener?.GetNotificationsAsync(NotificationKinds.Toast));
+            }
+            catch (Exception ex)
+            {
+                Hiro_Utils.LogError(ex, "Hiro.Notification.Listener");
+            }
+        }
+
+        private static int Do_Notifications(int origin, IReadOnlyList<UserNotification> notifs)
+        {
+            var ret = origin;
+            if (ret >= 0 && ret < notifs.Count)
+            {
+                for (int i = Math.Max(ret - 1, 0); i < notifs.Count; i++)
+                {
+                    var appName = notifs[i].AppInfo.PackageFamilyName.Equals("") ? notifs[i].AppInfo.DisplayInfo.DisplayName : notifs[i].AppInfo.PackageFamilyName;
+                    // Get the toast binding, if present
+                    NotificationBinding toastBinding = notifs[i].Notification.Visual.GetBinding(KnownNotificationBindings.ToastGeneric);
+                    if (toastBinding != null)
+                    {
+                        // And then get the text elements from the toast binding
+                        IReadOnlyList<AdaptiveNotificationText> textElements = toastBinding.GetTextElements();
+                        // Treat the first text element as the title text
+                        string? titleText = textElements.FirstOrDefault()?.Text;
+                        // We'll treat all subsequent text elements as body text,
+                        // joining them together via newlines.
+                        string bodyText = string.Join(Environment.NewLine, textElements.Skip(1).Select(t => t.Text));
+                        Notify(new Hiro_Notice(bodyText, 1, appName + " - " + titleText));
+                    }
+                }
+            }
+            return notifs.Count;
         }
 
         private static void Music_Tick()
         {
-            if (Initialize_Title(QQMusicPtr, out string? qtitle) == 0)
+            //QQ,Netease,Kuwo,Spotify,Kugou
+            if (Initialize_Title(Ptrs[0], out string? qtitle) == 0)
             {
                 Initialize_Ptr("QQMusic", 0);
             }
-            else if (qtitle != QQTitle && qtitle != null && !qtitle.Equals("QQ音乐"))
+            else if (qtitle != musicTitles[0] && qtitle != null && !qtitle.Equals("QQ音乐"))
             {
-                QQTitle = qtitle;
+                musicTitles[0] = qtitle;
                 Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Utils.Get_Translate("music")));
             }
-            if (Initialize_Title(NeteasePtr, out string? ntitle) == 0)
+            if (Initialize_Title(Ptrs[1], out string? ntitle) == 0)
                 Initialize_Ptr("cloudmusic", 1);
-            else if (ntitle != NeteaseTitle && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐"))
+            else if (ntitle != musicTitles[1] && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐"))
             {
-                NeteaseTitle = ntitle;
+                musicTitles[1] = ntitle;
                 Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Utils.Get_Translate("music")));
             }
-            if (Initialize_Title(KuwoPtr, out string? kwtitle) == 0)
+            if (Initialize_Title(Ptrs[2], out string? kwtitle) == 0)
                 Initialize_Ptr("kwmusic", 2);
-            else if (kwtitle != KuwoTitle && kwtitle != null && !kwtitle.Equals("KwStartPageDlg") && !kwtitle.Equals("酷我音乐"))
+            else if (kwtitle != musicTitles[2] && kwtitle != null && !kwtitle.Equals("KwStartPageDlg") && !kwtitle.Equals("酷我音乐"))
             {
-                if (KuwoTitle.Length > 2)
+                if (musicTitles[2].Length > 2)
                 {
-                    if (kwtitle.IndexOf(KuwoTitle.Substring(2)) != -1)
+                    if (kwtitle.IndexOf(musicTitles[2].Substring(2)) != -1)
                     {
-                        KuwoTitle = kwtitle;
+                        musicTitles[2] = kwtitle;
                         return;
                     }
                 }
-                KuwoTitle = kwtitle;
+                musicTitles[2] = kwtitle;
                 Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Utils.Get_Translate("music")));
             }
-            if (Initialize_Title(KugouPtr, out string? kgtitle) == 0)
+            if (Initialize_Title(Ptrs[3], out string? kgtitle) == 0)
                 Initialize_Ptr("KuGou", 3);
-            else if (kgtitle != KugouTitle && kgtitle != null && !kgtitle.Equals(string.Empty) && !kgtitle.Equals("酷狗音乐"))
+            else if (kgtitle != musicTitles[3] && kgtitle != null && !kgtitle.Equals(string.Empty) && !kgtitle.Equals("酷狗音乐"))
             {
-                KugouTitle = kgtitle;
+                musicTitles[3] = kgtitle;
                 Notify(new(Hiro_Utils.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, Hiro_Utils.Get_Translate("music")));
             }
-            if (Initialize_Title(SpotifyPtr, out string? sptitle) == 0)
-                SpotifyPtr = Initialize_Ptr("Spotify");
-            else if (sptitle != SpotifyTitle && sptitle != null && !sptitle.Equals("Spotify") && !sptitle.Equals("Spotify Premium"))
+            if (Initialize_Title(Ptrs[4], out string? sptitle) == 0)
+                Ptrs[4] = Initialize_Ptr("Spotify");
+            else if (sptitle != musicTitles[4] && sptitle != null && !sptitle.Equals("Spotify") && !sptitle.Equals("Spotify Premium"))
             {
-                SpotifyTitle = sptitle;
+                musicTitles[4] = sptitle;
                 Notify(new(Hiro_Utils.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, Hiro_Utils.Get_Translate("music")));
             }
         }
@@ -1006,16 +1096,11 @@ namespace hiro
                              switch (category)
                              {
                                  case 0:
-                                     QQMusicPtr = hWnd;
-                                     break;
                                  case 1:
-                                     NeteasePtr = hWnd;
-                                     break;
                                  case 2:
-                                     KuwoPtr = hWnd;
-                                     break;
                                  case 3:
-                                     KugouPtr = hWnd;
+                                 case 4:
+                                     Ptrs[category] = hWnd;
                                      break;
                                  default:
                                      break;

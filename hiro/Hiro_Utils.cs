@@ -451,14 +451,14 @@ namespace hiro
             size.Width = formattedText.Width + sender.Padding.Left + sender.Padding.Right;
             size.Height = formattedText.Height + sender.Padding.Top + sender.Padding.Bottom;
         }
-        public static void Set_Bgimage(Control sender, Control win, string? strFileName = null)
+        public static void Set_Bgimage(Control sender, Control win, string? strFileName = null, bool? ignoreAnimation = false)
         {
             Set_Opacity(sender, win);
             //Bgimage
             strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
             if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
             {
-                if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (ignoreAnimation != false && !Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Storyboard? sb = new();
                     try
@@ -1610,7 +1610,7 @@ namespace hiro
                     {
                         HiroInvoke(() =>
                         {
-                            new Hiro_Test().Show();
+                            new Hiro_Box().Show();
                         });
                         goto RunOK;
                     }

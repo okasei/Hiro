@@ -178,6 +178,9 @@ namespace hiro
                 case "3":
                     rbtn20.IsChecked = true;
                     break;
+                case "4":
+                    rbtn21.IsChecked = true;
+                    break;
                 default:
                     rbtn17.IsChecked = true;
                     break;
@@ -206,6 +209,7 @@ namespace hiro
             tr_btn.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "TRBtn", "0").Equals("1");
             image_compress.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1");
             UrlConfirmBox.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "URLConfirm", "0").Equals("1");
+            MonitorSysBox.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MonitorSys", "1").Equals("1");
             Autorun.Tag = "1";
             Load = true;
         }
@@ -235,10 +239,12 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(rbtn18, "noticewin");
             Hiro_Utils.Set_Control_Location(rbtn19, "noticeisland");
             Hiro_Utils.Set_Control_Location(rbtn20, "noticeimgland");
+            Hiro_Utils.Set_Control_Location(rbtn21, "noticehibox");
             Hiro_Utils.Set_Control_Location(reverse_style, "reversebox");
             Hiro_Utils.Set_Control_Location(tr_btn, "trbtnbox");
             Hiro_Utils.Set_Control_Location(image_compress, "imgzip");
             Hiro_Utils.Set_Control_Location(UrlConfirmBox, "urlconfirm");
+            Hiro_Utils.Set_Control_Location(MonitorSysBox, "monitorsys");
             Hiro_Utils.Set_Control_Location(Verbose, "verbosebox");
             Hiro_Utils.Set_Control_Location(animation, "anibox");
             Hiro_Utils.Set_Control_Location(lc_label, "leftclick");
@@ -314,10 +320,12 @@ namespace hiro
             rbtn18.Content = Hiro_Utils.Get_Translate("noticewin");
             rbtn19.Content = Hiro_Utils.Get_Translate("noticeisland");
             rbtn20.Content = Hiro_Utils.Get_Translate("noticeimgland");
+            rbtn21.Content = Hiro_Utils.Get_Translate("noticehibox");
             reverse_style.Content = Hiro_Utils.Get_Translate("reversebox");
             tr_btn.Content = Hiro_Utils.Get_Translate("trbtnbox");
             image_compress.Content = Hiro_Utils.Get_Translate("imgzip");
             UrlConfirmBox.Content = Hiro_Utils.Get_Translate("urlconfirm");
+            MonitorSysBox.Content = Hiro_Utils.Get_Translate("monitorsys");
             Verbose.Content = Hiro_Utils.Get_Translate("verbosebox");
             animation.Content = Hiro_Utils.Get_Translate("anibox");
             lc_label.Content = Hiro_Utils.Get_Translate("leftclick");
@@ -896,6 +904,10 @@ namespace hiro
         {
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "3");
         }
+        private void Rbtn21_Checked(object sender, RoutedEventArgs e)
+        {
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "4");
+        }
 
         private void UrlConfirmBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -905,6 +917,24 @@ namespace hiro
         private void UrlConfirmBox_Unchecked(object sender, RoutedEventArgs e)
         {
             Hiro_Utils.Write_Ini(App.dconfig, "Config", "URLConfirm", "0");
+        }
+        private void MonitorSysBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (rbtn18.IsChecked == true)
+            {
+                rbtn17.IsChecked = true;
+                rbtn18.IsChecked = false;
+            }
+            rbtn18.IsEnabled = false;
+            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
+                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "0");
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "MonitorSys", "1");
+        }
+
+        private void MonitorSysBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            rbtn18.IsEnabled = true;
+            Hiro_Utils.Write_Ini(App.dconfig, "Config", "MonitorSys", "0");
         }
 
         private void Fr_box_SelectionChanged(object sender, SelectionChangedEventArgs e)

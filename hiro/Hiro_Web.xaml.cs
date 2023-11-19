@@ -585,7 +585,7 @@ namespace hiro
             var blockSite = Hiro_Utils.Read_Ini(configPath, "Settings", "BlockSite", string.Empty);
             foreach (var block in blockSite.Split(";"))
             {
-                if (Regex.IsMatch(e.Uri, block))
+                if (block.Trim().Length > 0 && Regex.IsMatch(e.Uri, block))
                 {
                     Hiro_Utils.LogtoFile($"Pattern {block} Blocked Site: {e.Uri}");
                     e.Cancel = true;
