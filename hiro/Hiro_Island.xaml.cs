@@ -43,48 +43,11 @@ namespace hiro
             if (File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                BaseIcon.ImageSource = bi;
+                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
             }
             ContentLabel.MaxWidth = SystemParameters.FullPrimaryScreenWidth * 4 / 5;
             Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
-            var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
-            if (t.IndexOf(Environment.NewLine) != -1)
-            {
-                notifications = t.Replace("<nop>", "").Split(Environment.NewLine).ToList();
-                for (int i = 0; i < notifications.Count; i++)
-                {
-                    if (notifications[i].Replace(" ", "").Equals(string.Empty))
-                    {
-                        notifications.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-            else
-                notifications = new()
-                {
-                    t
-                };
-            former_count = notifications.Count;
-            ContentLabel.Text = notifications[0];
-            TitleLabel.Content = App.noticeitems[0].title;
-            act = App.noticeitems[0].act;
-            if (act != null)
-            {
-                ContentGrid.Cursor = Cursors.Hand;
-            }
-            else
-            {
-                ContentGrid.Cursor = null;
-            }
-            if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
-                TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
-            if (TitleLabel.Content != null)
-                former_title = TitleLabel.Content.ToString() ?? string.Empty;
-            if (former_count > 1)
-                TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
-            CD = App.noticeitems[0].time;
-            former_CD = CD;
+            Load_One();
             Loaded += delegate
             {
                 Load_Color();
@@ -97,8 +60,6 @@ namespace hiro
                 {
                     TimerTick();
                 };
-                App.noticeitems.RemoveAt(0);
-                notifications.RemoveAt(0);
             };
         }
 
@@ -162,48 +123,82 @@ namespace hiro
             }
             else
             {
-                CD = App.noticeitems[0].time;
-                former_CD = CD;
-                var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
-                if (t.IndexOf(Environment.NewLine) != -1)
+                Load_One();
+                Island_Switch();
+            }
+        }
+
+        private void Load_One()
+        {
+            CD = App.noticeitems[0].time;
+            former_CD = CD;
+            var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+            if (t.IndexOf(Environment.NewLine) != -1)
+            {
+                notifications = t.Replace("<nop>", "").Split(Environment.NewLine).ToList();
+                for (int i = 0; i < notifications.Count; i++)
                 {
-                    notifications = t.Replace("<nop>", "").Split(Environment.NewLine).ToList();
-                    for (int i = 0; i < notifications.Count; i++)
+                    if (notifications[i].Replace(" ", "").Equals(string.Empty))
                     {
-                        if (notifications[i].Replace(" ", "").Equals(string.Empty))
-                        {
-                            notifications.RemoveAt(i);
-                            i--;
-                        }
+                        notifications.RemoveAt(i);
+                        i--;
                     }
                 }
-                else
-                    notifications = new()
+            }
+            else
+                notifications = new()
+{
+    t
+};
+            former_count = notifications.Count;
+            ContentLabel.Text = notifications[0];
+            TitleLabel.Content = App.noticeitems[0].title;
+            act = App.noticeitems[0].act;
+            if (act != null)
+            {
+                ContentGrid.Cursor = Cursors.Hand;
+            }
+            else
+            {
+                ContentGrid.Cursor = null;
+            }
+            if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
+                TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
+            if (TitleLabel.Content != null)
+                former_title = TitleLabel.Content.ToString() ?? string.Empty;
+            if (former_count > 1)
+                TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
+            Load_Icon();
+            App.noticeitems.RemoveAt(0);
+            notifications.RemoveAt(0);
+            SetAutoSize(ContentGrid);
+        }
+
+        private void Load_Icon()
+        {
+            Hiro_Icon? icon = App.noticeitems[0].icon;
+            bool set = false;
+            if (icon != null)
+            {
+                if (icon.Image != null)
                 {
-                    t
-                };
-                former_count = notifications.Count;
-                ContentLabel.Text = notifications[0];
-                TitleLabel.Content = App.noticeitems[0].title;
-                act = App.noticeitems[0].act;
-                if (act != null)
-                {
-                    ContentGrid.Cursor = Cursors.Hand;
+                    BaseIcon.ImageSource = icon.Image;
+                    set = true;
                 }
                 else
                 {
-                    ContentGrid.Cursor = null;
+                    var iconLocation = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon.Location));
+                    if (File.Exists(iconLocation))
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(iconLocation);
+                        BaseIcon.ImageSource = bi;
+                        set = true;
+                    }
                 }
-                if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
-                    TitleLabel.Content = Hiro_Utils.Get_Translate("notitle");
-                if (TitleLabel.Content != null)
-                    former_title = TitleLabel.Content.ToString() ?? string.Empty;
-                if (former_count > 1)
-                    TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
-                App.noticeitems.RemoveAt(0);
-                notifications.RemoveAt(0);
-                SetAutoSize(ContentGrid);
-                Island_Switch();
+            }
+            if (!set)
+            {
+                BaseIcon.ImageSource = (Resources["PrimaryIcon"] as ImageBrush).ImageSource;
             }
         }
 

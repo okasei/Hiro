@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
         Title="Hiro_Island" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Window.Resources>
+        <ImageBrush x:Key="PrimaryIcon"  Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
+    </Window.Resources>
     <Grid x:Name="BaseGrid">
         <Border x:Name="BaseBorderBak" CornerRadius="25" Background="Black"/>
         <Border x:Name="BaseBorder" CornerRadius="25" Background="Black" ClipToBounds="True">

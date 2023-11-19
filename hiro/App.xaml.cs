@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
@@ -12,7 +13,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Windows.Foundation;
 using Windows.Foundation.Metadata;
+using Windows.Storage.Streams;
 using Windows.UI.Notifications;
 using Windows.UI.Notifications.Management;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
@@ -90,7 +93,7 @@ namespace hiro
 
         async private void Initialize_NotificationListener()
         {
-            if (Hiro_Utils.Read_Ini(dconfig, "Config", "MonitorSys", "1").Equals("1") && ApiInformation.IsTypePresent("Windows.UI.Notifications.Management.UserNotificationListener"))
+            if (ApiInformation.IsTypePresent("Windows.UI.Notifications.Management.UserNotificationListener"))
             {
                 if (Hiro_Utils.Read_Ini(dconfig, "Config", "Toast", "0").Equals("1"))
                     Hiro_Utils.Write_Ini(dconfig, "Config", "Toast", "0");
@@ -810,7 +813,8 @@ namespace hiro
         {
             try
             {
-
+                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "MonitorSys", "1").Equals("1"))
+                    return;
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1"))
                     Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "0");
                 var a = Hiro_Utils.Read_Ini(dconfig, "Config", "MonitorSysPara", "0").Trim();
@@ -844,7 +848,35 @@ namespace hiro
                         // We'll treat all subsequent text elements as body text,
                         // joining them together via newlines.
                         string bodyText = string.Join(Environment.NewLine, textElements.Skip(1).Select(t => t.Text));
-                        Notify(new Hiro_Notice(bodyText, 1, appName + " - " + titleText));
+                        var iconFile = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX("<current>\\system\\icons\\clsids\\")) + notifs[i].AppInfo.AppUserModelId + ".hsic";
+                        if (!System.IO.File.Exists(iconFile))
+                        {
+                            Hiro_Utils.CreateFolder(iconFile);
+                            RandomAccessStreamReference stream = notifs[i].AppInfo.DisplayInfo.GetLogo(new Windows.Foundation.Size(128, 128));
+                            if (stream is not null)
+                            {
+                                IAsyncOperation<IRandomAccessStreamWithContentType> streamOperation = stream.OpenReadAsync();
+                                Task<IRandomAccessStreamWithContentType> streamTask = streamOperation.AsTask();
+                                streamTask.Wait();
+                                IRandomAccessStreamWithContentType content = streamTask.Result;
+                                System.Threading.Tasks.Task.Run(() => {
+                                    try
+                                    {
+                                        FileStream TheFile = File.Create(iconFile);
+                                        content.AsStream().Seek(0, SeekOrigin.Begin);
+                                        content.AsStream().CopyTo(TheFile);
+                                        TheFile.Dispose();
+                                    }
+                                    catch (Exception E)
+                                    {
+                                        Hiro_Utils.LogError(E, "Hiro.Notification.SaveIcon");
+                                    }
+                                });
+                            }
+                        }
+                            Hiro_Icon icon = new();
+                            icon.Location = iconFile;
+                            Notify(new Hiro_Notice(bodyText, 1, appName + " - " + titleText, null, icon));
                     }
                 }
             }
@@ -861,14 +893,14 @@ namespace hiro
             else if (qtitle != musicTitles[0] && qtitle != null && !qtitle.Equals("QQ音乐"))
             {
                 musicTitles[0] = qtitle;
-                Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Utils.Get_Translate("music")));
+                Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\qqmusic.png" }));
             }
             if (Initialize_Title(Ptrs[1], out string? ntitle) == 0)
                 Initialize_Ptr("cloudmusic", 1);
             else if (ntitle != musicTitles[1] && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐"))
             {
                 musicTitles[1] = ntitle;
-                Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Utils.Get_Translate("music")));
+                Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\neteasemusic.png" }));
             }
             if (Initialize_Title(Ptrs[2], out string? kwtitle) == 0)
                 Initialize_Ptr("kwmusic", 2);
@@ -883,21 +915,21 @@ namespace hiro
                     }
                 }
                 musicTitles[2] = kwtitle;
-                Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Utils.Get_Translate("music")));
+                Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kuwomusic.png" }));
             }
             if (Initialize_Title(Ptrs[3], out string? kgtitle) == 0)
                 Initialize_Ptr("KuGou", 3);
             else if (kgtitle != musicTitles[3] && kgtitle != null && !kgtitle.Equals(string.Empty) && !kgtitle.Equals("酷狗音乐"))
             {
                 musicTitles[3] = kgtitle;
-                Notify(new(Hiro_Utils.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, Hiro_Utils.Get_Translate("music")));
+                Notify(new(Hiro_Utils.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kgmusic.png" }));
             }
             if (Initialize_Title(Ptrs[4], out string? sptitle) == 0)
                 Ptrs[4] = Initialize_Ptr("Spotify");
             else if (sptitle != musicTitles[4] && sptitle != null && !sptitle.Equals("Spotify") && !sptitle.Equals("Spotify Premium"))
             {
                 musicTitles[4] = sptitle;
-                Notify(new(Hiro_Utils.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, Hiro_Utils.Get_Translate("music")));
+                Notify(new(Hiro_Utils.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\spotify.png" }));
             }
         }
 

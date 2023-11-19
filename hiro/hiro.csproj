@@ -20,7 +20,6 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <BaseOutputPath></BaseOutputPath>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <ApplicationManifest>package.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,18 +35,20 @@ namespace hiro
         internal Action? act = null;
         internal int temps = 2;
         internal string formerTitle = "";
+        private Hiro_Icon? formerIcon = null;
+        private bool flag = false;
         public Hiro_Box()
         {
             InitializeComponent();
-            Load_Color();
-            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
             var icon = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomizeIcon", "");
             icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
-            if (System.IO.File.Exists(icon))
+            if (File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                BaseIcon.ImageSource = bi;
+                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
             }
+            Load_Color();
+            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.FullPrimaryScreenHeight * 9 / 10 - Height);
             Load_One();
@@ -89,8 +92,60 @@ namespace hiro
                 TitleLabel.Text = Hiro_Utils.Get_Translate("notitle");
             temps = App.noticeitems[0].time;
             Reset_Width();
+            Load_Icon();
             App.noticeitems.RemoveAt(0);
             notifications.RemoveAt(0);
+        }
+
+        private void Load_Icon()
+        {
+            Hiro_Icon? icon = App.noticeitems[0].icon;
+            if (!flag)
+            {
+                Set_Icon(icon);
+                formerIcon = icon;
+                flag = true;
+            }
+            else
+            {
+                if (icon != formerIcon)
+                {
+                    formerIcon = icon;
+                    var sb = Hiro_Utils.AddDoubleAnimaton(1, 300, BaseIconBorder, "Opacity", null, 0, 0.7);
+                    Set_Icon(icon);
+                    sb.Begin();
+                }
+            }
+        }
+
+        private void Set_Icon(Hiro_Icon? icon)
+        {
+            bool set = false;
+            if (icon != null)
+            {
+                if (icon.Image != null)
+                {
+                    BaseIcon.ImageSource = icon.Image;
+                    set = true;
+                }
+                else
+                {
+                    var iconLocation = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon.Location));
+                    if (File.Exists(iconLocation))
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(iconLocation);
+                        if (bi != null)
+                        {
+                            BaseIcon.ImageSource = bi;
+                            set = true;
+                        }
+                    }
+                }
+            }
+            if (!set)
+            {
+                BaseIcon.ImageSource = (Resources["PrimaryIcon"] as ImageBrush).ImageSource;
+            }
         }
 
         internal void Load_Color()

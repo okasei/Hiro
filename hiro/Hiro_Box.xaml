@@ -9,6 +9,7 @@
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <ImageBrush x:Key="PrimaryIcon"  Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
     </Window.Resources>
     <Grid x:Name="BaseGrid" Visibility="Hidden">
         <Border Name="OuterBorder" Background="{DynamicResource AppAccent}" CornerRadius="30" Height="0" Width="0" HorizontalAlignment="Center" VerticalAlignment="Center">

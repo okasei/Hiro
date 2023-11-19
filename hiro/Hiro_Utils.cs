@@ -202,6 +202,18 @@ namespace hiro
     }
     #endregion
 
+    #region 图标项目定义
+    public class Hiro_Icon
+    {
+        public string Location = string.Empty;
+        public BitmapImage? Image = null;
+        public Hiro_Icon()
+        {
+
+        }
+    }
+    #endregion
+
     #region 通知项目定义
     public class Hiro_Notice
     {
@@ -209,12 +221,14 @@ namespace hiro
         public string msg;
         public int time;
         public Action? act;
-        public Hiro_Notice(string ms = "NULL", int ti = 1, string? tit = null, Action? ac = null)
+        public Hiro_Icon icon;
+        public Hiro_Notice(string ms = "NULL", int ti = 1, string? tit = null, Action? ac = null, Hiro_Icon? icon = null)
         {
             msg = ms;
             time = ti;
             title = tit;
             act = ac;
+            this.icon = icon;
         }
     }
     #endregion
