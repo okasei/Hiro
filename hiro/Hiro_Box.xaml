@@ -12,15 +12,16 @@
         <ImageBrush x:Key="PrimaryIcon"  Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
     </Window.Resources>
     <Grid x:Name="BaseGrid" Visibility="Hidden">
-        <Border Name="OuterBorder" Background="{DynamicResource AppAccent}" CornerRadius="30" Height="0" Width="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border Name="OuterBorder" Background="{DynamicResource AppAccent}" CornerRadius="30" Height="0" Width="0" HorizontalAlignment="Center" VerticalAlignment="Center" MouseDown="OuterBorder_MouseDown">
             <Grid>
                 <Grid x:Name="TitleGrid" HorizontalAlignment="Left">
-                    <TextBlock Name="TitleLabel" Foreground="{DynamicResource AppFore}" Text="获得成就 - Hiro的棒棒糖！" FontFamily="Microsoft YaHei" FontSize="20" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Name="TitleLabel" Foreground="{DynamicResource AppFore}" Text="获得成就 - Hiro的棒棒糖！" FontFamily="Microsoft YaHei" FontSize="18" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
                 </Grid>
                 <Grid x:Name="ContentGrid" HorizontalAlignment="Left">
                     <TextBlock Name="ContentLabel" Foreground="{DynamicResource AppFore}" Text="成功反编译了 Hiro 的代码！" FontFamily="Microsoft YaHei" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" Opacity="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"></TextBlock>
                 </Grid>
                 <Label Name="TestLabel" Foreground="{DynamicResource AppFore}" Content="你这个坏蛋！" FontFamily="Microsoft YaHei" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="15" Opacity="0"></Label>
+                <Label Name="TestTitle" Foreground="{DynamicResource AppFore}" Content="你这个坏蛋！" FontFamily="Microsoft YaHei" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="15" Opacity="0"></Label>
             </Grid>
         </Border>
         <Border Name="InnerBorder" Background="{DynamicResource AppFore}" CornerRadius="30" Height="0" Width="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" ClipToBounds="True" MouseDown="InnerBorder_MouseDown" RenderTransformOrigin="0.5,0.5">

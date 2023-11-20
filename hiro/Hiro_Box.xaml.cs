@@ -40,6 +40,18 @@ namespace hiro
         public Hiro_Box()
         {
             InitializeComponent();
+            Hiro_Utils.Set_Control_Location(TestTitle, "boxtitle");
+            Hiro_Utils.Set_Control_Location(TestLabel, "boxcontent");
+            ContentLabel.FontFamily = TestLabel.FontFamily;
+            ContentLabel.FontSize = TestLabel.FontSize;
+            ContentLabel.FontStretch = TestLabel.FontStretch;
+            ContentLabel.FontWeight = TestLabel.FontWeight;
+            ContentLabel.FontStyle = TestLabel.FontStyle;
+            TitleLabel.FontFamily = TestTitle.FontFamily;
+            TitleLabel.FontSize = TestTitle.FontSize;
+            TitleLabel.FontStretch = TestTitle.FontStretch;
+            TitleLabel.FontWeight = TestTitle.FontWeight;
+            TitleLabel.FontStyle = TestTitle.FontStyle;
             var icon = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomizeIcon", "");
             icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
             if (File.Exists(icon))
@@ -60,7 +72,7 @@ namespace hiro
 
         private void Load_One()
         {
-            var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+            var t = App.noticeitems[0].msg.Replace("\r\n", Environment.NewLine).Replace("\n", Environment.NewLine).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
             if (t.IndexOf(Environment.NewLine) != -1)
             {
                 notifications = t.Replace("<nop>", "").Split(Environment.NewLine).ToList();
@@ -156,7 +168,7 @@ namespace hiro
 
         private void Reset_Width()
         {
-            ContentLabel.Text = notifications[0];
+            ContentLabel.Text = notifications[0].Trim();
             Size fsize = new();
             Size msize = new();
             fsize.Width = 0;
@@ -167,7 +179,7 @@ namespace hiro
                 if (msize.Width > fsize.Width)
                     fsize.Width = msize.Width;
             }
-            Width = Math.Max(Math.Min(maxWidth, msize.Width + 3 * innerMargin + Height), 200);
+            Width = Math.Max(Math.Min(maxWidth, fsize.Width + 3 * innerMargin + Height), 200);
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
         }
 
@@ -400,6 +412,14 @@ namespace hiro
         }
 
         private void InnerBorder_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (act != null)
+                act.Invoke();
+            act = null;
+            BaseGrid.Cursor = null;
+        }
+
+        private void OuterBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (act != null)
                 act.Invoke();

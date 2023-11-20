@@ -107,7 +107,7 @@ namespace hiro
         {
             if (notifications.Count > 0)
             {
-                ContentLabel.Text = notifications[0];
+                ContentLabel.Text = notifications[0].Trim();
                 CD = former_CD;
                 if (former_count > 1)
                     TitleLabel.Content = $"{former_title} ({former_count + 1 - notifications.Count}/{former_count})";
@@ -132,7 +132,7 @@ namespace hiro
         {
             CD = App.noticeitems[0].time;
             former_CD = CD;
-            var t = App.noticeitems[0].msg.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+            var t = App.noticeitems[0].msg.Replace("\r\n", Environment.NewLine).Replace("\n", Environment.NewLine).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
             if (t.IndexOf(Environment.NewLine) != -1)
             {
                 notifications = t.Replace("<nop>", "").Split(Environment.NewLine).ToList();
@@ -147,11 +147,11 @@ namespace hiro
             }
             else
                 notifications = new()
-{
-    t
-};
+            {
+                t
+            };
             former_count = notifications.Count;
-            ContentLabel.Text = notifications[0];
+            ContentLabel.Text = notifications[0].Trim();
             TitleLabel.Content = App.noticeitems[0].title;
             act = App.noticeitems[0].act;
             if (act != null)

@@ -577,7 +577,6 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 var ccbt = string.Empty;
                 if (eload)
                 {
-                    var bflag = false;
                     Dispatcher.Invoke(() =>
                     {
                         ccbt = ChatContentBak.Text;
@@ -671,7 +670,6 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                                 };
                             }
                             catch { }
-                            InlineUIContainer? a = null;
                             Dispatcher.Invoke(() =>
                             {
                                 nick.Inlines.Add(new InlineUIContainer(
@@ -788,7 +786,11 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 content = rgx.Replace(cont, Hiro_Utils.Get_Translate("emojitxt"));
 
                 if (i != 0)
-                    App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); })));
+                {
+                    var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+                    StrFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, UserId, "Avatar", string.Empty)));
+                    App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); }), new() { Location = StrFileName }));
+                }
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
                     try
                     {
@@ -1298,7 +1300,9 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
         private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Clipboard.SetText(Profile_Mac.Content.ToString());
-            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate("chatmcopy").Replace("%u", Aite) + ",2)", Hiro_Utils.Get_Translate("chat"));
+            var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+            StrFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, UserId, "Avatar", string.Empty)));
+            App.Notify(new(Hiro_Utils.Get_Translate("chatmcopy").Replace("%u", Aite), 2, Hiro_Utils.Get_Translate("chat"), null, new() { Location = StrFileName }));
         }
 
         private void Profile_MouseEnter(object sender, MouseEventArgs e)

@@ -221,7 +221,7 @@ namespace hiro
         public string msg;
         public int time;
         public Action? act;
-        public Hiro_Icon icon;
+        public Hiro_Icon? icon;
         public Hiro_Notice(string ms = "NULL", int ti = 1, string? tit = null, Action? ac = null, Hiro_Icon? icon = null)
         {
             msg = ms;
@@ -830,7 +830,7 @@ namespace hiro
         #endregion
 
         #region 字符串处理
-        public static String Path_Replace(String path, String toReplace, String replaced, bool CaseSensitive = false)
+        public static string Path_Replace(string path, string toReplace, string replaced, bool CaseSensitive = false)
         {
             var resu = (replaced.EndsWith("\\")) ? replaced[0..^1] : replaced;
             if (CaseSensitive)
@@ -856,7 +856,21 @@ namespace hiro
                 return string.Empty;
         }
 
-        public static String Anti_Path_Prepare(string path)
+        public static string Hiro_ToString(object? obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            else
+            {
+                var ret = obj.ToString();
+                if (ret != null)
+                    return ret;
+                else
+                    return string.Empty;
+            }
+        }
+
+        public static string Anti_Path_Prepare(string path)
         {
             path = Anti_Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.EnvironmentUsername}\\app").Replace("\\\\", "\\"));
             path = Anti_Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
@@ -892,8 +906,12 @@ namespace hiro
             return path;
         }
 
-        public static String Path_Prepare(string path)
+        public static string Path_Prepare(string path)
         {
+            if (path.StartsWith("\""))
+                path = path[1..];
+            if (path.EndsWith("\""))
+                path = path[..^1];
             path = Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.EnvironmentUsername}\\app").Replace("\\\\", "\\"));
             path = Path_Replace(path, "<capp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\default\\app").Replace("\\\\", "\\"));
             path = Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
@@ -931,7 +949,7 @@ namespace hiro
             return path;
         }
 
-        public static String Path_Prepare_EX(String path)
+        public static string Path_Prepare_EX(String path)
         {
             path = Path_Replace(path, "<yyyyy>", DateTime.Now.ToString("yyyyy"));
             path = Path_Replace(path, "<yyyy>", DateTime.Now.ToString("yyyy"));
@@ -2154,13 +2172,14 @@ namespace hiro
                     {
                         string titile = Get_Translate("syntax");
                         int duration = -1;
+                        Hiro_Icon? hicon = null;
                         if (parameter.Count > 0)
                         {
                             try
                             {
                                 duration = parameter.Count > 1 ? Convert.ToInt32(parameter[1]) : 2;
                                 titile = parameter[0];
-                                if (titile.ToLower().StartsWith("http://") || titile.ToLower().StartsWith("https://"))
+                                if (titile.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || titile.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     titile = GetWebContent(titile).Replace("<br>", "\\n");
                                 }
@@ -2173,12 +2192,20 @@ namespace hiro
                                         RunExe(p3, parameter[2], false);
                                     });
                                 }
+                                if (parameter.Count > 4)
+                                {
+                                    var p4 = parameter[4];
+                                    hicon = new()
+                                    {
+                                        Location = p4
+                                    };
+                                }
                                 if (File.Exists(titile))
                                     titile = File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
                                 if (parameter.Count > 2)
                                     source = parameter[2];
                                 duration = duration <= 0 ? 2 : duration;
-                                App.Notify(new(titile, duration, source, act));
+                                App.Notify(new(titile, duration, source, act, hicon));
                             }
                             catch (Exception ex)
                             {

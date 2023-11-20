@@ -68,7 +68,16 @@ namespace hiro
         internal static string LoginedToken = string.Empty;
         internal static System.Threading.Thread? serverThread = null;
         internal static int flashFlag = -1;
-        internal static int[] notificationNums = { -1, -1 };
+        internal static DateTimeOffset formerTime = DateTimeOffset.Now;
+        internal static DateTime formerT = DateTime.Now;
+        private static Dictionary<string, string> times = new()
+        {
+            {"morning",string.Empty},
+            {"noon",string.Empty},
+            {"afternoon",string.Empty},
+            {"evening",string.Empty},
+            {"night",string.Empty},
+        };
         private static UserNotificationListener? listener = null;
         #endregion
 
@@ -634,9 +643,10 @@ namespace hiro
 
         private static void InitializeMethod()
         {
+            Load_LocalTime();
             timer = new()
             {
-                Interval = new TimeSpan(10000000)
+                Interval = new TimeSpan(30000000)
             };
             timer.Tick += delegate
             {
@@ -645,10 +655,8 @@ namespace hiro
             timer.Start();
         }
 
-        public static void TimerTick()
+        internal static void Load_LocalTime()
         {
-            #region Hello
-            var hr = DateTime.Now.Hour;
             var morning = Hiro_Utils.Read_Ini(LangFilePath, "local", "morning", "[6,7,8,9,10]");
             var noon = Hiro_Utils.Read_Ini(LangFilePath, "local", "noon", "[11,12,13]");
             var afternoon = Hiro_Utils.Read_Ini(LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
@@ -659,28 +667,21 @@ namespace hiro
             afternoon = afternoon.Replace("[", "[,").Replace("]", ",]").Trim();
             evening = evening.Replace("[", "[,").Replace("]", ",]").Trim();
             night = night.Replace("[", "[,").Replace("]", ",]").Trim();
+            times["morning"] = morning;
+            times["noon"] = noon;
+            times["afternoon"] = afternoon;
+            times["evening"] = evening;
+            times["night"] = night;
+        }
+
+        public static void TimerTick()
+        {
+            #region Hello
+            var current = DateTime.Now;
             if (mn != null)
             {
-                if (morning.IndexOf("," + hr + ",") != -1)
-                {
-                    mn.Set_Home_Labels("morning");
-                }
-                else if (noon.IndexOf("," + hr + ",") != -1)
-                {
-                    mn.Set_Home_Labels("noon");
-                }
-                else if (afternoon.IndexOf("," + hr + ",") != -1)
-                {
-                    mn.Set_Home_Labels("afternoon");
-                }
-                else if (evening.IndexOf("," + hr + ",") != -1)
-                {
-                    mn.Set_Home_Labels("evening");
-                }
-                else if (night.IndexOf("," + hr + ",") != -1)
-                {
-                    mn.Set_Home_Labels("night");
-                }
+                var hr = current.Hour;
+                mn.Set_Home_Labels(times.Where(x => x.Value.IndexOf("," + hr + ",") != -1).FirstOrDefault().Key);
                 #endregion
                 if (AutoChat && Logined == true)
                 {
@@ -702,18 +703,17 @@ namespace hiro
 
                 }
             }
-            var tim = Hiro_Utils.Read_Ini(LangFilePath, "local", "locktime", "HH:mm");
-            var dat = Hiro_Utils.Read_Ini(LangFilePath, "local", "lockdate", "MM/dd (ddd)");
             if (ls != null)
             {
-                ls.timelabel.Content = DateTime.Now.ToString(tim);
-                ls.datelabel.Content = DateTime.Now.ToString(dat);
+                ls.timelabel.Content = current.ToString(Hiro_Utils.Read_Ini(LangFilePath, "local", "locktime", "HH:mm"));
+                ls.datelabel.Content = current.ToString(Hiro_Utils.Read_Ini(LangFilePath, "local", "lockdate", "MM/dd (ddd)"));
             }
             var i = 1;
             while (i <= scheduleitems.Count)
             {
                 System.Windows.Forms.Application.DoEvents();
-                if (scheduleitems[i - 1].Time.Equals(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")))
+                var scTime = DateTime.Parse(scheduleitems[i - 1].Time);
+                if (DateTime.Compare(formerT, scTime) < 0 && DateTime.Compare(current, scTime) > 0)
                 {
                     int disturb = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Disturb", "2"));
                     var a = scheduleitems[i - 1].Command.ToLower().Equals("alarm") || scheduleitems[i - 1].Command.ToLower().Equals("alarm()");
@@ -721,7 +721,7 @@ namespace hiro
                     if (a && b)
                     {
                         var os = Hiro_Utils.Get_OSVersion();
-                        if (os.IndexOf(".") != -1)
+                        if (os.Contains(".", StringComparison.CurrentCulture))
                             os = os[..os.IndexOf(".")];
                         if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int r) && r >= 10)
                         {
@@ -751,7 +751,7 @@ namespace hiro
                         if (!b)
                         {
                             mn?.AddToInfoCenter(
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
+                            scTime.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
                             + "\t" + Hiro_Utils.Get_Translate("infocmd") + ":" + "\t" + Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))) + Environment.NewLine
                             + "\t" + Hiro_Utils.Get_Translate("infosource") + ":" + "\t" + Hiro_Utils.Get_Translate("alarm") + Environment.NewLine);
                         }
@@ -760,15 +760,15 @@ namespace hiro
                             case -2.0:
                                 break;
                             case -1.0:
-                                scheduleitems[i - 1].Time = DateTime.Now.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
+                                scheduleitems[i - 1].Time = scTime.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
                                 Hiro_Utils.Write_Ini(sconfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                             case 0.0:
-                                scheduleitems[i - 1].Time = DateTime.Now.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
+                                scheduleitems[i - 1].Time = scTime.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
                                 Hiro_Utils.Write_Ini(sconfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                             default:
-                                scheduleitems[i - 1].Time = DateTime.Now.AddDays(Math.Abs(scheduleitems[i - 1].re)).ToString("yyyy/MM/dd HH:mm:ss");
+                                scheduleitems[i - 1].Time = scTime.AddDays(Math.Abs(scheduleitems[i - 1].re)).ToString("yyyy/MM/dd HH:mm:ss");
                                 Hiro_Utils.Write_Ini(sconfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                         }
@@ -777,6 +777,7 @@ namespace hiro
                 }
                 i++;
             }
+            formerT = current;
             if (ColorCD > -1)
             {
                 if (ColorCD == 0)
@@ -819,9 +820,10 @@ namespace hiro
                     Hiro_Utils.Write_Ini(App.dconfig, "Config", "Toast", "0");
                 var a = Hiro_Utils.Read_Ini(dconfig, "Config", "MonitorSysPara", "0").Trim();
                 if (a.Equals("1") || a.Equals("0"))
-                    notificationNums[0] = Do_Notifications(notificationNums[0], await listener?.GetNotificationsAsync(NotificationKinds.Unknown));
+                    Do_Notifications(await listener?.GetNotificationsAsync(NotificationKinds.Unknown), formerTime);
                 if (a.Equals("2") || a.Equals("0"))
-                    notificationNums[1] = Do_Notifications(notificationNums[1], await listener?.GetNotificationsAsync(NotificationKinds.Toast));
+                    Do_Notifications(await listener?.GetNotificationsAsync(NotificationKinds.Toast), formerTime);
+                formerTime = DateTimeOffset.Now;
             }
             catch (Exception ex)
             {
@@ -829,58 +831,54 @@ namespace hiro
             }
         }
 
-        private static int Do_Notifications(int origin, IReadOnlyList<UserNotification> notifs)
+        private static void Do_Notifications(IReadOnlyList<UserNotification> notifs, DateTimeOffset dfs)
         {
-            var ret = origin;
-            if (ret >= 0 && ret < notifs.Count)
+            foreach (var notif in notifs.Where(x => x.CreationTime.CompareTo(dfs) >= 0))
             {
-                for (int i = Math.Max(ret - 1, 0); i < notifs.Count; i++)
+                var appName = notif.AppInfo.DisplayInfo.DisplayName.Equals("") ? notif.AppInfo.PackageFamilyName : notif.AppInfo.DisplayInfo.DisplayName;
+                // Get the toast binding, if present
+                NotificationBinding toastBinding = notif.Notification.Visual.GetBinding(KnownNotificationBindings.ToastGeneric);
+                if (toastBinding != null)
                 {
-                    var appName = notifs[i].AppInfo.PackageFamilyName.Equals("") ? notifs[i].AppInfo.DisplayInfo.DisplayName : notifs[i].AppInfo.PackageFamilyName;
-                    // Get the toast binding, if present
-                    NotificationBinding toastBinding = notifs[i].Notification.Visual.GetBinding(KnownNotificationBindings.ToastGeneric);
-                    if (toastBinding != null)
+                    // And then get the text elements from the toast binding
+                    IReadOnlyList<AdaptiveNotificationText> textElements = toastBinding.GetTextElements();
+                    // Treat the first text element as the title text
+                    string? titleText = textElements.FirstOrDefault()?.Text;
+                    // We'll treat all subsequent text elements as body text,
+                    // joining them together via newlines.
+                    string bodyText = string.Join(Environment.NewLine, textElements.Skip(1).Select(t => t.Text));
+                    var iconFile = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX("<current>\\system\\icons\\clsids\\")) + notif.AppInfo.AppUserModelId + ".hsic";
+                    if (!System.IO.File.Exists(iconFile))
                     {
-                        // And then get the text elements from the toast binding
-                        IReadOnlyList<AdaptiveNotificationText> textElements = toastBinding.GetTextElements();
-                        // Treat the first text element as the title text
-                        string? titleText = textElements.FirstOrDefault()?.Text;
-                        // We'll treat all subsequent text elements as body text,
-                        // joining them together via newlines.
-                        string bodyText = string.Join(Environment.NewLine, textElements.Skip(1).Select(t => t.Text));
-                        var iconFile = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX("<current>\\system\\icons\\clsids\\")) + notifs[i].AppInfo.AppUserModelId + ".hsic";
-                        if (!System.IO.File.Exists(iconFile))
+                        Hiro_Utils.CreateFolder(iconFile);
+                        RandomAccessStreamReference stream = notif.AppInfo.DisplayInfo.GetLogo(new Windows.Foundation.Size(128, 128));
+                        if (stream is not null)
                         {
-                            Hiro_Utils.CreateFolder(iconFile);
-                            RandomAccessStreamReference stream = notifs[i].AppInfo.DisplayInfo.GetLogo(new Windows.Foundation.Size(128, 128));
-                            if (stream is not null)
+                            IAsyncOperation<IRandomAccessStreamWithContentType> streamOperation = stream.OpenReadAsync();
+                            Task<IRandomAccessStreamWithContentType> streamTask = streamOperation.AsTask();
+                            streamTask.Wait();
+                            IRandomAccessStreamWithContentType content = streamTask.Result;
+                            System.Threading.Tasks.Task.Run(() =>
                             {
-                                IAsyncOperation<IRandomAccessStreamWithContentType> streamOperation = stream.OpenReadAsync();
-                                Task<IRandomAccessStreamWithContentType> streamTask = streamOperation.AsTask();
-                                streamTask.Wait();
-                                IRandomAccessStreamWithContentType content = streamTask.Result;
-                                System.Threading.Tasks.Task.Run(() => {
-                                    try
-                                    {
-                                        FileStream TheFile = File.Create(iconFile);
-                                        content.AsStream().Seek(0, SeekOrigin.Begin);
-                                        content.AsStream().CopyTo(TheFile);
-                                        TheFile.Dispose();
-                                    }
-                                    catch (Exception E)
-                                    {
-                                        Hiro_Utils.LogError(E, "Hiro.Notification.SaveIcon");
-                                    }
-                                });
-                            }
+                                try
+                                {
+                                    FileStream TheFile = File.Create(iconFile);
+                                    content.AsStream().Seek(0, SeekOrigin.Begin);
+                                    content.AsStream().CopyTo(TheFile);
+                                    TheFile.Dispose();
+                                }
+                                catch (Exception E)
+                                {
+                                    Hiro_Utils.LogError(E, "Hiro.Notification.SaveIcon");
+                                }
+                            });
                         }
-                            Hiro_Icon icon = new();
-                            icon.Location = iconFile;
-                            Notify(new Hiro_Notice(bodyText, 1, appName + " - " + titleText, null, icon));
                     }
+                    Hiro_Icon icon = new();
+                    icon.Location = iconFile;
+                    Notify(new Hiro_Notice(bodyText, 1, appName + " - " + titleText, null, icon));
                 }
             }
-            return notifs.Count;
         }
 
         private static void Music_Tick()

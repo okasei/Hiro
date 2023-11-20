@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Windows.ApplicationModel.Appointments.AppointmentsProvider;
 
 namespace hiro
 {
@@ -489,6 +490,7 @@ namespace hiro
                 App.LangFilePath = App.CurrentDirectory + "\\system\\lang\\" + App.la[langbox.SelectedIndex].Name + ".hlp";
                 Hiro_Utils.Write_Ini(App.dconfig, "Config", "Lang", App.lang);
                 App.Load_Menu();
+                App.Load_LocalTime();
                 if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
                 {
                     if (Hiro_Main != null)
