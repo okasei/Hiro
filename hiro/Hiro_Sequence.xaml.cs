@@ -21,10 +21,10 @@ namespace hiro
         {
             InitializeComponent();
             Load_Colors();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
             Load_Position();
             Load_Translate();
-            Title = Hiro_Utils.Get_Translate("seqtitle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Translate("seqtitle") + " - " + App.appTitle;
             var maxwidth = SystemParameters.PrimaryScreenWidth / 5;
             var btnwidth = skipbtn.Width + skipbtn.Margin.Right + 5;
             maxwidth = (maxwidth > btnwidth) ? maxwidth : btnwidth;
@@ -41,7 +41,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && Visibility == Visibility.Visible)
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1") && Visibility == Visibility.Visible)
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(3, skipbtn, sb, -50, null);
@@ -262,7 +262,7 @@ namespace hiro
                     break;
             }
 
-            if (Visibility != Visibility.Visible || !changed || !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Visibility != Visibility.Visible || !changed || !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(0, textblock, sb, 50, null);
@@ -358,14 +358,14 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
         private void Seq_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
         }
 
         private void Seq_Closing(object sender, System.ComponentModel.CancelEventArgs e)

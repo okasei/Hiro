@@ -8,6 +8,9 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="alarm" Height="320" Width="800" ResizeMode="CanMinimize" WindowStyle="None" Icon="/hiro_circle.ico" WindowStartupLocation="Manual" Closing="Window_Closing">
+    <WindowChrome.WindowChrome>
+        <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>

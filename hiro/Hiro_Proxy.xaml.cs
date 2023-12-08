@@ -24,9 +24,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, Internet_Title, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, IBtn_1, sb, -50, null);
@@ -37,16 +37,16 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
                 sb.Begin();
             }
-            EnableProxy.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Proxy", "0") switch
+            EnableProxy.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Network", "Proxy", "0") switch
             {
                 "1" => null,
                 "2" => true,
                 _ => false
             };
-            AddressBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Server", string.Empty);
-            PortBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Port", string.Empty);
-            UsernameBox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Username", string.Empty);
-            PwdBox.Password = Hiro_Utils.Read_Ini(App.dconfig, "Network", "Password", string.Empty);
+            AddressBox.Text = Hiro_Utils.Read_Ini(App.dConfig, "Network", "Server", string.Empty);
+            PortBox.Text = Hiro_Utils.Read_Ini(App.dConfig, "Network", "Port", string.Empty);
+            UsernameBox.Text = Hiro_Utils.Read_Ini(App.dConfig, "Network", "Username", string.Empty);
+            PwdBox.Password = Hiro_Utils.Read_Ini(App.dConfig, "Network", "Password", string.Empty);
         }
 
         private void Hiro_Initialize()
@@ -120,12 +120,12 @@ namespace hiro
         private void IBtn_1_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var proxy = EnableProxy.IsChecked == true ? "2" : EnableProxy.IsChecked == false ? "0" : "1";
-            Hiro_Utils.Write_Ini(App.dconfig, "Network", "Proxy", proxy);
-            Hiro_Utils.Write_Ini(App.dconfig, "Network", "Server", AddressBox.Text);
-            Hiro_Utils.Write_Ini(App.dconfig, "Network", "Port", PortBox.Text);
-            Hiro_Utils.Write_Ini(App.dconfig, "Network", "Username", AddressBox.Text);
-            Hiro_Utils.Write_Ini(App.dconfig, "Network", "Username", UsernameBox.Text);
-            Hiro_Utils.Write_Ini(App.dconfig, "Network", "Password", PwdBox.Password);
+            Hiro_Utils.Write_Ini(App.dConfig, "Network", "Proxy", proxy);
+            Hiro_Utils.Write_Ini(App.dConfig, "Network", "Server", AddressBox.Text);
+            Hiro_Utils.Write_Ini(App.dConfig, "Network", "Port", PortBox.Text);
+            Hiro_Utils.Write_Ini(App.dConfig, "Network", "Username", AddressBox.Text);
+            Hiro_Utils.Write_Ini(App.dConfig, "Network", "Username", UsernameBox.Text);
+            Hiro_Utils.Write_Ini(App.dConfig, "Network", "Password", PwdBox.Password);
             App.Notify(new(Hiro_Utils.Get_Translate("restart"), 2, Hiro_Utils.Get_Translate("proxyer")));
             Hiro_Main?.Set_Label(Hiro_Main.configx);
         }

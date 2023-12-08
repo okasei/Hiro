@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Windows.UI.Composition;
 
 namespace hiro
 {
@@ -18,6 +19,7 @@ namespace hiro
         internal int aflag = -1;
         internal int bflag = 0;
         internal string? url = null;
+        internal WindowAccentCompositor? compositor = null;
         public Hiro_Alarm(int iid, string? CustomedTitle = null, string? CustomedContnet = null, int OneButtonOnly = 0)
         {
             InitializeComponent();
@@ -46,8 +48,8 @@ namespace hiro
                     bw.RunWorkerCompleted += delegate
                     {
                         ala_title.Content = CustomedTitle;
-                        Title = ala_title.Content + " - " + App.AppTitle;
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        Title = ala_title.Content + " - " + App.appTitle;
+                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                         {
                             Storyboard sb = new();
                             Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
@@ -60,7 +62,7 @@ namespace hiro
             }
             else
                 ala_title.Content = Hiro_Utils.Get_Translate("alarmtitle");
-            Title = ala_title.Content + " - " + App.AppTitle;
+            Title = ala_title.Content + " - " + App.appTitle;
             if (CustomedContnet != null)
             {
                 if (CustomedContnet.ToLower().StartsWith("http://") || CustomedContnet.ToLower().StartsWith("https://"))
@@ -76,7 +78,7 @@ namespace hiro
                     {
                         CustomedContnet = CustomedContnet.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
                         sv.Content = CustomedContnet;
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                         {
                             Storyboard sb = new();
                             Hiro_Utils.AddPowerAnimation(1, content, sb, -50, null);
@@ -99,11 +101,10 @@ namespace hiro
             if (con != null)
                 Hiro_Utils.LogtoFile("[ALARM]Content: " + con.Replace(Environment.NewLine, "\\n"));
         }
-
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
@@ -156,11 +157,21 @@ namespace hiro
 
         public void Loadbgi(int direction)
         {
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                compositor ??= new(this);
+                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                return;
+            }
+            if (compositor != null)
+            {
+                compositor.IsEnabled = false;
+            }
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            Hiro_Utils.Set_Bgimage(bgimage, this, null, null, windowChrome, compositor);
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
@@ -189,7 +200,7 @@ namespace hiro
             var hwnd = windowInteropHelper.Handle;
             var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
             source?.AddHook(WndProc);
-            WindowStyle = WindowStyle.SingleBorderWindow;
+            WindowStyle = WindowStyle.None;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

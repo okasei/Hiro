@@ -10,13 +10,13 @@ namespace hiro
         public Hiro_Background()
         {
             InitializeComponent();
-            Title = App.AppTitle;
+            Title = App.appTitle;
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void Back_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
                 sb = Hiro_Utils.AddDoubleAnimaton(0.7, 300, this, "Opacity", sb, 0);
@@ -32,7 +32,7 @@ namespace hiro
 
         internal void Fade_Out()
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
                 sb = Hiro_Utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);

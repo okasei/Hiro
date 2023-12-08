@@ -23,7 +23,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             if (!animation) 
                 return;
             Storyboard sb = new();
@@ -40,11 +40,11 @@ namespace hiro
         public void Update_Labels()
         {
             var hr = DateTime.Now.Hour;
-            var morning = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "morning", "[6,7,8,9,10]");
-            var noon = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "noon", "[11,12,13]");
-            var afternoon = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
-            var evening = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "evening", "[19,20,21,22]");
-            var night = Hiro_Utils.Read_Ini(App.LangFilePath, "local", "night", "[23,0,1,2,3,4,5]");
+            var morning = Hiro_Utils.Read_Ini(App.langFilePath, "local", "morning", "[6,7,8,9,10]");
+            var noon = Hiro_Utils.Read_Ini(App.langFilePath, "local", "noon", "[11,12,13]");
+            var afternoon = Hiro_Utils.Read_Ini(App.langFilePath, "local", "afternoon", "[14,15,16,17,18]");
+            var evening = Hiro_Utils.Read_Ini(App.langFilePath, "local", "evening", "[19,20,21,22]");
+            var night = Hiro_Utils.Read_Ini(App.langFilePath, "local", "night", "[23,0,1,2,3,4,5]");
             morning = morning.Replace("[", "[,").Replace("]", ",]").Trim();
             noon = noon.Replace("[", "[,").Replace("]", ",]").Trim();
             afternoon = afternoon.Replace("[", "[,").Replace("]", ",]").Trim();
@@ -74,7 +74,7 @@ namespace hiro
 
         private void Set_Labels(string val)
         {
-            val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Translate(val).Replace("%u", App.EnvironmentUsername) : Hiro_Utils.Get_Translate(val + "cus").Replace("%u", App.Username);
+            val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Translate(val).Replace("%u", App.eUserName) : Hiro_Utils.Get_Translate(val + "cus").Replace("%u", App.username);
             if (!Hello.Text.Equals(val))
                 Hello.Text = val;
             val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Translate("copyright")));

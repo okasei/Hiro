@@ -52,7 +52,7 @@ namespace hiro
             TitleLabel.FontStretch = TestTitle.FontStretch;
             TitleLabel.FontWeight = TestTitle.FontWeight;
             TitleLabel.FontStyle = TestTitle.FontStyle;
-            var icon = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomizeIcon", "");
+            var icon = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeIcon", "");
             icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
             if (File.Exists(icon))
             {
@@ -60,7 +60,7 @@ namespace hiro
                 (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
             }
             Load_Color();
-            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
+            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.FullPrimaryScreenHeight * 9 / 10 - Height);
             Load_One();
@@ -185,10 +185,10 @@ namespace hiro
 
         private void Box_In()
         {
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "HiBoxAudio", "1").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "HiBoxAudio", "1").Equals("1"))
                 try
                 {
-                    var fileP = Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "BoxAudioPath", "<current>\\system\\sounds\\achievement.wav"));
+                    var fileP = Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BoxAudioPath", "<current>\\system\\sounds\\achievement.wav"));
                     if (!System.IO.File.Exists(fileP))
                         //fileP = Hiro_Utils.Path_Prepare("C:\\Users\\Rex\\Downloads\\Music\\xbox_one_rare_achiev.wav");
                         fileP = Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");

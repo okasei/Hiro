@@ -26,9 +26,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, color_title, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, color_text, sb, -50, null);
@@ -36,7 +36,7 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(3, cobtn2, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, cobtn3, sb, -50, null);
             }
-            if (!animation) 
+            if (!animation)
                 return;
             Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
             sb.Begin();
@@ -79,20 +79,22 @@ namespace hiro
 
         private void Cobtn3_Click(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "Lockcolor", "default");
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Lockcolor", "default");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
             if (Hiro_Main != null)
             {
                 Hiro_Main.Set_Label(Hiro_Main.configx);
+                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+                    Hiro_Main?.Blurbgi(0);
             }
-            
+
         }
 
         private void Cobtn1_Click(object sender, RoutedEventArgs e)
         {
             App.AppAccentColor = color_picker.Color;
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "Lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
             if (Hiro_Main != null)
@@ -113,15 +115,15 @@ namespace hiro
 
         internal void Unify_Color(bool force = false)
         {
-            if (color_picker.Color == App.AppAccentColor && !force) 
+            if (color_picker.Color == App.AppAccentColor && !force)
                 return;
             color_text.Text = $"#{color_picker.Color.R:X2}{color_picker.Color.G:X2}{color_picker.Color.B:X2}";
             color_ex.Background = new SolidColorBrush(color_picker.Color);
-            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Utils.Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1")));
+            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Utils.Read_Ini(App.dConfig, "Config", "Reverse", "0").Equals("1")));
         }
         private void Color_text_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key != Key.Enter) 
+            if (e.Key != Key.Enter)
                 return;
             if (!color_text.Text.StartsWith("#"))
                 color_text.Text = "#" + color_text.Text;

@@ -19,7 +19,7 @@ namespace hiro
         {
             InitializeComponent();
             path = p;
-            Title = Hiro_Utils.Get_Translate("locktitle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Translate("locktitle") + " - " + App.appTitle;
             Load_Colors();
             SetValue(Canvas.LeftProperty, 0.0);
             Canvas.SetTop(this, -SystemParameters.PrimaryScreenHeight);
@@ -35,13 +35,13 @@ namespace hiro
             }
             else
             {
-                var filep = App.CurrentDirectory + "\\system\\wallpaper\\" + DateTime.Now.ToString("yyyyMMdd") + ".jpg";
+                var filep = App.currentDir + "\\system\\wallpaper\\" + DateTime.Now.ToString("yyyyMMdd") + ".jpg";
                 string wp = "";
                 if (!System.IO.File.Exists(filep))
                 {
                     bgimage.Background = Background;
                     System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
-                    request.Headers.Add("UserAgent", "Rex/2.1.0 (Hiro Inside)");
+                    request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                     request.Content = new System.Net.Http.StringContent("");
                     request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
                     System.ComponentModel.BackgroundWorker bw = new();
@@ -83,7 +83,7 @@ namespace hiro
                         if (!System.IO.File.Exists(filep))
                             return;
                         SetAsLocalImage(filep);
-                        bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+                        bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
                         Hiro_Utils.Blur_Animation(0, animation, bgimage, this);
                     };
                     bw.RunWorkerAsync();
@@ -118,7 +118,7 @@ namespace hiro
 
         private void Run_In()
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, 0, TimeSpan.FromMilliseconds(800));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
@@ -135,7 +135,7 @@ namespace hiro
         private void Run_Out()
         {
             Hiro_Utils.SetCursor(1);
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, TimeSpan.FromMilliseconds(600));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;

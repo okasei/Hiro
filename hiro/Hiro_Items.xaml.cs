@@ -26,9 +26,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, btn1, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn2, sb, 50, null);
@@ -117,7 +117,7 @@ namespace hiro
                 Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command, App.cmditems[i - 1].HotKey);
                 App.cmditems[i - 1] = nec;
-                var inipath = App.dconfig;
+                var inipath = App.dConfig;
                 Hiro_Utils.Write_Ini(inipath, i.ToString(), "Title", nec.Name);
                 Hiro_Utils.Write_Ini(inipath, i.ToString(), "Command", "(" + nec.Command + ")");
                 Hiro_Utils.Write_Ini(inipath, i.ToString(), "HotKey", nec.HotKey);
@@ -147,7 +147,7 @@ namespace hiro
                 Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command, App.cmditems[i + 1].HotKey);
                 App.cmditems[i + 1] = nec;
-                var inipath = App.dconfig;
+                var inipath = App.dConfig;
                 Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", App.cmditems[i].Name);
                 Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", "(" + App.cmditems[i].Command + ")");
                 Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
@@ -178,7 +178,7 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
-                var inipath = App.dconfig;
+                var inipath = App.dConfig;
                 while (i < App.cmditems.Count - 1)
                 {
                     App.cmditems[i].Name = App.cmditems[i + 1].Name;

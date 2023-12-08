@@ -29,9 +29,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(3, tpbtn1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, tpbtn2, sb, -50, null);

@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.Threading;
+using System.Windows.Shell;
 
 namespace hiro
 {
@@ -27,16 +28,17 @@ namespace hiro
         internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> playlist = new();
         internal int index = -1;
         internal int pcd = -1;
+        internal WindowAccentCompositor? compositor = null;
         public Hiro_Player(string? play = null)
         {
             InitializeComponent();
             toplay = play;
-            Title = App.AppTitle;
+            Title = App.appTitle;
             Loaded += delegate
             {
                 Load_Color();
                 Load_Translate();
-                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
                 Initialize_Player();
                 Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
                 Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
@@ -149,7 +151,7 @@ namespace hiro
                             {
                                 Ctrl_Progress_Bg.Width = pnlClient.ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
                             }
-                            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                             {
                                 var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
                                 if (len < 150)
@@ -266,7 +268,7 @@ namespace hiro
                                     index = playlist.Count - 1;
                                     hiro_provider.MediaPlayer.Play(new Uri(uri));
                                     Ctrl_Text.Text = uri;
-                                    Title = Hiro_Utils.GetFileName(uri) + " - " + App.AppTitle;
+                                    Title = Hiro_Utils.GetFileName(uri) + " - " + App.appTitle;
                                     Player_Container.Visibility = Visibility.Visible;
                                     Player_Container.Tag = "Playing";
                                     Update_Progress();
@@ -312,11 +314,21 @@ namespace hiro
 
         public void Loadbgi(int direction, bool? animation = null)
         {
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                compositor ??= new(this);
+                Hiro_Utils.Set_Acrylic(bgimage, this, null, compositor);
+                return;
+            }
+            if (compositor != null)
+            {
+                compositor.IsEnabled = false;
+            }
             if (bflag == 1)
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool ani = animation == null ? !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0") : (bool)animation;
+            bool ani = animation == null ? !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0") : (bool)animation;
             Hiro_Utils.Blur_Animation(direction, ani, bgimage, this);
             bflag = 0;
         }
@@ -328,7 +340,7 @@ namespace hiro
                 Player_Container.Visibility = Visibility.Hidden;
                 Player_Container.Tag = "End";
                 Ctrl_Progress.Width = 0;
-                Title = App.AppTitle;
+                Title = App.appTitle;
                 Ctrl_Time.Content = "00:00";
                 Update_Progress();
             });
@@ -371,7 +383,7 @@ namespace hiro
         {
             Dgi.Visibility = Visibility.Hidden;
             Update_Progress();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
             if (rflag == 1)
             {
                 mSize.Width = Width;
@@ -691,7 +703,7 @@ namespace hiro
                 CheckFileExists = true, //验证路径的有效性
                 CheckPathExists = true,//验证路径的有效性
                 Multiselect = true,
-                Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
+                Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
             };
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
@@ -707,7 +719,7 @@ namespace hiro
 
         private void Switch_List()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             if (Dgi.Visibility == Visibility.Visible)
             {
                 Thickness to = new()
@@ -774,7 +786,7 @@ namespace hiro
         {
             if (Ctrl_Address.Visibility == Visibility.Hidden)
             {
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -793,7 +805,7 @@ namespace hiro
             }
             else
             {
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -813,7 +825,7 @@ namespace hiro
         {
             if (Controller.Visibility == Visibility.Hidden)
             {
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Controller.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -839,7 +851,7 @@ namespace hiro
             }
             else
             {
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Controller.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -1034,7 +1046,7 @@ namespace hiro
             {
                 if (!Ctrl_Text.Text.Equals(string.Empty))
                     ParseCommand();
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -1133,7 +1145,7 @@ namespace hiro
         {
             Player_Info.Content = val;
             pcd = 2;
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 if (Player_Info.Visibility != Visibility.Visible)
                 {
@@ -1149,7 +1161,7 @@ namespace hiro
                                 pcd--;
                                 System.Threading.Thread.Sleep(2000);
                             }
-                            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -1182,7 +1194,7 @@ namespace hiro
                     new System.Threading.Thread(() =>
                     {
                         System.Threading.Thread.Sleep(2000);
-                        if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                        if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                         {
                             Dispatcher.Invoke(() =>
                             {
@@ -1268,7 +1280,7 @@ namespace hiro
                         var uri = playlist[i].Command;
                         hiro_provider.MediaPlayer.Play(new Uri(uri));
                         Ctrl_Text.Text = uri;
-                        Title = Hiro_Utils.GetFileName(uri) + " - " + App.AppTitle;
+                        Title = Hiro_Utils.GetFileName(uri) + " - " + App.appTitle;
                         Player_Container.Visibility = Visibility.Visible;
                         Player_Container.Tag = "Playing";
                     }

@@ -20,7 +20,7 @@ namespace hiro
             Loaded += delegate
             {
                 HiHiro();
-                Name_Textbox.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "User", string.Empty);
+                Name_Textbox.Text = Hiro_Utils.Read_Ini(App.dConfig, "Config", "User", string.Empty);
             };
         }
 
@@ -54,9 +54,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(0, Login_Title, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(0, Pwd_Label, sb, 50, null);
@@ -112,16 +112,16 @@ namespace hiro
                         Dispatcher.Invoke(() =>
                         {
                             if (Auto_Login.IsChecked == true)
-                                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoLogin", "1");
+                                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoLogin", "1");
                             else
-                                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoLogin", "0");
+                                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoLogin", "0");
                         });
-                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "Token", Hiro_Utils.Read_Ini(tmp, "Login", "msg", string.Empty));
-                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "User", Hiro_Utils.Read_Ini(tmp, "Login", "usr", string.Empty));
-                        App.LoginedUser = Hiro_Utils.Read_Ini(tmp, "Login", "usr", string.Empty);
-                        App.LoginedToken = Hiro_Utils.Read_Ini(tmp, "Login", "msg", string.Empty);
+                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "Token", Hiro_Utils.Read_Ini(tmp, "Login", "msg", string.Empty));
+                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "User", Hiro_Utils.Read_Ini(tmp, "Login", "usr", string.Empty));
+                        App.loginedUser = Hiro_Utils.Read_Ini(tmp, "Login", "usr", string.Empty);
+                        App.loginedToken = Hiro_Utils.Read_Ini(tmp, "Login", "msg", string.Empty);
                         App.Logined = true;
-                        Hiro_Utils.SyncProfile(App.LoginedUser, App.LoginedToken);
+                        Hiro_Utils.SyncProfile(App.loginedUser, App.loginedToken);
                         Dispatcher.Invoke(() =>
                         {
                             if (Hiro_Main != null)

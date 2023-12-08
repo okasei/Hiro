@@ -78,15 +78,15 @@ namespace hiro
 
         internal void Load_Translate()
         {
-            Title = Hiro_Utils.Get_Translate("httitle").Replace("%h", App.AppTitle);
+            Title = Hiro_Utils.Get_Translate("httitle").Replace("%h", App.appTitle);
             minbtn.ToolTip = Hiro_Utils.Get_Translate("min");
             closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
         }
 
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 System.Windows.Media.Animation.Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(2, Ctrl_Btns, sb, -50, null);
@@ -101,7 +101,7 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }

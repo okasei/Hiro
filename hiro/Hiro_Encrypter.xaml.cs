@@ -20,6 +20,7 @@ namespace hiro
         internal string pwd = string.Empty;
         internal string fpath = string.Empty;
         internal bool oflag = false;
+        internal WindowAccentCompositor? compositor = null;
         public Hiro_Encrypter(int mode = 0, string? file = null, string? pwd = null, bool flag = false)
         {
             InitializeComponent();
@@ -49,8 +50,8 @@ namespace hiro
 
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
@@ -88,7 +89,7 @@ namespace hiro
         }
         void Load_Translate()
         {
-            Title = mode == 0 ? Hiro_Utils.Get_Translate("enentitle") + " - " + App.AppTitle : Hiro_Utils.Get_Translate("endetitle") + " - " + App.AppTitle;
+            Title = mode == 0 ? Hiro_Utils.Get_Translate("enentitle") + " - " + App.appTitle : Hiro_Utils.Get_Translate("endetitle") + " - " + App.appTitle;
             EncryptTitle.Content = Hiro_Utils.Get_Translate("enentitle");
             DecryptTitle.Content = Hiro_Utils.Get_Translate("endetitle");
             albtn_1.Content = mode == 0 ? Hiro_Utils.Get_Translate("enencrypt") : Hiro_Utils.Get_Translate("endecrypt");
@@ -110,13 +111,13 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(pb, "enprogress");
             if (mode == 0)
             {
-                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle1", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle0", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle1", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle0", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
             }
             else
             {
-                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle0", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle1", animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle0", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle1", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
             }
             Hiro_Utils.Set_Control_Location(FileLabel, "enflabel");
             Hiro_Utils.Set_Control_Location(PwdLabel, "enplabel");
@@ -138,7 +139,7 @@ namespace hiro
             {
                 System.Windows.Controls.Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - this.Width / 2);
                 System.Windows.Controls.Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2);
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddPowerAnimation(1, EncryptTitle, sb, -50, null);
@@ -173,11 +174,21 @@ namespace hiro
 
         public void Loadbgi(int direction)
         {
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                compositor ??= new(this);
+                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                return;
+            }
+            if (compositor != null)
+            {
+                compositor.IsEnabled = false;
+            }
             if (bflag == 1)
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
@@ -209,7 +220,7 @@ namespace hiro
         private void PwdLabel_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var appname = mode == 0 ? Hiro_Utils.Get_Translate("enapp") : Hiro_Utils.Get_Translate("deapp");
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "DefaultPwd", pwd);
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "DefaultPwd", pwd);
             Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("enpwdsaved")},2)", appname, false);
         }
 
@@ -363,7 +374,7 @@ namespace hiro
         {
             if (pwd.Equals(string.Empty))
             {
-                pwd = Hiro_Utils.Read_Ini(App.dconfig, "Config", "DefaultPwd", string.Empty);
+                pwd = Hiro_Utils.Read_Ini(App.dConfig, "Config", "DefaultPwd", string.Empty);
             }
             GoStart();
         }
@@ -509,7 +520,7 @@ namespace hiro
                 PwdPath.Password = string.Empty;
                 PwdPath.Visibility = Visibility.Hidden;
                 SeePwd.Visibility = Visibility.Visible;
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddPowerAnimation(1, SeePwd, sb, 50, null);
@@ -541,15 +552,15 @@ namespace hiro
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enrun");
-            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-            Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enopen");
-            Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-            Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true, animation: Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void FilePath_Drop(object sender, DragEventArgs e)

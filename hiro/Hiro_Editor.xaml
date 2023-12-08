@@ -8,6 +8,9 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="editor" Height="450" Width="800" WindowStyle="None" ShowInTaskbar="False" ResizeMode="NoResize" Loaded="Edi_Loaded" Deactivated="Edi_Deactivated" Topmost="True" AllowsTransparency="True" KeyDown="Edi_KeyDown" Icon="/hiro_circle.ico" Closing="Edi_Closing">
+    <WindowChrome.WindowChrome>
+        <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
     <Grid>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="status" Content="Page 1 - 0 Word(s)" HorizontalAlignment="Left" Margin="5,0,0,5" VerticalAlignment="Bottom" FontFamily="Segoe UI" Style="{DynamicResource HiroLabel}"/>

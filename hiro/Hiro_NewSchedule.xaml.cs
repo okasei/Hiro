@@ -27,9 +27,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(3, scbtn_4, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, scbtn_5, sb, -50, null);
@@ -151,10 +151,10 @@ namespace hiro
             {
                 var i = App.scheduleitems.Count + 1;
                 App.scheduleitems.Add(new Scheduleitem(i, tb11.Text, tb12.Text, tb13.Text, re));
-                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Name", tb11.Text);
-                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Time", tb12.Text);
-                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Command", "(" + tb13.Text + ")");
-                Hiro_Utils.Write_Ini(App.sconfig, i.ToString(), "Repeat", re.ToString());
+                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Name", tb11.Text);
+                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Time", tb12.Text);
+                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Command", "(" + tb13.Text + ")");
+                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Repeat", re.ToString());
             }
             else
             {
@@ -163,10 +163,10 @@ namespace hiro
                 App.scheduleitems[i].Time = tb12.Text;
                 App.scheduleitems[i].Command = tb13.Text;
                 App.scheduleitems[i].re = re;
-                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Name", tb11.Text);
-                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Time", tb12.Text);
-                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Command", "(" + tb13.Text + ")");
-                Hiro_Utils.Write_Ini(App.sconfig, (i + 1).ToString(), "Repeat", re.ToString());
+                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Name", tb11.Text);
+                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Time", tb12.Text);
+                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Command", "(" + tb13.Text + ")");
+                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Repeat", re.ToString());
             }
             System.Globalization.DateTimeFormatInfo dtFormat = new()
             {

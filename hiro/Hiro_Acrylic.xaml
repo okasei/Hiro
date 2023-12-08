@@ -1,0 +1,36 @@
+﻿<Page x:Class="hiro.Hiro_Acrylic"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:hiro"
+      mc:Ignorable="d" 
+      d:DesignHeight="420" d:DesignWidth="420" KeepAlive="False"
+      Title="Hiro_Acrylic">
+    <Page.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+    </Page.Resources>
+    <Grid>
+        <Label x:Name="AcrylicTitle" Style="{DynamicResource HiroLabel}" Content="Acrylic Effects" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="120" Height="25"/>
+        <Grid x:Name="AcrylicColorGrid" Margin="0,30,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
+            <Label x:Name="ColorTitle" Style="{DynamicResource HiroLabel}" Content="Blend Color" HorizontalAlignment="Left" Margin="10,15,0,0" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="120" Height="25"/>
+            <RadioButton Margin="10,50,0,0" x:Name="ColorWhite" Content="White" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Foreground ="{DynamicResource AppFore}" Height="25" Checked="ColorWhite_Checked"/>
+            <RadioButton Margin="70,50,0,0" x:Name="ColorBlack" Content="Black" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Foreground ="{DynamicResource AppFore}" Height="25" Checked="ColorBlack_Checked"/>
+            <RadioButton Margin="130,50,0,0" x:Name="ColorCustomize" Content="Customize" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Foreground ="{DynamicResource AppFore}" Height="25" Checked="ColorCustomize_Checked"/>
+            <Button  Margin="230,50,0,0" x:Name="ColorBtn" Content="Customize" HorizontalAlignment="Left" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="1" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush ="{DynamicResource AppFore}" Foreground ="{DynamicResource AppFore}" Background ="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="ColorBtn_Click"/>
+        </Grid>
+        <Grid x:Name="AcrylicTransparentGrid" Margin="0,100,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
+            <Label  Style="{DynamicResource HiroLabel}" x:Name="TransparentTitle" Content="Select your favorable background style" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="10,15,0,0"/>
+            <Slider x:Name="TransparentSlider" Style="{x:Null}" Margin="10,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="380" Height="15" Maximum="255" Minimum="1" SmallChange="5" Value="255" LargeChange="25" AutoToolTipPlacement="None" MouseLeftButtonUp="TransparentSlider_MouseLeftButtonUp"/>
+        </Grid>
+        <Grid x:Name="AcrylicHalfGrid"  Margin="0,150,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
+            <Label Margin="10,15,0,0" x:Name="HalfTitle" Style="{DynamicResource HiroLabel}" Content="Half On MainUI" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="120" Height="25"/>
+            <RadioButton Margin="10,45,0,0" x:Name="NoHalf" Content="Disabled" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Foreground ="{DynamicResource AppFore}" Height="25" Checked="NoHalf_Checked"/>
+            <RadioButton Margin="90,45,0,0" x:Name="HalfPure" Content="With Color" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Foreground ="{DynamicResource AppFore}" Height="25" Checked="HalfPure_Checked"/>
+            <RadioButton Margin="170,45,0,0" x:Name="HalfImage" Content="With Image" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Foreground ="{DynamicResource AppFore}" Height="25" Checked="HalfImage_Checked"/>
+        </Grid>
+        <Button x:Name="AcrylicCancel" Content="Cancel" HorizontalAlignment="Left" Margin="321,349,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="1" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush ="{DynamicResource AppFore}" Foreground ="{DynamicResource AppFore}" Background ="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="AcrylicCancel_Click"/>
+        <Button x:Name="AcrylicOK" Content="OK" HorizontalAlignment="Left" Margin="239,349,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="1" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush ="{DynamicResource AppFore}" Foreground ="{DynamicResource AppFore}"  Background ="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="AcrylicOK_Click"/>
+    </Grid>
+</Page>

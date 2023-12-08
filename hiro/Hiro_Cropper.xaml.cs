@@ -33,7 +33,7 @@ namespace hiro
             Load_Color();
             Load_Translate();
             SourceInitialized += OnSourceInitialized;
-            Title = Hiro_Utils.Get_Translate("crop").Replace("%h", App.AppTitle);
+            Title = Hiro_Utils.Get_Translate("crop").Replace("%h", App.appTitle);
         }
 
 

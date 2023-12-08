@@ -38,7 +38,7 @@ namespace hiro
         public Hiro_Island()
         {
             InitializeComponent();
-            var icon = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomizeIcon", "");
+            var icon = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeIcon", "");
             icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
             if (File.Exists(icon))
             {
@@ -46,7 +46,7 @@ namespace hiro
                 (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
             }
             ContentLabel.MaxWidth = SystemParameters.FullPrimaryScreenWidth * 4 / 5;
-            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
+            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
             Load_One();
             Loaded += delegate
             {
@@ -67,13 +67,13 @@ namespace hiro
         {
             TitleLabel.Foreground = new SolidColorBrush(App.AppForeColor);
             ContentLabel.Foreground = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 160));
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("3"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("3"))
             {
                 BaseBorderBak.Visibility = Visibility.Visible;
                 BaseBorder.Background = Hiro_Utils.Set_Bgimage(BaseBorder.Background, this);
                 Hiro_Utils.Set_Foreground_Opacity(BaseBorderBak);
             }
-            else if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            else if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 BaseBorderBak.Visibility = Visibility.Hidden;
                 Storyboard? sc = new();
@@ -208,7 +208,7 @@ namespace hiro
             former_width = BaseGrid.ActualWidth;
             former_height = BaseGrid.ActualHeight;
             former_left = SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 sb = Hiro_Utils.AddDoubleAnimaton(50, 850, this, TopProperty.Name, sb, -former_height, 0.7);
@@ -238,7 +238,7 @@ namespace hiro
         {
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 sb = Hiro_Utils.AddDoubleAnimaton(-h, 700, this, TopProperty.Name, sb, 50, 0.7);
@@ -283,7 +283,7 @@ namespace hiro
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
             var offset = Math.Min(w * 0.1, 50);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 var sb = new Storyboard();
                 sb = Hiro_Utils.AddDoubleAnimaton(former_left + offset, 300, this, LeftProperty.Name, sb, former_left);

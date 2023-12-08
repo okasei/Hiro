@@ -45,11 +45,11 @@ namespace hiro
 
         public void Load_Translate()
         {
-            titlelabel.Content = Hiro_Utils.Get_Translate("locked").Replace("%h", App.AppTitle);
-            InfoLabel.Content = Hiro_Utils.Get_Translate("lockedinfo").Replace("%h", App.AppTitle);
-            InfoLabel2.Content = Hiro_Utils.Get_Translate("lockedwait").Replace("%h", App.AppTitle);
-            Pwd_BtnB.Content = Hiro_Utils.Get_Translate("lockback").Replace("%h", App.AppTitle);
-            Pwd_BtnE.Content = Hiro_Utils.Get_Translate("lockenter").Replace("%h", App.AppTitle);
+            titlelabel.Content = Hiro_Utils.Get_Translate("locked").Replace("%h", App.appTitle);
+            InfoLabel.Content = Hiro_Utils.Get_Translate("lockedinfo").Replace("%h", App.appTitle);
+            InfoLabel2.Content = Hiro_Utils.Get_Translate("lockedwait").Replace("%h", App.appTitle);
+            Pwd_BtnB.Content = Hiro_Utils.Get_Translate("lockback").Replace("%h", App.appTitle);
+            Pwd_BtnE.Content = Hiro_Utils.Get_Translate("lockenter").Replace("%h", App.appTitle);
         }
 
         public void Load_Position()
@@ -89,7 +89,7 @@ namespace hiro
             Info.Visibility = Visibility.Hidden;
             InputPwd.Visibility = Visibility.Hidden;
             tosee.Visibility = Visibility.Visible;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, tosee, sb, -50, null);
@@ -167,7 +167,7 @@ namespace hiro
         public void HiHiro()
         {
             titlelabel.Visibility = Visibility.Visible;
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, titlelabel, sb, -50, null);

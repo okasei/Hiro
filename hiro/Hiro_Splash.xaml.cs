@@ -62,7 +62,7 @@ namespace hiro
             }
             next = Hiro_Utils.Read_Ini(filePath, "Config", "Next", "");
             HiHiro();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
         }
 
         public Hiro_Splash(string title, string content, string loading, string background, int tick, bool topmost, bool movable, bool closable, string nextCMD)
@@ -83,7 +83,7 @@ namespace hiro
                     closebtn.Visibility = Visibility.Collapsed;
             }
             HiHiro();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
         }
 
         public void Load_Color()
@@ -95,7 +95,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             if (animation)
             {
                 Storyboard sb = new();
@@ -112,7 +112,7 @@ namespace hiro
                 }
                 sb.Begin();
             }
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -141,7 +141,7 @@ namespace hiro
         private void LoadTimer()
         {
             SourceInitialized += OnSourceInitialized;
-            Title = ala_title.Content.ToString() + " - " + App.AppTitle;
+            Title = ala_title.Content.ToString() + " - " + App.appTitle;
             Load_Color();
             ContentRendered += (e, args) =>
             {
@@ -163,7 +163,7 @@ namespace hiro
                 {
                     tick--;
                     minbtn.Content = tick.ToString();
-                    bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+                    bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
                     var t = new Thickness(ActualWidth - tick * ActualWidth / (int)ProgressLabel.Tag, 0, 0, 0);
                     if (animation)
                     {
@@ -207,7 +207,7 @@ namespace hiro
         {
             if (next.Length != 0)
             {
-                Hiro_Utils.RunExe(next, App.AppTitle);
+                Hiro_Utils.RunExe(next, App.appTitle);
             }
         }
 
@@ -220,7 +220,7 @@ namespace hiro
                 Hiro_Utils.Set_Bgimage(bgimage, this, backgroundFIle);
             else
                 Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }

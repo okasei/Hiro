@@ -27,9 +27,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, ntn1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, ntn2, sb, -50, null);
@@ -283,7 +283,7 @@ namespace hiro
             ofd.ValidateNames = true; // 验证用户输入是否是一个有效的Windows文件名
             ofd.CheckFileExists = true; //验证路径的有效性
             ofd.CheckPathExists = true;//验证路径的有效性
-            ofd.Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle;
+            ofd.Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle;
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
                 strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
@@ -341,9 +341,9 @@ namespace hiro
                 var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text, hk));
-                Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "Title", tb7.Text);
-                Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "Command", "(" + tb8.Text + ")");
-                Hiro_Utils.Write_Ini(App.dconfig, i.ToString(), "HotKey", hk);
+                Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "Title", tb7.Text);
+                Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "Command", "(" + tb8.Text + ")");
+                Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "HotKey", hk);
                 if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
                 {
                     try
@@ -363,9 +363,9 @@ namespace hiro
             {
                 App.cmditems[index].Name = tb7.Text;
                 App.cmditems[index].Command = tb8.Text;
-                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Title", tb7.Text);
-                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "Command", "(" + tb8.Text + ")");
-                Hiro_Utils.Write_Ini(App.dconfig, (index + 1).ToString(), "HotKey", hk);
+                Hiro_Utils.Write_Ini(App.dConfig, (index + 1).ToString(), "Title", tb7.Text);
+                Hiro_Utils.Write_Ini(App.dConfig, (index + 1).ToString(), "Command", "(" + tb8.Text + ")");
+                Hiro_Utils.Write_Ini(App.dConfig, (index + 1).ToString(), "HotKey", hk);
                 if (!App.cmditems[index].HotKey.Equals(hk))
                 {
                     App.cmditems[index].HotKey = hk;

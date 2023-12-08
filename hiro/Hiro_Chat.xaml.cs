@@ -74,9 +74,9 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
 
         public void HiHiro(bool first = false)
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(0, ChatContent, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(0, SendContent, sb, 50, null);
@@ -145,7 +145,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                                 Dispatcher.Invoke(() =>
                                 {
                                     var m = new Thickness(im.Margin.Left - 5, im.Margin.Top - 5, 0, 0);
-                                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                                     {
                                         Storyboard sb = new();
                                         Hiro_Utils.AddThicknessAnimaton(m, 250, FocusLabelR, "Margin", sb);
@@ -188,7 +188,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                             {
                                 Dispatcher.Invoke(() =>
                                 {
-                                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                                     {
                                         Storyboard sb = new();
                                         Hiro_Utils.AddDoubleAnimaton(0, 250, FocusLabelR, "Opacity", sb);
@@ -249,8 +249,8 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 var folder = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\");
                 Hiro_Utils.CreateFolder(folder);
                 var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + UserId + ".hcf");
-                UserId = Hiro_Utils.Read_Ini(App.dconfig, "Config", "ChatID", "rex");
-                LocalId = App.LoginedUser;
+                UserId = Hiro_Utils.Read_Ini(App.dConfig, "Config", "ChatID", "rex");
+                LocalId = App.loginedUser;
                 Dispatcher.Invoke(() =>
                 {
                     ChatContentBak.Text = File.Exists(file) ? File.ReadAllText(file) : "";
@@ -512,7 +512,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     }
                     File.Delete(tmp);
                     var hcf = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + UserId + ".hcf");
-                    var content = Hiro_Utils.GetChat(App.LoginedUser, App.LoginedToken, UserId, hcf);
+                    var content = Hiro_Utils.GetChat(App.loginedUser, App.loginedToken, UserId, hcf);
                     if (content.Equals("success"))
                     {
                         content = File.ReadAllText(hcf);
@@ -607,7 +607,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                         nick = new();
                         Run nrun = new()
                         {
-                            Text = icon[0].Replace(LocalId, App.Username).Replace(UserId, Aite) + " " + icon[1] + Environment.NewLine,
+                            Text = icon[0].Replace(LocalId, App.username).Replace(UserId, Aite) + " " + icon[1] + Environment.NewLine,
                             FontWeight = FontWeights.Bold,
                             Foreground = icon[0].StartsWith(LocalId) ? (Brush)Resources["AppForeDim"] : (Brush)Resources["AppFore"]
                         };
@@ -754,11 +754,11 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 var user = item[..index];
                 if (user.Equals(LocalId))
                     continue;
-                user = user.Replace(LocalId, App.Username).Replace(UserId, Aite);
+                user = user.Replace(LocalId, App.username).Replace(UserId, Aite);
                 index = item.IndexOf(",", index + 1);
                 var content = item[(index + 1)..];
                 content = content.Replace(Environment.NewLine, "");
-                var i = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Message", "3"));
+                var i = int.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Message", "3"));
                 switch (i)
                 {
                     case 0:
@@ -791,10 +791,10 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     StrFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(StrFileName, UserId, "Avatar", string.Empty)));
                     App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); }), new() { Location = StrFileName }));
                 }
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1"))
+                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "MessageAudio", "1").Equals("1"))
                     try
                     {
-                        var fileP = Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudioPath", string.Empty));
+                        var fileP = Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "MessageAudioPath", string.Empty));
                         if (!File.Exists(fileP))
                             fileP = Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
                         System.Media.SoundPlayer sndPlayer = new(fileP);
@@ -811,7 +811,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
         {
             try
             {
-                var res = Hiro_Utils.SendMsg(App.LoginedUser, App.LoginedToken, UserId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                var res = Hiro_Utils.SendMsg(App.loginedUser, App.loginedToken, UserId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 + "," + msg);
                 if (!res.Equals("success"))
                     Dispatcher.Invoke(() =>
@@ -844,11 +844,11 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             try
             {
                 var res = Hiro_Utils.UploadProfileSettings(
-                    App.LoginedUser, App.LoginedToken, App.Username,
-                    Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty),
-                    Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"),
-                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", "")),
-                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", "")),
+                    App.loginedUser, App.loginedToken, App.username,
+                    Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomSign", string.Empty),
+                    Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatarStyle", "1"),
+                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserBackground", "")),
+                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatar", "")),
                     "update"
                     );
                 if (!res.Equals("success"))
@@ -958,7 +958,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             {
                 Hiro_Utils.version = "v" + text[8..];
                 Hiro_Utils.LogtoFile("[INFO]Chat Version Updated " + "v" + text[8..]);
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AppVer", text[8..]);
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AppVer", text[8..]);
                 Hiro_Get_Chat();
                 return;
             }
@@ -966,7 +966,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             {
                 UserId = text[7..];
                 Hiro_Utils.LogtoFile("[INFO]Talk to " + UserId);
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "ChatID", UserId);
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "ChatID", UserId);
                 SendContent.Document.Blocks.Clear();
                 Load_Friend_Info_First();
                 return;
@@ -1033,7 +1033,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
         {
             if (Emoji_Container.Visibility == Visibility.Visible)
             {
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                 {
                     var sb = Hiro_Utils.AddDoubleAnimaton(0, 450, Emoji_Container, "Opacity", null);
                     sb.Completed += delegate
@@ -1047,7 +1047,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             }
             else
             {
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                 {
                     Emoji_Container.Visibility = Visibility.Visible;
                     var sb = Hiro_Utils.AddPowerAnimation(1, Emoji_Container, null, 50);
@@ -1194,7 +1194,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                             }
                         }
                         SendContent.CaretPosition = inline?.ElementEnd;
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                         {
                             var sb = Hiro_Utils.AddDoubleAnimaton(0, 450, Emoji_Container, "Opacity", null);
                             sb.Completed += delegate
@@ -1212,7 +1212,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     Dispatcher.Invoke(() =>
                     {
                         var m = new Thickness(im.Margin.Left - 5, im.Margin.Top - 5, 0, 0);
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                         {
                             Storyboard sb = new();
                             Hiro_Utils.AddThicknessAnimaton(m, 250, FocusLabel, "Margin", sb);
@@ -1259,7 +1259,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             {
                 Emoji_Platte.Height = h + bw + 10;
                 scrollviewer.ScrollToHome();
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                     Hiro_Utils.AddPowerAnimation(1, Emoji_Platte, null, 50).Begin();
             });
         }
@@ -1292,7 +1292,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
 
         private void Profile_Nickname_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             var tag = xflag ? "chatidx" : "chatid";
             Hiro_Utils.Set_Mac_Location(Profile_Mac, tag, Profile_Nickname, animation: animation, animationTime: 250);
         }
@@ -1307,7 +1307,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
 
         private void Profile_MouseEnter(object sender, MouseEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             xflag = true;
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "chatavatarx", animation: animation, animationTime: 250);
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "chatavatarx", animation: animation, animationTime: 250);
@@ -1320,7 +1320,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
 
         private void Profile_MouseLeave(object sender, MouseEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             xflag = false;
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "chatavatar", animation: animation, animationTime: 250);
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "chatavatar", animation: animation, animationTime: 250);
@@ -1337,7 +1337,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
         {
             if (sender == Emoji_Platte)
             {
-                if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddDoubleAnimaton(0, 250, FocusLabel, "Opacity", sb);

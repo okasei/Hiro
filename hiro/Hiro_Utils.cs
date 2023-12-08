@@ -23,6 +23,8 @@ using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using System.Net;
 using System.Security.Cryptography;
+using System.Windows.Shell;
+using Windows.UI.Composition;
 
 namespace hiro
 {
@@ -421,9 +423,9 @@ namespace hiro
         {
             try
             {
-                if (!File.Exists(App.LogFilePath))
-                    File.Create(App.LogFilePath).Close();
-                FileStream fs = new(App.LogFilePath, FileMode.Open, FileAccess.ReadWrite);
+                if (!File.Exists(App.logFilePath))
+                    File.Create(App.logFilePath).Close();
+                FileStream fs = new(App.logFilePath, FileMode.Open, FileAccess.ReadWrite);
                 StreamReader sr = new(fs);
                 var str = sr.ReadToEnd();
                 StreamWriter sw = new(fs);
@@ -452,7 +454,7 @@ namespace hiro
         #region 翻译文件
         public static string Get_Translate(string val)
         {
-            return Read_Ini($"{App.CurrentDirectory}\\system\\lang\\{App.lang}.hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine).Replace("%b", " ");
+            return Read_Ini($"{App.currentDir}\\system\\lang\\{App.lang}.hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine).Replace("%b", " ");
         }
         #endregion
 
@@ -465,14 +467,51 @@ namespace hiro
             size.Width = formattedText.Width + sender.Padding.Left + sender.Padding.Right;
             size.Height = formattedText.Height + sender.Padding.Top + sender.Padding.Bottom;
         }
-        public static void Set_Bgimage(Control sender, Control win, string? strFileName = null, bool? ignoreAnimation = false)
+
+        public static void Set_Acrylic(Label? sender, Window win, WindowChrome? windowChrome = null, WindowAccentCompositor? compositor = null)
         {
-            Set_Opacity(sender, win);
-            //Bgimage
-            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
-            if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
+            if (win != null&& compositor != null)
             {
-                if (ignoreAnimation != false && !Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                win.Background = null;
+                if (sender != null)
+                    sender.Visibility = Visibility.Collapsed;
+                if (windowChrome != null)
+                    windowChrome.GlassFrameThickness = new(0, 0, 1, 0);
+                var colorOptions = Read_Ini(App.dConfig, "Config", "AcrylicMode", "2");//0 - White, 1 - Black, 2 = Customize
+                var colorTransparency = 0;
+                if (!int.TryParse(Read_Ini(App.dConfig, "Config", "AcrylicTransparency", "71"), out colorTransparency))
+                    colorTransparency = 0x47;
+                colorTransparency = Math.Max(colorTransparency, 1);
+                colorTransparency = Math.Min(colorTransparency, 255);
+                Color acrylicColor = (colorOptions) switch
+                {
+                    "0" => Colors.White,
+                    "1" => Colors.Black,
+                    _ => App.AppAccentColor
+                };
+                compositor.Color = Color.FromArgb((byte)colorTransparency, acrylicColor.R, acrylicColor.G, acrylicColor.B);
+                compositor.IsEnabled = true;
+                if (windowChrome != null)
+                    windowChrome.GlassFrameThickness = new(0);
+                return;
+            }
+        }
+        public static void Set_Bgimage(Label sender, Window win, string? strFileName = null, bool? ignoreAnimation = false, WindowChrome? windowChrome = null, WindowAccentCompositor? compositor = null)
+        {
+            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                sender.Visibility = Visibility.Collapsed;
+                win.Background = null;
+                return;
+            }
+            if (sender.Visibility != Visibility.Visible)
+                sender.Visibility = Visibility.Visible;
+            //Bgimage
+            Set_Opacity(sender, win);
+            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dConfig, "Config", "BackImage", "")));
+            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
+            {
+                if (ignoreAnimation != false && !Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Storyboard? sb = new();
                     try
@@ -505,14 +544,15 @@ namespace hiro
                 };
                 sender.Background = ib;
             }
+
         }
         public static Brush Set_Bgimage(Brush sender, Control win, string? strFileName = null)
         {
             //Bgimage
-            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dconfig, "Config", "BackImage", "")));
-            if (Read_Ini(App.dconfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
+            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dConfig, "Config", "BackImage", "")));
+            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
             {
-                if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Storyboard? sb = new();
                     try
@@ -550,7 +590,11 @@ namespace hiro
 
         public static void Set_Opacity(FrameworkElement sender, Control? win = null)
         {
-            if (!double.TryParse(Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
+            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                return;
+            }
+            if (!double.TryParse(Read_Ini(App.dConfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
             Color bg = Colors.White;
             switch (to)
@@ -573,7 +617,7 @@ namespace hiro
         }
         public static void Set_Foreground_Opacity(Border sender, Control? win = null)
         {
-            if (!double.TryParse(Read_Ini(App.dconfig, "Config", "OpacityMask", "255"), out double to))
+            if (!double.TryParse(Read_Ini(App.dConfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
             Color bg = Colors.White;
             switch (to)
@@ -597,7 +641,7 @@ namespace hiro
         public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false, bool location = true, bool animation = false, double animationTime = 150)
         {
             if (extra == false || path == null || !File.Exists(path))
-                path = App.LangFilePath;
+                path = App.langFilePath;
             try
             {
                 if (sender != null)
@@ -695,7 +739,7 @@ namespace hiro
             {
                 if (mac != null && name != null)
                 {
-                    var result = HiroParse(Read_Ini(App.LangFilePath, "location", mval, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
+                    var result = HiroParse(Read_Ini(App.langFilePath, "location", mval, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
                     if (!result[0].Equals("-1"))
                         mac.FontFamily = new FontFamily(result[0]);
                     if (!result[1].Equals("-1"))
@@ -770,7 +814,7 @@ namespace hiro
             {
                 if (sender != null)
                 {
-                    var loc = Read_Ini(App.LangFilePath, "location", val, string.Empty);
+                    var loc = Read_Ini(App.langFilePath, "location", val, string.Empty);
                     loc = loc.Replace(" ", "").Replace("%b", " ");
                     loc = loc[(loc.IndexOf("{") + 1)..];
                     loc = loc[..loc.LastIndexOf("}")];
@@ -872,7 +916,7 @@ namespace hiro
 
         public static string Anti_Path_Prepare(string path)
         {
-            path = Anti_Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.EnvironmentUsername}\\app").Replace("\\\\", "\\"));
+            path = Anti_Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.eUserName}\\app").Replace("\\\\", "\\"));
             path = Anti_Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Anti_Path_Replace(path, "<system>", Environment.SystemDirectory);
             path = Anti_Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86.Path);
@@ -908,11 +952,7 @@ namespace hiro
 
         public static string Path_Prepare(string path)
         {
-            if (path.StartsWith("\""))
-                path = path[1..];
-            if (path.EndsWith("\""))
-                path = path[..^1];
-            path = Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.EnvironmentUsername}\\app").Replace("\\\\", "\\"));
+            path = Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.eUserName}\\app").Replace("\\\\", "\\"));
             path = Path_Replace(path, "<capp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\default\\app").Replace("\\\\", "\\"));
             path = Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Path_Replace(path, "<system>", Environment.SystemDirectory);
@@ -944,7 +984,7 @@ namespace hiro
             path = Path_Replace(path, "<recent>", Environment.GetFolderPath(Environment.SpecialFolder.Recent));
             path = Path_Replace(path, "<profile>", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             path = Path_Replace(path, "<sendto>", Environment.GetFolderPath(Environment.SpecialFolder.SendTo));
-            path = Path_Replace(path, "<hiuser>", App.EnvironmentUsername);
+            path = Path_Replace(path, "<hiuser>", App.eUserName);
             path = Path_Replace(path, "<nop>", "");
             return path;
         }
@@ -974,8 +1014,8 @@ namespace hiro
             path = Path_Replace(path, "<date>", DateTime.Now.ToString("yyyyMMdd"));
             path = Path_Replace(path, "<time>", DateTime.Now.ToString("HHmmss"));
             path = Path_Replace(path, "<now>", DateTime.Now.ToString("yyMMddHHmmss"));
-            path = Path_Replace(path, "<me>", App.Username);
-            path = Path_Replace(path, "<hiro>", App.AppTitle);
+            path = Path_Replace(path, "<me>", App.username);
+            path = Path_Replace(path, "<hiro>", App.appTitle);
             path = Path_Replace(path, "<product>", Get_Translate("dlproduct"));
             return path;
         }
@@ -1039,7 +1079,7 @@ namespace hiro
                         }
                     }
                     #endregion
-                    int disturb = int.Parse(Read_Ini(App.dconfig, "Config", "Disturb", "2"));
+                    int disturb = int.Parse(Read_Ini(App.dConfig, "Config", "Disturb", "2"));
                     #region 识别文件类型
                     if (File.Exists(path))
                     {
@@ -1109,7 +1149,7 @@ namespace hiro
                         if (!File.Exists(parameter[0]))
                         {
                             HttpRequestMessage request = new(HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
-                            request.Headers.Add("UserAgent", $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 HiroApplication/{Hiro_Resources.ApplicationVersion}");
+                            request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                             request.Content = new StringContent("");
                             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
                             if (App.hc == null)
@@ -1464,7 +1504,6 @@ namespace hiro
                                 App.mn.closebtn.Visibility = Visibility.Hidden;
                                 App.mn.stack.Visibility = Visibility.Hidden;
                                 App.mn.Visibility = Visibility.Hidden;
-                                App.mn.Update_VlcPlayer_Status();
                             }
                         });
                         goto RunOK;
@@ -1495,11 +1534,11 @@ namespace hiro
                     if (path.ToLower() == "hello" || path.ToLower() == "hello()")
                     {
                         var hr = DateTime.Now.Hour;
-                        var morning = Read_Ini(App.LangFilePath, "local", "morning", "[6,7,8,9,10]");
-                        var noon = Read_Ini(App.LangFilePath, "local", "noon", "[11,12,13]");
-                        var afternoon = Read_Ini(App.LangFilePath, "local", "afternoon", "[14,15,16,17,18]");
-                        var evening = Read_Ini(App.LangFilePath, "local", "evening", "[19,20,21,22]");
-                        var night = Read_Ini(App.LangFilePath, "local", "night", "[23,0,1,2,3,4,5]");
+                        var morning = Read_Ini(App.langFilePath, "local", "morning", "[6,7,8,9,10]");
+                        var noon = Read_Ini(App.langFilePath, "local", "noon", "[11,12,13]");
+                        var afternoon = Read_Ini(App.langFilePath, "local", "afternoon", "[14,15,16,17,18]");
+                        var evening = Read_Ini(App.langFilePath, "local", "evening", "[19,20,21,22]");
+                        var night = Read_Ini(App.langFilePath, "local", "night", "[23,0,1,2,3,4,5]");
                         morning = $",{morning.Replace("[", "").Replace("]", "").Replace(" ", "")},";
                         noon = $",{noon.Replace("[", "").Replace("]", "").Replace(" ", "")},";
                         afternoon = $",{afternoon.Replace("[", "").Replace("]", "").Replace(" ", "")},";
@@ -1518,9 +1557,9 @@ namespace hiro
                         else
                             trindex = 4;
                         if (App.CustomUsernameFlag == 0)
-                            App.Notify(new Hiro_Notice(Get_Translate(trstrs[trindex * 2]).Replace("%u", App.EnvironmentUsername), 2, Get_Translate("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate(trstrs[trindex * 2]).Replace("%u", App.eUserName), 2, Get_Translate("hello")));
                         else
-                            App.Notify(new Hiro_Notice(Get_Translate(trstrs[trindex * 2 + 1]).Replace("%u", App.Username), 2, Get_Translate("hello")));
+                            App.Notify(new Hiro_Notice(Get_Translate(trstrs[trindex * 2 + 1]).Replace("%u", App.username), 2, Get_Translate("hello")));
                         goto RunOK;
                     }
                     //sequence(uri)
@@ -1642,7 +1681,7 @@ namespace hiro
                     {
                         HiroInvoke(() =>
                         {
-                            new Hiro_Box().Show();
+                            new Hiro_Blur().Show();
                         });
                         goto RunOK;
                     }
@@ -1939,7 +1978,7 @@ namespace hiro
                         var os = Get_OSVersion();
                         if (os.IndexOf(".") != -1)
                             os = os[..os.IndexOf(".")];
-                        var boo = Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10;
+                        var boo = Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10;
                         if (boo)
                         {
                             if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
@@ -1960,7 +1999,7 @@ namespace hiro
                                 HiroInvoke(() =>
                                 {
                                     new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                                .AddArgument("Launch", App.AppTitle)
+                                .AddArgument("Launch", App.appTitle)
                                 .AddText(parameter[0])
                                 .AddText(parameter[1].Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine))
                                 .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
@@ -2137,7 +2176,7 @@ namespace hiro
                             Hiro_Msg msg = new(parameter[0])
                             {
                                 bg = bg,
-                                Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))) + " - " + App.AppTitle
+                                Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))) + " - " + App.appTitle
                             };
                             msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))));
                             msg.acceptbtn.Content = Read_Ini(parameter[0], "Message", "accept", Get_Translate("msgaccept"));
@@ -2235,7 +2274,7 @@ namespace hiro
                     }
                     if (path.ToLower().StartsWith("web("))
                     {
-                        if (Read_Ini(App.dconfig, "Config", "URLConfirm", "0").Equals("1") && urlCheck && App.mn == null)
+                        if (Read_Ini(App.dConfig, "Config", "URLConfirm", "0").Equals("1") && urlCheck && App.mn == null)
                         {
                             var acbak = autoClose;
                             var confrimWin = Path_Prepare_EX(Path_Prepare("<capp>\\<lang>\\url.hms"));
@@ -2248,7 +2287,7 @@ namespace hiro
                                 Hiro_Msg msg = new(confrimWin)
                                 {
                                     bg = bg,
-                                    Title = Path_Prepare(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))) + " - " + App.AppTitle
+                                    Title = Path_Prepare(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))) + " - " + App.appTitle
                                 };
                                 msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))));
                                 msg.acceptbtn.Content = Read_Ini(confrimWin, "Message", "accept", Get_Translate("msgaccept"));
@@ -2428,7 +2467,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (Read_Ini(App.dconfig, "Config", "URLConfirm", "0").Equals("1") &&
+                    if (Read_Ini(App.dConfig, "Config", "URLConfirm", "0").Equals("1") &&
                     (parameter[0].ToLower().StartsWith("https://") || parameter[0].ToLower().StartsWith("http://")
                     || parameter[0].ToLower().Equals("firefox")
                     || parameter[0].ToLower().Equals("chrome")
@@ -2448,7 +2487,7 @@ namespace hiro
                             Hiro_Msg msg = new(confrimWin)
                             {
                                 bg = bg,
-                                Title = Path_Prepare(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))) + " - " + App.AppTitle
+                                Title = Path_Prepare(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))) + " - " + App.appTitle
                             };
                             msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))));
                             msg.acceptbtn.Content = Read_Ini(confrimWin, "Message", "accept", Get_Translate("msgaccept"));
@@ -2553,8 +2592,8 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                pinfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app";
-                pinfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.EnvironmentUsername + "\\app\\" + pinfo.FileName;
+                pinfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.eUserName + "\\app";
+                pinfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "\\users\\" + App.eUserName + "\\app\\" + pinfo.FileName;
                 try
                 {
                     _ = Process.Start(pinfo);
@@ -2974,7 +3013,7 @@ namespace hiro
                     success.Invoke();
                     return;
                 }
-                NewUser("N+@" + App.EnvironmentUsername, success, falied, cancel);
+                NewUser("N+@" + App.eUserName, success, falied, cancel);
                 //Auth(null, "aki-helper@" + textBox1.Text);
             }
             else
@@ -2990,6 +3029,12 @@ namespace hiro
         #region 模糊动画
         public static void Blur_Animation(int direction, bool animation, Control label, Window win, BackgroundWorker? bw = null)
         {
+            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                if (bw != null)
+                    bw.RunWorkerAsync();
+                return;
+            }
             //0: 25->0 12s  1:0->50 25s 2:0->25 12s 3:50->25 12s
             double start = direction switch
             {
@@ -3043,7 +3088,7 @@ namespace hiro
 
         public static void Blur_Out(Control ct, BackgroundWorker? bw = null)
         {
-            if (!Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 ct.Effect = new System.Windows.Media.Effects.BlurEffect()
                 {
@@ -3256,8 +3301,8 @@ namespace hiro
         {
             string a = "";
             int b = 1;
-            string c = Read_Ini(App.LangFilePath, "Command", b.ToString() + "_cmd", " ");
-            string d = Read_Ini(App.LangFilePath, "Command", b.ToString() + "_content", " ").Replace("\\n", Environment.NewLine);
+            string c = Read_Ini(App.langFilePath, "Command", b.ToString() + "_cmd", " ");
+            string d = Read_Ini(App.langFilePath, "Command", b.ToString() + "_content", " ").Replace("\\n", Environment.NewLine);
             while (!c.Equals(" ") && !d.Equals(" "))
             {
                 if (cmd.ToLower().StartsWith(c.ToLower()))
@@ -3266,8 +3311,8 @@ namespace hiro
                     break;
                 }
                 b++;
-                c = Read_Ini(App.LangFilePath, "Command", b.ToString() + "_cmd", " ");
-                d = Read_Ini(App.LangFilePath, "Command", b.ToString() + "_content", " ").Replace("\\n", Environment.NewLine);
+                c = Read_Ini(App.langFilePath, "Command", b.ToString() + "_cmd", " ");
+                d = Read_Ini(App.langFilePath, "Command", b.ToString() + "_content", " ").Replace("\\n", Environment.NewLine);
             }
             return a;
         }
@@ -3277,7 +3322,7 @@ namespace hiro
         public static string GetWebContent(string url, bool save = false, string? savepath = null)
         {
             HttpRequestMessage request = new(HttpMethod.Get, url);
-            request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+            request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
             request.Content = new StringContent("");
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
             request.Options.TryAdd("AllowAutoRedirect", true);
@@ -3454,15 +3499,15 @@ namespace hiro
                             break;
                         case -1.0:
                             App.scheduleitems[id].Time = dt.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
-                            Write_Ini(App.sconfig, (id + 1).ToString(), "Time", App.scheduleitems[id].Time);
+                            Write_Ini(App.sConfig, (id + 1).ToString(), "Time", App.scheduleitems[id].Time);
                             break;
                         case 0.0:
                             App.scheduleitems[id].Time = dt.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
-                            Write_Ini(App.sconfig, (id + 1).ToString(), "Time", App.scheduleitems[id].Time);
+                            Write_Ini(App.sConfig, (id + 1).ToString(), "Time", App.scheduleitems[id].Time);
                             break;
                         default:
                             App.scheduleitems[id].Time = dt.AddDays(Math.Abs(App.scheduleitems[id].re)).ToString("yyyy/MM/dd HH:mm:ss");
-                            Write_Ini(App.sconfig, (id + 1).ToString(), "Time", App.scheduleitems[id].Time);
+                            Write_Ini(App.sConfig, (id + 1).ToString(), "Time", App.scheduleitems[id].Time);
                             break;
                     }
                 }
@@ -3476,7 +3521,7 @@ namespace hiro
 
         public static void Delete_Alarm(int id)
         {
-            var inipath = App.sconfig;
+            var inipath = App.sConfig;
             if (id > -1)
             {
                 while (id < App.scheduleitems.Count - 1)
@@ -3537,7 +3582,7 @@ namespace hiro
                     Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//检索指定的子项
                     registry ??= Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                     registry.SetValue("Hiro_Autostart", strName + " silent");//设置该子项的新的“键值对”
-                    Write_Ini(App.dconfig, "Config", "AutoRun", "1");
+                    Write_Ini(App.dConfig, "Config", "AutoRun", "1");
                     LogtoFile("[HIROWEGO]Enable Autorun");
                 }
                 catch (Exception ex)
@@ -3552,7 +3597,7 @@ namespace hiro
                     return;
                 registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                 registry.DeleteValue("Hiro_Autostart", false);//删除指定“键名称”的键/值对
-                Write_Ini(App.dconfig, "Config", "AutoRun", "0");
+                Write_Ini(App.dConfig, "Config", "AutoRun", "0");
                 LogtoFile("[HIROWEGO]Disable Autorun");
             }
         }
@@ -3598,11 +3643,11 @@ namespace hiro
         public static void IntializeColorParameters()
         {
             Color mAppAccentColor = (Color)ColorConverter.ConvertFromString("#00C4FF");
-            if (!Read_Ini(App.dconfig, "Config", "LockColor", "default").Equals("default"))
+            if (!Read_Ini(App.dConfig, "Config", "LockColor", "default").Equals("default"))
             {
                 try
                 {
-                    mAppAccentColor = (Color)ColorConverter.ConvertFromString(Read_Ini(App.dconfig, "Config", "LockColor", "#00C4FF"));
+                    mAppAccentColor = (Color)ColorConverter.ConvertFromString(Read_Ini(App.dConfig, "Config", "LockColor", "#00C4FF"));
                 }
                 catch (Exception ex)
                 {
@@ -3614,7 +3659,7 @@ namespace hiro
                 mAppAccentColor = GetThemeColor();
             }
             App.AppAccentColor = mAppAccentColor;
-            App.AppForeColor = Get_ForeColor(mAppAccentColor, Read_Ini(App.dconfig, "Config", "Reverse", "0").Equals("1"));
+            App.AppForeColor = Get_ForeColor(mAppAccentColor, Read_Ini(App.dConfig, "Config", "Reverse", "0").Equals("1"));
             LogtoFile("[HIROWEGO]Accent Color: " + App.AppAccentColor.ToString());
             LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
         }
@@ -4064,7 +4109,7 @@ namespace hiro
                 byte[] ndata = new byte[eof.Length];
                 eof.CopyTo(ndata, 0);
                 HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                 request.Content = new ByteArrayContent(ndata);
                 request.Content.Headers.Remove("Content-Type");
                 request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
@@ -4116,15 +4161,15 @@ namespace hiro
         public static void Logout()
         {
             App.Logined = false;
-            App.LoginedToken = string.Empty;
-            App.Username = App.EnvironmentUsername;
+            App.loginedToken = string.Empty;
+            App.username = App.eUserName;
             App.CustomUsernameFlag = 0;
-            Write_Ini(App.dconfig, "Config", "Token", string.Empty);
-            Write_Ini(App.dconfig, "Config", "AutoLogin", "0");
-            Write_Ini(App.dconfig, "Config", "CustomUser", "0");
-            Write_Ini(App.dconfig, "Config", "CustomName", string.Empty);
-            Write_Ini(App.dconfig, "Config", "CustomSign", string.Empty);
-            Write_Ini(App.dconfig, "Config", "UserAvatarStyle", string.Empty);
+            Write_Ini(App.dConfig, "Config", "Token", string.Empty);
+            Write_Ini(App.dConfig, "Config", "AutoLogin", "0");
+            Write_Ini(App.dConfig, "Config", "CustomUser", "0");
+            Write_Ini(App.dConfig, "Config", "CustomName", string.Empty);
+            Write_Ini(App.dConfig, "Config", "CustomSign", string.Empty);
+            Write_Ini(App.dConfig, "Config", "UserAvatarStyle", string.Empty);
         }
 
         public static string UploadProfileImage(string file, string user, string token, string type)
@@ -4158,7 +4203,7 @@ namespace hiro
                 bytebuffer.CopyTo(ndata, send.Length);
                 eof.CopyTo(ndata, send.Length + bytebuffer.Length);
                 HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                 request.Content = new ByteArrayContent(ndata);
                 request.Content.Headers.Remove("Content-Type");
                 request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
@@ -4206,7 +4251,7 @@ namespace hiro
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"method\"" + Enter + Enter + "" + method + "" + Enter + "--" + boundary + "--"
                     );
                 HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                 request.Content = new ByteArrayContent(send);
                 request.Content.Headers.Remove("Content-Type");
                 request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
@@ -4270,7 +4315,7 @@ namespace hiro
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--"
                     );
                 HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                 request.Content = new ByteArrayContent(send);
                 request.Content.Headers.Remove("Content-Type");
                 request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
@@ -4287,16 +4332,16 @@ namespace hiro
                                 stream.CopyTo(fileStream);
                             }
                         }
-                        Write_Ini(App.dconfig, "Config", "CustomUser", "2");
-                        Write_Ini(App.dconfig, "Config", "CustomName", Read_Ini(saveto, "Profile", "Name", string.Empty));
-                        Write_Ini(App.dconfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty));
-                        Write_Ini(App.dconfig, "Config", "UserAvatarStyle", Read_Ini(saveto, "Profile", "Avatar", "1"));
-                        App.Username = Read_Ini(saveto, "Profile", "Name", string.Empty);
+                        Write_Ini(App.dConfig, "Config", "CustomUser", "2");
+                        Write_Ini(App.dConfig, "Config", "CustomName", Read_Ini(saveto, "Profile", "Name", string.Empty));
+                        Write_Ini(App.dConfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty));
+                        Write_Ini(App.dConfig, "Config", "UserAvatarStyle", Read_Ini(saveto, "Profile", "Avatar", "1"));
+                        App.username = Read_Ini(saveto, "Profile", "Name", string.Empty);
                         App.CustomUsernameFlag = 1;
                         var usrAvatar = "<hiapp>\\images\\avatar\\" + user + ".hap";
                         var usrBack = "<hiapp>\\images\\background\\" + user + ".hpp";
-                        Write_Ini(App.dconfig, "Config", "UserAvatar", usrAvatar);
-                        Write_Ini(App.dconfig, "Config", "UserBackground", usrBack);
+                        Write_Ini(App.dConfig, "Config", "UserAvatar", usrAvatar);
+                        Write_Ini(App.dConfig, "Config", "UserBackground", usrBack);
                         CreateFolder(Path_Prepare(usrAvatar));
                         CreateFolder(Path_Prepare(usrBack));
                         if (File.Exists(Path_Prepare(usrAvatar)))
@@ -4345,7 +4390,7 @@ namespace hiro
                 byte[] ndata = new byte[eof.Length];
                 eof.CopyTo(ndata, 0);
                 HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                 request.Content = new ByteArrayContent(ndata);
                 request.Content.Headers.Remove("Content-Type");
                 request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
@@ -4390,7 +4435,7 @@ namespace hiro
                 byte[] ndata = new byte[eof.Length];
                 eof.CopyTo(ndata, 0);
                 HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
                 request.Content = new ByteArrayContent(ndata);
                 request.Content.Headers.Remove("Content-Type");
                 request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
@@ -4450,7 +4495,7 @@ namespace hiro
             BitmapImage bitmapimage = new();
             bitmapimage.BeginInit();
             bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-            switch (Read_Ini(App.dconfig, "Config", "ImageRead", "1"))
+            switch (Read_Ini(App.dConfig, "Config", "ImageRead", "1"))
             {
                 case "0":
                     {

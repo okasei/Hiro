@@ -21,21 +21,15 @@ namespace hiro
         internal bool[] animation = { true, false };
         internal Storyboard? sb = null;
         internal Action? act = null;
+        internal WindowAccentCompositor? compositor = null;
         public Hiro_Notification()
         {
             InitializeComponent();
-            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.AppTitle}";
+            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
             Load_Color();
             Hiro_Utils.Set_Control_Location(notinfo, "notify");
             Width = SystemParameters.PrimaryScreenWidth;
             Height = 32;
-            SourceInitialized += delegate
-            {
-                Canvas.SetTop(this, -ActualHeight);
-                Canvas.SetLeft(this, 0);
-            };
-            msg = "";
-            animation[0] = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
             timer = new()
             {
                 Interval = new TimeSpan(100000)
@@ -44,11 +38,21 @@ namespace hiro
             {
                 TimerTick();
             };
-            timer.Start();
+            Loaded += delegate
+            {
+                Visibility = Visibility.Visible;
+                Canvas.SetTop(this, -ActualHeight);
+                Canvas.SetLeft(this, 0);
+                if (timer != null)
+                    timer.Start();
+            };
+            msg = "";
+            animation[0] = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+
         }
         private void TimerTick()
         {
-            switch(flag[0])
+            switch (flag[0])
             {
                 case 0:
                     timer.Interval = new TimeSpan(10000000);
@@ -118,8 +122,19 @@ namespace hiro
         }
         public void Load_Color()
         {
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                compositor ??= new(this);
+                Hiro_Utils.Set_Acrylic(null, this, null, compositor);
+                notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
+                return;
+            }
+            if (compositor != null)
+            {
+                compositor.IsEnabled = false;
+            }
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 Storyboard? sc = new();
                 Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sc);
@@ -199,7 +214,7 @@ namespace hiro
             notinfo.Width = msize.Width;
             th.Left = ActualWidth / 2 - msize.Width / 2;
             if (th.Left < 0)
-            {  
+            {
                 if (!first)
                 {
                     th.Left = Width - msize.Width;
@@ -229,7 +244,7 @@ namespace hiro
                     animation[1] = false;
                 }
                 notinfo.Margin = th;
-            } 
+            }
         }
         private void Ani()
         {

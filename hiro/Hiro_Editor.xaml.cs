@@ -16,15 +16,16 @@ namespace hiro
         public int bflag = 0;
         internal int editpage = 0;
         private bool load = false;
+        internal WindowAccentCompositor? compositor = null;
         public Hiro_Editor()
         {
             InitializeComponent();
-            editpage = int.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "EditPage", "0"));
+            editpage = int.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "EditPage", "0"));
             Load_Position();
-            Title = Hiro_Utils.Get_Translate("edititle") + " - " + App.AppTitle;
+            Title = Hiro_Utils.Get_Translate("edititle") + " - " + App.appTitle;
             Load();
             con.Focus();
-            slider.Value = double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "EditOpacity", "1"));
+            slider.Value = double.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "EditOpacity", "1"));
             allow = 1;
             slider.IsEnabled = true;
             Opacity = (float)slider.Value;
@@ -67,7 +68,7 @@ namespace hiro
 
         private void Update_Animation()
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(3, status, sb, -50, null);
@@ -80,7 +81,7 @@ namespace hiro
             {
                 try
                 {
-                    string path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
+                    string path = App.currentDir + "\\users\\" + App.eUserName + "\\editor\\" + editpage.ToString() + ".het";
                     if (!System.IO.File.Exists(path))
                         System.IO.File.Create(path).Close();
                     System.IO.File.WriteAllText(path, con.Text);
@@ -104,7 +105,7 @@ namespace hiro
         }
         public void Load()
         {
-            var path = App.CurrentDirectory + "\\users\\" + App.EnvironmentUsername + "\\editor\\" + editpage.ToString() + ".het";
+            var path = App.currentDir + "\\users\\" + App.eUserName + "\\editor\\" + editpage.ToString() + ".het";
             try
             {
                 con.Text = System.IO.File.ReadAllText(path);
@@ -116,7 +117,7 @@ namespace hiro
             }
             status.Content = Hiro_Utils.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Update_Animation();
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "EditPage", editpage.ToString());
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "EditPage", editpage.ToString());
         }
         public void Load_Color()
         {
@@ -148,7 +149,7 @@ namespace hiro
         }
         private void Run_In()
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600))
                 {
@@ -182,7 +183,7 @@ namespace hiro
             runoutflag = 1;
             Save();
             con.IsEnabled = false;
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450))
                 {
@@ -294,7 +295,7 @@ namespace hiro
         {
             Opacity = (float)slider.Value;
             if (allow == 1)
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "EditOpacity", slider.Value.ToString());
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "EditOpacity", slider.Value.ToString());
         }
 
         private void Edi_KeyDown(object sender, KeyEventArgs e)
@@ -342,12 +343,22 @@ namespace hiro
         }
         public void Loadbgi()
         {
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                compositor ??= new(this);
+                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                return;
+            }
+            if (compositor != null)
+            {
+                compositor.IsEnabled = false;
+            }
             if (bflag == 1)
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
-            Hiro_Utils.Blur_Animation(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), animation, bgimage, this);
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            Hiro_Utils.Blur_Animation(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), animation, bgimage, this);
             bflag = 0;
         }
 

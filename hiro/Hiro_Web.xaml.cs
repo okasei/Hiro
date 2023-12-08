@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Windows.AI.MachineLearning;
+using System.Windows.Shell;
 
 namespace hiro
 {
@@ -34,6 +34,7 @@ namespace hiro
         private ImageSource? savedicon = null;//Hiro Icon
         private ContextMenu? favMenu = null;
         private bool iconLoaded = false;
+        internal WindowAccentCompositor? compositor = null;
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();
@@ -43,7 +44,7 @@ namespace hiro
                 uribtn.Content = startUri;
             }
             this.startUri = startUri;
-            Title = App.AppTitle;
+            Title = App.appTitle;
             configPath = startUri.Equals("<hiuser>") ? Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\web.config")) : Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare($"<hiapp>\\web\\{startUri}\\web.config"));
             Load_Color();
             Load_Translate();
@@ -123,7 +124,7 @@ namespace hiro
         public void HiHiro()
         {
             UpdateUniversalLeft();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, TitleGrid, sb, -50, null);
@@ -292,7 +293,7 @@ namespace hiro
             };
             label.MouseEnter += delegate (object sender, MouseEventArgs e)
             {
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddColorAnimaton((Color)Resources["AppForeDimColor"], 250, label, "Background.Color", sb);
@@ -311,7 +312,7 @@ namespace hiro
             };
             label.MouseLeave += delegate (object sender, MouseEventArgs e)
             {
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddColorAnimaton(Colors.Transparent, 250, label, "Background.Color", sb);
@@ -346,6 +347,16 @@ namespace hiro
         }
         public void Loadbgi(int direction, bool animation)
         {
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            {
+                compositor ??= new(this);
+                Hiro_Utils.Set_Acrylic(bgimage, this, null, compositor);
+                return;
+            }
+            if (compositor != null)
+            {
+                compositor.IsEnabled = false;
+            }
             if (bflag == 1)
                 return;
             bflag = 1;
@@ -410,7 +421,7 @@ namespace hiro
         {
             iconLoaded = false;
             SetSavedPrimitiveIcon();
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             var visual = PreBtn.Visibility;
             var visual2 = NextBtn.Visibility;
             PreBtn.Visibility = wv2.CoreWebView2.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
@@ -450,7 +461,7 @@ namespace hiro
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
         {
 
-            var animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             var visual = soundbtn.Visibility;
             soundbtn.Visibility = wv2.CoreWebView2.IsDocumentPlayingAudio ? Visibility.Visible : Visibility.Collapsed;
             if (soundbtn.Visibility == Visibility.Visible && visual != soundbtn.Visibility && animation)
@@ -571,7 +582,7 @@ namespace hiro
             URLBtn.Content = secure ? Hiro_Utils.Get_Translate("websecure") : Hiro_Utils.Get_Translate("webinsecure");
             URLSign.Content = secure ? "\uF61A" : "\uF618";
             URLBtn.ToolTip = secure ? Hiro_Utils.Get_Translate("websecuretip") : Hiro_Utils.Get_Translate("webinsecuretip");
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") && URLGrid.Visibility == Visibility.Visible)
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1") && URLGrid.Visibility == Visibility.Visible)
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, URLGrid, sb, -50, null);
@@ -735,7 +746,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(uribtn, "webspace", location: false);
             Hiro_Utils.Set_Control_Location(CrashedLabel, "webcrashtip");
             Hiro_Utils.Set_Control_Location(CrashedButton, "webcrashbtn");
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Blur", "0")), false);
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
         }
 
         public void Load_Translate()
@@ -869,15 +880,15 @@ namespace hiro
         {
             if (WebGrid.Visibility != Visibility.Visible)
             {
-                TitleLabel.Text = App.AppTitle;
+                TitleLabel.Text = App.appTitle;
             }
             else
             {
                 prefix = wv2.CoreWebView2.IsDocumentPlayingAudio ? Hiro_Utils.Get_Translate("webmusic") : "";
                 string ti = fixed_title ?? Hiro_Utils.Get_Translate("webtitle");
                 string lo = loading ? Hiro_Utils.Get_Translate("loading") : "";
-                TitleLabel.Text = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", lo).Replace("%p", prefix).Replace("%h", App.AppTitle);
-                if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title))
+                TitleLabel.Text = ti.Replace("%t", wv2.CoreWebView2.DocumentTitle).Replace("%i", lo).Replace("%p", prefix).Replace("%h", App.appTitle);
+                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1") || FlowTitle.Equals(Title))
                 {
                     Title = TitleLabel.Text;
                     return;
@@ -971,7 +982,7 @@ namespace hiro
                         TitleLabel.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
                         URLBox.Visibility = URLBox.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
                         URLBox.Text = wv2.CoreWebView2.Source;
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                         {
                             System.Windows.Media.Animation.Storyboard sb = new();
                             if (TitleLabel.Visibility == Visibility.Visible)
@@ -987,7 +998,7 @@ namespace hiro
                         TitleLabel.Visibility = FavGrid.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
                         FavGrid.Visibility = FavGrid.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
                         URLBox.Visibility = Visibility.Collapsed;
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                         {
                             System.Windows.Media.Animation.Storyboard sb = new();
                             if (FavGrid.Visibility == Visibility.Visible)

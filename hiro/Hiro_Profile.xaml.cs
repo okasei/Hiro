@@ -28,17 +28,17 @@ namespace hiro
             Hiro_Initialize();
             Loaded += delegate
             {
-                SetAvatar(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", ""))), false);
-                SetBackground(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", ""))), false);
+                SetAvatar(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatar", ""))), false);
+                SetBackground(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserBackground", ""))), false);
                 HiHiro();
             };
         }
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(0, BaseGrid, sb, -100, null);
@@ -86,20 +86,20 @@ namespace hiro
 
         public void Load_Data()
         {
-            msg_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Message", "3")));
-            disturb_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dconfig, "Config", "Disturb", "2")));
-            rbtn17.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomNick", "1").Equals("2");
+            msg_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Message", "3")));
+            disturb_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Disturb", "2")));
+            rbtn17.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomNick", "1").Equals("2");
             rbtn16.IsChecked = !rbtn17.IsChecked;
             if (rbtn17.IsChecked == true)
             {
-                App.AppTitle = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
+                App.appTitle = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomHIRO", "Hiro");
                 if (App.wnd != null)
-                    App.wnd.trayText.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "Hiro");
+                    App.wnd.trayText.Text = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomHIRO", "Hiro");
             }
-            msg_audio.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "MessageAudio", "1").Equals("1");
-            msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dconfig, "Config", "AutoChat", "1").Equals("1");
-            tb10.Text = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomHIRO", "");
-            var str = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty);
+            msg_audio.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "MessageAudio", "1").Equals("1");
+            msg_auto.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "AutoChat", "1").Equals("1");
+            tb10.Text = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomHIRO", "");
+            var str = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomSign", string.Empty);
             if (str.Trim().Equals(string.Empty))
             {
                 Profile_Signature.Content = Hiro_Utils.Get_Translate("profilesign");
@@ -110,10 +110,10 @@ namespace hiro
                 Profile_Signature.Content = str;
                 Profile_Signature.Foreground = (SolidColorBrush)Resources["AppFore"];
             }
-            str = Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomName", string.Empty);
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomUser", "1").Equals("1") || str.Trim().Equals(string.Empty))
+            str = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomName", string.Empty);
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomUser", "1").Equals("1") || str.Trim().Equals(string.Empty))
             {
-                Profile_Nickname.Content = App.Username;
+                Profile_Nickname.Content = App.username;
                 Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
             }
             else
@@ -121,7 +121,7 @@ namespace hiro
                 Profile_Nickname.Content = str;
                 Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppFore"];
             }
-            switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"))
+            switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatarStyle", "1"))
             {
                 case "0":
                     Profile_Rectangle.Visibility = Visibility.Hidden;
@@ -132,7 +132,7 @@ namespace hiro
                     Profile_Ellipse.Visibility = Visibility.Hidden;
                     break;
             }
-            var mac = Hiro_Utils.Read_Ini(App.dconfig, "Config", "User", Hiro_Utils.Get_Translate("idnull"));
+            var mac = Hiro_Utils.Read_Ini(App.dConfig, "Config", "User", Hiro_Utils.Get_Translate("idnull"));
             Profile_Mac.Content = mac;
             Load = true;
         }
@@ -210,7 +210,7 @@ namespace hiro
         private void Btn8_Click(object sender, RoutedEventArgs e)
         {
             btn8.IsEnabled = false;
-            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-fb", App.AppTitle);
+            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-fb", App.appTitle);
             btn8.IsEnabled = true;
         }
 
@@ -251,28 +251,28 @@ namespace hiro
 
         private void Rbtn16_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "1");
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomNick", "1");
             tb10.IsEnabled = false;
-            App.AppTitle = Hiro_Resources.ApplicationName;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            App.appTitle = Hiro_Resources.ApplicationName;
+            Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
             {
-                Hiro_Main.titlelabel.Content = App.AppTitle;
-                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.titlelabel.Content = App.appTitle;
+                Hiro_Main.Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
-                App.wnd.trayText.Text = App.AppTitle;
+                App.wnd.trayText.Text = App.appTitle;
         }
         private void Rbtn17_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomNick", "2");
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomNick", "2");
             tb10.IsEnabled = true;
-            App.AppTitle = tb10.Text;
-            Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            App.appTitle = tb10.Text;
+            Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
             {
-                Hiro_Main.titlelabel.Content = App.AppTitle;
-                Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.titlelabel.Content = App.appTitle;
+                Hiro_Main.Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
                 App.wnd.trayText.Text = tb10.Text;
@@ -280,15 +280,15 @@ namespace hiro
 
         private void Tb10_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomNick", "1").Equals("2"))
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomNick", "1").Equals("2"))
             {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomHIRO", tb10.Text);
-                App.AppTitle = tb10.Text;
-                Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomHIRO", tb10.Text);
+                App.appTitle = tb10.Text;
+                Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 if (Hiro_Main != null)
                 {
-                    Hiro_Main.titlelabel.Content = App.AppTitle;
-                    Hiro_Main.Title = App.AppTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                    Hiro_Main.titlelabel.Content = App.appTitle;
+                    Hiro_Main.Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 }
                 if (App.wnd != null)    
                     App.wnd.trayText.Text = tb10.Text;
@@ -300,7 +300,7 @@ namespace hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Message", (Convert.ToInt32(msg_level.Value)).ToString());
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Message", (Convert.ToInt32(msg_level.Value)).ToString());
                 msg_status.Content = Convert.ToInt32(msg_level.Value) switch
                 {
                     1 => Hiro_Utils.Get_Translate("msghide"),
@@ -316,7 +316,7 @@ namespace hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "Disturb", (Convert.ToInt32(disturb_level.Value)).ToString());
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Disturb", (Convert.ToInt32(disturb_level.Value)).ToString());
                 disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
                 {
                     1 => Hiro_Utils.Get_Translate("disturbfs"),
@@ -342,7 +342,7 @@ namespace hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "MessageAudio", "1");
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "MessageAudio", "1");
             }
         }
 
@@ -350,7 +350,7 @@ namespace hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "MessageAudio", "0");
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "MessageAudio", "0");
             }
         }
 
@@ -358,7 +358,7 @@ namespace hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoChat", "1");
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoChat", "1");
                 if (Hiro_Main != null)
                     Hiro_Main.hiro_chat ??= new(Hiro_Main);
             }
@@ -368,7 +368,7 @@ namespace hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "AutoChat", "0");
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoChat", "0");
             }
         }
 
@@ -395,11 +395,11 @@ namespace hiro
                 try
                 {
                     var res = Hiro_Utils.UploadProfileSettings(
-                    App.LoginedUser, App.LoginedToken, App.Username,
-                    Hiro_Utils.Read_Ini(App.dconfig, "Config", "CustomSign", string.Empty),
-                    Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"),
-                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserBackground", "")),
-                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatar", "")),
+                    App.loginedUser, App.loginedToken, App.username,
+                    Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomSign", string.Empty),
+                    Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatarStyle", "1"),
+                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserBackground", "")),
+                    Hiro_Utils.GetMD5(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatar", "")),
                     "update"
                     );
                     if (!res.Equals("success"))
@@ -423,21 +423,21 @@ namespace hiro
             {
                 if (Profile_Nickname_Textbox.Text.Trim().Equals(string.Empty))
                 {
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomUser", "1");
+                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomUser", "1");
                     App.CustomUsernameFlag = 0;
-                    App.Username = App.EnvironmentUsername;
+                    App.username = App.eUserName;
                     Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
                 }
                 else
                 {
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomUser", "2");
-                    Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomName", Profile_Nickname_Textbox.Text);
+                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomUser", "2");
+                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomName", Profile_Nickname_Textbox.Text);
                     App.CustomUsernameFlag = 1;
-                    App.Username = Profile_Nickname_Textbox.Text;
+                    App.username = Profile_Nickname_Textbox.Text;
                     Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppFore"];
                 }
                 Update_Profile();
-                Profile_Nickname.Content = App.Username;
+                Profile_Nickname.Content = App.username;
                 Profile_Nickname.Visibility = Visibility.Visible;
                 Profile_Nickname_Textbox.Visibility = Visibility.Hidden;
                 e.Handled = true;
@@ -455,7 +455,7 @@ namespace hiro
             if (e.Key == Key.Enter)
             {
                 Profile_Signature_Textbox.Text = Profile_Signature_Textbox.Text.Trim().Equals(string.Empty) ? string.Empty : Profile_Signature_Textbox.Text;
-                Hiro_Utils.Write_Ini(App.dconfig, "Config", "CustomSign", Profile_Signature_Textbox.Text);
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomSign", Profile_Signature_Textbox.Text);
                 Profile_Signature.Content = Profile_Signature_Textbox.Text.Equals(string.Empty) ? Hiro_Utils.Get_Translate("profilesign") : Profile_Signature_Textbox.Text;
                 Profile_Signature.Foreground = Profile_Signature_Textbox.Text.Equals(string.Empty) ? (SolidColorBrush)Resources["AppForeDisabled"] : (SolidColorBrush)Resources["AppFore"];
                 Profile_Signature.Visibility = Visibility.Visible;
@@ -482,7 +482,7 @@ namespace hiro
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
+                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
@@ -514,7 +514,7 @@ namespace hiro
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.AppTitle
+                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
@@ -533,21 +533,21 @@ namespace hiro
             }
             else if (e.ButtonState == e.RightButton)
             {
-                switch (Hiro_Utils.Read_Ini(App.dconfig, "Config", "UserAvatarStyle", "1"))
+                switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatarStyle", "1"))
                 {
                     case "0":
                         Profile_Rectangle.Visibility = Visibility.Visible;
                         Profile_Rectangle.Fill = (ImageBrush)Resources["Avatar"];
                         Profile_Ellipse.Visibility = Visibility.Hidden;
                         Profile_Ellipse.Fill = null;
-                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatarStyle", "1");
+                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatarStyle", "1");
                         break;
                     default:
                         Profile_Rectangle.Visibility = Visibility.Hidden;
                         Profile_Rectangle.Fill = null;
                         Profile_Ellipse.Visibility = Visibility.Visible;
                         Profile_Ellipse.Fill = (ImageBrush)Resources["Avatar"];
-                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatarStyle", "0");
+                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatarStyle", "0");
                         break;
                 }
                 Update_Profile();
@@ -622,7 +622,7 @@ namespace hiro
                         hh = Profile_Rectangle.Height * 2;
                     });
                     bool m = false;
-                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
+                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Compression", "1").Equals("1"))
                     {
                         if (ww < w && hh < h)
                         {
@@ -688,7 +688,7 @@ namespace hiro
                                 trfile = "avatarlarge";
                             else
                             {
-                                var res = Hiro_Utils.UploadProfileImage(file, App.LoginedUser, App.LoginedToken, "hap");
+                                var res = Hiro_Utils.UploadProfileImage(file, App.loginedUser, App.loginedToken, "hap");
                                 if (res.Equals("success"))
                                     trfile = "avatarsucc";
                                 else
@@ -700,7 +700,7 @@ namespace hiro
                             });
                         }).Start();
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserAvatar", strFileName);
+                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatar", strFileName);
                     }
 
                 }
@@ -736,7 +736,7 @@ namespace hiro
                         hh = Profile_Background.Height * 1.5;
                     });
                     bool m = false;
-                    if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Compression", "1").Equals("1"))
+                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Compression", "1").Equals("1"))
                     {
                         if (ww < w && hh < h)
                         {
@@ -801,7 +801,7 @@ namespace hiro
                                 trfile = "profilelarge";
                             else
                             {
-                                var res = Hiro_Utils.UploadProfileImage(file, App.LoginedUser, App.LoginedToken, "hpp");
+                                var res = Hiro_Utils.UploadProfileImage(file, App.loginedUser, App.loginedToken, "hpp");
                                 if (res.Equals("success"))
                                     trfile = "profilesucc";
                                 else
@@ -813,7 +813,7 @@ namespace hiro
                             });
                         }).Start();
                         strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                        Hiro_Utils.Write_Ini(App.dconfig, "Config", "UserBackground", strFileName);
+                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserBackground", strFileName);
                     }
 
                 }
@@ -838,7 +838,7 @@ namespace hiro
 
         private void Profile_Nickname_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             var tag = xflag ? "profileidx" : "profileid";
             Hiro_Utils.Set_Mac_Location(Profile_Mac, tag, Profile_Nickname, animation: animation, animationTime: 250);
         }
@@ -860,7 +860,7 @@ namespace hiro
 
         private void Profile_MouseEnter(object sender, MouseEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             xflag = true;
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilenamex", animation: animation, animationTime: 250);
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesignx", animation: animation, animationTime: 250);
@@ -873,7 +873,7 @@ namespace hiro
 
         private void Profile_MouseLeave(object sender, MouseEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             xflag = false;
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilename", animation: animation, animationTime: 250);
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesign", animation: animation, animationTime: 250);
@@ -887,7 +887,7 @@ namespace hiro
         private void Btn11_Click(object sender, RoutedEventArgs e)
         {
             btn11.IsEnabled = false;
-            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-doc", App.AppTitle);
+            Hiro_Utils.RunExe("https://i.rexio.cn/hiro-doc", App.appTitle);
             btn11.IsEnabled = true;
         }
     }

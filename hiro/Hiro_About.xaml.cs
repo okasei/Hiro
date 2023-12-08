@@ -26,7 +26,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             if (!animation)
                 return;
             Storyboard sb = new();
@@ -125,7 +125,7 @@ namespace hiro
                         var os = Hiro_Utils.Get_OSVersion();
                         if (os.IndexOf(".") != -1)
                             os = os[..os.IndexOf(".")];
-                        if (Hiro_Utils.Read_Ini(App.dconfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
+                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddText(Hiro_Utils.Get_Translate("updatetitle"))
@@ -159,7 +159,7 @@ namespace hiro
 
         private void Avatar_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatarx", animation: true, animationTime: 250);
                 Hiro_Utils.Set_Control_Location(chk_btn, ischecking ? "checkcancelx" : "checkupx", animation: true, animationTime: 250);
@@ -170,7 +170,7 @@ namespace hiro
 
         private void Avatar_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (!Hiro_Utils.Read_Ini(App.dconfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatar", animation: true, animationTime: 250);
                 Hiro_Utils.Set_Control_Location(chk_btn, ischecking ? "checkcancel" : "checkup", animation: true, animationTime: 250);

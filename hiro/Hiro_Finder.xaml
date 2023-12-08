@@ -8,11 +8,14 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="None" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" Closing="Window_Closing"  GotKeyboardFocus="Window_GotKeyboardFocus" Deactivated="Window_Deactivated" Icon="/hiro_circle.ico">
+        Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="SingleBorderWindow" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" Closing="Window_Closing"  GotKeyboardFocus="Window_GotKeyboardFocus" Deactivated="Window_Deactivated" Icon="/hiro_circle.ico">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
     </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
     <Grid>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="PlaceHolder" Content="Please Input" FontSize="1" Foreground="{DynamicResource AppForeDim}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" Visibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Width="{Binding Width, ElementName=Hiro_Text}" Height="{Binding Height, ElementName=Hiro_Text}"></Label>
