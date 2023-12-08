@@ -220,6 +220,7 @@ namespace hiro
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMain", "1");
             if (HalfImage.IsChecked == true)
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMain", "2");
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicTransparency", ((byte)TransparentSlider.Value).ToString());
             Hiro_Main?.Set_Label(Hiro_Main.configx);
             Hiro_Main?.Blurbgi(0);
         }

@@ -17,6 +17,7 @@
         <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
     </WindowChrome.WindowChrome>
     <Grid x:Name="alarmgrid" MouseLeftButtonDown="Alarmgrid_MouseLeftButtonDown" Drop="alarmgrid_Drop">
+        <Label x:Name="VirtualTitle" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" MouseDown="VirtualTitle_MouseDown"/>
         <Label x:Name="bgimage" Foreground="{DynamicResource AppFore}" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="borderlabel" BorderBrush="{DynamicResource AppFore}"  Foreground="{DynamicResource AppFore}" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <Label x:Name="EncryptTitle" Content="Time Up!" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="172,35,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="20" FontWeight="Bold" Style="{DynamicResource HiroLabel}" MouseLeftButtonDown="EncryptTitle_MouseLeftButtonDown"/>

@@ -1850,14 +1850,6 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().Equals("idtracer") || path.ToLower().Equals("idtracer()"))
-                    {
-                        HiroInvoke(() =>
-                        {
-                            new Hiro_ID().Show();
-                        });
-                        goto RunOK;
-                    }
                     if (path.ToLower().StartsWith("ticker("))
                     {
                         var adflag = false;

@@ -25,6 +25,10 @@ namespace hiro
         internal int current = 0;
         internal int bflag = 0;
         internal WindowAccentCompositor? compositor = null;
+        private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
         public Hiro_Ticker(string tid, string tformat = "%n", int tcurrent = 0, int tnum = int.MaxValue, int tmin = int.MinValue, int tmax = int.MaxValue)
         {
             InitializeComponent();

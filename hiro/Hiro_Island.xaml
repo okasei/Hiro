@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Hiro_Island" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
     <Window.Resources>
         <ImageBrush x:Key="PrimaryIcon"  Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>

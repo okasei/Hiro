@@ -847,7 +847,7 @@ namespace hiro
                 blureff.IsEnabled = false;
                 btn10.IsEnabled = false;
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "3");
-                //Hiro_Main?.Set_Label(Hiro_Main.acrylicx);
+                Hiro_Main?.Blurbgi(0);
                 rbtn15.IsEnabled = true;
                 rbtn14.IsEnabled = true;
                 acrylic_btn.IsEnabled = true;

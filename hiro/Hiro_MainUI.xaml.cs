@@ -301,7 +301,7 @@ namespace hiro
                     {
                         switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2"))
                         {
-                            case "1":
+                            case "2":
                                 {
                                     var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
                                     sb.Completed += (e, args) =>
@@ -330,7 +330,7 @@ namespace hiro
                                     }
                                     break;
                                 }
-                            case "2":
+                            case "1":
                                 {
                                     var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
                                     sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(130, 0, 0, 0), 250, bgimage, "Margin", sb);
@@ -375,7 +375,7 @@ namespace hiro
                     {
                         switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2"))
                         {
-                            case "1":
+                            case "2":
                                 {
                                     var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
                                     sb.Completed += (e, args) =>
@@ -404,7 +404,7 @@ namespace hiro
                                     }
                                     break;
                                 }
-                            case "2":
+                            case "1":
                                 {
                                     var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
                                     sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(130, 0, 0, 0), 250, bgimage, "Margin", sb);
@@ -449,22 +449,24 @@ namespace hiro
                     {
                         switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2"))
                         {
-                            case "1":
+                            case "2":
                                 {
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
                                         var sb2 = Hiro_Utils.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
                                         sb2.Completed += (e, args) =>
                                         {
-                                            bgimage.Opacity = 0;
+                                            bgimage.Opacity = 1;
                                             bgimage.Visibility = Visibility.Collapsed;
                                             bgimage.Margin = new Thickness(0, 0, 0, 0);
                                         };
                                         sb2.Begin();
                                     }
+                                    else
+                                        bgimage.Margin = new Thickness(0, 0, 0, 0);
                                     break;
                                 }
-                            case "2":
+                            case "1":
                                 {
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
@@ -472,18 +474,19 @@ namespace hiro
                                         sb2 = Hiro_Utils.AddThicknessAnimaton(new Thickness(240, 0, 0, 0), 250, bgimage, "Margin", sb2);
                                         sb2.Completed += (e, args) =>
                                         {
-                                            bgimage.Opacity = 0;
+                                            bgimage.Opacity = 1;
                                             bgimage.Visibility = Visibility.Collapsed;
                                             bgimage.Margin = new Thickness(0, 0, 0, 0);
                                         };
                                         sb2.Begin();
                                     }
+                                    else
+                                        bgimage.Margin = new Thickness(0, 0, 0, 0);
                                     break;
                                 }
                             default:
                                 {
-
-                                    bgimage.Opacity = 0;
+                                    bgimage.Opacity = 1;
                                     bgimage.Visibility = Visibility.Collapsed;
                                     bgimage.Margin = new Thickness(0, 0, 0, 0);
                                     break;
@@ -1238,7 +1241,10 @@ namespace hiro
             }
             else
             {
+                bgimage.Margin = new Thickness(0);
                 bgimage.Visibility = Visibility.Visible;
+                Hiro_Utils.Set_Bgimage(bgimage, this);
+                currentBack = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", "")));
                 if (compositor != null)
                 {
                     compositor.IsEnabled = false;

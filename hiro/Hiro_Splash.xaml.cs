@@ -32,6 +32,10 @@ namespace hiro
             LoadTimer();
             HiHiro();
         }
+        private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
 
         public Hiro_Splash(string filePath)
         {
@@ -217,9 +221,9 @@ namespace hiro
                 return;
             bflag = 1;
             if (System.IO.File.Exists(backgroundFIle))
-                Hiro_Utils.Set_Bgimage(bgimage, this, backgroundFIle);
+                bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this, backgroundFIle);
             else
-                Hiro_Utils.Set_Bgimage(bgimage, this);
+                bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this);
             bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;

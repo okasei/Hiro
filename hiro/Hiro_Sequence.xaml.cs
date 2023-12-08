@@ -249,12 +249,18 @@ namespace hiro
             {
                 //左上右下0123
                 case 3:
-                    Canvas.SetTop(this, pdat.rc.top - Height);
+                    var t = pdat.rc.top - Height;
+                    t = Math.Max(t,0);
+                    t = Math.Min(t, SystemParameters.PrimaryScreenHeight - Height);
+                    Canvas.SetTop(this, t);
                     Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);
                     break;
                 case 2:
+                    var l = pdat.rc.left - Width;
+                    l = Math.Max(l, 0);
+                    l = Math.Min(l, SystemParameters.PrimaryScreenWidth - Width);
                     Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);
-                    Canvas.SetLeft(this, pdat.rc.left - Width);
+                    Canvas.SetLeft(this, l);
                     break;
                 default:
                     Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight - Height);

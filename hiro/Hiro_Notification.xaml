@@ -12,6 +12,7 @@
         <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
     </WindowChrome.WindowChrome>
     <Grid>
+        <Label x:Name="VirtualTitle" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30"/>
         <Label Style="{DynamicResource HiroLabel}" x:Name="notinfo"  Content="" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseDoubleClick="Notinfo_MouseDoubleClick" Width="100" Height="32" MouseLeftButtonUp="Notinfo_MouseLeftButtonUp"/>
     </Grid>
 </Window>

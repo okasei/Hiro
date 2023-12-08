@@ -212,6 +212,13 @@ namespace hiro
                 System.IO.File.Delete(toolstr);
             }
         }
+        private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (bg == null)
+            {
+                Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+            }
+        }
 
         private void Msg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

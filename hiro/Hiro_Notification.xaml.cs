@@ -15,6 +15,7 @@ namespace hiro
     {
         internal string msg;
         internal DispatcherTimer timer;
+        internal string appName = "Hiro";
         internal int[] flag = { 0, 0, 0 };//0=进入,1=显示,2=退出//loop//loops
         internal double i = 0.01;
         internal double ai = 0.01;
@@ -158,6 +159,7 @@ namespace hiro
                 if (App.noticeitems.Count != 0)
                 {
                     msg = App.noticeitems[0].msg;
+                    appName = App.noticeitems[0].title;
                     flag[1] = App.noticeitems[0].time;
                     flag[2] = flag[1];
                     act = App.noticeitems[0].act;
@@ -182,7 +184,7 @@ namespace hiro
                 var newmsg = "";
                 while (newmsg.Trim().Equals("") && msg.IndexOf("\\n") != -1)
                 {
-                    newmsg = msg[..msg.IndexOf("\\n")];
+                    newmsg = $"[{appName}] {msg[..msg.IndexOf("\\n")]}";
                     if (!notinfo.Content.Equals(newmsg))
                     {
                         notinfo.Content = newmsg;
@@ -197,9 +199,9 @@ namespace hiro
             }
             else if (!msg.Equals(""))
             {
-                if (!notinfo.Content.Equals(msg))
+                if (!notinfo.Content.Equals($"[{appName}] {msg}"))
                 {
-                    notinfo.Content = msg;
+                    notinfo.Content = $"[{appName}] {msg}";
                     Ani();
                 }
                 msg = "";
@@ -253,7 +255,7 @@ namespace hiro
         }
         private void Noti_Loaded(object sender, RoutedEventArgs e)
         {
-            notinfo.Content = App.noticeitems[0].msg.IndexOf("\\n") != -1 ? App.noticeitems[0].msg[..App.noticeitems[0].msg.IndexOf("\\n")] : App.noticeitems[0].msg;
+            notinfo.Content = "[" + App.noticeitems[0].title + "] " + (App.noticeitems[0].msg.Contains("\\n") ? App.noticeitems[0].msg[..App.noticeitems[0].msg.IndexOf("\\n")] : App.noticeitems[0].msg);
             Load_Noti_Position(true);
         }
 

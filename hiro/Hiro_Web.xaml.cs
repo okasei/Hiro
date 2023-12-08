@@ -35,6 +35,10 @@ namespace hiro
         private ContextMenu? favMenu = null;
         private bool iconLoaded = false;
         internal WindowAccentCompositor? compositor = null;
+        private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();

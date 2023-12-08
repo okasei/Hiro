@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -464,6 +465,11 @@ namespace hiro
         {
             WindowState = WindowState.Minimized;
             e.Handled = true;
+        }
+
+        private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
         }
     }
 

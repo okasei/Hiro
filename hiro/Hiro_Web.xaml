@@ -18,6 +18,7 @@
         <Color x:Key="AppForeDimColor">White</Color>
     </Window.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Label x:Name="VirtualTitle" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" MouseDown="VirtualTitle_MouseDown"/>
         <Image x:Name="uicon" Visibility="Hidden" Source="/hiro_circle.ico"></Image>
         <Label x:Name="bgimage" Width="{Binding ActualWidth,ElementName=window}" Height="{Binding ActualHeight,ElementName=window}" Margin="0,0,0,0"/>
         <Grid x:Name="BaseGrid" MouseDown="TitleGrid_MouseDown">

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -21,6 +22,10 @@ namespace hiro
         internal string fpath = string.Empty;
         internal bool oflag = false;
         internal WindowAccentCompositor? compositor = null;
+        private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
         public Hiro_Encrypter(int mode = 0, string? file = null, string? pwd = null, bool flag = false)
         {
             InitializeComponent();

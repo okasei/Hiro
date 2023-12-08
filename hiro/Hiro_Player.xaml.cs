@@ -29,6 +29,10 @@ namespace hiro
         internal int index = -1;
         internal int pcd = -1;
         internal WindowAccentCompositor? compositor = null;
+        private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
+        }
         public Hiro_Player(string? play = null)
         {
             InitializeComponent();

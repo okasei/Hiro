@@ -5,6 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:hiro"
       mc:Ignorable="d" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      materialDesign:ShadowAssist.CacheMode="{x:Null}"
       d:DesignHeight="420" d:DesignWidth="420" KeepAlive="False"
       Title="Hiro_Acrylic">
     <Page.Resources>

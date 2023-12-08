@@ -12,6 +12,7 @@
         <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
     </WindowChrome.WindowChrome>
     <Grid>
+        <Label x:Name="VirtualTitle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="" Height="30"/>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="status" Content="Page 1 - 0 Word(s)" HorizontalAlignment="Left" Margin="5,0,0,5" VerticalAlignment="Bottom" FontFamily="Segoe UI" Style="{DynamicResource HiroLabel}"/>
         <Slider x:Name="slider" materialDesign:ShadowAssist.CacheMode="{x:Null}" HorizontalAlignment="Right" Margin="0,0,5,5" VerticalAlignment="Bottom" Width="163" Maximum="1" SmallChange="0.1" LargeChange="0.3" FontSize="11" FontFamily="Segoe UI" ValueChanged="Slider_ValueChanged" Value="1" IsEnabled="False" Minimum="0.3"/>

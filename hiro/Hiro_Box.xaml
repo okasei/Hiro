@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+       materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Notification" Height="60" Width="400"  ResizeMode="NoResize" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>

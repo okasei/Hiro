@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hiro"
         mc:Ignorable="d"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Hiro_Ticker" Height="150" Width="430" Background="{DynamicResource AppAccent}" WindowStyle="SingleBorderWindow" Icon="/hiro_circle.ico">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
@@ -18,6 +20,7 @@
         <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
     </WindowChrome.WindowChrome>
     <Grid MouseDown="Grid_MouseDown">
+        <Label x:Name="VirtualTitle" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" MouseDown="VirtualTitle_MouseDown"/>
         <Label x:Name="bgimage" Background="Coral" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="{DynamicResource AppFore}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <StackPanel x:Name="Ctrl_Btns" Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0" Orientation="Horizontal" Height="35">
