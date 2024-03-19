@@ -254,12 +254,6 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(proxyx, "proxy", location: false);
             Hiro_Utils.Set_Control_Location(chatx, "chat", location: false);
             Hiro_Utils.Set_Control_Location(loginx, "login", location: false);
-            Thickness th2 = extended.Margin;
-            th2.Left = Width / 2 - Height / 2;
-            th2.Top = 0;
-            extended.Margin = th2;
-            extended.Width = Height;
-            extended.Height = Height;
         }
 
         internal void Set_AcrylicStyle(bool preview = false, int type = 0)

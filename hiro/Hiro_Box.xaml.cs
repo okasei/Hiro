@@ -202,11 +202,13 @@ namespace hiro
             InnerBorder.Margin = new Thickness(0);
             var sb = Hiro_Utils.AddDoubleAnimaton(Height, boxInLen, OuterBorder, "Height", null, 0, 0.7);
             sb = Hiro_Utils.AddDoubleAnimaton(Height, boxInLen, OuterBorder, "Width", sb, 0, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(Height + 15, boxInLen, InnerBorder, "Height", sb, 0, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(Height + 15, boxInLen, InnerBorder, "Width", sb, 0, 0.7);
+            sb = Hiro_Utils.AddDoubleAnimaton(1, boxInLen, InnerBorder, "Opacity", sb, 0, 0.7);
             sb.Completed += (e, args) =>
             {
                 OuterBorder.Height = Height;
                 OuterBorder.Width = Height;
-
             };
             BaseGrid.Visibility = Visibility.Visible;
             sb.Begin();
@@ -214,14 +216,16 @@ namespace hiro
             {
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    var sb = Hiro_Utils.AddDoubleAnimaton(Height - innerMargin, boxInLen, InnerBorder, "Height", null, 0, 0.7);
-                    sb = Hiro_Utils.AddDoubleAnimaton(Height - innerMargin, boxInLen, InnerBorder, "Width", sb, 0, 0.7);
-                    sb = Hiro_Utils.AddDoubleAnimaton(45, boxInLen, BaseIconBorder, "Height", sb, 0, 0.7);
-                    sb = Hiro_Utils.AddDoubleAnimaton(45, boxInLen, BaseIconBorder, "Width", sb, 0, 0.7);
+                    var sb = Hiro_Utils.AddDoubleAnimaton(Height - innerMargin, boxInLen, InnerBorder, "Height", null, null, 0.7);
+                    sb = Hiro_Utils.AddDoubleAnimaton(Height - innerMargin, boxInLen, InnerBorder, "Width", sb, null, 0.7);
+                    sb = Hiro_Utils.AddDoubleAnimaton(45, boxInLen, BaseIconBorder, "Height", sb, Height, 0.7);
+                    sb = Hiro_Utils.AddDoubleAnimaton(45, boxInLen, BaseIconBorder, "Width", sb, Height, 0.7);
+                    sb = Hiro_Utils.AddDoubleAnimaton(1, boxInLen, BaseIconBorder, "Opacity", sb, 0, 0.7);
                     InnerBorder.Height = Height - 5;
                     InnerBorder.Width = Height - 5;
                     sb.Completed += (e, args) =>
                     {
+                        BaseIconBorder.Opacity = 1;
                         Extend_Out();
                     };
                     sb.Begin();
@@ -261,7 +265,7 @@ namespace hiro
 
         private void Switch_Infomation()
         {
-            var sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(-Width + InnerBorder.Width + innerMargin, 0, 0, 0), 2 * (Width - InnerBorder.Width - innerMargin) + 200, InnerBorder, "Margin", null, null, 0.7);
+            var sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(-Width + InnerBorder.Width + innerMargin, 0, 0, 0), 2 * (Width - InnerBorder.Width - innerMargin) + 200, InnerBorder, "Margin", null, null, 0.5);
             sb.Completed += (e, args) =>
             {
                 InnerBorder.Margin = new Thickness(-Width + InnerBorder.Width + innerMargin, 0, 0, 0);
@@ -276,6 +280,7 @@ namespace hiro
             TitleGrid.Height = Height;
             TitleGrid.Width = Width - innerMargin * 3 - Height;
             var sb = Hiro_Utils.AddDoubleAnimaton(1, fadeInLen, TitleLabel, "Opacity", null, 0, 0.7);
+            sb = Hiro_Utils.AddThicknessAnimaton(null, fadeInLen, TitleLabel, "Margin", sb, new Thickness(TitleLabel.Margin.Left - 5, TitleLabel.Margin.Top, TitleLabel.Margin.Right, TitleLabel.Margin.Bottom), 0.7);
             sb.Completed += (e, args) =>
             {
                 TitleLabel.Opacity = 1;
@@ -293,6 +298,7 @@ namespace hiro
         private void Title_FadeOut()
         {
             var sb = Hiro_Utils.AddDoubleAnimaton(0, 250, TitleLabel, "Opacity", null, 1, 0.7);
+            sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(TitleLabel.Margin.Left + 5, TitleLabel.Margin.Top, TitleLabel.Margin.Right, TitleLabel.Margin.Bottom), fadeInLen, TitleLabel, "Margin", sb, null, 0.7);
             sb.Completed += (e, args) =>
             {
                 TitleLabel.Opacity = 0;
@@ -314,6 +320,7 @@ namespace hiro
             ContentGrid.Width = Width - innerMargin * 3 - Height;
             var sb = Hiro_Utils.AddDoubleAnimaton(1, fadeInLen, ContentLabel, "Opacity", null, 0, 0.7);
             sb = Hiro_Utils.AddDoubleAnimaton(Width, fadeInLen, OuterBorder, "Width", sb, null, 0.7);
+            sb = Hiro_Utils.AddThicknessAnimaton(null, fadeInLen, ContentLabel, "Margin", sb, new Thickness(ContentLabel.Margin.Left - 5, ContentLabel.Margin.Top, ContentLabel.Margin.Right, ContentLabel.Margin.Bottom), 0.7);
             sb.Completed += (e, args) =>
             {
                 ContentLabel.Opacity = 1;
@@ -331,6 +338,7 @@ namespace hiro
         private void Content_FadeOut()
         {
             var sb = Hiro_Utils.AddDoubleAnimaton(0, fadeOutLen, ContentLabel, "Opacity", null, 1, 0.7);
+            sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(ContentLabel.Margin.Left + 5, ContentLabel.Margin.Top, ContentLabel.Margin.Right, ContentLabel.Margin.Bottom), fadeInLen, ContentLabel, "Margin", sb, null, 0.7);
             sb.Completed += (e, args) =>
             {
                 ContentLabel.Opacity = 0;
@@ -355,7 +363,7 @@ namespace hiro
 
         private void Extend_Back()
         {
-            var sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), Width - InnerBorder.Width - innerMargin + 100, InnerBorder, "Margin", null, null, 0.7);
+            var sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), Width - InnerBorder.Width - innerMargin + 100, InnerBorder, "Margin", null, null, 0.5);
             sb = Hiro_Utils.AddDoubleAnimaton(OuterBorder.Height, Width - InnerBorder.Width - innerMargin + 100, OuterBorder, "Width", sb, null, 0.7);
             sb.Completed += (e, args) =>
             {

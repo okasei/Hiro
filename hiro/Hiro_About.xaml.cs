@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -13,6 +14,8 @@ namespace hiro
         private System.ComponentModel.BackgroundWorker? upbw = null;
         private string ups = "latest";
         internal bool ischecking = false;
+        internal string formerIcon = "";
+        internal string extendIcon = "";
         public Hiro_About(Hiro_MainUI? Parent)
         {
             InitializeComponent();
@@ -26,10 +29,32 @@ namespace hiro
 
         public void HiHiro()
         {
+            string iconPath = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeAbout", "")));
+            string extPath = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeExtend", "")));
+            Storyboard sb = new();
+            if (!iconPath.Equals(formerIcon) && System.IO.File.Exists(iconPath))
+            {
+                BaseIcon.ImageSource = Hiro_Utils.GetBitmapImage(iconPath);
+                sb = Hiro_Utils.AddDoubleAnimaton(1, 450, BaseIcon, "Opacity", sb, 0, 0.7);
+                formerIcon = iconPath;
+            }
+            if (!extPath.Equals(extendIcon) && System.IO.File.Exists(extPath))
+            {
+                if (Hiro_Main != null)
+                {
+                    BitmapImage? bi = Hiro_Utils.GetBitmapImage(extPath);
+                    ImageBrush ib = new()
+                    {
+                        Stretch = Stretch.UniformToFill,
+                        ImageSource = bi
+                    };
+                    Hiro_Main.extended.Background = ib;
+                }
+                extendIcon = iconPath;
+            }
             bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             if (!animation)
                 return;
-            Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
             sb.Begin();
         }

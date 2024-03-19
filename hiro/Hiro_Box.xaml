@@ -27,7 +27,7 @@
             </Grid>
         </Border>
         <Border Name="InnerBorder" Background="{DynamicResource AppFore}" CornerRadius="30" Height="0" Width="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" ClipToBounds="True" MouseDown="InnerBorder_MouseDown" RenderTransformOrigin="0.5,0.5">
-            <Border x:Name="BaseIconBorder" Margin="5" CornerRadius="25" ClipToBounds="True" Width="45" Height="45" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border x:Name="BaseIconBorder" Margin="5" CornerRadius="25" ClipToBounds="True" Width="45" Height="45" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0">
                 <Border.Background>
                     <ImageBrush x:Name="BaseIcon" Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
                 </Border.Background>
