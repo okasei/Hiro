@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Shell;
+using System.IO;
 
 namespace hiro
 {
@@ -19,6 +20,7 @@ namespace hiro
     public partial class Hiro_Player : Window
     {
         internal VlcVideoSourceProvider? hiro_provider = null;
+        internal VlcVideoSourceProvider? hiro_provider2 = null;
         internal string? toplay = null;
         private int bflag = 0;
         private int rflag = 1;
@@ -95,7 +97,8 @@ namespace hiro
                     if (obj == null)
                     {
                         hiro_provider.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "" });
-                        Player_Container.Dispatcher.Invoke(() => {
+                        Player_Container.Dispatcher.Invoke(() =>
+                        {
                             Player_Container.SetBinding(Image.SourceProperty,
                             new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
                         });
@@ -232,6 +235,8 @@ namespace hiro
                 else if (txt.StartsWith("hiro.speed:"))
                 {
                     hiro_provider.MediaPlayer.Rate = float.Parse(txt[11..]);
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Rate = float.Parse(txt[11..]);
                 }
                 else
                 {
@@ -260,9 +265,45 @@ namespace hiro
                 {
                     try
                     {
+                        string? directory = Path.GetDirectoryName(uri);
+
+                        string vidPath = uri;
+                        string audioPath = "";
+
+                        // Check if the URI ends with "audio.mts" or "video.mts"
+                        if (uri.EndsWith("audio.m4s") || uri.EndsWith("video.m4s"))
+                        {
+                            // Check if there exists a corresponding "video.mts" file
+                            string vidFilePath = Path.Combine(directory ?? "", "video.m4s");
+                            if (File.Exists(vidFilePath))
+                            {
+                                vidPath = vidFilePath;
+                            }
+                            vidFilePath = Path.Combine(directory ?? "", "audio.m4s");
+                            if (File.Exists(vidFilePath))
+                            {
+                                audioPath = vidFilePath;
+                            }
+                        }
+
+                        // Check if the URI ends with "audio.mts" or "video.mts"
+                        if (uri.EndsWith("audio.mp4") || uri.EndsWith("video.mp4"))
+                        {
+                            // Check if there exists a corresponding "video.mts" file
+                            string vidFilePath = Path.Combine(directory ?? "", "video.mp4");
+                            if (File.Exists(vidFilePath))
+                            {
+                                vidPath = vidFilePath;
+                            }
+                            vidFilePath = Path.Combine(directory ?? "", "audio.mp4");
+                            if (File.Exists(vidFilePath))
+                            {
+                                audioPath = vidFilePath;
+                            }
+                        }
                         Dispatcher.Invoke(() =>
                         {
-                            playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(uri), uri, string.Empty));
+                            playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(vidPath), vidPath, string.Empty));
                             if (hiro_provider != null)
                             {
                                 var a = Player_Container.Tag != null && !((string)Player_Container.Tag).Equals("Playing") && !((string)Player_Container.Tag).Equals("Paused");
@@ -270,12 +311,25 @@ namespace hiro
                                 if (a || b)
                                 {
                                     index = playlist.Count - 1;
-                                    hiro_provider.MediaPlayer.Play(new Uri(uri));
-                                    Ctrl_Text.Text = uri;
-                                    Title = Hiro_Utils.GetFileName(uri) + " - " + App.appTitle;
+                                    hiro_provider.MediaPlayer.Play(new Uri(vidPath));
+                                    Ctrl_Text.Text = vidPath;
+                                    Title = Hiro_Utils.GetFileName(vidPath) + " - " + App.appTitle;
                                     Player_Container.Visibility = Visibility.Visible;
                                     Player_Container.Tag = "Playing";
                                     Update_Progress();
+                                    if (audioPath.Length > 0)
+                                    {
+                                        if (hiro_provider2 == null)
+                                        {
+                                            hiro_provider2 = new(Dispatcher);
+                                            hiro_provider2.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "" });
+                                        }
+                                        hiro_provider2.MediaPlayer.Play(new Uri(audioPath));
+                                    }
+                                    else
+                                    {
+                                        hiro_provider2?.MediaPlayer.Stop();
+                                    }
                                 }
                             }
                         });
@@ -365,6 +419,12 @@ namespace hiro
                 {
                     var a = e.GetPosition(Ctrl_Progress_Bg);
                     hiro_provider.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
+                    try
+                    {
+                        if (hiro_provider2 != null)
+                            hiro_provider2.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
+                    }
+                    catch { }
                     Update_Progress();
                 }
             }
@@ -378,6 +438,12 @@ namespace hiro
                 {
                     var a = e.GetPosition(Ctrl_Progress);
                     hiro_provider.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
+                    try
+                    {
+                        if (hiro_provider2 != null)
+                            hiro_provider2.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
+                    }
+                    catch { }
                     Update_Progress();
                 }
             }
@@ -483,6 +549,7 @@ namespace hiro
                     if (hiro_provider.MediaPlayer.IsPausable())
                     {
                         hiro_provider.MediaPlayer.Pause();
+                        hiro_provider2?.MediaPlayer.Pause();
                         Player_Container.Tag = "Paused";
                         Player_Notify(Hiro_Utils.Get_Translate("playerpause"));
                     }
@@ -493,6 +560,7 @@ namespace hiro
                     {
                         Player_Container.Tag = "Playing";
                         hiro_provider.MediaPlayer.Play();
+                        hiro_provider2?.MediaPlayer.Play();
                         Player_Notify(Hiro_Utils.Get_Translate("playerplay"));
                     }
                 }
@@ -924,6 +992,8 @@ namespace hiro
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 2;
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Rate = 2;
                     Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "2"));
                 }
             };
@@ -937,6 +1007,8 @@ namespace hiro
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 1.5f;
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Rate = 1.5f;
                     Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1.5"));
                 }
             };
@@ -950,6 +1022,8 @@ namespace hiro
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 1;
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Rate = 1;
                     Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1"));
                 }
             };
@@ -963,6 +1037,8 @@ namespace hiro
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 0.75f;
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Rate = 0.75f;
                     Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.75"));
                 }
             };
@@ -976,6 +1052,8 @@ namespace hiro
                 if (hiro_provider != null)
                 {
                     hiro_provider.MediaPlayer.Rate = 0.5f;
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Rate = 0.5f;
                     Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.5"));
                 }
             };
@@ -1238,6 +1316,8 @@ namespace hiro
                     else
                         vol = vol + del;
                     hiro_provider.MediaPlayer.Rate = vol;
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Rate = vol;
                     Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
                     e.Handled = true;
                 }
@@ -1253,6 +1333,8 @@ namespace hiro
                     else
                         vol = vol + del;
                     hiro_provider.MediaPlayer.Audio.Volume = vol;
+                    if (hiro_provider2 != null)
+                        hiro_provider2.MediaPlayer.Audio.Volume = vol;
                     Player_Notify(Hiro_Utils.Get_Translate("playervol").Replace("%v", vol.ToString()));
                     e.Handled = true;
                 }
@@ -1282,11 +1364,61 @@ namespace hiro
                     {
                         index = i;
                         var uri = playlist[i].Command;
-                        hiro_provider.MediaPlayer.Play(new Uri(uri));
-                        Ctrl_Text.Text = uri;
-                        Title = Hiro_Utils.GetFileName(uri) + " - " + App.appTitle;
+                        string? directory = Path.GetDirectoryName(uri);
+
+                        string vidPath = uri;
+                        string audioPath = "";
+
+                        // Check if the URI ends with "audio.mts" or "video.mts"
+                        if (uri.EndsWith("audio.m4s") || uri.EndsWith("video.m4s"))
+                        {
+                            // Check if there exists a corresponding "video.mts" file
+                            string vidFilePath = Path.Combine(directory ?? "", "video.m4s");
+                            if (File.Exists(vidFilePath))
+                            {
+                                vidPath = vidFilePath;
+                            }
+                            vidFilePath = Path.Combine(directory ?? "", "audio.m4s");
+                            if (File.Exists(vidFilePath))
+                            {
+                                audioPath = vidFilePath;
+                            }
+                        }
+
+                        // Check if the URI ends with "audio.mts" or "video.mts"
+                        if (uri.EndsWith("audio.mp4") || uri.EndsWith("video.mp4"))
+                        {
+                            // Check if there exists a corresponding "video.mts" file
+                            string vidFilePath = Path.Combine(directory ?? "", "video.mp4");
+                            if (File.Exists(vidFilePath))
+                            {
+                                vidPath = vidFilePath;
+                            }
+                            vidFilePath = Path.Combine(directory ?? "", "audio.mp4");
+                            if (File.Exists(vidFilePath))
+                            {
+                                audioPath = vidFilePath;
+                            }
+                        }
+                        hiro_provider.MediaPlayer.Play(new Uri(vidPath));
+                        Ctrl_Text.Text = vidPath;
+                        Title = Hiro_Utils.GetFileName(vidPath) + " - " + App.appTitle;
                         Player_Container.Visibility = Visibility.Visible;
                         Player_Container.Tag = "Playing";
+                        if (audioPath.Length > 0)
+                        {
+                            if (hiro_provider2 == null)
+                            {
+                                hiro_provider2 = new(Dispatcher);
+                                hiro_provider2.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "" });
+                            }
+                            hiro_provider2.MediaPlayer.Play(new Uri(audioPath));
+                        }
+                        else
+                        {
+                            hiro_provider2?.MediaPlayer.Stop();
+                        }
+
                     }
                     catch (Exception ex)
                     {
