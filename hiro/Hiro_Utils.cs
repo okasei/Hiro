@@ -25,6 +25,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Windows.Shell;
 using Windows.UI.Composition;
+using hiro.Helpers;
 
 namespace hiro
 {
@@ -470,7 +471,7 @@ namespace hiro
 
         public static void Set_Acrylic(Label? sender, Window win, WindowChrome? windowChrome = null, WindowAccentCompositor? compositor = null)
         {
-            if (win != null&& compositor != null)
+            if (win != null && compositor != null)
             {
                 win.Background = null;
                 if (sender != null)
@@ -1685,6 +1686,11 @@ namespace hiro
                         });
                         goto RunOK;
                     }
+                    if (path.ToLower().StartsWith("badge("))
+                    {
+                        Hiro_System.ShowBadge(parameter);
+                        goto RunOK;
+                    }
                     if (path.ToLower().StartsWith("invoke("))
                     {
                         if (parameter.Count > 0)
@@ -2468,59 +2474,8 @@ namespace hiro
                     || (parameter[0].ToLower().Equals("explorer") && (parameter[2].ToLower().StartsWith("https://") || parameter[2].ToLower().StartsWith("http://"))))
                     && urlCheck)
                     {
-                        var acbak = autoClose;
-                        var confrimWin = Path_Prepare_EX(Path_Prepare("<capp>\\<lang>\\url.hms"));
+                        Hiro_System.ShowWebConfirmDialog(autoClose, path, source);
                         autoClose = false;
-                        HiroInvoke(() =>
-                        {
-                            Hiro_Background? bg = null;
-                            if (Read_Ini(confrimWin, "Action", "Background", "true").ToLower().Equals("true"))
-                                bg = new();
-                            Hiro_Msg msg = new(confrimWin)
-                            {
-                                bg = bg,
-                                Title = Path_Prepare(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))) + " - " + App.appTitle
-                            };
-                            msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))));
-                            msg.acceptbtn.Content = Read_Ini(confrimWin, "Message", "accept", Get_Translate("msgaccept"));
-                            msg.rejectbtn.Content = Read_Ini(confrimWin, "Message", "reject", Get_Translate("msgreject"));
-                            msg.cancelbtn.Content = Read_Ini(confrimWin, "Message", "cancel", Get_Translate("msgcancel"));
-                            confrimWin = Path_Prepare_EX(Path_Prepare(Read_Ini(confrimWin, "Message", "content", Get_Translate("syntax"))));
-                            if (confrimWin.ToLower().StartsWith("http://") || confrimWin.ToLower().StartsWith("https://"))
-                            {
-                                msg.sv.Content = Get_Translate("msgload");
-                                BackgroundWorker bw = new();
-                                bw.DoWork += delegate
-                                {
-                                    confrimWin = GetWebContent(confrimWin).Replace("<br>", "\\n");
-                                };
-                                bw.RunWorkerCompleted += delegate
-                                {
-                                    msg.sv.Content = confrimWin.Replace("\\n", Environment.NewLine);
-                                };
-                                bw.RunWorkerAsync();
-                            }
-                            else if (File.Exists(confrimWin))
-                                msg.sv.Content = Path_Prepare(Path_Prepare_EX(File.ReadAllText(confrimWin))).Replace("\\n", Environment.NewLine);
-                            else
-                                msg.sv.Content = confrimWin.Replace("\\n", Environment.NewLine);
-                            msg.Load_Position();
-                            msg.OKButtonPressed += delegate
-                            {
-                                RunExe(path, source, acbak, false);
-                            };
-                            msg.CancelButtonPressed += delegate
-                            {
-                                if (acbak && App.mn == null)
-                                    RunExe("exit()");
-                            };
-                            msg.RejectButtonPressed += delegate
-                            {
-                                if (acbak && App.mn == null)
-                                    RunExe("exit()");
-                            };
-                            msg.Show();
-                        });
                         goto RunOK;
                     }
                     var parameter_ = HiroCmdParse(path, false);

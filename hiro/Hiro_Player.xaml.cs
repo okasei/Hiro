@@ -627,7 +627,15 @@ namespace hiro
                 if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
                 {
                     if (hiro_provider.MediaPlayer.Position + 0.01 < 1)
+                    {
                         hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position + 0.01);
+                        if (hiro_provider2 != null)
+                            try
+                            {
+                                hiro_provider2.MediaPlayer.Position = (float)(hiro_provider2.MediaPlayer.Position + 0.01);
+                            }
+                            catch { }
+                    }
                     Update_Progress();
                     e.Handled = true;
                 }
@@ -638,6 +646,12 @@ namespace hiro
                 {
                     if (hiro_provider.MediaPlayer.Position - 0.01 > 0)
                         hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position - 0.01);
+                    if (hiro_provider2 != null)
+                        try
+                        {
+                            hiro_provider2.MediaPlayer.Position = (float)(hiro_provider2.MediaPlayer.Position - 0.01);
+                        }
+                        catch { }
                     Update_Progress();
                     e.Handled = true;
                 }

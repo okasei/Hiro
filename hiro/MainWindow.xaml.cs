@@ -321,6 +321,9 @@ namespace hiro
                     case Hiro_Splash k:
                         k.Load_Color();
                         break;
+                    case Hiro_Badge l:
+                        l.LoadColor();
+                        break;
                 }
                 System.Windows.Forms.Application.DoEvents();
             }
