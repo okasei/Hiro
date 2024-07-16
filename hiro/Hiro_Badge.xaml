@@ -9,12 +9,12 @@
         Title="Hiro_Badge" Height="400" Width="400"  ResizeMode="NoResize" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent" WindowStartupLocation="Manual" Closing="window_Closing">
     <Window.Resources>
         <ImageBrush x:Key="BadgeImage" Stretch="UniformToFill"/>
-        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="White"></SolidColorBrush>
     </Window.Resources>
     <Grid>
         <hc:CornerClip x:Name="EllipseBorder" CornerRadius="{Binding Height, ElementName=window}" Height="{Binding Height, ElementName=window}" Width="{Binding Height, ElementName=window}" HorizontalAlignment="Center" VerticalAlignment="Center" MouseEnter="EllipseBorder_MouseEnter" MouseLeftButtonDown="EllipseBorder_MouseLeftButtonDown">
             <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="{Binding Height, ElementName=window}" Width="{Binding Height, ElementName=window}">
-                <Ellipse x:Name="Badge_Ellipse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="400" Width="400" Margin="0,0,0,0"  Visibility="Visible" Stroke="{DynamicResource AppFore}" StrokeThickness="2" RenderTransformOrigin="0.5,0.5">
+                <Ellipse x:Name="Badge_Ellipse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="400" Width="400" Margin="0,0,0,0"  Visibility="Visible" Stroke="{DynamicResource AppAccent}" StrokeThickness="2" RenderTransformOrigin="0.5,0.5">
                     <Ellipse.RenderTransform>
                         <RotateTransform x:Name="ellipseRotate" Angle="0.0"/>
                     </Ellipse.RenderTransform>
@@ -63,7 +63,7 @@
         </hc:CornerClip>
         <Border Name="RectangleBorder" Background="Transparent" CornerRadius="0" Height="{Binding Height, ElementName=window}" Width="{Binding Height, ElementName=window}" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" MouseEnter="RectangleBorder_MouseEnter" MouseLeftButtonDown="RectangleBorder_MouseLeftButtonDown">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Rectangle x:Name="Badge_Rectangle" HorizontalAlignment="Center" VerticalAlignment="Center" Height="400" Width="400" Stroke="{DynamicResource AppFore}" StrokeThickness="2" RenderTransformOrigin="0.5,0.5">
+                <Rectangle x:Name="Badge_Rectangle" HorizontalAlignment="Center" VerticalAlignment="Center" Height="400" Width="400" Stroke="{DynamicResource AppAccent}" StrokeThickness="2" RenderTransformOrigin="0.5,0.5">
                     <Rectangle.RenderTransform>
                         <RotateTransform x:Name="triangleRotate" Angle="0.0"/>
                     </Rectangle.RenderTransform>

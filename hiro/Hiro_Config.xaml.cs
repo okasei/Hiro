@@ -182,6 +182,9 @@ namespace hiro
                 case "4":
                     rbtn21.IsChecked = true;
                     break;
+                case "5":
+                    rbtn22.IsChecked = true;
+                    break;
                 default:
                     rbtn17.IsChecked = true;
                     break;
@@ -247,6 +250,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(rbtn19, "noticeisland");
             Hiro_Utils.Set_Control_Location(rbtn20, "noticeimgland");
             Hiro_Utils.Set_Control_Location(rbtn21, "noticehibox");
+            Hiro_Utils.Set_Control_Location(rbtn22, "noticehiboxie");
             Hiro_Utils.Set_Control_Location(reverse_style, "reversebox");
             Hiro_Utils.Set_Control_Location(tr_btn, "trbtnbox");
             Hiro_Utils.Set_Control_Location(image_compress, "imgzip");
@@ -329,6 +333,7 @@ namespace hiro
             rbtn19.Content = Hiro_Utils.Get_Translate("noticeisland");
             rbtn20.Content = Hiro_Utils.Get_Translate("noticeimgland");
             rbtn21.Content = Hiro_Utils.Get_Translate("noticehibox");
+            rbtn22.Content = Hiro_Utils.Get_Translate("noticehiboxie");
             reverse_style.Content = Hiro_Utils.Get_Translate("reversebox");
             tr_btn.Content = Hiro_Utils.Get_Translate("trbtnbox");
             image_compress.Content = Hiro_Utils.Get_Translate("imgzip");
@@ -956,6 +961,11 @@ namespace hiro
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "FPS", fritems[fr_box.SelectedIndex]);
                 App.Notify(new(Hiro_Utils.Get_Translate("restart"), 2, Hiro_Utils.Get_Translate("frame")));
             }
+        }
+
+        private void Rbtn22_Checked(object sender, RoutedEventArgs e)
+        {
+            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "5");
         }
     }
 }

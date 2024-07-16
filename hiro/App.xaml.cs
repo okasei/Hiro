@@ -46,6 +46,7 @@ namespace hiro
         internal static Hiro_Notification? noti = null;
         internal static Hiro_Island? hisland = null;
         internal static Hiro_Box? hiBox = null;
+        internal static Hiro_Boxie? hiBoxie = null;
         internal static Hiro_Editor? ed = null;
         internal static Hiro_LockScreen? ls = null;
         internal static List<Hiro_Notice> noticeitems = new();
@@ -350,7 +351,7 @@ namespace hiro
                                     }
                                     else
                                     {
-                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin Failed " + Hiro_Utils.Read_Ini(tmp, "Config", "msg", string.Empty));
+                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin Failed " + Hiro_Utils.Read_Ini(tmp, "Config", "msg", string.Empty) + r.ToString());
                                         Logined = false;
                                     }
                                     if (System.IO.File.Exists(tmp))
@@ -421,6 +422,15 @@ namespace hiro
                     {
                         hiBox ??= new();
                         hiBox.Show();
+                    });
+                }
+                else if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("5"))
+                {
+                    noticeitems.Add(i);
+                    Hiro_Utils.HiroInvoke(() =>
+                    {
+                        hiBoxie ??= new();
+                        hiBoxie.Show();
                     });
                 }
                 else

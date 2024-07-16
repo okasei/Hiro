@@ -31,6 +31,7 @@ namespace hiro
         internal int index = -1;
         internal int pcd = -1;
         internal WindowAccentCompositor? compositor = null;
+        bool isMaxed = false;
         private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
@@ -52,6 +53,42 @@ namespace hiro
                 Focus();
                 Update_Layout();
             };
+            SourceInitialized += OnSourceInitialized;
+        }
+
+        private void OnSourceInitialized(object? sender, EventArgs e)
+        {
+            var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
+            var hwnd = windowInteropHelper.Handle;
+            var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
+            source?.AddHook(WndProc);
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            switch (msg)
+            {
+                case 0x0084://NCHITTEST
+                    if (maxbtn.IsMouseOver || resbtn.IsMouseOver)
+                    {
+                        if (!isMaxed)
+                        {
+                            isMaxed = true;
+                            handled = true;
+                            return new(9);
+                        }
+                    }
+                    else
+                    {
+                        isMaxed = false;
+                    }
+                    break;
+                default:
+                    //Console.WriteLine("Msg: " + m.Msg + ";LParam: " + m.LParam + ";WParam: " + m.WParam + ";Result: " + m.Result);
+                    break;
+            }
+            return IntPtr.Zero;
+
         }
 
         private void AddDanmaku(string content, Color color, FontWeight fontWeight, FontStretch fontStretch, FontStyle fontStyle, int Position)
@@ -1194,8 +1231,8 @@ namespace hiro
         {
             minbtn.ToolTip = Hiro_Utils.Get_Translate("Min");
             closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
-            maxbtn.ToolTip = Hiro_Utils.Get_Translate("max");
-            resbtn.ToolTip = Hiro_Utils.Get_Translate("restore");
+            //maxbtn.ToolTip = Hiro_Utils.Get_Translate("max");
+            //resbtn.ToolTip = Hiro_Utils.Get_Translate("restore");
             Load_Menu();
         }
 

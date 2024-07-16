@@ -31,6 +31,7 @@ namespace hiro
             {
                 AdjustSize();
                 FadeIn();
+                LoadColor();
             };
         }
 
@@ -60,6 +61,7 @@ namespace hiro
             {
                 AdjustSize();
                 FadeIn();
+                LoadColor();
             };
             var icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(pic));
             if (System.IO.File.Exists(icon))
@@ -92,7 +94,7 @@ namespace hiro
 
         internal void LoadColor()
         {
-            Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppAccent"] = new SolidColorBrush(App.AppAccentColor);
         }
 
         internal void CallLight(int obj = 0)
