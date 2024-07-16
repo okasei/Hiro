@@ -22,6 +22,7 @@ namespace hiro
         internal string fpath = string.Empty;
         internal bool oflag = false;
         internal WindowAccentCompositor? compositor = null;
+        internal bool maxed = false;
         private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
