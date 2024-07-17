@@ -36,6 +36,8 @@ namespace hiro
             Load_Color();
             Load_Position();
             Load_Translate();
+            Load_PrimaryIcon();
+            Load_Icon();
             new System.Threading.Thread(() =>
             {
                 if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "HiBoxAudio", "1").Equals("1"))
@@ -59,6 +61,26 @@ namespace hiro
                     Animation_In();
                 });
             }).Start();
+        }
+
+        private void Load_PrimaryIcon()
+        {
+            var icon = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeIcon", "");
+            icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
+            if (System.IO.File.Exists(icon))
+            {
+                BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+            }
+            else
+            {
+                icon = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatar", "")));
+                if (System.IO.File.Exists(icon) && App.Logined == true)
+                {
+                    BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                    (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                }
+            }
         }
 
         private void Animation_In()
@@ -389,7 +411,7 @@ namespace hiro
 
         private void Load_Icon()
         {
-            Hiro_Icon? icon = App.noticeitems[0].icon;
+            Hiro_Icon? icon = App.noticeitems.Count > 0 ? App.noticeitems[0].icon : null;
             if (!flag)
             {
                 Set_Icon(icon);

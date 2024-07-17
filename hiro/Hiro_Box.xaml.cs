@@ -52,13 +52,7 @@ namespace hiro
             TitleLabel.FontStretch = TestTitle.FontStretch;
             TitleLabel.FontWeight = TestTitle.FontWeight;
             TitleLabel.FontStyle = TestTitle.FontStyle;
-            var icon = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeIcon", "");
-            icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
-            if (File.Exists(icon))
-            {
-                BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
-            }
+            Load_PrimaryIcon();
             Load_Color();
             Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
@@ -68,6 +62,26 @@ namespace hiro
             {
                 Box_In();
             };
+        }
+
+        private void Load_PrimaryIcon()
+        {
+            var icon = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeIcon", "");
+            icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
+            if (System.IO.File.Exists(icon))
+            {
+                BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+            }
+            else
+            {
+                icon = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatar", "")));
+                if (System.IO.File.Exists(icon) && App.Logined == true)
+                {
+                    BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                    (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                }
+            }
         }
 
         private void Load_One()
