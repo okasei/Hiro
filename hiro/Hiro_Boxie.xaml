@@ -11,10 +11,11 @@
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccentTrans" Color="Coral"></SolidColorBrush>
         <ImageBrush x:Key="PrimaryIcon"  Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
     </Window.Resources>
     <Grid  x:Name="BaseGrid" MouseLeftButtonDown="BaseGrid_MouseLeftButtonDown">
-        <Border x:Name="BackgroundBorder"  CornerRadius="35" Background="{DynamicResource AppAccent}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="0" Height="70" Opacity="0"/>
+        <Border x:Name="BackgroundBorder"  CornerRadius="35" Background="{DynamicResource AppAccentTrans}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="0" Height="70" Opacity="0"/>
         <Grid x:Name="IconGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Height="100" Width="100">
             <Border x:Name="Icon_Background_0" CornerRadius="50" Background="{DynamicResource AppAccent}" Height="0" Width="0"/>
             <Border x:Name="Icon_Background_1" CornerRadius="50" Background="{DynamicResource AppFore}" Height="0" Width="0"/>
@@ -27,15 +28,17 @@
             </Border>
         </Grid>
         <Grid x:Name="Text_Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed">
-            <Label x:Name="Text_Display_0" Foreground="{DynamicResource AppFore}" Content="你这个坏蛋！" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Opacity="0"/>
-            <Label x:Name="Text_Display_1" Foreground="{DynamicResource AppFore}" Content="你这个坏蛋！" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Opacity="0"/>
+            <TextBlock Name="Text_Display_0" Foreground="{DynamicResource AppFore}" Text="你这个坏蛋！" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Center" Block.TextAlignment="Center" FontSize="18" Opacity="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Block.LineHeight="{Binding ActualHeight, ElementName=window, Mode=OneWay}"></TextBlock>
+            <TextBlock Name="Text_Display_1" Foreground="{DynamicResource AppFore}" Text="你这个坏蛋！" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Center" Block.TextAlignment="Center" FontSize="18" Opacity="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Block.LineHeight="{Binding ActualHeight, ElementName=window, Mode=OneWay}"></TextBlock>
             <Label Name="Test_Text_Display" Foreground="{DynamicResource AppFore}" Content="你这个坏蛋！" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="18" Opacity="0"></Label>
          </Grid>
         <Grid x:Name="Title_Grid" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed">
-            <Label x:Name="Hiro_Title" Foreground="{DynamicResource AppFore}" Content="点按此处" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Opacity="0"/>
+            <Label x:Name="Hiro_Title_Label" Foreground="{DynamicResource AppFore}" Content="点按此处" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Opacity="0"/>
+            <TextBlock Name="Hiro_Title" Foreground="{DynamicResource AppFore}" Text="点按此处" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Center" Block.TextAlignment="Center" FontSize="18" Opacity="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Block.LineHeight="{Binding ActualHeight, ElementName=window, Mode=OneWay}"></TextBlock>
         </Grid>
         <Grid x:Name="Extension_Grid" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed">
-            <Label x:Name="Hiro_Extension_Title" Foreground="{DynamicResource AppFore}" Content="查看更多" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Opacity="0"/>
+            <Label x:Name="Hiro_Extension_Title_Label" Foreground="{DynamicResource AppFore}" Content="查看更多" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Opacity="0"/>
+            <TextBlock Name="Hiro_Extension_Title" Foreground="{DynamicResource AppFore}" Text="点按此处" FontFamily="Microsoft YaHei" HorizontalAlignment="Stretch" VerticalAlignment="Center" Block.TextAlignment="Center" FontSize="18" Opacity="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Block.LineHeight="{Binding ActualHeight, ElementName=window, Mode=OneWay}"></TextBlock>
         </Grid>
         <Grid x:Name="LocationGrid" VerticalAlignment="Top" HorizontalAlignment="Left" Width="10" Height="10" Visibility="Collapsed"/>
     </Grid>

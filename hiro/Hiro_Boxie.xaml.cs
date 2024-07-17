@@ -29,6 +29,7 @@ namespace hiro
         bool finish = false;
         int channel = -1;
         double maxW = 150;
+        internal string formerTitle = "";
         public Hiro_Boxie()
         {
             InitializeComponent();
@@ -85,24 +86,42 @@ namespace hiro
 
         internal void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(Text_Display_0, "BoxText", location: false);
-            Hiro_Utils.Set_Control_Location(Text_Display_1, "BoxText", location: false);
             Hiro_Utils.Set_Control_Location(Test_Text_Display, "BoxText", location: false);
-            Hiro_Utils.Set_Control_Location(Hiro_Title, "BoxFinal", location: false);
-            Hiro_Utils.Set_Control_Location(Hiro_Extension_Title, "BoxFinal", location: false);
+            Text_Display_0.FontFamily = Test_Text_Display.FontFamily;
+            Text_Display_0.FontSize = Test_Text_Display.FontSize;
+            Text_Display_0.FontStretch = Test_Text_Display.FontStretch;
+            Text_Display_0.FontWeight = Test_Text_Display.FontWeight;
+            Text_Display_0.FontStyle = Test_Text_Display.FontStyle;
+            Text_Display_1.FontFamily = Test_Text_Display.FontFamily;
+            Text_Display_1.FontSize = Test_Text_Display.FontSize;
+            Text_Display_1.FontStretch = Test_Text_Display.FontStretch;
+            Text_Display_1.FontWeight = Test_Text_Display.FontWeight;
+            Text_Display_1.FontStyle = Test_Text_Display.FontStyle;
+            Hiro_Utils.Set_Control_Location(Hiro_Title_Label, "BoxFinal", location: false);
+            Hiro_Utils.Set_Control_Location(Hiro_Extension_Title_Label, "BoxFinal", location: false);
+            Hiro_Title.FontFamily = Hiro_Title_Label.FontFamily;
+            Hiro_Title.FontSize = Hiro_Title_Label.FontSize;
+            Hiro_Title.FontStretch = Hiro_Title_Label.FontStretch;
+            Hiro_Title.FontWeight = Hiro_Title_Label.FontWeight;
+            Hiro_Title.FontStyle = Hiro_Title_Label.FontStyle;
+            Hiro_Extension_Title.FontFamily = Hiro_Extension_Title_Label.FontFamily;
+            Hiro_Extension_Title.FontSize = Hiro_Extension_Title_Label.FontSize;
+            Hiro_Extension_Title.FontStretch = Hiro_Extension_Title_Label.FontStretch;
+            Hiro_Extension_Title.FontWeight = Hiro_Extension_Title_Label.FontWeight;
+            Hiro_Extension_Title.FontStyle = Hiro_Extension_Title_Label.FontStyle;
         }
         internal void Load_Translate()
         {
-            Hiro_Title.Content = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalLeft")));
-            Hiro_Extension_Title.Content = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalRight")));
+            Hiro_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalLeft")));
+            Hiro_Extension_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalRight")));
         }
 
         private void Animation_Out()
         {
             if (act != null)
             {
-                Hiro_Title.Content = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalActLeft")));
-                Hiro_Extension_Title.Content = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalActRight")));
+                Hiro_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalActLeft")));
+                Hiro_Extension_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalActRight")));
             }
             else
             {
@@ -221,20 +240,19 @@ namespace hiro
             Storyboard.SetTarget(ani, obj);
             Storyboard.SetTargetProperty(ani, new PropertyPath(propertyPath));
             sb.Children.Add(ani);
-            /*sb.Children.Add(ani);
-            sb = Hiro_Utils.AddDoubleAnimaton(value, time, obj, propertyPath, sb);
-            sb.FillBehavior = FillBehavior.HoldEnd;*/
             return sb;
         }
 
         internal void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 250));
+            Resources["AppAccent"] = new SolidColorBrush(App.AppAccentColor);
+            Resources["AppAccentTrans"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 250));
         }
 
         private void Load_One()
         {
+            channel = -1;
             var t = App.noticeitems[0].msg.Replace("\r\n", Environment.NewLine).Replace("\r", Environment.NewLine).Replace("\n", Environment.NewLine).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
             Load_Icon();
             if (t.IndexOf(Environment.NewLine) != -1)
@@ -259,14 +277,7 @@ namespace hiro
                 tt = Hiro_Utils.Get_Translate("notitle");
             Title = tt + " - " + Hiro_Resources.ApplicationName;
             act = App.noticeitems[0].act;
-            if (act != null)
-            {
-                BaseGrid.Cursor = Cursors.Hand;
-            }
-            else
-            {
-                BaseGrid.Cursor = null;
-            }
+            BaseGrid.Cursor = act != null ? BaseGrid.Cursor = Cursors.Hand : null;
             temps = App.noticeitems[0].time;
             maxW = 150;
             foreach (var w in notifications)
@@ -277,7 +288,16 @@ namespace hiro
                 maxW = Math.Max(maxW, msize.Width);
             }
             Size tsize = new();
-            Test_Text_Display.Content = tt;
+            if (tt.Equals(formerTitle))
+            {
+                Test_Text_Display.Content = notifications[0];
+                notifications.RemoveAt(0);
+            }
+            else
+            {
+                Test_Text_Display.Content = tt;
+                formerTitle = tt;
+            }
             Hiro_Utils.Get_Text_Visual_Width(Test_Text_Display, VisualTreeHelper.GetDpi(this).PixelsPerDip, out tsize);
             maxW = Math.Max(maxW, tsize.Width);
             Reset_Width(true);
@@ -289,9 +309,6 @@ namespace hiro
             s.Completed += delegate
             {
                 IconGrid.Margin = new Thickness(Icon_Background_3.Width - targetWidth + 5, 0, 0, 0);
-                Text_Grid.Margin = new Thickness(Icon_Background_3.Width + 10, 0, 0, 0);
-                Text_Grid.Width = targetWidth - Text_Grid.Margin.Left - 10;
-                Text_Grid.Height = Height;
                 s = null;
             };
             s.Begin();
@@ -306,7 +323,7 @@ namespace hiro
                 case -1:
                     {
                         channel = 0;
-                        Text_Display_0.Content = Test_Text_Display.Content;
+                        Text_Display_0.Text = Test_Text_Display.Content.ToString();
                         var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_0, "Margin", null, new Thickness(0, 150, 0, 0));
                         s = Hiro_Utils.AddDoubleAnimaton(1, 400, Text_Display_0, "Opacity", s, 0);
                         s.Completed += delegate
@@ -323,7 +340,7 @@ namespace hiro
                 case 0:
                     {
                         channel = 1;
-                        Text_Display_1.Content = Test_Text_Display.Content;
+                        Text_Display_1.Text = Test_Text_Display.Content.ToString();
                         var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_1, "Margin", null, null);
                         s = Hiro_Utils.AddDoubleAnimaton(1, 400, Text_Display_1, "Opacity", s, 0);
                         s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_0, "Margin", s, null);
@@ -341,7 +358,7 @@ namespace hiro
                 case 1:
                     {
                         channel = 0;
-                        Text_Display_0.Content = Test_Text_Display.Content;
+                        Text_Display_0.Text = Test_Text_Display.Content.ToString();
                         var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_0, "Margin", null, null);
                         s = Hiro_Utils.AddDoubleAnimaton(1, 400, Text_Display_0, "Opacity", s, 0);
                         s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_1, "Margin", s, null);
@@ -434,7 +451,42 @@ namespace hiro
                 {
                     if (App.noticeitems.Count > 0)
                     {
-                        Load_One();
+                        switch (channel)
+                        {
+                            case 0:
+                                {
+                                    var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_0, "Margin", null, null);
+                                    s = Hiro_Utils.AddDoubleAnimaton(0, 400, Text_Display_0, "Opacity", s, 1);
+                                    s.Completed += delegate
+                                    {
+                                        Text_Display_0.Margin = new Thickness(0, 150, 0, 0);
+                                        Text_Display_0.Opacity = 0;
+                                        Load_One();
+                                    };
+                                    s.Begin();
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    channel = 0;
+                                    Text_Display_0.Text = Test_Text_Display.Content.ToString();
+                                    var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_1, "Margin", null, null);
+                                    s = Hiro_Utils.AddDoubleAnimaton(0, 400, Text_Display_1, "Opacity", s, 1);
+                                    s.Completed += delegate
+                                    {
+                                        Text_Display_1.Margin = new Thickness(0, 150, 0, 0);
+                                        Text_Display_1.Opacity = 0;
+                                        Load_One();
+                                    };
+                                    s.Begin();
+                                    break;
+                                }
+                            default:
+                                {
+                                    Load_One();
+                                    break;
+                                }
+                        }
                     }
                     else
                     {
@@ -449,7 +501,7 @@ namespace hiro
                     return 0;
                 }
             }
-            var w = Math.Max(Math.Min(maxWidth, maxW + 3 * innerMargin + Icon_Background_3.Width), maxW);
+            var w = Math.Min(maxWidth, Math.Max(maxW + 3 * innerMargin + Icon_Background_3.Width, maxW));
             Width = Math.Max(w, Width);
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
             if (finish)
@@ -468,6 +520,9 @@ namespace hiro
                         Width = w;
                         Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
                         Text_Grid.Visibility = Visibility.Visible;
+                        Text_Grid.Margin = new Thickness(Icon_Background_3.Width + 10, 0, 0, 0);
+                        Text_Grid.Width = w - Text_Grid.Margin.Left - 10;
+                        Text_Grid.Height = Height;
                         GoText();
                     };
                     s.Begin();

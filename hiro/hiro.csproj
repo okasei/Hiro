@@ -10,9 +10,9 @@
     <Copyright>Copyright©2024 Soleil Hiro</Copyright>
     <Authors>N+ Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.3.7</FileVersion>
-    <AssemblyVersion>2.3.7</AssemblyVersion>
-    <Version>2.3.7</Version>
+    <FileVersion>2.3.8</FileVersion>
+    <AssemblyVersion>2.3.8</AssemblyVersion>
+    <Version>2.3.8</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>

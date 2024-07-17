@@ -79,7 +79,7 @@ namespace hiro {
         }
         
         /// <summary>
-        ///   查找类似 2030701 的本地化字符串。
+        ///   查找类似 2030801 的本地化字符串。
         /// </summary>
         internal static string ApplicationUpdateVersion {
             get {
@@ -88,7 +88,7 @@ namespace hiro {
         }
         
         /// <summary>
-        ///   查找类似 2.3.7 的本地化字符串。
+        ///   查找类似 2.3.8 的本地化字符串。
         /// </summary>
         internal static string ApplicationVersion {
             get {
