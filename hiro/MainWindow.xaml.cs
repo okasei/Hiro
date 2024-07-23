@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
@@ -15,11 +16,13 @@ namespace hiro
         internal System.Windows.Controls.ContextMenu? cm = null;
         internal Windows.Networking.Connectivity.NetworkConnectivityLevel ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
         internal string rec_nc = "";
+        internal string disks = ";";
         public MainWindow()
         {
             InitializeComponent();
             System.Windows.Controls.Canvas.SetTop(this, -23333);
             System.Windows.Controls.Canvas.SetLeft(this, -23333);
+            ScanDiskUnload();
         }
 
         public void InitializeInnerParameters()
@@ -182,6 +185,39 @@ namespace hiro
             AddClipboardFormatListener(App.WND_Handle);
         }
 
+
+        private DriveInfo? ScanDisk()
+        {
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            foreach (var drive in drives)
+            {
+                if (drive.DriveType != DriveType.Unknown)
+                {
+                    var label = drive.Name.ToLower() + ";";
+                    if (!disks.Contains(label + ";"))
+                    {
+                        disks = disks + label + ";";
+                        return drive;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void ScanDiskUnload()
+        {
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            disks = ";";
+            foreach (var drive in drives)
+            {
+                if (drive.DriveType != DriveType.Unknown)
+                {
+                    var label = drive.Name.ToLower() + ";";
+                    disks = disks + label + ";";
+                }
+            }
+        }
+
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
@@ -216,6 +252,7 @@ namespace hiro
                 case 0x0219:
                     if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Verbose", "0").Equals("1"))
                     {
+                        Action? ac = null;
                         var mms = Hiro_Utils.Get_Translate("deinfo") + " - ";
                         switch (wParam.ToInt32())
                         {
@@ -223,15 +260,32 @@ namespace hiro
                                 mms += Hiro_Utils.Get_Translate("deconfig");
                                 break;
                             case 0x8000:
-                                mms += Hiro_Utils.Get_Translate("medconnect");
-                                break;
+                                {
+                                    var a = ScanDisk();
+                                    if (null != a)
+                                    {
+                                        ac = new(() =>
+                                        {
+                                            Hiro_Utils.RunExe(a.RootDirectory.ToString(), Hiro_Utils.Get_Translate("device"), false);
+                                        });
+                                        mms += Hiro_Utils.Get_Translate("medconname").Replace("%n", a.VolumeLabel).Replace("%l", a.Name);
+                                    }
+                                    else
+                                    {
+                                        mms += Hiro_Utils.Get_Translate("medconnect");
+                                    }
+                                    break;
+                                }
                             case 0x8004:
-                                mms += Hiro_Utils.Get_Translate("medremove");
-                                break;
+                                {
+                                    ScanDiskUnload();
+                                    mms += Hiro_Utils.Get_Translate("medremove");
+                                    break;
+                                }
                             default:
                                 return IntPtr.Zero;
                         }
-                        App.Notify(new Hiro_Notice(mms, 2, Hiro_Utils.Get_Translate("device")));
+                        App.Notify(new Hiro_Notice(mms, 2, Hiro_Utils.Get_Translate("device"), ac));
                     }
                     break;
                 case 0x031D:

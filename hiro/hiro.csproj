@@ -20,6 +20,7 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <BaseOutputPath></BaseOutputPath>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
