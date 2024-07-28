@@ -1,4 +1,5 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Text;
@@ -19,6 +20,7 @@ using Windows.Foundation.Metadata;
 using Windows.Storage.Streams;
 using Windows.UI.Notifications;
 using Windows.UI.Notifications.Management;
+using static hiro.Helpers.Hiro_Class;
 
 namespace hiro
 {
@@ -101,7 +103,7 @@ namespace hiro
                 Initialize_NotificationListener();
             });
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "FPS", "60"))));
-            Unosquare.FFME.Library.FFmpegDirectory = @Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\ffmpeg\x64";
+            Unosquare.FFME.Library.FFmpegDirectory = @Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-x64\ffmpeg";
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -369,7 +371,7 @@ namespace hiro
                                 {
                                     Logined = null;
                                     var tmp = System.IO.Path.GetTempFileName();
-                                    var r = Hiro_Utils.Login(loginedUser, loginedToken, true, tmp);
+                                    var r = Hiro_ID.Login(loginedUser, loginedToken, true, tmp);
                                     if (r.Equals("success") && Hiro_Utils.Read_Ini(tmp, "Login", "res", "-1").Equals("0"))
                                     {
                                         Logined = true;
@@ -384,7 +386,7 @@ namespace hiro
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
                                     if (Logined == true)
-                                        Hiro_Utils.SyncProfile(loginedUser, loginedToken);
+                                        Hiro_ID.SyncProfile(loginedUser, loginedToken);
 
                                 }).Start();
                             }
@@ -409,7 +411,7 @@ namespace hiro
             return;
         }
 
-        public static void Notify(Hiro_Notice i)
+        internal static void Notify(Hiro_Class.Hiro_Notice i)
         {
             string title = appTitle;
             i.msg = Hiro_Utils.Path_Prepare_EX(i.msg);
@@ -564,12 +566,12 @@ namespace hiro
         private static void InitializeInnerParameters()
         {
             currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            Hiro_Utils.CreateFolder(currentDir + "\\users\\" + eUserName + "\\editor\\");
-            Hiro_Utils.CreateFolder(currentDir + "\\users\\" + eUserName + "\\log\\");
-            Hiro_Utils.CreateFolder(currentDir + "\\users\\" + eUserName + "\\config\\");
-            Hiro_Utils.CreateFolder(currentDir + "\\users\\" + eUserName + "\\app\\");
-            Hiro_Utils.CreateFolder(currentDir + "\\system\\lang\\");
-            Hiro_Utils.CreateFolder(currentDir + "\\system\\wallpaper\\");
+            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\editor\\");
+            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\log\\");
+            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\config\\");
+            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\app\\");
+            Hiro_File.CreateFolder(currentDir + "\\system\\lang\\");
+            Hiro_File.CreateFolder(currentDir + "\\system\\wallpaper\\");
             logFilePath = currentDir + "\\users\\" + eUserName + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
             System.IO.File.Delete(logFilePath);
             Hiro_Utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
@@ -636,7 +638,7 @@ namespace hiro
                     username = eUserName;
                     break;
             }
-            Hiro_Utils.version = "v" + Hiro_Utils.Read_Ini(dConfig, "Config", "AppVer", "1");
+            Hiro_ID.version = "v" + Hiro_Utils.Read_Ini(dConfig, "Config", "AppVer", "1");
             if (Hiro_Utils.Read_Ini(dConfig, "Config", "CustomNick", "1").Equals("2"))
                 appTitle = Hiro_Utils.Read_Ini(dConfig, "Config", "CustomHIRO", "Hiro");
             if (Hiro_Utils.Read_Ini(dConfig, "Config", "TRBtn", "0").Equals("1"))
@@ -894,7 +896,7 @@ namespace hiro
                     var iconFile = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX("<current>\\system\\icons\\clsids\\")) + notif.AppInfo.AppUserModelId + ".hsic";
                     if (!System.IO.File.Exists(iconFile))
                     {
-                        Hiro_Utils.CreateFolder(iconFile);
+                        Hiro_File.CreateFolder(iconFile);
                         RandomAccessStreamReference stream = notif.AppInfo.DisplayInfo.GetLogo(new Windows.Foundation.Size(128, 128));
                         if (stream is not null)
                         {

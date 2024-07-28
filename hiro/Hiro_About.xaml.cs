@@ -1,10 +1,10 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 
 namespace hiro
 {
@@ -91,7 +91,7 @@ namespace hiro
                 upbw.WorkerSupportsCancellation = true;
                 upbw.DoWork += delegate
                 {
-                    ups = Hiro_Utils.GetWebContent("https://hiro.rexio.cn/Update/hiro.php?r=update&v=" + Hiro_Resources.ApplicationUpdateVersion + "&lang=" + App.lang);
+                    ups = Hiro_Net.GetWebContent("https://hiro.rexio.cn/Update/hiro.php?r=update&v=" + Hiro_Resources.ApplicationUpdateVersion + "&lang=" + App.lang);
                 };
                 upbw.RunWorkerCompleted += delegate
                 {
@@ -111,10 +111,10 @@ namespace hiro
             switch (ups)
             {
                 case "latest":
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("updatelatest"), 2, Hiro_Utils.Get_Translate("checkup")));
+                    App.Notify(new Hiro_Class.Hiro_Notice(Hiro_Utils.Get_Translate("updatelatest"), 2, Hiro_Utils.Get_Translate("checkup")));
                     break;
                 case "Error":
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("updateerror"), 2, Hiro_Utils.Get_Translate("checkup")));
+                    App.Notify(new Hiro_Class.Hiro_Notice(Hiro_Utils.Get_Translate("updateerror"), 2, Hiro_Utils.Get_Translate("checkup")));
                     break;
                 default:
                     try
@@ -154,7 +154,7 @@ namespace hiro
                     catch (Exception ex)
                     {
                         Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Check");
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("updateerror"), 2, Hiro_Utils.Get_Translate("checkup")));
+                        App.Notify(new Hiro_Class.Hiro_Notice(Hiro_Utils.Get_Translate("updateerror"), 2, Hiro_Utils.Get_Translate("checkup")));
                     }
 
                     break;

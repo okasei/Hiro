@@ -1,4 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using hiro.Helpers;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -247,7 +248,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 load = false;
                 eload = false;
                 var folder = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\");
-                Hiro_Utils.CreateFolder(folder);
+                Hiro_File.CreateFolder(folder);
                 var file = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + UserId + ".hcf");
                 UserId = Hiro_Utils.Read_Ini(App.dConfig, "Config", "ChatID", "rex");
                 LocalId = App.loginedUser;
@@ -415,10 +416,10 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             {
                 try
                 {
-                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\"));
-                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\profile\\"));
-                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\back\\"));
-                    Hiro_Utils.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\"));
+                    Hiro_File.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\"));
+                    Hiro_File.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\profile\\"));
+                    Hiro_File.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\back\\"));
+                    Hiro_File.CreateFolder(Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\"));
                     var hus = Guid.NewGuid();
                     var StrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
                     var baseDir = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\profile\\");
@@ -428,7 +429,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                         hus = Guid.NewGuid();
                     }
                     var tmp = System.IO.Path.GetTempFileName();
-                    var res = Hiro_Utils.UploadProfileSettings(
+                    var res = Hiro_ID.UploadProfileSettings(
                         UserId, "token", Aite,
                         Hiro_Utils.Read_Ini(pformer, "Config", "Signature", string.Empty),
                         Hiro_Utils.Read_Ini(pformer, "Config", "Avatar", "1"),
@@ -492,7 +493,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                         if (File.Exists(former))
                             File.Delete(former);
                         Hiro_Utils.Write_Ini(StrFileName, UserId, "Avatar", "<hiapp>\\chat\\friends\\avatar\\" + hus + ".hap");
-                        Hiro_Utils.GetWebContent(r, true, baseDir + hus + ".hap");
+                        Hiro_Net.GetWebContent(r, true, baseDir + hus + ".hap");
                         Load_Avatar();
                     }
                     baseDir = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\friends\\back\\");
@@ -507,18 +508,18 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                         if (File.Exists(former))
                             File.Delete(former);
                         Hiro_Utils.Write_Ini(StrFileName, UserId, "BackImage", "<hiapp>\\chat\\friends\\back\\" + hus + ".hpp");
-                        Hiro_Utils.GetWebContent(r, true, baseDir + hus + ".hpp");
+                        Hiro_Net.GetWebContent(r, true, baseDir + hus + ".hpp");
                         Load_Background();
                     }
                     File.Delete(tmp);
                     var hcf = Hiro_Utils.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + UserId + ".hcf");
-                    var content = Hiro_Utils.GetChat(App.loginedUser, App.loginedToken, UserId, hcf);
+                    var content = Hiro_ID.GetChat(App.loginedUser, App.loginedToken, UserId, hcf);
                     if (content.Equals("success"))
                     {
                         content = File.ReadAllText(hcf);
                         if (content.Equals("IDENTIFY_ERROR"))
                         {
-                            Hiro_Utils.Logout();
+                            Hiro_ID.Logout();
                             Dispatcher.Invoke(() =>
                             {
                                 Hiro_Main?.Set_Label(Hiro_Main.loginx);
@@ -811,7 +812,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
         {
             try
             {
-                var res = Hiro_Utils.SendMsg(App.loginedUser, App.loginedToken, UserId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                var res = Hiro_ID.SendMsg(App.loginedUser, App.loginedToken, UserId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 + "," + msg);
                 if (!res.Equals("success"))
                     Dispatcher.Invoke(() =>
@@ -820,7 +821,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     });
                 else if (res.Equals("IDENTIFY_ERROR"))
                 {
-                    Hiro_Utils.Logout();
+                    Hiro_ID.Logout();
                     Dispatcher.Invoke(() =>
                     {
                         Hiro_Main?.Set_Label(Hiro_Main.loginx);
@@ -843,7 +844,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
         {
             try
             {
-                var res = Hiro_Utils.UploadProfileSettings(
+                var res = Hiro_ID.UploadProfileSettings(
                     App.loginedUser, App.loginedToken, App.username,
                     Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomSign", string.Empty),
                     Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatarStyle", "1"),
@@ -956,7 +957,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             }
             if (text.ToLower().StartsWith("version:"))
             {
-                Hiro_Utils.version = "v" + text[8..];
+                Hiro_ID.version = "v" + text[8..];
                 Hiro_Utils.LogtoFile("[INFO]Chat Version Updated " + "v" + text[8..]);
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "AppVer", text[8..]);
                 Hiro_Get_Chat();

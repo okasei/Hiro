@@ -38,7 +38,7 @@ namespace hiro.Helpers
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
-                        confrimWin = Hiro_Utils.GetWebContent(confrimWin).Replace("<br>", "\\n");
+                        confrimWin = Hiro_Net.GetWebContent(confrimWin).Replace("<br>", "\\n");
                     };
                     bw.RunWorkerCompleted += delegate
                     {

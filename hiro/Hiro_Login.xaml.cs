@@ -1,4 +1,5 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -106,7 +107,7 @@ namespace hiro
                 var tmp = System.IO.Path.GetTempFileName();
                 try
                 {
-                    var res = Hiro_Utils.Login(user, pwd, false, tmp);
+                    var res = Hiro_ID.Login(user, pwd, false, tmp);
                     if (res.Equals("success") && Hiro_Utils.Read_Ini(tmp, "Login", "res", "-1").Equals("0"))
                     {
                         Dispatcher.Invoke(() =>
@@ -121,7 +122,7 @@ namespace hiro
                         App.loginedUser = Hiro_Utils.Read_Ini(tmp, "Login", "usr", string.Empty);
                         App.loginedToken = Hiro_Utils.Read_Ini(tmp, "Login", "msg", string.Empty);
                         App.Logined = true;
-                        Hiro_Utils.SyncProfile(App.loginedUser, App.loginedToken);
+                        Hiro_ID.SyncProfile(App.loginedUser, App.loginedToken);
                         Dispatcher.Invoke(() =>
                         {
                             if (Hiro_Main != null)

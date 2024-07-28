@@ -5,7 +5,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Automation.Peers;
+using hiro.Helpers;
 
 namespace hiro
 {
@@ -55,7 +55,7 @@ namespace hiro
             {
                 var video = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackVideo", "")));
                 var b = BackVideo.Visibility == Visibility.Visible && (BackVideo.IsPlaying || BackVideo.IsPaused) && BackVideo.MediaInfo.MediaSource.Equals(video.Trim());
-                if (System.IO.File.Exists(video) && !b)
+                if ((System.IO.File.Exists(video) || video.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || video.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase) || video.StartsWith("rstp:", StringComparison.CurrentCultureIgnoreCase)) && !b)
                 {
                     new System.Threading.Thread(async () =>
                     {
@@ -66,6 +66,7 @@ namespace hiro
                                 await BackVideo.Open(new Uri(video));
                                 if (Visibility != Visibility.Visible)
                                     await BackVideo.Pause();
+                                BackVideo.IsMuted = Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackVideoMute", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
                                 BackVideo.Visibility = Visibility.Visible;
                             }
                             catch (Exception e)
@@ -158,7 +159,7 @@ namespace hiro
                             img.Dispose();
                             strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
                             strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
-                            Hiro_Utils.CreateFolder(strFileName);
+                            Hiro_File.CreateFolder(strFileName);
                             if (System.IO.File.Exists(strFileName))
                                 System.IO.File.Delete(strFileName);
                             b.Save(strFileName);
@@ -610,7 +611,7 @@ namespace hiro
                     Hiro_Utils.LogError(ex, "Hiro.Exception.Hotkey.Register.Format");
                 }
                 co = co[1..^1];
-                App.cmditems.Add(new Cmditem(p, i, ti, co, key));
+                App.cmditems.Add(new Hiro_Class.Cmditem(p, i, ti, co, key));
                 i++;
                 p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 ti = Hiro_Utils.Read_Ini(inipath, i.ToString(), "Title", "");
@@ -679,7 +680,7 @@ namespace hiro
                             break;
                         }
                 }
-                App.scheduleitems.Add(new Scheduleitem(i, na, ti, co, double.Parse(re)));
+                App.scheduleitems.Add(new Hiro_Class.Scheduleitem(i, na, ti, co, double.Parse(re)));
                 i++;
                 ti = Hiro_Utils.Read_Ini(inipath, i.ToString(), "Time", "");
                 co = Hiro_Utils.Read_Ini(inipath, i.ToString(), "Command", "");
@@ -809,7 +810,7 @@ namespace hiro
                     sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, infocenter, "Opacity", sb);
                     sb.Completed += delegate
                     {
-                        if (BackVideo.Visibility == Visibility.Visible)
+                        if (BackVideo.Visibility == Visibility.Visible && BackVideo.Visibility == Visibility.Visible)
                             BackVideo.Play();
                         infocenter.Opacity = 0;
                         infocenter.Visibility = Visibility.Hidden;
@@ -1269,7 +1270,11 @@ namespace hiro
             {
                 BackVideo.Visibility = Visibility.Collapsed;
                 if (BackVideo.IsPlaying || BackVideo.IsPaused)
+                {
+
                     BackVideo.Stop();
+                    BackVideo.Close();
+                }
             }
         }
 
@@ -1340,7 +1345,7 @@ namespace hiro
             for (int i = 0; i < 1; i++)
             {
                 dt = dt.AddSeconds(2);
-                App.scheduleitems.Add(new Scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
+                App.scheduleitems.Add(new Hiro_Class.Scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
 
             }
 
@@ -1396,7 +1401,7 @@ namespace hiro
             {
                 if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2"))
                     Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
-                if (BackVideo.IsPaused)
+                if (BackVideo.IsPaused && BackVideo.Visibility == Visibility.Visible)
                     BackVideo.Play();
             }
             else
@@ -1457,7 +1462,7 @@ namespace hiro
         private void BackVideo_MediaOpened(object sender, Unosquare.FFME.Common.MediaOpenedEventArgs e)
         {
 
-            if (BackVideo.MediaInfo.Streams.Count > 0)
+            if (BackVideo.MediaInfo.Streams.Count > 0 && Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackVideoCrop", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
             {
                 var w = BackVideo.MediaInfo.Streams[0].PixelWidth;
                 var h = BackVideo.MediaInfo.Streams[0].PixelHeight;
@@ -1482,7 +1487,7 @@ namespace hiro
 
         private void ui_Activated(object sender, EventArgs e)
         {
-            if (BackVideo.IsPaused)
+            if (BackVideo.IsPaused && BackVideo.Visibility == Visibility.Visible)
                 BackVideo.Play();
         }
 

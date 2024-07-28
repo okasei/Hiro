@@ -1,4 +1,5 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,7 +43,7 @@ namespace hiro
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
-                        CustomedTitle = Hiro_Utils.GetWebContent(CustomedTitle);
+                        CustomedTitle = Hiro_Net.GetWebContent(CustomedTitle);
                     };
                     bw.RunWorkerAsync();
                     bw.RunWorkerCompleted += delegate
@@ -71,7 +72,7 @@ namespace hiro
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
-                        CustomedContnet = Hiro_Utils.GetWebContent(CustomedContnet);
+                        CustomedContnet = Hiro_Net.GetWebContent(CustomedContnet);
                     };
                     bw.RunWorkerAsync();
                     bw.RunWorkerCompleted += delegate

@@ -17,333 +17,21 @@ using Windows.Security.Credentials;
 using Windows.Security.Credentials.UI;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualBasic;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
-using System.Net;
 using System.Security.Cryptography;
 using System.Windows.Shell;
-using Windows.UI.Composition;
 using hiro.Helpers;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
-using System.Drawing.Text;
+using static hiro.Helpers.Hiro_Class;
 
 namespace hiro
 {
-    #region 命令项目定义
-    public class Cmditem : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private int p;
-        private int i;
-        private string na;
-        private string co;
-        private string hk;
-
-        public int Page
-        {
-            get { return p; }
-            set
-            {
-                p = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Page)));
-            }
-        }
-        public int Id
-        {
-            get { return i; }
-            set
-            {
-                i = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
-            }
-        }
-        public string Name
-        {
-            get { return na; }
-            set
-            {
-                na = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
-            }
-        }
-        public string Command
-        {
-            get { return co; }
-            set
-            {
-                co = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Command)));
-            }
-        }
-
-        public string HotKey
-        {
-            get { return hk; }
-            set
-            {
-                hk = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HotKey)));
-            }
-        }
-        public Cmditem()
-        {
-            Page = -1;
-            Id = -1;
-            Name = string.Empty;
-            Command = string.Empty;
-            HotKey = string.Empty;
-            p = -1;
-            Id = -1;
-            na = string.Empty;
-            co = string.Empty;
-            hk = string.Empty;
-        }
-        public Cmditem(int a, int b, string c, string d, string e)
-        {
-            Page = a;
-            Id = b;
-            Name = c;
-            Command = d;
-            HotKey = e;
-            p = a;
-            Id = b;
-            na = c;
-            co = d;
-            hk = e;
-        }
-    }
-    #endregion
-
-    #region 日程项目定义
-    public class Scheduleitem : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private int i;
-        private string na;
-        private string ti;
-        private string co;
-        public double re;
-        public string Time
-        {
-            get { return ti; }
-            set
-            {
-                ti = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Time)));
-            }
-        }
-        public int Id
-        {
-            get { return i; }
-            set
-            {
-                i = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
-            }
-        }
-        public string Name
-        {
-            get { return na; }
-            set
-            {
-                na = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
-            }
-        }
-        public string Command
-        {
-            get { return co; }
-            set
-            {
-                co = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Command)));
-            }
-        }
-
-        public Scheduleitem()
-        {
-            Time = "19000101000000";
-            Id = -1;
-            Name = string.Empty;
-            Command = string.Empty;
-            re = -2.0;
-            ti = "19000101000000";
-            i = -1;
-            na = string.Empty;
-            co = string.Empty;
-        }
-        public Scheduleitem(int b, string a, string c, string d, double e)
-        {
-            Name = a;
-            Id = b;
-            Time = c;
-            Command = d;
-            re = e;
-            na = a;
-            i = b;
-            ti = c;
-            co = d;
-        }
-    }
-    #endregion
-
-    #region 通知窗口项目定义
-    public class Hiro_AlarmWin
-    {
-        public Hiro_Alarm win;
-        public int id;
-        public Hiro_AlarmWin(Hiro_Alarm a, int b)
-        {
-            win = a;
-            id = b;
-        }
-        public Hiro_AlarmWin(int a, Hiro_Alarm b)
-        {
-            win = b;
-            id = a;
-        }
-    }
-    #endregion
-
-    #region 图标项目定义
-    public class Hiro_Icon
-    {
-        public string Location = string.Empty;
-        public BitmapImage? Image = null;
-        public Hiro_Icon()
-        {
-
-        }
-    }
-    #endregion
-
-    #region 通知项目定义
-    public class Hiro_Notice
-    {
-        public string? title;
-        public string msg;
-        public int time;
-        public Action? act;
-        public Hiro_Icon? icon;
-        public Hiro_Notice(string ms = "NULL", int ti = 1, string? tit = null, Action? ac = null, Hiro_Icon? icon = null)
-        {
-            msg = ms;
-            time = ti;
-            title = tit;
-            act = ac;
-            this.icon = icon;
-        }
-    }
-    #endregion
-
-    #region 语言项目定义
-    public class Language : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private string na;
-        private string la;
-        public string Name
-        {
-            get { return na; }
-            set
-            {
-                na = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
-            }
-        }
-        public string Langname
-        {
-            get { return la; }
-            set
-            {
-                la = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Langname)));
-            }
-        }
-
-        public Language()
-        {
-            Name = "null";
-            Langname = "null";
-            na = "null";
-            la = "null";
-        }
-
-        public Language(string Name, string LangName)
-        {
-            this.Name = Name;
-            Langname = LangName;
-            na = Name;
-            la = LangName;
-        }
-    }
-    #endregion
-
-    #region 通信标准定义
-    public class HiroApp
-    {
-        public int state = -1;
-        public string? appID = null;
-        public string? appPackage = null;
-        public string? appName = null;
-        public string? msg = null;
-        public HiroApp(string? appID = null, string? appPackage = null, string? appName = null, string? msg = null, int state = 0)
-        {
-            this.appID = appID;
-            this.appPackage = appPackage;
-            this.appName = appName;
-            this.msg = msg;
-            this.state = state;
-        }
-        public bool CheckIntegrity()
-        {
-            if (appID == null || appPackage == null || appName == null || msg == null)
-                return true;
-            else
-                return false;
-        }
-        public void Reset()
-        {
-            appID = null;
-            appPackage = null;
-            appName = null;
-            msg = null;
-            state = 0;
-        }
-        public override string ToString()
-        {
-            var ret = "ID: ";
-            var re = appID ?? "null";
-            ret = ret + re + ", Package: ";
-            re = appPackage ?? "null";
-            ret = ret + re + ", Name: ";
-            re = appName ?? "null";
-            ret = ret + re + ", Msg: ";
-            re = msg ?? "null";
-            ret += re;
-            return ret;
-        }
-    }
-
-    #endregion
-
-    #region 自定义Image
-
-    public class HiroUIContainer : RichTextBox
-    {
-
-    }
-
-    #endregion
-
     public partial class Hiro_Utils : Component
     {
 
         static int keyid = 0;
-        internal static string version = "v1";
 
         #region 自动生成
         public Hiro_Utils()
@@ -1153,50 +841,13 @@ namespace hiro
                     if (path.ToLower().StartsWith("save("))
                     {
                         source = Get_Translate("download");
-                        string result = "";
-                        CreateFolder(parameter[1]);
-                        result = GetWebContent(parameter[0], true, parameter[1]);
-                        if (result.ToLower().Equals("error"))
-                            App.Notify(new Hiro_Notice(Get_Translate("error"), 2, source));
-                        else
-                            App.Notify(new Hiro_Notice(Get_Translate("success"), 2, source));
+                        Hiro_Net.Save(source, parameter);
                         goto RunOK;
                     }
                     #region 壁纸相关
                     if (path.ToLower().StartsWith("bingw("))
                     {
-                        if (!File.Exists(parameter[0]))
-                        {
-                            HttpRequestMessage request = new(HttpMethod.Get, "https://api.rexio.cn/v1/rex.php?r=wallpaper");
-                            request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                            request.Content = new StringContent("");
-                            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-                            if (App.hc == null)
-                                goto RunOK;
-                            try
-                            {
-                                HttpResponseMessage response = App.hc.Send(request);
-
-                                if (response.Content != null)
-                                {
-                                    Stream stream = response.Content.ReadAsStream();
-                                    System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
-                                    CreateFolder(parameter[0]);
-                                    image.Save(parameter[0]);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                RunExe($"alarm({Get_Translate("error")},{ex})");
-                                LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
-                            }
-                            if (!File.Exists(parameter[0]))
-                                App.Notify(new Hiro_Notice(Get_Translate("unknown"), 2, Get_Translate("wallpaper")));
-                            else
-                                App.Notify(new Hiro_Notice(Get_Translate("wpsaved"), 2, Get_Translate("wallpaper")));
-                        }
-                        else
-                            App.Notify(new Hiro_Notice(Get_Translate("wpexist"), 2, Get_Translate("wallpaper")));
+                        Hiro_Net.BingWp(path, parameter);
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("wallpaper("))
@@ -1229,92 +880,17 @@ namespace hiro
                     #region 文件操作
                     if (path.ToLower().StartsWith("delete("))
                     {
-                        if (!File.Exists(parameter[0]))
-                        {
-                            if (Directory.Exists(parameter[0]))
-                                try
-                                {
-                                    Directory.Delete(parameter[0], true);
-                                }
-                                catch (Exception ex)
-                                {
-                                    App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
-                                    LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
-                                }
-                            else
-                                LogtoFile($"[WARNING]Hiro.Warning.IO.Delete: Warning at {path} | Details: {Get_Translate("filenotexist")}");
-                            goto RunOK;
-                        }
-                        try
-                        {
-                            File.Delete(parameter[0]);
-                        }
-                        catch (Exception ex)
-                        {
-                            App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
-                            LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
-                        }
+                        Hiro_File.DeleteFile(path, parameter);
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("move("))
                     {
-                        if (!File.Exists(parameter[0]))
-                        {
-                            try
-                            {
-                                CreateFolder(parameter[1]);
-                                Directory.Move(parameter[0], parameter[1]);
-                            }
-                            catch (Exception ex)
-                            {
-                                App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
-                                LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
-                            }
-                            goto RunOK;
-                        }
-                        try
-                        {
-                            CreateFolder(parameter[1]);
-                            File.Move(parameter[0], parameter[1]);
-                        }
-                        catch (Exception ex)
-                        {
-                            App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
-                            LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
-                        }
+                        Hiro_File.MoveFile(path, parameter);
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("copy("))
                     {
-                        if (!File.Exists(parameter[0]))
-                        {
-                            if (Directory.Exists(parameter[0]))
-                                try
-                                {
-                                    CopyDirectory(parameter[0], parameter[1]);
-                                }
-                                catch (Exception ex)
-                                {
-                                    App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
-                                    LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
-                                }
-                            else
-                            {
-                                App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("file")));
-                                LogError(new FileNotFoundException(), $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
-                            }
-                            goto RunOK;
-                        }
-                        try
-                        {
-                            CreateFolder(parameter[1]);
-                            File.Copy(parameter[0], parameter[1]);
-                        }
-                        catch (Exception ex)
-                        {
-                            App.Notify(new Hiro_Notice(Get_Translate("failed"), 2, Get_Translate("file")));
-                            LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
-                        }
+                        Hiro_File.CopyFile(path, parameter);
                         goto RunOK;
                     }
                     #endregion
@@ -1450,49 +1026,12 @@ namespace hiro
                     }
                     if (path.ToLower().StartsWith("zip("))
                     {
-                        CreateFolder(parameter[1]);
-                        System.IO.Compression.ZipFile.CreateFromDirectory(parameter[0], parameter[1]);
-                        BackgroundWorker bw = new();
-                        if (parameter.Count > 2)
-                        {
-                            var para = parameter[2].ToLower();
-                            if (para.IndexOf("s") != -1)
-                                RunExe(parameter[1]);
-                            if (para.IndexOf("d") != -1)
-                                RunExe($"Delete({parameter[0]})");
-                        }
-                        if (parameter.Count > 3)
-                        {
-                            string cmd = parameter[3];
-                            for (var i = 4; i < parameter.Count; i++)
-                            {
-                                cmd += "," + parameter[i];
-                            }
-                            RunExe(cmd, source);
-                        }
+                        Hiro_File.Zip(source, parameter);
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("unzip("))
                     {
-                        CreateFolder(parameter[1]);
-                        System.IO.Compression.ZipFile.ExtractToDirectory(parameter[0], parameter[1]);
-                        if (parameter.Count > 2)
-                        {
-                            var para = parameter[2].ToLower();
-                            if (para.IndexOf("s") != -1)
-                                RunExe(parameter[1]);
-                            if (para.IndexOf("d") != -1)
-                                RunExe($"Delete({parameter[0]})");
-                        }
-                        if (parameter.Count > 3)
-                        {
-                            string cmd = parameter[3];
-                            for (var i = 4; i < parameter.Count; i++)
-                            {
-                                cmd += "," + parameter[i];
-                            }
-                            RunExe(cmd, source);
-                        }
+                        Hiro_File.Unzip(source, parameter);
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("exit()"))
@@ -1716,7 +1255,7 @@ namespace hiro
                             var pa = parameter[0];
                             if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
                             {
-                                pa = GetWebContent(pa).Replace("\\n", string.Empty).Replace("<br>", string.Empty);
+                                pa = Hiro_Net.GetWebContent(pa).Replace("\\n", string.Empty).Replace("<br>", string.Empty);
                                 if (App.dflag)
                                     LogtoFile("[INVOKE]" + pa);
                             }
@@ -1999,7 +1538,7 @@ namespace hiro
                         {
                             if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
                             {
-                                pa = GetWebContent(pa);
+                                pa = Hiro_Net.GetWebContent(pa);
                             }
                             if (parameter.Count > 1)
                             {
@@ -2007,7 +1546,7 @@ namespace hiro
 
                                 if ((par.ToLower().StartsWith("http://") || par.ToLower().StartsWith("https://")) && boo)
                                 {
-                                    par = GetWebContent(par).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+                                    par = Hiro_Net.GetWebContent(par).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
                                 }
                             }
                             if (parameter.Count > 1)
@@ -2205,7 +1744,7 @@ namespace hiro
                                 BackgroundWorker bw = new();
                                 bw.DoWork += delegate
                                 {
-                                    parameter[0] = GetWebContent(parameter[0]).Replace("<br>", "\\n");
+                                    parameter[0] = Hiro_Net.GetWebContent(parameter[0]).Replace("<br>", "\\n");
                                 };
                                 bw.RunWorkerCompleted += delegate
                                 {
@@ -2236,7 +1775,7 @@ namespace hiro
                                 titile = parameter[0];
                                 if (titile.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || titile.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
                                 {
-                                    titile = GetWebContent(titile).Replace("<br>", "\\n");
+                                    titile = Hiro_Net.GetWebContent(titile).Replace("<br>", "\\n");
                                 }
                                 Action? act = null;
                                 if (parameter.Count > 3)
@@ -2316,7 +1855,7 @@ namespace hiro
                                     BackgroundWorker bw = new();
                                     bw.DoWork += delegate
                                     {
-                                        confrimWin = GetWebContent(confrimWin).Replace("<br>", "\\n");
+                                        confrimWin = Hiro_Net.GetWebContent(confrimWin).Replace("<br>", "\\n");
                                     };
                                     bw.RunWorkerCompleted += delegate
                                     {
@@ -2917,33 +2456,6 @@ namespace hiro
             }
         }
 
-        private static void CopyDirectory(string srcdir, string desdir)
-        {
-            if (srcdir.EndsWith("\\"))
-                srcdir = srcdir[0..^1];
-            if (desdir.ToLower().StartsWith(srcdir.ToLower()))
-            {
-                App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("file")));
-                return;
-            }
-            string desfolderdir = desdir;
-            if (!desfolderdir.EndsWith("\\"))
-            {
-                desfolderdir += "\\";
-            }
-            CreateFolder(desfolderdir);
-            string[] filenames = Directory.GetFileSystemEntries(srcdir);
-            foreach (string file in filenames)
-            {
-                string newdest = desfolderdir + file.Replace(srcdir, "");
-                CreateFolder(newdest);
-                if (Directory.Exists(file))
-                    CopyDirectory(file, newdest);
-                else
-                    File.Copy(file, newdest);
-            }
-        }
-
         #endregion
 
         #region Windows Hello
@@ -3334,69 +2846,6 @@ namespace hiro
         }
         #endregion
 
-        #region 检查更新
-        public static string GetWebContent(string url, bool save = false, string? savepath = null)
-        {
-            HttpRequestMessage request = new(HttpMethod.Get, url);
-            request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-            request.Content = new StringContent("");
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-            request.Options.TryAdd("AllowAutoRedirect", true);
-            request.Options.TryAdd("KeppAlive", true);
-            request.Options.TryAdd("ProtocolVersion", HttpVersion.Version11);
-            //这里设置协议
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;// SecurityProtocolType.Tls1.2; 
-            ServicePointManager.CheckCertificateRevocationList = true;
-            ServicePointManager.DefaultConnectionLimit = 100;
-            ServicePointManager.Expect100Continue = false;
-            if (App.hc == null)
-                throw new Exception(Get_Translate("webnotinitial"));
-            try
-            {
-                HttpResponseMessage response = App.hc.Send(request);
-                if (response.Content != null)
-                {
-                    using (Stream stream = response.Content.ReadAsStream())
-                    {
-                        string result = string.Empty;
-                        if (save == true && savepath != null)
-                        {
-                            try
-                            {
-                                using (var fileStream = File.Create(savepath))
-                                {
-                                    stream.CopyTo(fileStream);
-                                }
-                                return "saved";
-                            }
-                            catch (Exception ex)
-                            {
-                                LogError(ex, $"Hiro.Exception.Web.Get");
-                                throw new Exception(ex.Message);
-                            }
-                        }
-                        else
-                        {
-                            StreamReader sr = new(stream);
-                            result = sr.ReadToEnd();
-                            return result;
-                        }
-                    }
-                }
-                else
-                {
-                    LogError(new ArgumentNullException(), $"Hiro.Exception.Web.Respose");
-                    return Get_Translate("error");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, $"Hiro.Exception.Web.HttpClient");
-                throw new Exception(ex.Message);
-            }
-        }
-        #endregion
-
         #region API函数声明
 
         #region 读文件
@@ -3616,33 +3065,6 @@ namespace hiro
                 Write_Ini(App.dConfig, "Config", "AutoRun", "0");
                 LogtoFile("[HIROWEGO]Disable Autorun");
             }
-        }
-        #endregion
-
-        #region 新建完全限定路径文件夹
-        public static bool CreateFolder(string path)
-        {
-            int pos = path.IndexOf("\\") + 1;
-            string vpath;
-            DirectoryInfo? di;
-            try
-            {
-                while (pos > 0)
-                {
-                    vpath = path[..pos];
-                    pos = path.IndexOf("\\", pos) + 1;
-                    di = new DirectoryInfo(vpath);
-                    if (!di.Exists)
-                        di.Create();
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, $"Hiro.Exception.Directory.Create");
-                return false;
-            }
-            return true;
-
         }
         #endregion
 
@@ -4101,387 +3523,6 @@ namespace hiro
                     var md5Hash = crypto.ComputeHash(fs);
                     return DeleteUnVisibleChar(BitConverter.ToString(md5Hash));
                 }
-            }
-        }
-        #endregion
-
-        #region 个人资料操作
-        public static string Login(string account, string pwd, bool token = false, string? saveto = null)
-        {
-            var url = "https://id.rexio.cn/login.php";
-            try
-            {
-                if (App.hc == null)
-                    throw new Exception(Get_Translate("webnotinitial"));
-                string boundary = DateTime.Now.Ticks.ToString("X");
-                string Enter = "\r\n";
-                string t = token ? "token" : "pwd";
-                byte[] eof = Encoding.UTF8.GetBytes(
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"account\"" + Enter + Enter + "" + account + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"pwd\"" + Enter + Enter + "" + pwd + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"lang\"" + Enter + Enter + "" + App.lang + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + t + "" + Enter + "--" + boundary + "--"
-                    );
-                byte[] ndata = new byte[eof.Length];
-                eof.CopyTo(ndata, 0);
-                HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                request.Content = new ByteArrayContent(ndata);
-                request.Content.Headers.Remove("Content-Type");
-                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
-                HttpResponseMessage response = App.hc.Send(request);
-                if (response.Content != null)
-                {
-                    if (saveto != null)
-                    {
-                        try
-                        {
-                            using (Stream stream = response.Content.ReadAsStream())
-                            {
-                                using (var fileStream = File.Create(saveto))
-                                {
-                                    stream.CopyTo(fileStream);
-                                }
-                            }
-                            return "success";
-                        }
-                        catch (Exception ex)
-                        {
-                            LogError(ex, "Hiro.Exception.Login.Save");
-                            throw new Exception(ex.Message);
-                        }
-                    }
-                    else
-                    {
-                        using (Stream stream = response.Content.ReadAsStream())
-                        {
-                            string result = string.Empty;
-                            using (StreamReader sr = new(stream))
-                            {
-                                result = sr.ReadToEnd();
-                                return result;
-                            }
-                        }
-                    }
-                }
-                else
-                    return "null";
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Hiro.Exception.Login");
-                return "error";
-            }
-        }
-
-        public static void Logout()
-        {
-            App.Logined = false;
-            App.loginedToken = string.Empty;
-            App.username = App.eUserName;
-            App.CustomUsernameFlag = 0;
-            Write_Ini(App.dConfig, "Config", "Token", string.Empty);
-            Write_Ini(App.dConfig, "Config", "AutoLogin", "0");
-            Write_Ini(App.dConfig, "Config", "CustomUser", "0");
-            Write_Ini(App.dConfig, "Config", "CustomName", string.Empty);
-            Write_Ini(App.dConfig, "Config", "CustomSign", string.Empty);
-            Write_Ini(App.dConfig, "Config", "UserAvatarStyle", string.Empty);
-        }
-
-        public static string UploadProfileImage(string file, string user, string token, string type)
-        {
-            var url = "https://hiro.rexio.cn/Chat/upload.php";
-            try
-            {
-                if (App.hc == null)
-                    throw new Exception(Get_Translate("webnotinitial"));
-                FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
-                byte[] bytebuffer;
-                bytebuffer = new byte[fs.Length];
-                fs.Read(bytebuffer, 0, (int)fs.Length);
-                fs.Close();
-                string filename = Path.GetFileName(file);
-                filename = filename ?? "null";
-                string boundary = DateTime.Now.Ticks.ToString("X");
-                string Enter = "\r\n";
-                byte[] send = Encoding.UTF8.GetBytes(
-                    "--" + boundary + Enter + "Content-Type: application/octet-stream" + Enter + "Content-Disposition: form-data; filename=\"" + "" + filename + "" + "\"; name=\"file\"" + Enter + Enter
-                    );
-                byte[] eof = Encoding.UTF8.GetBytes(
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"type\"" + Enter + Enter + "" + type + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"md5\"" + Enter + Enter + "" + GetMD5(file).Replace("-", "") + "" + Enter + "--" + boundary + "--"
-                    );
-                byte[] ndata = new byte[send.Length + bytebuffer.Length + eof.Length];
-                send.CopyTo(ndata, 0);
-                bytebuffer.CopyTo(ndata, send.Length);
-                eof.CopyTo(ndata, send.Length + bytebuffer.Length);
-                HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                request.Content = new ByteArrayContent(ndata);
-                request.Content.Headers.Remove("Content-Type");
-                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
-                HttpResponseMessage response = App.hc.Send(request);
-                if (response.Content != null)
-                {
-                    using (Stream stream = response.Content.ReadAsStream())
-                    {
-                        string result = string.Empty;
-                        using (StreamReader sr = new(stream))
-                        {
-                            result = sr.ReadToEnd();
-                            return result;
-                        }
-                    }
-                }
-                else
-                    return "null";
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Hiro.Exception.Update.Profile");
-                return "error";
-            }
-        }
-
-        public static string UploadProfileSettings(string user, string token, string name, string signature, string avatar, string iavatar, string back, string method = "update", string? saveto = null)
-        {
-            var url = "https://hiro.rexio.cn/Chat/update.php";
-            try
-            {
-                if (App.hc == null)
-                    throw new Exception(Get_Translate("webnotinitial"));
-                string boundary = DateTime.Now.Ticks.ToString("X");
-                string Enter = "\r\n";
-                byte[] send = Encoding.UTF8.GetBytes(
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"name\"" + Enter + Enter + "" + name + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"sign\"" + Enter + Enter + "" + signature + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + avatar + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + iavatar + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + back + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"method\"" + Enter + Enter + "" + method + "" + Enter + "--" + boundary + "--"
-                    );
-                HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                request.Content = new ByteArrayContent(send);
-                request.Content.Headers.Remove("Content-Type");
-                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
-                HttpResponseMessage response = App.hc.Send(request);
-                if (response.Content != null)
-                {
-                    if (method.Equals("check") && saveto != null)
-                    {
-                        try
-                        {
-                            using (Stream stream = response.Content.ReadAsStream())
-                            {
-                                using (var fileStream = File.Create(saveto))
-                                {
-                                    stream.CopyTo(fileStream);
-                                }
-                            }
-                            return "success";
-                        }
-                        catch (Exception ex)
-                        {
-                            LogError(ex, "Hiro.Exception.Update.Profile.Settings.Save");
-                            throw new Exception(ex.Message);
-                        }
-                    }
-                    else
-                    {
-                        using (Stream stream = response.Content.ReadAsStream())
-                        {
-                            string result = string.Empty;
-                            using (StreamReader sr = new(stream))
-                            {
-                                result = sr.ReadToEnd();
-                                return result;
-                            }
-                        }
-                    }
-                }
-                else
-                    return "null";
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Hiro.Exception.Update.Profile.Settings");
-                return "error";
-            }
-        }
-
-        public static string SyncProfile(string user, string token)
-        {
-            var url = "https://hiro.rexio.cn/Chat/sync.php";
-            try
-            {
-                if (App.hc == null)
-                    throw new Exception(Get_Translate("webnotinitial"));
-                string boundary = DateTime.Now.Ticks.ToString("X");
-                string Enter = "\r\n";
-                byte[] send = Encoding.UTF8.GetBytes(
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--"
-                    );
-                HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                request.Content = new ByteArrayContent(send);
-                request.Content.Headers.Remove("Content-Type");
-                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
-                HttpResponseMessage response = App.hc.Send(request);
-                if (response.Content != null)
-                {
-                    var saveto = Path.GetTempFileName();
-                    try
-                    {
-                        using (Stream stream = response.Content.ReadAsStream())
-                        {
-                            using (var fileStream = File.Create(saveto))
-                            {
-                                stream.CopyTo(fileStream);
-                            }
-                        }
-                        Write_Ini(App.dConfig, "Config", "CustomUser", "2");
-                        Write_Ini(App.dConfig, "Config", "CustomName", Read_Ini(saveto, "Profile", "Name", string.Empty));
-                        Write_Ini(App.dConfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty));
-                        Write_Ini(App.dConfig, "Config", "UserAvatarStyle", Read_Ini(saveto, "Profile", "Avatar", "1"));
-                        App.username = Read_Ini(saveto, "Profile", "Name", string.Empty);
-                        App.CustomUsernameFlag = 1;
-                        var usrAvatar = "<hiapp>\\images\\avatar\\" + user + ".hap";
-                        var usrBack = "<hiapp>\\images\\background\\" + user + ".hpp";
-                        Write_Ini(App.dConfig, "Config", "UserAvatar", usrAvatar);
-                        Write_Ini(App.dConfig, "Config", "UserBackground", usrBack);
-                        CreateFolder(Path_Prepare(usrAvatar));
-                        CreateFolder(Path_Prepare(usrBack));
-                        if (File.Exists(Path_Prepare(usrAvatar)))
-                            File.Delete(Path_Prepare(usrAvatar));
-                        if (File.Exists(Path_Prepare(usrBack)))
-                            File.Delete(Path_Prepare(usrBack));
-                        GetWebContent(Read_Ini(saveto, "Profile", "Iavavtar", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hap"), true, Path_Prepare(usrAvatar));
-                        GetWebContent(Read_Ini(saveto, "Profile", "Back", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hpp"), true, Path_Prepare(usrBack));
-                        if (File.Exists(saveto))
-                            File.Delete(saveto);
-                        return "success";
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError(ex, "Hiro.Exception.Update.Profile.Sync.Save");
-                        if (File.Exists(saveto))
-                            File.Delete(saveto);
-                        throw new Exception(ex.Message);
-                    }
-                }
-                else
-                    return "null";
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Hiro.Exception.Update.Profile.Sync");
-                return "error";
-            }
-        }
-
-        public static string SendMsg(string user, string token, string to, string content)
-        {
-            var url = "https://hiro.rexio.cn/Chat/send.php";
-            try
-            {
-                if (App.hc == null)
-                    throw new Exception(Get_Translate("webnotinitial"));
-                string boundary = DateTime.Now.Ticks.ToString("X");
-                string Enter = "\r\n";
-                byte[] eof = Encoding.UTF8.GetBytes(
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"to\"" + Enter + Enter + "" + to + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"content\"" + Enter + Enter + "" + content + "" + Enter + "--" + boundary + "--"
-                    );
-                byte[] ndata = new byte[eof.Length];
-                eof.CopyTo(ndata, 0);
-                HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                request.Content = new ByteArrayContent(ndata);
-                request.Content.Headers.Remove("Content-Type");
-                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
-                HttpResponseMessage response = App.hc.Send(request);
-                if (response.Content != null)
-                {
-                    using (Stream stream = response.Content.ReadAsStream())
-                    {
-                        string result = string.Empty;
-                        using (StreamReader sr = new(stream))
-                        {
-                            result = sr.ReadToEnd();
-                            return result;
-                        }
-                    }
-                }
-                else
-                    return "null";
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Hiro.Exception.Chat.Send");
-                return "error";
-            }
-        }
-
-
-        public static string GetChat(string user, string token, string to, string saveto)
-        {
-            var url = "https://hiro.rexio.cn/Chat/log.php";
-            try
-            {
-                if (App.hc == null)
-                    throw new Exception(Get_Translate("webnotinitial"));
-                string boundary = DateTime.Now.Ticks.ToString("X");
-                string Enter = "\r\n";
-                byte[] eof = Encoding.UTF8.GetBytes(
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"to\"" + Enter + Enter + "" + to + "" + Enter + "--" + boundary + "--"
-                    );
-                byte[] ndata = new byte[eof.Length];
-                eof.CopyTo(ndata, 0);
-                HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                request.Content = new ByteArrayContent(ndata);
-                request.Content.Headers.Remove("Content-Type");
-                request.Content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data;boundary=" + boundary);
-                HttpResponseMessage response = App.hc.Send(request);
-                if (response.Content != null)
-                {
-                    try
-                    {
-                        using (Stream stream = response.Content.ReadAsStream())
-                        {
-                            using (var fileStream = File.Create(saveto))
-                            {
-                                stream.CopyTo(fileStream);
-                            }
-                        }
-                        return "success";
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError(ex, "Hiro.Exception.Chat.Get.Save");
-                        throw new Exception(ex.Message);
-                    }
-                }
-                else
-                    return "null";
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Hiro.Exception.Chat.Get");
-                return "error";
             }
         }
         #endregion

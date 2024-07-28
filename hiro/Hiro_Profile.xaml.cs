@@ -1,4 +1,5 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -225,7 +226,7 @@ namespace hiro
             var wps = "";
             whatsbw.DoWork += delegate
             {
-                wps = Hiro_Utils.GetWebContent("https://hiro.rexio.cn/Update/new.php?ver=" + Hiro_Resources.ApplicationVersion + "&lang=" + App.lang);
+                wps = Hiro_Net.GetWebContent("https://hiro.rexio.cn/Update/new.php?ver=" + Hiro_Resources.ApplicationVersion + "&lang=" + App.lang);
             };
             whatsbw.RunWorkerCompleted += delegate
             {
@@ -394,7 +395,7 @@ namespace hiro
             {
                 try
                 {
-                    var res = Hiro_Utils.UploadProfileSettings(
+                    var res = Hiro_ID.UploadProfileSettings(
                     App.loginedUser, App.loginedToken, App.username,
                     Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomSign", string.Empty),
                     Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatarStyle", "1"),
@@ -488,7 +489,7 @@ namespace hiro
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
                     var newStrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
-                    Hiro_Utils.CreateFolder(newStrFileName);
+                    Hiro_File.CreateFolder(newStrFileName);
                     Point pt = new(418, 235);
                     var crop = new Hiro_Cropper(strFileName, newStrFileName, pt, (x) =>
                     {
@@ -520,7 +521,7 @@ namespace hiro
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
                     var newStrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
-                    Hiro_Utils.CreateFolder(newStrFileName);
+                    Hiro_File.CreateFolder(newStrFileName);
                     new Hiro_Cropper(strFileName, newStrFileName, new Point(1, 1), (x) =>
                     {
                         if (x == true)
@@ -660,7 +661,7 @@ namespace hiro
                         img.Dispose();
                         strFileName = @"<hiapp>\images\avatar\" + strFileName[strFileName.LastIndexOf("\\")..];
                         strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
-                        Hiro_Utils.CreateFolder(strFileName);
+                        Hiro_File.CreateFolder(strFileName);
                         if (System.IO.File.Exists(strFileName))
                             System.IO.File.Delete(strFileName);
                         b.Save(strFileName);
@@ -688,7 +689,7 @@ namespace hiro
                                 trfile = "avatarlarge";
                             else
                             {
-                                var res = Hiro_Utils.UploadProfileImage(file, App.loginedUser, App.loginedToken, "hap");
+                                var res = Hiro_ID.UploadProfileImage(file, App.loginedUser, App.loginedToken, "hap");
                                 if (res.Equals("success"))
                                     trfile = "avatarsucc";
                                 else
@@ -773,9 +774,9 @@ namespace hiro
                         img.Dispose();
                         strFileName = @"<hiapp>\images\profile\" + strFileName[strFileName.LastIndexOf("\\")..];
                         strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
-                        Hiro_Utils.CreateFolder(strFileName);
-                        if (System.IO.File.Exists(strFileName))
-                            System.IO.File.Delete(strFileName);
+                        Hiro_File.CreateFolder(strFileName);
+                        if (File.Exists(strFileName))
+                            File.Delete(strFileName);
                         b.Save(strFileName);
                         b.Dispose();
                     }
@@ -801,7 +802,7 @@ namespace hiro
                                 trfile = "profilelarge";
                             else
                             {
-                                var res = Hiro_Utils.UploadProfileImage(file, App.loginedUser, App.loginedToken, "hpp");
+                                var res = Hiro_ID.UploadProfileImage(file, App.loginedUser, App.loginedToken, "hpp");
                                 if (res.Equals("success"))
                                     trfile = "profilesucc";
                                 else
@@ -854,7 +855,7 @@ namespace hiro
 
         private void Btn10_Click(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Logout();
+            Hiro_ID.Logout();
             Hiro_Main?.Set_Label(Hiro_Main.homex);
         }
 

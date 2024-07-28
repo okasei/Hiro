@@ -1,4 +1,5 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -734,7 +735,7 @@ namespace hiro
                     strFileName = ofd.FileName;
                     var newStrFileName = strFileName;
                     strFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + System.IO.Path.GetFileName(strFileName));
-                    Hiro_Utils.CreateFolder(strFileName);
+                    Hiro_File.CreateFolder(strFileName);
                     new Hiro_Cropper(newStrFileName, strFileName, new Point(550, 450), (x) =>
                     {
                         if (x == true)
@@ -771,7 +772,7 @@ namespace hiro
                                             img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
                                             strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
                                             strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
-                                            Hiro_Utils.CreateFolder(strFileName);
+                                            Hiro_File.CreateFolder(strFileName);
                                             if (System.IO.File.Exists(strFileName))
                                                 System.IO.File.Delete(strFileName);
                                             img.Save(strFileName);

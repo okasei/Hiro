@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.WebView2.Core;
+﻿using hiro.Helpers;
+using Microsoft.Web.WebView2.Core;
 using System;
 using System.Diagnostics;
 using System.Reflection.Metadata;
@@ -546,8 +547,8 @@ namespace hiro
                         new System.Threading.Thread(() =>
                         {
                             var output = Hiro_Utils.Path_Prepare("<hiapp>\\images\\web\\") + Guid.NewGuid() + ".hwico";
-                            Hiro_Utils.CreateFolder(output);
-                            var result = Hiro_Utils.GetWebContent(iconUri, true, output);
+                            Hiro_File.CreateFolder(output);
+                            var result = Hiro_Net.GetWebContent(iconUri, true, output);
                             if (result.Equals("saved"))
                             {
                                 Dispatcher.Invoke(() =>

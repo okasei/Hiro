@@ -1,8 +1,10 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static hiro.Helpers.Hiro_Class;
 
 namespace hiro
 {
@@ -168,7 +170,7 @@ namespace hiro
                 mSaveFileName = Hiro_Utils.Path_Replace(mSaveFileName, "<index>", index.ToString());
                 index++;
             }
-            Hiro_Utils.CreateFolder(mSaveFileName);
+            Hiro_File.CreateFolder(mSaveFileName);
             if (mSaveFileName.EndsWith("\\"))
                 mSaveFileName += strFileName;
             if (System.IO.File.Exists(mSaveFileName) || App.hc == null)
