@@ -23,6 +23,7 @@ namespace hiro
             Height = SystemParameters.PrimaryScreenHeight / 10;
             Title = App.appTitle;
             Hiro_Initialize();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
             ContentRendered += delegate
              {

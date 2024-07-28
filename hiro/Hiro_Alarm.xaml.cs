@@ -24,6 +24,7 @@ namespace hiro
         public Hiro_Alarm(int iid, string? CustomedTitle = null, string? CustomedContnet = null, int OneButtonOnly = 0)
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
             Width = SystemParameters.PrimaryScreenWidth * 5 / 8;
             Height = SystemParameters.PrimaryScreenHeight * 5 / 8;

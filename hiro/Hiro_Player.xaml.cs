@@ -37,6 +37,7 @@ namespace hiro
         public Hiro_Player(string? play = null)
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             toplay = play;
             Title = App.appTitle;
             Loaded += delegate

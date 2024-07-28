@@ -43,6 +43,7 @@ namespace hiro
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             if (!startUri.Equals("<hiuser>"))
             {
                 uribtn.Visibility = Visibility.Visible;

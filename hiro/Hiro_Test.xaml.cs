@@ -24,6 +24,7 @@ namespace hiro
         public Hiro_Test()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Load_Emoji();
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 180));

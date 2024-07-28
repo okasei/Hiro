@@ -20,6 +20,7 @@ namespace hiro
         public Hiro_Editor()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             editpage = int.Parse(Hiro_Utils.Read_DCIni("EditPage", "0"));
             Load_Position();
             Title = Hiro_Utils.Get_Translate("edititle") + " - " + App.appTitle;

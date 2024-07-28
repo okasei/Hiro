@@ -32,6 +32,7 @@ namespace hiro
             Load_Picture(filePath);
             Load_Color();
             Load_Translate();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
             Title = Hiro_Utils.Get_Translate("crop").Replace("%h", App.appTitle);
         }

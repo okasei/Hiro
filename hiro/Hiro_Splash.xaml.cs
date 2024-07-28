@@ -29,6 +29,7 @@ namespace hiro
         public Hiro_Splash()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             LoadTimer();
             HiHiro();
         }

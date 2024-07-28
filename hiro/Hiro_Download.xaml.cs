@@ -37,6 +37,7 @@ namespace hiro
             Load_Colors();
             Load_Position();
             Load_Translate();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Loaded += delegate
             {
                 HiHiro();

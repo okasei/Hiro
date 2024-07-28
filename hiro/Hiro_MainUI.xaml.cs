@@ -38,6 +38,7 @@ namespace hiro
         public Hiro_MainUI()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Initializing");
             SourceInitialized += OnSourceInitialized;
             MainUI_Initialize();

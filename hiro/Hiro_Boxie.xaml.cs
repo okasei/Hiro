@@ -39,6 +39,7 @@ namespace hiro
             Load_Translate();
             Load_PrimaryIcon();
             Load_Icon();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             new System.Threading.Thread(() =>
             {
                 if (Hiro_Utils.Read_DCIni("HiBoxAudio", "1").Equals("1"))

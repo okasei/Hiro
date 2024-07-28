@@ -29,6 +29,7 @@ namespace hiro
         public Hiro_Encrypter(int mode = 0, string? file = null, string? pwd = null, bool flag = false)
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             this.mode = mode;
             oflag = flag;
             if (oflag)

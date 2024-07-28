@@ -30,6 +30,7 @@ namespace hiro
         public Hiro_Lock(BackgroundWorker Finished)
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
             Loaded += delegate
             {

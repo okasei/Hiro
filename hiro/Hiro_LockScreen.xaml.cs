@@ -18,6 +18,7 @@ namespace hiro
         public Hiro_LockScreen(string? p)
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             path = p;
             Title = Hiro_Utils.Get_Translate("locktitle") + " - " + App.appTitle;
             Load_Colors();

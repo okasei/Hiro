@@ -42,7 +42,8 @@ namespace hiro
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Power");
             }
-            var iconP = Hiro_Utils.Read_PPDCIni("CustomIcon", "");
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            var iconP = Hiro_Utils.Read_PPDCIni("CustomTrayIcon", "");
             if (File.Exists(iconP))
             {
                 try

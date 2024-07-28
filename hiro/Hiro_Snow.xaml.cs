@@ -29,6 +29,7 @@ namespace hiro
         public Hiro_Snow()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             timer = new DispatcherTimer();
             timer.Tick += (e, args) =>
             {

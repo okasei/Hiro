@@ -38,8 +38,8 @@ namespace hiro
         public Hiro_Island()
         {
             InitializeComponent();
-            var icon = Hiro_Utils.Read_DCIni("CustomizeIcon", "");
-            icon = Hiro_Utils.Path_PPX(icon);
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            var icon = Hiro_Utils.Read_PPDCIni("CustomizeIcon", "");
             if (File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);

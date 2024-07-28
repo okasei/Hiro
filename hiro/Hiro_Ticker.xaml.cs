@@ -32,6 +32,7 @@ namespace hiro
         public Hiro_Ticker(string tid, string tformat = "%n", int tcurrent = 0, int tnum = int.MaxValue, int tmin = int.MinValue, int tmax = int.MaxValue)
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             id = tid;
             format = tformat;
             current = tcurrent;

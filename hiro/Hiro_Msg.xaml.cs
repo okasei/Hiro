@@ -24,6 +24,7 @@ namespace hiro
         public Hiro_Msg(string? config = null)
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             toolstr = config;
             if (toolstr != null)
             {

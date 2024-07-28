@@ -20,6 +20,7 @@ namespace hiro
         public Hiro_Sequence()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Load_Colors();
             Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
             Load_Position();
@@ -133,7 +134,7 @@ namespace hiro
                 Close();
                 return;
             }
-            var sc = Hiro_Utils.Path_PPX(cmds[ci);
+            var sc = Hiro_Utils.Path_PPX(cmds[ci]);
             if (App.dflag)
                 Hiro_Utils.LogtoFile("[SEQUENCE]" + sc);
             skipbtn.Visibility = Visibility.Hidden;

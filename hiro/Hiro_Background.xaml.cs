@@ -11,6 +11,7 @@ namespace hiro
         {
             InitializeComponent();
             Title = App.appTitle;
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 

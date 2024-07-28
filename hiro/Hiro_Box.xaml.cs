@@ -55,6 +55,7 @@ namespace hiro
             TitleLabel.FontStyle = TestTitle.FontStyle;
             Load_PrimaryIcon();
             Load_Color();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.FullPrimaryScreenHeight * 9 / 10 - Height);

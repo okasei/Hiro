@@ -27,6 +27,7 @@ namespace hiro
         public Hiro_Badge()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Loaded += (e, args) =>
             {
                 AdjustSize();

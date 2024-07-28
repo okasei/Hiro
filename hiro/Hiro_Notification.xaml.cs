@@ -26,6 +26,7 @@ namespace hiro
         public Hiro_Notification()
         {
             InitializeComponent();
+            Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
             Load_Color();
             Hiro_Utils.Set_Control_Location(notinfo, "notify");
