@@ -27,9 +27,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, ntn1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, ntn2, sb, -50, null);
@@ -340,7 +340,7 @@ namespace hiro
             {
                 var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
-                App.cmditems.Add(new Cmditem(p, i, tb7.Text, tb8.Text, hk));
+                App.cmditems.Add(new Helpers.Hiro_Class.Cmditem(p, i, tb7.Text, tb8.Text, hk));
                 Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "Title", tb7.Text);
                 Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "Command", "(" + tb8.Text + ")");
                 Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "HotKey", hk);

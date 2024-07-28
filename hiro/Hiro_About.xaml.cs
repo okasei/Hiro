@@ -29,7 +29,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            string iconPath = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeAbout", "")));
+            string iconPath = Hiro_Utils.Read_PPDCIni("CustomizeAbout", "");
             Storyboard sb = new();
             if (!iconPath.Equals(formerIcon) && System.IO.File.Exists(iconPath))
             {
@@ -37,7 +37,7 @@ namespace hiro
                 sb = Hiro_Utils.AddDoubleAnimaton(1, 450, BaseIcon, "Opacity", sb, 0, 0.7);
                 formerIcon = iconPath;
             }
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             if (!animation)
                 return;
             Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
@@ -119,7 +119,7 @@ namespace hiro
                 default:
                     try
                     {
-                        if (System.IO.Directory.Exists(Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX("<current>\\update\\"))))
+                        if (System.IO.Directory.Exists(Hiro_Utils.Path_PPX("<current>\\update\\")))
                             Hiro_Utils.RunExe("Delete(<current>\\update\\");
                         string version = ups[(ups.IndexOf("version:[") + "version:[".Length)..];
                         version = version[..version.IndexOf("]")];
@@ -130,7 +130,7 @@ namespace hiro
                         var os = Hiro_Utils.Get_OSVersion();
                         if (os.IndexOf(".") != -1)
                             os = os[..os.IndexOf(".")];
-                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
+                        if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddText(Hiro_Utils.Get_Translate("updatetitle"))
@@ -164,7 +164,7 @@ namespace hiro
 
         private void Avatar_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatarx", animation: true, animationTime: 250);
                 Hiro_Utils.Set_Control_Location(chk_btn, ischecking ? "checkcancelx" : "checkupx", animation: true, animationTime: 250);
@@ -175,7 +175,7 @@ namespace hiro
 
         private void Avatar_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatar", animation: true, animationTime: 250);
                 Hiro_Utils.Set_Control_Location(chk_btn, ischecking ? "checkcancel" : "checkup", animation: true, animationTime: 250);

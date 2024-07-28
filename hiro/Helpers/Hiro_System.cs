@@ -16,7 +16,7 @@ namespace hiro.Helpers
         internal static void ShowWebConfirmDialog(bool autoClose, string path, string? source)
         {
             var acbak = autoClose;
-            var confrimWin = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<capp>\\<lang>\\url.hms"));
+            var confrimWin = Hiro_Utils.Path_PPX("<capp>\\<lang>\\url.hms");
             Hiro_Utils.HiroInvoke(() =>
             {
                 Hiro_Background? bg = null;
@@ -25,14 +25,14 @@ namespace hiro.Helpers
                 Hiro_Msg msg = new(confrimWin)
                 {
                     bg = bg,
-                    Title = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(confrimWin, "Message", "Title", Hiro_Utils.Get_Translate("syntax")))) + " - " + App.appTitle
+                    Title = Hiro_Utils.Path_PPX(Hiro_Utils.Read_Ini(confrimWin, "Message", "Title", Hiro_Utils.Get_Translate("syntax")) + " - " + App.appTitle)
                 };
-                msg.backtitle.Content = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(confrimWin, "Message", "Title", Hiro_Utils.Get_Translate("syntax")))));
+                msg.backtitle.Content = Hiro_Utils.Read_PPIni(confrimWin, "Message", "Title", Hiro_Utils.Get_Translate("syntax"));
                 msg.acceptbtn.Content = Hiro_Utils.Read_Ini(confrimWin, "Message", "accept", Hiro_Utils.Get_Translate("msgaccept"));
                 msg.rejectbtn.Content = Hiro_Utils.Read_Ini(confrimWin, "Message", "reject", Hiro_Utils.Get_Translate("msgreject"));
                 msg.cancelbtn.Content = Hiro_Utils.Read_Ini(confrimWin, "Message", "cancel", Hiro_Utils.Get_Translate("msgcancel"));
-                confrimWin = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(confrimWin, "Message", "content", Hiro_Utils.Get_Translate("syntax"))));
-                if (confrimWin.ToLower().StartsWith("http://") || confrimWin.ToLower().StartsWith("https://"))
+                confrimWin = Hiro_Utils.Read_PPIni(confrimWin, "Message", "content", Hiro_Utils.Get_Translate("syntax"));
+                if (Hiro_Text.StartsWith(confrimWin,"http://") || Hiro_Text.StartsWith(confrimWin, "https://"))
                 {
                     msg.sv.Content = Hiro_Utils.Get_Translate("msgload");
                     BackgroundWorker bw = new();
@@ -47,7 +47,7 @@ namespace hiro.Helpers
                     bw.RunWorkerAsync();
                 }
                 else if (System.IO.File.Exists(confrimWin))
-                    msg.sv.Content = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(System.IO.File.ReadAllText(confrimWin))).Replace("\\n", Environment.NewLine);
+                    msg.sv.Content = Hiro_Utils.Path_PPX(System.IO.File.ReadAllText(confrimWin)).Replace("\\n", Environment.NewLine);
                 else
                     msg.sv.Content = confrimWin.Replace("\\n", Environment.NewLine);
                 msg.Load_Position();

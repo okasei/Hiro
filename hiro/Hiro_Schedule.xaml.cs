@@ -25,9 +25,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, scbtn_1, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, scbtn_2, sb, 50, null);
@@ -68,6 +68,7 @@ namespace hiro
 
         public void Load_Position()
         {
+            Hiro_Utils.Set_Control_Location(ExCellLabel, "scell", location: false);
             Hiro_Utils.Set_Control_Location(scbtn_1, "scnew");
             Hiro_Utils.Set_Control_Location(scbtn_2, "scdelete");
             Hiro_Utils.Set_Control_Location(scbtn_3, "scmodify");

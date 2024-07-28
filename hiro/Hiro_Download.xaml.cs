@@ -45,8 +45,8 @@ namespace hiro
 
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
@@ -432,7 +432,7 @@ namespace hiro
 
         public void Loadbgi(int direction)
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
@@ -446,7 +446,7 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
@@ -454,13 +454,13 @@ namespace hiro
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("dlopen");
-            Hiro_Utils.Set_Control_Location(Autorun, "dlopen", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "dlopen", bottom: true, animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("dlrun");
-            Hiro_Utils.Set_Control_Location(Autorun, "dlrun", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "dlrun", bottom: true, animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

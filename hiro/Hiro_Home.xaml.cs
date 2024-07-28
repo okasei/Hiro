@@ -23,7 +23,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             if (!animation) 
                 return;
             Storyboard sb = new();
@@ -77,7 +77,7 @@ namespace hiro
             val = (App.CustomUsernameFlag == 0) ? Hiro_Utils.Get_Translate(val).Replace("%u", App.eUserName) : Hiro_Utils.Get_Translate(val + "cus").Replace("%u", App.username);
             if (!Hello.Text.Equals(val))
                 Hello.Text = val;
-            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Translate("copyright")));
+            val = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("copyright"));
             if (!Copyright.Text.Equals(val))
                 Copyright.Text = val;
         }

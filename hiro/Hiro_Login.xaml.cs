@@ -21,7 +21,7 @@ namespace hiro
             Loaded += delegate
             {
                 HiHiro();
-                Name_Textbox.Text = Hiro_Utils.Read_Ini(App.dConfig, "Config", "User", string.Empty);
+                Name_Textbox.Text = Hiro_Utils.Read_DCIni("User", string.Empty);
             };
         }
 
@@ -55,9 +55,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(0, Login_Title, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(0, Pwd_Label, sb, 50, null);

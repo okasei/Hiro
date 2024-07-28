@@ -55,8 +55,8 @@ namespace hiro
 
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
@@ -116,13 +116,13 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(pb, "enprogress");
             if (mode == 0)
             {
-                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle1", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle0", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle1", animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle0", animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
             }
             else
             {
-                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle0", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle1", animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(EncryptTitle, "enentitle0", animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
+                Hiro_Utils.Set_Control_Location(DecryptTitle, "endetitle1", animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
             }
             Hiro_Utils.Set_Control_Location(FileLabel, "enflabel");
             Hiro_Utils.Set_Control_Location(PwdLabel, "enplabel");
@@ -144,7 +144,7 @@ namespace hiro
             {
                 System.Windows.Controls.Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - this.Width / 2);
                 System.Windows.Controls.Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2);
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddPowerAnimation(1, EncryptTitle, sb, -50, null);
@@ -179,7 +179,7 @@ namespace hiro
 
         public void Loadbgi(int direction)
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
@@ -193,7 +193,7 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
@@ -379,7 +379,7 @@ namespace hiro
         {
             if (pwd.Equals(string.Empty))
             {
-                pwd = Hiro_Utils.Read_Ini(App.dConfig, "Config", "DefaultPwd", string.Empty);
+                pwd = Hiro_Utils.Read_DCIni("DefaultPwd", string.Empty);
             }
             GoStart();
         }
@@ -525,7 +525,7 @@ namespace hiro
                 PwdPath.Password = string.Empty;
                 PwdPath.Visibility = Visibility.Hidden;
                 SeePwd.Visibility = Visibility.Visible;
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddPowerAnimation(1, SeePwd, sb, 50, null);
@@ -557,15 +557,15 @@ namespace hiro
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enrun");
-            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-            Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autodelete, "endelete", bottom: true, animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "enrun", bottom: true, animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
             Autorun.Content = Hiro_Utils.Get_Translate("enopen");
-            Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
-            Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true, animation: Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autodelete, "endeleter", bottom: true, animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
+            Hiro_Utils.Set_Control_Location(Autorun, "enopen", bottom: true, animation: Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void FilePath_Drop(object sender, DragEventArgs e)

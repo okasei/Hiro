@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Shell;
 using System.IO;
+using hiro.Helpers;
 
 namespace hiro
 {
@@ -24,7 +25,7 @@ namespace hiro
         private Size mSize = new(450, 800);
         private int cflag = 1;
         internal ContextMenu? cm = null;
-        internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> playlist = new();
+        internal static System.Collections.ObjectModel.ObservableCollection<Hiro_Class.Cmditem> playlist = new();
         internal int index = -1;
         internal int pcd = -1;
         internal WindowAccentCompositor? compositor = null;
@@ -42,7 +43,7 @@ namespace hiro
             {
                 Load_Color();
                 Load_Translate();
-                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
                 Initialize_Player();
                 Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
                 Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
@@ -196,7 +197,7 @@ namespace hiro
                     var wid = zero ? 0 : Ctrl_Progress_Bg.Width * Media.Position.TotalSeconds / Media.MediaInfo.Duration.TotalSeconds;
                     wid = wid >= 0 ? wid : 0;
                     Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
-                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+                    if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                     {
                         var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
                         if (len < 150)
@@ -331,7 +332,7 @@ namespace hiro
 
         public void Loadbgi(int direction, bool? animation = null)
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, null, compositor);
@@ -345,7 +346,7 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool ani = animation == null ? !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0") : (bool)animation;
+            bool ani = animation == null ? !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0") : (bool)animation;
             Hiro_Utils.Blur_Animation(direction, ani, bgimage, this);
             bflag = 0;
         }
@@ -380,7 +381,7 @@ namespace hiro
         {
             Dgi.Visibility = Visibility.Hidden;
             Update_Progress();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")), false);
             if (rflag == 1)
             {
                 mSize.Width = Width;
@@ -643,7 +644,7 @@ namespace hiro
 
         private void Switch_List()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             if (Dgi.Visibility == Visibility.Visible)
             {
                 Thickness to = new()
@@ -710,7 +711,7 @@ namespace hiro
         {
             if (Ctrl_Address.Visibility == Visibility.Hidden)
             {
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -729,7 +730,7 @@ namespace hiro
             }
             else
             {
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -749,7 +750,7 @@ namespace hiro
         {
             if (Controller.Visibility == Visibility.Hidden)
             {
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Controller.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -775,7 +776,7 @@ namespace hiro
             }
             else
             {
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Controller.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -955,7 +956,7 @@ namespace hiro
             {
                 if (!Ctrl_Text.Text.Equals(string.Empty))
                     ParseCommand();
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -1054,7 +1055,7 @@ namespace hiro
         {
             Player_Info.Content = val;
             pcd = 2;
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
                 if (Player_Info.Visibility != Visibility.Visible)
                 {
@@ -1070,7 +1071,7 @@ namespace hiro
                                 pcd--;
                                 System.Threading.Thread.Sleep(2000);
                             }
-                            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -1103,7 +1104,7 @@ namespace hiro
                     new System.Threading.Thread(() =>
                     {
                         System.Threading.Thread.Sleep(2000);
-                        if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                        if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                         {
                             Dispatcher.Invoke(() =>
                             {

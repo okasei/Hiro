@@ -28,7 +28,7 @@ namespace hiro
 
         internal void Load_Settings()
         {
-            switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "AcrylicMode", "2"))
+            switch (Hiro_Utils.Read_DCIni("AcrylicMode", "2"))
             {
                 case "0":
                     {
@@ -48,12 +48,12 @@ namespace hiro
             }
             ColorBtn.IsEnabled = ColorCustomize.IsChecked ?? false;
             var trans = 0x47;
-            if (!int.TryParse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "AcrylicTransparency", "71"), out trans))
+            if (!int.TryParse(Hiro_Utils.Read_DCIni("AcrylicTransparency", "71"), out trans))
                 trans = 0x47;
             trans = Math.Max(trans, 1);
             trans = Math.Min(trans, 255);
             TransparentSlider.Value = trans;
-            switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "AcrylicMain", "0"))
+            switch (Hiro_Utils.Read_DCIni("AcrylicMain", "0"))
             {
                 case "1":
                     {
@@ -75,9 +75,9 @@ namespace hiro
         }
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, AcrylicTitle, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, AcrylicColorGrid, sb, -50, null);

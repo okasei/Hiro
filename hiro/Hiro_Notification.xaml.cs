@@ -48,7 +48,7 @@ namespace hiro
                     timer.Start();
             };
             msg = "";
-            animation[0] = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            animation[0] = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
 
         }
         private void TimerTick()
@@ -123,7 +123,7 @@ namespace hiro
         }
         public void Load_Color()
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(null, this, null, compositor);
@@ -135,7 +135,7 @@ namespace hiro
                 compositor.IsEnabled = false;
             }
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Storyboard? sc = new();
                 Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sc);

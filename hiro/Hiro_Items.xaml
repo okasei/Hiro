@@ -46,6 +46,11 @@
             </DataGrid.RowStyle>
             <DataGrid.CellStyle>
                 <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="FontFamily" Value="{Binding FontFamily, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontSize" Value="{Binding FontSize, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontWeight" Value="{Binding FontWeight, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontStretch" Value="{Binding FontStretch, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontStyle" Value="{Binding FontStyle, ElementName=ExCellLabel, Mode=OneWay}"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="Transparent"/>
@@ -55,6 +60,7 @@
                 </Style>
             </DataGrid.CellStyle>
         </DataGrid>
+        <Label x:Name="ExCellLabel" Visibility="Collapsed"/>
         <Button x:Name="btn1" BorderThickness="1" Content="New" HorizontalAlignment="Left" Margin="0,386,0,5" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Btn1_Click"/>
         <Button x:Name="btn2" BorderThickness="1" Content="Move Up" HorizontalAlignment="Left" Margin="52,386,0,5" Width="70" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Click="Btn2_Click"/>
         <Button x:Name="btn3" BorderThickness="1" Content="Move Down" HorizontalAlignment="Left" Margin="124,386,0,5" Width="75" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Click="Btn3_Click"/>

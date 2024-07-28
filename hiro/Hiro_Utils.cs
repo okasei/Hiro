@@ -63,6 +63,20 @@ namespace hiro
                 return defaultText;
             }
         }
+
+        public static string Read_PPIni(string iniFilePath, string Section, string Key, string defaultText)
+        {
+            return Path_Prepare(Path_Prepare_EX(Read_Ini(iniFilePath, Section, Key, defaultText)));
+        }
+
+        public static string Read_PPDCIni(string Key, string defaultText)
+        {
+            return Read_PPIni(App.dConfig, "Config", Key, defaultText);
+        }
+        public static string Read_DCIni(string Key, string defaultText)
+        {
+            return Read_Ini(App.dConfig, "Config", Key, defaultText);
+        }
         #endregion
 
         #region 写Ini文件
@@ -696,7 +710,7 @@ namespace hiro
             return path;
         }
 
-        public static string Path_Prepare_EX(String path)
+        public static string Path_Prepare_EX(string path)
         {
             path = Path_Replace(path, "<yyyyy>", DateTime.Now.ToString("yyyyy"));
             path = Path_Replace(path, "<yyyy>", DateTime.Now.ToString("yyyy"));
@@ -725,6 +739,11 @@ namespace hiro
             path = Path_Replace(path, "<hiro>", App.appTitle);
             path = Path_Replace(path, "<product>", Get_Translate("dlproduct"));
             return path;
+        }
+
+        public static string Path_PPX(string path)
+        {
+            return Path_Prepare(Path_Prepare_EX(path));
         }
         #endregion
 
@@ -820,10 +839,10 @@ namespace hiro
                         goto RunOK;
                     }
                     #region 调试
-                    if (path.ToLower().StartsWith("debug("))
+                    if (Hiro_Text.StartsWith(path, "debug("))
                     {
                         source = Get_Translate("debug");
-                        if (!path.ToLower().StartsWith("debug()"))
+                        if (!Hiro_Text.StartsWith(path, "debug()"))
                         {
                             RunExe($"notify({path},2)", source);
                         }
@@ -838,19 +857,19 @@ namespace hiro
                         goto RunOK;
                     }
                     #endregion
-                    if (path.ToLower().StartsWith("save("))
+                    if (Hiro_Text.StartsWith(path, "save("))
                     {
                         source = Get_Translate("download");
                         Hiro_Net.Save(source, parameter);
                         goto RunOK;
                     }
                     #region 壁纸相关
-                    if (path.ToLower().StartsWith("bingw("))
+                    if (Hiro_Text.StartsWith(path, "bingw("))
                     {
                         Hiro_Net.BingWp(path, parameter);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("wallpaper("))
+                    if (Hiro_Text.StartsWith(path, "wallpaper("))
                     {
                         source = Get_Translate("wallpaper");
                         if (File.Exists(parameter[0]))
@@ -878,24 +897,24 @@ namespace hiro
                     }
                     #endregion
                     #region 文件操作
-                    if (path.ToLower().StartsWith("delete("))
+                    if (Hiro_Text.StartsWith(path, "delete("))
                     {
                         Hiro_File.DeleteFile(path, parameter);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("move("))
+                    if (Hiro_Text.StartsWith(path, "move("))
                     {
                         Hiro_File.MoveFile(path, parameter);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("copy("))
+                    if (Hiro_Text.StartsWith(path, "copy("))
                     {
                         Hiro_File.CopyFile(path, parameter);
                         goto RunOK;
                     }
                     #endregion
                     #region 系统环境
-                    if (path.ToLower().StartsWith("vol("))
+                    if (Hiro_Text.StartsWith(path, "vol("))
                     {
                         switch (path.ToLower())
                         {
@@ -916,7 +935,7 @@ namespace hiro
                         }
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("bluetooth("))
+                    if (Hiro_Text.StartsWith(path, "bluetooth("))
                     {
                         bool? situation = (parameter.Count > 0 ? parameter[0].ToLower() : "") switch
                         {
@@ -927,7 +946,7 @@ namespace hiro
                         SetBthState(situation, parameter.Count > 1 ? parameter[1] : null);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("wifi("))
+                    if (Hiro_Text.StartsWith(path, "wifi("))
                     {
                         int situation = path.ToLower() switch
                         {
@@ -951,7 +970,7 @@ namespace hiro
                             SetWiFiState(situation);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("media("))
+                    if (Hiro_Text.StartsWith(path, "media("))
                     {
                         System.Windows.Input.Key situation = path.ToLower() switch
                         {
@@ -975,7 +994,7 @@ namespace hiro
                         keybd_event(keyi, MapVirtualKey(keyi, 0), 0x0001 | 0x0002, 0);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("key("))
+                    if (Hiro_Text.StartsWith(path, "key("))
                     {
                         List<byte> modi = new();
                         int pathi = int.Parse(parameter[0]);
@@ -1019,22 +1038,22 @@ namespace hiro
                         goto RunOK;
                     }
                     #endregion
-                    if (path.ToLower().StartsWith("ini("))
+                    if (Hiro_Text.StartsWith(path, "ini("))
                     {
                         Write_Ini(parameter[0], parameter[1], parameter[2], parameter[3]);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("zip("))
+                    if (Hiro_Text.StartsWith(path, "zip("))
                     {
                         Hiro_File.Zip(source, parameter);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("unzip("))
+                    if (Hiro_Text.StartsWith(path, "unzip("))
                     {
                         Hiro_File.Unzip(source, parameter);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("exit()"))
+                    if (Hiro_Text.StartsWith(path, "exit()"))
                     {
                         try
                         {
@@ -1050,7 +1069,7 @@ namespace hiro
                         }
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("hide()"))
+                    if (Hiro_Text.StartsWith(path, "hide()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1066,7 +1085,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("menu()"))
+                    if (Hiro_Text.StartsWith(path, "menu()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1078,7 +1097,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("show()"))
+                    if (Hiro_Text.StartsWith(path, "show()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1121,7 +1140,7 @@ namespace hiro
                         goto RunOK;
                     }
                     //sequence(uri)
-                    if (path.ToLower().StartsWith("seq("))
+                    if (Hiro_Text.StartsWith(path, "seq("))
                     {
 
                         var ca = parameter.Count < 2 || (!parameter[1].ToLower().Equals("hide") && !parameter[1].ToLower().Equals("h"));
@@ -1135,7 +1154,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("item(") && !path.ToLower().StartsWith("item()"))
+                    if (Hiro_Text.StartsWith(path, "item(") && !Hiro_Text.StartsWith(path, "item()"))
                     {
                         var RealPath = parameter[0];
                         for (int i = 1; i < parameter.Count; i++)
@@ -1155,7 +1174,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("run("))
+                    if (Hiro_Text.StartsWith(path, "run("))
                     {
                         if (parameter.Count == 0)
                         {
@@ -1203,7 +1222,7 @@ namespace hiro
                             RunExe("exit()");
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("lock()"))
+                    if (Hiro_Text.StartsWith(path, "lock()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1215,7 +1234,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("weather("))
+                    if (Hiro_Text.StartsWith(path, "weather("))
                     {
                         source = Get_Translate("weather");
                         path = path.ToLower() switch
@@ -1243,17 +1262,17 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("badge("))
+                    if (Hiro_Text.StartsWith(path, "badge("))
                     {
                         Hiro_System.ShowBadge(parameter);
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("invoke("))
+                    if (Hiro_Text.StartsWith(path, "invoke("))
                     {
                         if (parameter.Count > 0)
                         {
                             var pa = parameter[0];
-                            if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
+                            if (Hiro_Text.StartsWith(pa, "http://") || Hiro_Text.StartsWith(pa, "https://"))
                             {
                                 pa = Hiro_Net.GetWebContent(pa).Replace("\\n", string.Empty).Replace("<br>", string.Empty);
                                 if (App.dflag)
@@ -1271,7 +1290,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("decrypt("))
+                    if (Hiro_Text.StartsWith(path, "decrypt("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1304,7 +1323,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("decrypto("))
+                    if (Hiro_Text.StartsWith(path, "decrypto("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1342,7 +1361,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("encrypt("))
+                    if (Hiro_Text.StartsWith(path, "encrypt("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1375,7 +1394,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("encrypto("))
+                    if (Hiro_Text.StartsWith(path, "encrypto("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1413,7 +1432,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("ticker("))
+                    if (Hiro_Text.StartsWith(path, "ticker("))
                     {
                         var adflag = false;
                         if (parameter.Count < 1)
@@ -1496,7 +1515,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("hiroad("))
+                    if (Hiro_Text.StartsWith(path, "hiroad("))
                     {
                         source = Get_Translate("update");
                         HiroInvoke(() =>
@@ -1513,7 +1532,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("download("))
+                    if (Hiro_Text.StartsWith(path, "download("))
                     {
                         source = Get_Translate("download");
                         HiroInvoke(() =>
@@ -1527,7 +1546,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("alarm("))
+                    if (Hiro_Text.StartsWith(path, "alarm("))
                     {
                         var pa = parameter[0];
                         var os = Get_OSVersion();
@@ -1536,7 +1555,7 @@ namespace hiro
                         var boo = Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10;
                         if (boo)
                         {
-                            if (pa.ToLower().StartsWith("http://") || pa.ToLower().StartsWith("https://"))
+                            if (Hiro_Text.StartsWith(pa, "http://") || Hiro_Text.StartsWith(pa, "https://"))
                             {
                                 pa = Hiro_Net.GetWebContent(pa);
                             }
@@ -1544,7 +1563,7 @@ namespace hiro
                             {
                                 var par = parameter[1];
 
-                                if ((par.ToLower().StartsWith("http://") || par.ToLower().StartsWith("https://")) && boo)
+                                if ((Hiro_Text.StartsWith(par, "http://") || Hiro_Text.StartsWith(par, "https://")) && boo)
                                 {
                                     par = Hiro_Net.GetWebContent(par).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
                                 }
@@ -1588,7 +1607,7 @@ namespace hiro
                         }
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("splash("))
+                    if (Hiro_Text.StartsWith(path, "splash("))
                     {
                         var pa = parameter[0];
                         HiroInvoke(() =>
@@ -1616,7 +1635,7 @@ namespace hiro
                     }
                     if (App.mn != null)
                     {
-                        if (path.ToLower().StartsWith("home()"))
+                        if (Hiro_Text.StartsWith(path, "home()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1626,7 +1645,7 @@ namespace hiro
                             });
                             goto RunOK;
                         }
-                        if (path.ToLower().StartsWith("item()"))
+                        if (Hiro_Text.StartsWith(path, "item()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1636,7 +1655,7 @@ namespace hiro
                             });
                             goto RunOK;
                         }
-                        if (path.ToLower().StartsWith("schedule()"))
+                        if (Hiro_Text.StartsWith(path, "schedule()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1646,7 +1665,7 @@ namespace hiro
                             });
                             goto RunOK;
                         }
-                        if (path.ToLower().StartsWith("config()"))
+                        if (Hiro_Text.StartsWith(path, "config()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1656,7 +1675,7 @@ namespace hiro
                             });
                             goto RunOK;
                         }
-                        if (path.ToLower().StartsWith("chat()"))
+                        if (Hiro_Text.StartsWith(path, "chat()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1666,7 +1685,7 @@ namespace hiro
                             });
                             goto RunOK;
                         }
-                        if (path.ToLower().StartsWith("me()"))
+                        if (Hiro_Text.StartsWith(path, "me()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1676,7 +1695,7 @@ namespace hiro
                             });
                             goto RunOK;
                         }
-                        if (path.ToLower().StartsWith("about()"))
+                        if (Hiro_Text.StartsWith(path, "about()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1687,7 +1706,7 @@ namespace hiro
                             goto RunOK;
                         }
                     }
-                    if (path.ToLower().StartsWith("restart("))
+                    if (Hiro_Text.StartsWith(path, "restart("))
                     {
                         if (App.mn == null)
                         {
@@ -1721,7 +1740,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("message("))
+                    if (Hiro_Text.StartsWith(path, "message("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1762,7 +1781,7 @@ namespace hiro
                         goto RunOK;
                     }
 
-                    if (path.Length > 7 && path.ToLower().StartsWith("notify("))
+                    if (path.Length > 7 && Hiro_Text.StartsWith(path, "notify("))
                     {
                         string titile = Get_Translate("syntax");
                         int duration = -1;
@@ -1809,7 +1828,7 @@ namespace hiro
                         }
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("play("))
+                    if (Hiro_Text.StartsWith(path, "play("))
                     {
                         if (App.mn != null)
                         {
@@ -1827,7 +1846,7 @@ namespace hiro
                         }
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("web("))
+                    if (Hiro_Text.StartsWith(path, "web("))
                     {
                         if (Read_Ini(App.dConfig, "Config", "URLConfirm", "0").Equals("1") && urlCheck && App.mn == null)
                         {
@@ -1955,7 +1974,7 @@ namespace hiro
 
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("editor()"))
+                    if (Hiro_Text.StartsWith(path, "editor()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1964,7 +1983,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("lockscr("))
+                    if (Hiro_Text.StartsWith(path, "lockscr("))
                     {
                         var location = parameter.Count > 0 && !parameter[0].Trim().Equals(string.Empty) ? parameter[0] : null;
                         HiroInvoke(() =>
@@ -1974,7 +1993,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("auth("))
+                    if (Hiro_Text.StartsWith(path, "auth("))
                     {
                         Action sc = new(() =>
                         {
@@ -2010,7 +2029,7 @@ namespace hiro
                         });
                         goto RunOK;
                     }
-                    if (path.ToLower().StartsWith("hirowego()") || path.ToLower().StartsWith("finder()") || path.ToLower().StartsWith("start()"))
+                    if (Hiro_Text.StartsWith(path, "hirowego()") || Hiro_Text.StartsWith(path, "finder()") || Hiro_Text.StartsWith(path, "start()"))
                     {
                         HiroInvoke(() =>
                         {

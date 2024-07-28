@@ -102,8 +102,8 @@ namespace hiro
                 Initialize_Notify_Recall();
                 Initialize_NotificationListener();
             });
-            Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "FPS", "60"))));
-            Unosquare.FFME.Library.FFmpegDirectory = @Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-x64\ffmpeg";
+            Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Hiro_Utils.Read_DCIni("FPS", "60"))));
+            Unosquare.FFME.Library.FFmpegDirectory = @Hiro_Utils.Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -111,7 +111,7 @@ namespace hiro
 
         internal static string AddCustomFont(string path)
         {
-            var p = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(path)).Trim();
+            var p = Hiro_Utils.Path_PPX(path).Trim();
             if (File.Exists(p))
             {
                 if (pfIndex.ContainsKey(p))
@@ -136,7 +136,7 @@ namespace hiro
         {
             if (ApiInformation.IsTypePresent("Windows.UI.Notifications.Management.UserNotificationListener"))
             {
-                if (Hiro_Utils.Read_Ini(dConfig, "Config", "Toast", "0").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1"))
                     Hiro_Utils.Write_Ini(dConfig, "Config", "Toast", "0");
                 listener = UserNotificationListener.Current;
                 // And request access to the user's notifications (must be called from UI thread)
@@ -234,7 +234,7 @@ namespace hiro
                 var recStr = Hiro_Utils.DeleteUnVisibleChar(socketConnection.receivedMsg);
                 var outputb = Convert.FromBase64String(recStr);
                 recStr = Encoding.Default.GetString(outputb);
-                recStr = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(recStr)).Trim();
+                recStr = Hiro_Utils.Path_PPX(recStr).Trim();
                 if (System.IO.File.Exists(recStr))
                 {
                     HiroApp ha = new();
@@ -364,7 +364,7 @@ namespace hiro
                                 Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
                             else
                                 mn.Show();
-                            if (Hiro_Utils.Read_Ini(dConfig, "Config", "AutoLogin", "0").Equals("1"))
+                            if (Hiro_Utils.Read_DCIni("AutoLogin", "0").Equals("1"))
                             {
                                 Hiro_Utils.LogtoFile("[INFO]AutoLogin enabled");
                                 new System.Threading.Thread(() =>
@@ -397,8 +397,8 @@ namespace hiro
                             }
                             if (autoexe)
                             {
-                                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "AutoExe", "1").Equals("2"))
-                                    Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dConfig, "Config", "AutoAction", "nop"), Hiro_Utils.Get_Translate("autoexe"));
+                                if (Hiro_Utils.Read_DCIni("AutoExe", "1").Equals("2"))
+                                    Hiro_Utils.RunExe(Hiro_Utils.Read_DCIni("AutoAction", "nop"), Hiro_Utils.Get_Translate("autoexe"));
                             }
                             InitializeMethod();
                             Build_Socket();
@@ -417,13 +417,13 @@ namespace hiro
             i.msg = Hiro_Utils.Path_Prepare_EX(i.msg);
             if (i.title != null)
                 title = Hiro_Utils.Path_Prepare_EX(i.title);
-            int disturb = int.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Disturb", "2"));
+            int disturb = int.Parse(Hiro_Utils.Read_DCIni("Disturb", "2"));
             if ((disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0))
             {
                 var os = Hiro_Utils.Get_OSVersion();
                 if (os.IndexOf(".") != -1)
                     os = os[..os.IndexOf(".")];
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
+                if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                 {
                     Hiro_Utils.HiroInvoke(() =>
                     {
@@ -435,7 +435,7 @@ namespace hiro
                     });
 
                 }
-                else if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("2") || Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("3"))
+                else if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("2") || Hiro_Utils.Read_DCIni("Toast", "0").Equals("3"))
                 {
                     noticeitems.Add(i);
                     Hiro_Utils.HiroInvoke(() =>
@@ -444,7 +444,7 @@ namespace hiro
                         hisland.Show();
                     });
                 }
-                else if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("4"))
+                else if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("4"))
                 {
                     noticeitems.Add(i);
                     Hiro_Utils.HiroInvoke(() =>
@@ -453,7 +453,7 @@ namespace hiro
                         hiBox.Show();
                     });
                 }
-                else if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("5"))
+                else if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("5"))
                 {
                     noticeitems.Add(i);
                     Hiro_Utils.HiroInvoke(() =>
@@ -582,7 +582,7 @@ namespace hiro
             Hiro_Utils.LogtoFile("[HIROWEGO]DConfig at " + dConfig);
             Hiro_Utils.LogtoFile("[HIROWEGO]SConfig at " + sConfig);
             FirstUse = !System.IO.File.Exists(dConfig) && !System.IO.File.Exists(sConfig);
-            var str = Hiro_Utils.Read_Ini(dConfig, "Config", "Lang", "");
+            var str = Hiro_Utils.Read_DCIni("Lang", "");
             if (str.Equals("") || str.Equals("default"))
             {
                 lang = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
@@ -613,7 +613,7 @@ namespace hiro
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(lang);
             Hiro_Utils.LogtoFile("[HIROWEGO]Current language: " + lang);
             langFilePath = currentDir + "\\system\\lang\\" + lang + ".hlp";
-            appTitle = Hiro_Utils.Read_Ini(dConfig, "Config", "CustomNick", "1").Equals("2") ? Hiro_Utils.Read_Ini(dConfig, "Config", "CustomHIRO", "Hiro") : Hiro_Resources.ApplicationName;
+            appTitle = Hiro_Utils.Read_DCIni("CustomNick", "1").Equals("2") ? Hiro_Utils.Read_DCIni("CustomHIRO", "Hiro") : Hiro_Resources.ApplicationName;
             System.IO.DirectoryInfo di = new(currentDir + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
             {
@@ -627,21 +627,21 @@ namespace hiro
                     }
                 }
             }
-            switch (Hiro_Utils.Read_Ini(dConfig, "Config", "CustomUser", "1"))
+            switch (Hiro_Utils.Read_DCIni("CustomUser", "1"))
             {
                 case "2":
                     CustomUsernameFlag = 1;
-                    username = Hiro_Utils.Read_Ini(dConfig, "Config", "CustomName", "");
+                    username = Hiro_Utils.Read_DCIni("CustomName", "");
                     break;
                 default:
                     CustomUsernameFlag = 0;
                     username = eUserName;
                     break;
             }
-            Hiro_ID.version = "v" + Hiro_Utils.Read_Ini(dConfig, "Config", "AppVer", "1");
-            if (Hiro_Utils.Read_Ini(dConfig, "Config", "CustomNick", "1").Equals("2"))
-                appTitle = Hiro_Utils.Read_Ini(dConfig, "Config", "CustomHIRO", "Hiro");
-            if (Hiro_Utils.Read_Ini(dConfig, "Config", "TRBtn", "0").Equals("1"))
+            Hiro_ID.version = "v" + Hiro_Utils.Read_DCIni("AppVer", "1");
+            if (Hiro_Utils.Read_DCIni("CustomNick", "1").Equals("2"))
+                appTitle = Hiro_Utils.Read_DCIni("CustomHIRO", "Hiro");
+            if (Hiro_Utils.Read_DCIni("TRBtn", "0").Equals("1"))
                 trval = 0;
             if (Hiro_Utils.Read_Ini(dConfig, "Network", "Proxy", "0").Equals("1"))//IE Proxy
             {
@@ -677,9 +677,9 @@ namespace hiro
                 hc = new(hch);
             }
             Hiro_Utils.LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
-            loginedUser = Hiro_Utils.Read_Ini(dConfig, "Config", "User", string.Empty);
-            loginedToken = Hiro_Utils.Read_Ini(dConfig, "Config", "Token", string.Empty);
-            AutoChat = Hiro_Utils.Read_Ini(dConfig, "Config", "AutoChat", "1").Equals("1");
+            loginedUser = Hiro_Utils.Read_DCIni("User", string.Empty);
+            loginedToken = Hiro_Utils.Read_DCIni("Token", string.Empty);
+            AutoChat = Hiro_Utils.Read_DCIni("AutoChat", "1").Equals("1");
         }
 
         private static void InitializeMethod()
@@ -687,7 +687,7 @@ namespace hiro
             Load_LocalTime();
             timer = new()
             {
-                Interval = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Performance", "0") switch
+                Interval = Hiro_Utils.Read_DCIni("Performance", "0") switch
                 {
                     "1" => TimeSpan.FromSeconds(3),
                     "2" => TimeSpan.FromSeconds(10),
@@ -761,7 +761,7 @@ namespace hiro
                 var scTime = DateTime.Parse(scheduleitems[i - 1].Time);
                 if (DateTime.Compare(formerT, scTime) < 0 && DateTime.Compare(current, scTime) > 0)
                 {
-                    int disturb = int.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Disturb", "2"));
+                    int disturb = int.Parse(Hiro_Utils.Read_DCIni("Disturb", "2"));
                     var a = scheduleitems[i - 1].Command.ToLower().Equals("alarm") || scheduleitems[i - 1].Command.ToLower().Equals("alarm()");
                     var b = (disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0);
                     if (a && b)
@@ -769,12 +769,12 @@ namespace hiro
                         var os = Hiro_Utils.Get_OSVersion();
                         if (os.Contains(".", StringComparison.CurrentCulture))
                             os = os[..os.IndexOf(".")];
-                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int r) && r >= 10)
+                        if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int r) && r >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)
                             .AddText(Hiro_Utils.Get_Translate("alarmtitle"))
-                            .AddText(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))))
+                            .AddText(Hiro_Utils.Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
                                         .SetContent(Hiro_Utils.Get_Translate("alarmok"))
                                         .AddArgument("action", "ok"))
@@ -787,7 +787,7 @@ namespace hiro
                         }
                         else
                         {
-                            Hiro_Alarm ala = new(aw.Count, CustomedContnet: Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))));
+                            Hiro_Alarm ala = new(aw.Count, CustomedContnet: Hiro_Utils.Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)));
                             aw.Add(new Hiro_AlarmWin(ala, i - 1));
                             ala.Show();
                         }
@@ -798,7 +798,7 @@ namespace hiro
                         {
                             mn?.AddToInfoCenter(
                             scTime.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
-                            + "\t" + Hiro_Utils.Get_Translate("infocmd") + ":" + "\t" + Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine))) + Environment.NewLine
+                            + "\t" + Hiro_Utils.Get_Translate("infocmd") + ":" + "\t" + Hiro_Utils.Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)) + Environment.NewLine
                             + "\t" + Hiro_Utils.Get_Translate("infosource") + ":" + "\t" + Hiro_Utils.Get_Translate("alarm") + Environment.NewLine);
                         }
                         switch (scheduleitems[i - 1].re)
@@ -846,7 +846,7 @@ namespace hiro
                     break;
             }
             //Music
-            if (Hiro_Utils.Read_Ini(dConfig, "Config", "Verbose", "0").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1"))
             {
                 Music_Tick();
             }
@@ -860,11 +860,11 @@ namespace hiro
         {
             try
             {
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "MonitorSys", "1").Equals("1"))
+                if (!Hiro_Utils.Read_DCIni("MonitorSys", "1").Equals("1"))
                     return;
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1"))
                     Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "0");
-                var a = Hiro_Utils.Read_Ini(dConfig, "Config", "MonitorSysPara", "0").Trim();
+                var a = Hiro_Utils.Read_DCIni("MonitorSysPara", "0").Trim();
                 if (a.Equals("1") || a.Equals("0"))
                     Do_Notifications(await listener?.GetNotificationsAsync(NotificationKinds.Unknown), formerTime);
                 if (a.Equals("2") || a.Equals("0"))
@@ -893,7 +893,7 @@ namespace hiro
                     // We'll treat all subsequent text elements as body text,
                     // joining them together via newlines.
                     string bodyText = string.Join(Environment.NewLine, textElements.Skip(1).Select(t => t.Text));
-                    var iconFile = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX("<current>\\system\\icons\\clsids\\")) + notif.AppInfo.AppUserModelId + ".hsic";
+                    var iconFile = Hiro_Utils.Path_PPX("<current>\\system\\icons\\clsids\\") + notif.AppInfo.AppUserModelId + ".hsic";
                     if (!System.IO.File.Exists(iconFile))
                     {
                         Hiro_File.CreateFolder(iconFile);

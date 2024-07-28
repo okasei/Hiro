@@ -89,7 +89,7 @@ namespace hiro
             Info.Visibility = Visibility.Hidden;
             InputPwd.Visibility = Visibility.Hidden;
             tosee.Visibility = Visibility.Visible;
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, tosee, sb, -50, null);
@@ -126,7 +126,7 @@ namespace hiro
 
         private void Get_Password()
         {
-            /*var pw = Hiro_Utils.Read_Ini(App.dconfig, "Config", "Password");
+            /*var pw = Hiro_Utils.Read_DCIni("Password");
             System.Security.Cryptography.HMACSHA512 hmac = new System.Security.Cryptography.HMACSHA512();
             hmac.
                 StringBuilder sBuilder = new(131);
@@ -167,7 +167,7 @@ namespace hiro
         public void HiHiro()
         {
             titlelabel.Visibility = Visibility.Visible;
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, titlelabel, sb, -50, null);

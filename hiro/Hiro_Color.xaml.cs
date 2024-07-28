@@ -26,9 +26,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, color_title, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, color_text, sb, -50, null);
@@ -85,7 +85,7 @@ namespace hiro
             if (Hiro_Main != null)
             {
                 Hiro_Main.Set_Label(Hiro_Main.configx);
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+                if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
                     Hiro_Main?.Blurbgi(0);
             }
 
@@ -119,7 +119,7 @@ namespace hiro
                 return;
             color_text.Text = $"#{color_picker.Color.R:X2}{color_picker.Color.G:X2}{color_picker.Color.B:X2}";
             color_ex.Background = new SolidColorBrush(color_picker.Color);
-            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Utils.Read_Ini(App.dConfig, "Config", "Reverse", "0").Equals("1")));
+            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Utils.Read_DCIni("Reverse", "0").Equals("1")));
         }
         private void Color_text_KeyUp(object sender, KeyEventArgs e)
         {

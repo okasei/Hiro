@@ -27,7 +27,7 @@ namespace hiro
             toolstr = config;
             if (toolstr != null)
             {
-                string sndPath = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Music", "")));
+                string sndPath = Hiro_Utils.Path_PPX(Hiro_Utils.Read_Ini(toolstr, "Message", "Music", ""));
                 if (System.IO.File.Exists(sndPath))
                     try
                     {
@@ -55,7 +55,7 @@ namespace hiro
                 };
             }
             SourceInitialized += OnSourceInitialized;
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 acceptbtn.Visibility = Visibility.Visible;
                 rejectbtn.Visibility = Visibility.Visible;
@@ -65,7 +65,7 @@ namespace hiro
             };
             Loaded += delegate
             {
-                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
                 if (!App.dflag) 
                     return;
                 Hiro_Utils.LogtoFile("[MESSAGE]Title: " + backtitle.Content);
@@ -81,7 +81,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1")) 
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("1")) 
                 return;
             acceptbtn.Visibility = Visibility.Visible;
             rejectbtn.Visibility = Visibility.Visible;
@@ -155,7 +155,7 @@ namespace hiro
         }
         public void Loadbgi(int direction)
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
@@ -168,11 +168,11 @@ namespace hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            if (toolstr != null && System.IO.File.Exists(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", "")))))
-                Hiro_Utils.Set_Bgimage(bgimage, this, Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", ""))));
+            if (toolstr != null && System.IO.File.Exists(Hiro_Utils.Path_PPX(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", ""))))
+                Hiro_Utils.Set_Bgimage(bgimage, this, Hiro_Utils.Path_PPX(Hiro_Utils.Read_Ini(toolstr, "Message", "Background", "")));
             else
                 Hiro_Utils.Set_Bgimage(bgimage, this);
-            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }

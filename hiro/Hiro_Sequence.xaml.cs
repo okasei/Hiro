@@ -21,7 +21,7 @@ namespace hiro
         {
             InitializeComponent();
             Load_Colors();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
             Load_Position();
             Load_Translate();
             Title = Hiro_Utils.Get_Translate("seqtitle") + " - " + App.appTitle;
@@ -41,7 +41,7 @@ namespace hiro
 
         public void HiHiro()
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1") && Visibility == Visibility.Visible)
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1") && Visibility == Visibility.Visible)
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(3, skipbtn, sb, -50, null);
@@ -133,7 +133,7 @@ namespace hiro
                 Close();
                 return;
             }
-            var sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
+            var sc = Hiro_Utils.Path_PPX(cmds[ci);
             if (App.dflag)
                 Hiro_Utils.LogtoFile("[SEQUENCE]" + sc);
             skipbtn.Visibility = Visibility.Hidden;
@@ -144,7 +144,7 @@ namespace hiro
                 pausebtn.Content = Hiro_Utils.Get_Translate("seqconti");
                 return;
             }
-            if (sc.ToLower().StartsWith("pause("))
+            if (sc.StartsWith("pause(", StringComparison.CurrentCultureIgnoreCase))
             {
                 var scp = Hiro_Utils.HiroParse(sc);
                 try
@@ -223,7 +223,7 @@ namespace hiro
             try
             {
                 var next = Hiro_Utils.Get_Translate("seqnext");
-                var sc = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(cmds[ci]));
+                var sc = Hiro_Utils.Path_PPX(cmds[ci]);
                 var current = Hiro_Utils.Get_Translate("seqcurrent") + sc;
                 var inde = (ci + 1).ToString() + "/" + cmds.Count.ToString();
                 if (tick > 0)
@@ -268,7 +268,7 @@ namespace hiro
                     break;
             }
 
-            if (Visibility != Visibility.Visible || !changed || !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Visibility != Visibility.Visible || !changed || !Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(0, textblock, sb, 50, null);
@@ -364,14 +364,14 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
         private void Seq_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
         }
 
         private void Seq_Closing(object sender, System.ComponentModel.CancelEventArgs e)

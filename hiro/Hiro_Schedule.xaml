@@ -46,6 +46,11 @@
             </DataGrid.RowStyle>
             <DataGrid.CellStyle>
                 <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="FontFamily" Value="{Binding FontFamily, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontSize" Value="{Binding FontSize, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontWeight" Value="{Binding FontWeight, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontStretch" Value="{Binding FontStretch, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontStyle" Value="{Binding FontStyle, ElementName=ExCellLabel, Mode=OneWay}"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="Transparent"/>
@@ -55,6 +60,7 @@
                 </Style>
             </DataGrid.CellStyle>
         </DataGrid>
+        <Label x:Name="ExCellLabel" Visibility="Collapsed"/>
         <Button x:Name="scbtn_1" BorderThickness="1" Content="New" HorizontalAlignment="Left" Margin="0,386,0,0" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Scbtn_1_Click"/>
         <Button x:Name="scbtn_2" BorderThickness="1" Content="Delete" Margin="55,386,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Cursor="Hand" Click="Scbtn_2_Click"/>
         <Button x:Name="scbtn_3" BorderThickness="1" Content="Modify" HorizontalAlignment="Left" Margin="120,386,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Scbtn_3_Click"/>

@@ -2,9 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using static hiro.Helpers.Hiro_Class;
 
 namespace hiro
 {
@@ -44,6 +42,18 @@ namespace hiro
             {
                 Hiro_Utils.LogError(ex, "Hiro.Exception.Power");
             }
+            var iconP = Hiro_Utils.Read_PPDCIni("CustomIcon", "");
+            if (File.Exists(iconP))
+            {
+                try
+                {
+                    Hiro_Tray.Icon = new System.Drawing.Icon(iconP);
+                }
+                catch(Exception e)
+                {
+                    Hiro_Utils.LogError(e, "Hiro.Tray.CustomeIcon");
+                }
+            }
         }
 
 
@@ -52,7 +62,7 @@ namespace hiro
             try
             {
                 var p = Windows.System.Power.PowerManager.EnergySaverStatus;
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Verbose", "0").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1"))
                 {
                     switch (p)
                     {
@@ -84,7 +94,7 @@ namespace hiro
             try
             {
                 int p = Windows.System.Power.PowerManager.RemainingChargePercent;
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Verbose", "0").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1"))
                 {
                     if (Windows.System.Power.PowerManager.BatteryStatus ==
                         Windows.System.Power.BatteryStatus.Charging)
@@ -115,7 +125,7 @@ namespace hiro
                 }
             }
 
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Verbose", "0").Equals("1"))
+            if (!Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1"))
                 return;
             var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
             string ext = "";
@@ -223,14 +233,14 @@ namespace hiro
             switch (msg)
             {
                 case 0x0320://系统颜色改变
-                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "LockColor", "default").Equals("default"))
+                    if (Hiro_Utils.Read_DCIni("LockColor", "default").Equals("default"))
                         App.ColorCD = 3;
                     break;
                 case 0x0083://prevent system from drawing outline
                     handled = true;
                     break;
                 case 0x0218:
-                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Verbose", "0").Equals("1"))
+                    if (Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1"))
                     {
                         try
                         {
@@ -250,7 +260,7 @@ namespace hiro
                     }
                     break;
                 case 0x0219:
-                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Verbose", "0").Equals("1"))
+                    if (Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1"))
                     {
                         Action? ac = null;
                         var mms = Hiro_Utils.Get_Translate("deinfo") + " - ";
@@ -387,14 +397,14 @@ namespace hiro
         {
             Hiro_Tray.TrayMiddleMouseDown += delegate
             {
-                var mc = Hiro_Utils.Read_Ini(App.dConfig, "Config", "MiddleClick", "2");
+                var mc = Hiro_Utils.Read_DCIni("MiddleClick", "2");
                 switch (mc)
                 {
                     case "2":
                         Hiro_Utils.RunExe("menu()"); ;
                         break;
                     case "3":
-                        var mce = Hiro_Utils.Read_Ini(App.dConfig, "Config", "MiddleAction", "");
+                        var mce = Hiro_Utils.Read_DCIni("MiddleAction", "");
                         Hiro_Utils.RunExe(mce);
                         break;
                     default:
@@ -411,14 +421,14 @@ namespace hiro
             };
             Hiro_Tray.TrayRightMouseDown += delegate
             {
-                var rc = Hiro_Utils.Read_Ini(App.dConfig, "Config", "RightClick", "2");
+                var rc = Hiro_Utils.Read_DCIni("RightClick", "2");
                 switch (rc)
                 {
                     case "2":
                         Hiro_Utils.RunExe("menu()");
                         break;
                     case "3":
-                        var rce = Hiro_Utils.Read_Ini(App.dConfig, "Config", "RightAction", "");
+                        var rce = Hiro_Utils.Read_DCIni("RightAction", "");
                         Hiro_Utils.RunExe(rce);
                         break;
                     default:
@@ -435,14 +445,14 @@ namespace hiro
             };
             Hiro_Tray.TrayLeftMouseDown += delegate
             {
-                var lc = Hiro_Utils.Read_Ini(App.dConfig, "Config", "LeftClick", "1");
+                var lc = Hiro_Utils.Read_DCIni("LeftClick", "1");
                 switch (lc)
                 {
                     case "2":
                         Hiro_Utils.RunExe("menu()");
                         break;
                     case "3":
-                        var lce = Hiro_Utils.Read_Ini(App.dConfig, "Config", "LeftAction", "");
+                        var lce = Hiro_Utils.Read_DCIni("LeftAction", "");
                         Hiro_Utils.RunExe(lce);
                         break;
                     default:

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static MaterialDesignThemes.Wpf.Theme;
 
 namespace hiro
 {
@@ -26,9 +27,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, btn1, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn2, sb, 50, null);
@@ -75,6 +76,7 @@ namespace hiro
 
         public void Load_Position()
         {
+            Hiro_Utils.Set_Control_Location(ExCellLabel, "icell", location: false);
             Hiro_Utils.Set_Control_Location(btn1, "inew");
             Hiro_Utils.Set_Control_Location(btn2, "iup");
             Hiro_Utils.Set_Control_Location(btn3, "idown");
@@ -114,7 +116,7 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > 0 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
-                Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
+                Helpers.Hiro_Class.Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command, App.cmditems[i - 1].HotKey);
                 App.cmditems[i - 1] = nec;
                 var inipath = App.dConfig;
@@ -144,7 +146,7 @@ namespace hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count - 1)
             {
                 var i = dgi.SelectedIndex;
-                Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
+                Helpers.Hiro_Class.Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command, App.cmditems[i + 1].HotKey);
                 App.cmditems[i + 1] = nec;
                 var inipath = App.dConfig;

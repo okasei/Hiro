@@ -51,9 +51,9 @@ namespace hiro
 
         internal void Load_Video()
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("4"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("4"))
             {
-                var video = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackVideo", "")));
+                var video = Hiro_Utils.Read_PPDCIni("BackVideo", "");
                 var b = BackVideo.Visibility == Visibility.Visible && (BackVideo.IsPlaying || BackVideo.IsPaused) && BackVideo.MediaInfo.MediaSource.Equals(video.Trim());
                 if ((System.IO.File.Exists(video) || video.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || video.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase) || video.StartsWith("rstp:", StringComparison.CurrentCultureIgnoreCase)) && !b)
                 {
@@ -66,7 +66,7 @@ namespace hiro
                                 await BackVideo.Open(new Uri(video));
                                 if (Visibility != Visibility.Visible)
                                     await BackVideo.Pause();
-                                BackVideo.IsMuted = Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackVideoMute", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+                                BackVideo.IsMuted = Hiro_Utils.Read_DCIni("BackVideoMute", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
                                 BackVideo.Visibility = Visibility.Visible;
                             }
                             catch (Exception e)
@@ -101,11 +101,11 @@ namespace hiro
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
-            var bg = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1");
+            var bg = Hiro_Utils.Read_DCIni("Background", "1");
             if (!bg.Equals("3") && !bg.Equals("4"))
                 new System.Threading.Thread(() =>
             {
-                var strFileName = Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", string.Empty);
+                var strFileName = Hiro_Utils.Read_DCIni("BackImage", string.Empty);
                 if (System.IO.File.Exists(@strFileName))
                 {
                     try
@@ -121,7 +121,7 @@ namespace hiro
                             hh = Height * 2;
                         });
                         bool m = false;
-                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Compression", "1").Equals("1"))
+                        if (Hiro_Utils.Read_DCIni("Compression", "1").Equals("1"))
                         {
                             if (ww < w && hh < h)
                             {
@@ -158,7 +158,7 @@ namespace hiro
                             System.Drawing.Bitmap b = new(img);
                             img.Dispose();
                             strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
-                            strFileName = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(strFileName));
+                            strFileName = Hiro_Utils.Path_PPX(strFileName);
                             Hiro_File.CreateFolder(strFileName);
                             if (System.IO.File.Exists(strFileName))
                                 System.IO.File.Delete(strFileName);
@@ -172,7 +172,7 @@ namespace hiro
                         Dispatcher.Invoke(async () =>
                         {
                             Hiro_Utils.Set_Bgimage(bgimage, this);
-                            currentBack = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", "")));
+                            currentBack = Hiro_Utils.Read_PPDCIni("BackImage", "");
                         });
                     }
                     catch (Exception ex)
@@ -186,9 +186,9 @@ namespace hiro
 
         public void HiHiro()
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2"))
-                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("2"))
+                Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")), false);
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Set_Label(selected ?? homex);
             }
@@ -197,7 +197,7 @@ namespace hiro
             minbtn.Visibility = Visibility.Visible;
             closebtn.Visibility = Visibility.Visible;
             stack.Visibility = Visibility.Visible;
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, titlelabel, sb, -50, null);
@@ -219,7 +219,7 @@ namespace hiro
             {
                 infotext.AppendText(text);
                 infolabel.Visibility = Visibility.Visible;
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                 {
                     Storyboard sb = new();
                     Hiro_Utils.AddPowerAnimation(0, infolabel, sb, -50, null);
@@ -291,7 +291,7 @@ namespace hiro
             }
             else
             {
-                switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "AcrylicMain", "0"))
+                switch (Hiro_Utils.Read_DCIni("AcrylicMain", "0"))
                 {
                     case "1":
                         {
@@ -320,7 +320,7 @@ namespace hiro
 
                 case 1:
                     {
-                        switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2"))
+                        switch (Hiro_Utils.Read_DCIni("Ani", "2"))
                         {
                             case "2":
                                 {
@@ -394,7 +394,7 @@ namespace hiro
                     }
                 case 2:
                     {
-                        switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2"))
+                        switch (Hiro_Utils.Read_DCIni("Ani", "2"))
                         {
                             case "2":
                                 {
@@ -468,7 +468,7 @@ namespace hiro
                     }
                 default:
                     {
-                        switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2"))
+                        switch (Hiro_Utils.Read_DCIni("Ani", "2"))
                         {
                             case "2":
                                 {
@@ -521,13 +521,13 @@ namespace hiro
         public void Load_Colors()
         {
             Hiro_Utils.IntializeColorParameters();
-            switch (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1"))
+            switch (Hiro_Utils.Read_DCIni("Background", "1"))
             {
                 case "1":
                     Blurbgi(0);
                     break;
                 case "2":
-                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
                     break;
                 case "3":
                     {
@@ -804,7 +804,7 @@ namespace hiro
         {
             if (infocenter.Visibility == Visibility.Visible)
             {
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Storyboard? sb = new();
                     sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, infocenter, "Opacity", sb);
@@ -814,7 +814,7 @@ namespace hiro
                             BackVideo.Play();
                         infocenter.Opacity = 0;
                         infocenter.Visibility = Visibility.Hidden;
-                        if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+                        if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                         {
                             infocenter.IsEnabled = false;
                             Storyboard? sbe = new();
@@ -842,7 +842,7 @@ namespace hiro
             }
             else
             {
-                Hiro_Utils.RunExe(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Min", "1").Equals("1")
+                Hiro_Utils.RunExe(Hiro_Utils.Read_DCIni("Min", "1").Equals("1")
                     ? "hide()"
                     : "exit()");
             }
@@ -861,21 +861,21 @@ namespace hiro
             if (!hh.Hello.Text.Equals(val))
             {
                 hh.Hello.Text = val;
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
                     var sb = new Storyboard();
                     Hiro_Utils.AddPowerAnimation(0, hh.Hello, sb);
                     sb.Begin();
                 }
             }
-            val = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Get_Translate("copyright")));
+            val = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("copyright"));
             if (!hh.Copyright.Text.Equals(val))
                 hh.Copyright.Text = val;
         }
 
         public void Set_Label(Label label)
         {
-            var animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             if (current == hiro_acrylic)
                 Blurbgi(0);
             Load_Labels();
@@ -907,7 +907,7 @@ namespace hiro
                 acrylicx.Visibility = Visibility.Hidden;
             }
             var duration = Math.Abs(label.Margin.Top - bgx.Margin.Top);
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
                 duration = duration > label.Height * 2 ? 2 * duration : 6 * duration;
                 Storyboard? sb = new();
@@ -975,17 +975,17 @@ namespace hiro
             }
             else
             {
-                var backg = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Background", label.Name, "")));
+                var backg = Hiro_Utils.Path_PPX(Hiro_Utils.Read_Ini(App.dConfig, "Background", label.Name, ""));
                 if (!System.IO.File.Exists(backg))
                 {
-                    backg = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", "")));
+                    backg = Hiro_Utils.Read_PPDCIni("BackImage", "");
                 }
-                if (backg != currentBack && !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+                if (backg != currentBack && !Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
                 {
                     Hiro_Utils.Set_Bgimage(bgimage, this, backg);
                     currentBack = backg;
-                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2"))
-                        Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
+                    if (Hiro_Utils.Read_DCIni("Background", "1").Equals("2"))
+                        Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")), false);
                 }
             }
             if (label == homex)
@@ -1151,7 +1151,7 @@ namespace hiro
 
         private void Ui_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Min", "1").Equals("1"))
+            if (Hiro_Utils.Read_DCIni("Min", "1").Equals("1"))
             {
                 Visibility = Visibility.Hidden;
                 if (BackVideo.Visibility == Visibility.Visible)
@@ -1204,7 +1204,7 @@ namespace hiro
                             d.Loadbgi(direction);
                             break;
                         case Hiro_Web f:
-                            f.Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
+                            f.Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")), false);
                             break;
                         case Hiro_Finder g:
                             g.Loadbgi(direction);
@@ -1223,13 +1223,13 @@ namespace hiro
                     System.Windows.Forms.Application.DoEvents();
                 }
             }
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             System.ComponentModel.BackgroundWorker bw = new();
             bw.RunWorkerCompleted += delegate
             {
                 SetHCStatus();
             };
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
@@ -1242,18 +1242,18 @@ namespace hiro
                 bgimage.Margin = new Thickness(0);
                 bgimage.Visibility = Visibility.Visible;
                 Hiro_Utils.Set_Bgimage(bgimage, this);
-                currentBack = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", "")));
+                currentBack = Hiro_Utils.Read_PPDCIni("BackImage", "");
                 if (compositor != null)
                 {
                     compositor.IsEnabled = false;
                 }
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2"))
+                if (Hiro_Utils.Read_DCIni("Background", "1").Equals("2"))
                 {
 
                     Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
                     StopVideo();
                 }
-                else if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("4"))
+                else if (Hiro_Utils.Read_DCIni("Background", "1").Equals("4"))
                     Load_Video();
                 else
                 {
@@ -1294,7 +1294,7 @@ namespace hiro
 
         internal void OpacityBgi()
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 Background = null;
                 return;
@@ -1362,7 +1362,7 @@ namespace hiro
             infocenter.Visibility = Visibility.Visible;
             if (BackVideo.Visibility == Visibility.Visible)
                 BackVideo.Pause();
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Storyboard? sb = new();
                 sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, infocenter, "Opacity", sb, 0);
@@ -1399,8 +1399,8 @@ namespace hiro
                 WindowState = WindowState.Normal;
             else if (WindowState != WindowState.Minimized)
             {
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2"))
-                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
+                if (Hiro_Utils.Read_DCIni("Background", "1").Equals("2"))
+                    Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")), false);
                 if (BackVideo.IsPaused && BackVideo.Visibility == Visibility.Visible)
                     BackVideo.Play();
             }
@@ -1462,7 +1462,7 @@ namespace hiro
         private void BackVideo_MediaOpened(object sender, Unosquare.FFME.Common.MediaOpenedEventArgs e)
         {
 
-            if (BackVideo.MediaInfo.Streams.Count > 0 && Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackVideoCrop", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+            if (BackVideo.MediaInfo.Streams.Count > 0 && Hiro_Utils.Read_DCIni("BackVideoCrop", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
             {
                 var w = BackVideo.MediaInfo.Streams[0].PixelWidth;
                 var h = BackVideo.MediaInfo.Streams[0].PixelHeight;

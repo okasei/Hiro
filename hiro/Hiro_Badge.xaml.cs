@@ -63,7 +63,7 @@ namespace hiro
                 FadeIn();
                 LoadColor();
             };
-            var icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(pic));
+            var icon = Hiro_Utils.Path_PPX(pic);
             if (System.IO.File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);

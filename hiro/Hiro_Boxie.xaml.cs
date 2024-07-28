@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using static hiro.Helpers.Hiro_Class;
 
 namespace hiro
 {
@@ -40,10 +41,10 @@ namespace hiro
             Load_Icon();
             new System.Threading.Thread(() =>
             {
-                if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "HiBoxAudio", "1").Equals("1"))
+                if (Hiro_Utils.Read_DCIni("HiBoxAudio", "1").Equals("1"))
                     try
                     {
-                        var fileP = Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BoxAudioPath", "<current>\\system\\sounds\\achievement.wav"));
+                        var fileP = Hiro_Utils.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");
                         if (!System.IO.File.Exists(fileP))
                             //fileP = Hiro_Utils.Path_Prepare("C:\\Users\\Rex\\Downloads\\Music\\xbox_one_rare_achiev.wav");
                             fileP = Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
@@ -65,8 +66,8 @@ namespace hiro
 
         private void Load_PrimaryIcon()
         {
-            var icon = Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeIcon", "");
-            icon = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon));
+            var icon = Hiro_Utils.Read_DCIni("CustomizeIcon", "");
+            icon = Hiro_Utils.Path_PPX(icon);
             if (System.IO.File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -74,7 +75,7 @@ namespace hiro
             }
             else
             {
-                icon = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "UserAvatar", "")));
+                icon = Hiro_Utils.Read_PPDCIni("UserAvatar", "");
                 if (System.IO.File.Exists(icon) && App.Logined == true)
                 {
                     BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -134,16 +135,16 @@ namespace hiro
         }
         internal void Load_Translate()
         {
-            Hiro_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalLeft")));
-            Hiro_Extension_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalRight")));
+            Hiro_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalLeft"));
+            Hiro_Extension_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalRight"));
         }
 
         private void Animation_Out()
         {
             if (act != null)
             {
-                Hiro_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalActLeft")));
-                Hiro_Extension_Title.Text = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("BoxFinalActRight")));
+                Hiro_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalActLeft"));
+                Hiro_Extension_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalActRight"));
             }
             else
             {
@@ -442,7 +443,7 @@ namespace hiro
                 }
                 else
                 {
-                    var iconLocation = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(icon.Location));
+                    var iconLocation = Hiro_Utils.Path_PPX(icon.Location);
                     if (System.IO.File.Exists(iconLocation))
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(iconLocation);

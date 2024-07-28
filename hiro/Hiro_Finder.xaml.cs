@@ -71,7 +71,7 @@ namespace hiro
             Load_Color();
             Load_Translate();
             Load_Position();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
         }
 
         public void Load_Color()
@@ -82,7 +82,7 @@ namespace hiro
 
         public void Load_Translate()
         {
-            PlaceHolder.Content = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Get_Translate("hirogo")));
+            PlaceHolder.Content = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("hirogo"));
         }
 
         public void Load_Position()
@@ -95,7 +95,7 @@ namespace hiro
         {
             if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
                 PlaceHolder.Visibility = Visibility.Visible;
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
@@ -111,7 +111,7 @@ namespace hiro
 
         public void Loadbgi(int direction)
         {
-            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
+            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
@@ -125,7 +125,7 @@ namespace hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
+            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
@@ -135,7 +135,7 @@ namespace hiro
             if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
             {
                 PlaceHolder.Visibility = Visibility.Visible;
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                     return;
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
@@ -151,7 +151,7 @@ namespace hiro
             else
             {
 
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                 {
                     PlaceHolder.Visibility = Visibility.Hidden;
                 }
