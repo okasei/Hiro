@@ -30,27 +30,12 @@ namespace hiro
         public void HiHiro()
         {
             string iconPath = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeAbout", "")));
-            string extPath = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "CustomizeExtend", "")));
             Storyboard sb = new();
             if (!iconPath.Equals(formerIcon) && System.IO.File.Exists(iconPath))
             {
                 BaseIcon.ImageSource = Hiro_Utils.GetBitmapImage(iconPath);
                 sb = Hiro_Utils.AddDoubleAnimaton(1, 450, BaseIcon, "Opacity", sb, 0, 0.7);
                 formerIcon = iconPath;
-            }
-            if (!extPath.Equals(extendIcon) && System.IO.File.Exists(extPath))
-            {
-                if (Hiro_Main != null)
-                {
-                    BitmapImage? bi = Hiro_Utils.GetBitmapImage(extPath);
-                    ImageBrush ib = new()
-                    {
-                        Stretch = Stretch.UniformToFill,
-                        ImageSource = bi
-                    };
-                    Hiro_Main.extended.Background = ib;
-                }
-                extendIcon = iconPath;
             }
             bool animation = !Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0");
             if (!animation)
@@ -84,11 +69,6 @@ namespace hiro
         {
             Hiro_Utils.Set_Control_Location(chk_btn, "checkup");
             Hiro_Utils.Set_FrameworkElement_Location(avatar, "avatar");
-        }
-
-        private void Avatar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Hiro_Main?.Hiro_We_Extend();
         }
 
         private void Chk_btn_Click(object sender, RoutedEventArgs e)

@@ -89,12 +89,6 @@
         </Label>
         <ProgressBar x:Name="pb" Height="5" Width="548" Background="Transparent" BorderBrush="{x:Null}"  Foreground ="{DynamicResource AppFore}" IsIndeterminate="True" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.RowSpan="2" Visibility="Hidden"/>
         <Frame x:Name="frame" NavigationUIVisibility="Hidden" Source="/Hiro_Home.xaml" Margin="130,30,0,0" Background="Transparent" Width="420" Height="420" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top" LoadCompleted="Frame_LoadCompleted" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.IsSharedSizeScope="True"/>
-        <Label x:Name="extend_background" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Red" FontFamily="Segoe UI" FontWeight="Normal" FontSize="14" Height="30" Width="30" Visibility="Hidden" Margin="151,10,0,0" MouseLeftButtonDown="Extend_background_MouseLeftButtonDown"/>
-        <Label x:Name="extended" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontFamily="Segoe UI" FontWeight="Normal" FontSize="14" Visibility="Hidden" MouseLeftButtonDown="Extended_MouseLeftButtonDown" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-            <Label.Background>
-                <ImageBrush Stretch="UniformToFill" ImageSource="/hiro.png"/>
-            </Label.Background>
-        </Label>
         <Grid x:Name="infocenter" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0" Width="550" Height="450">
             <Label x:Name="infoimage" Background="{DynamicResource InfoAccent}"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0" Width="550" Height="450"/>
             <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0" Width="550" Height="450">

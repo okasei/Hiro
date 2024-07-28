@@ -26,6 +26,9 @@ using System.Security.Cryptography;
 using System.Windows.Shell;
 using Windows.UI.Composition;
 using hiro.Helpers;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Enumeration;
+using System.Drawing.Text;
 
 namespace hiro
 {
@@ -653,7 +656,22 @@ namespace hiro
                         sender.VerticalAlignment = VerticalAlignment.Bottom;
                     var result = HiroParse(Read_Ini(path, "location", val, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
                     if (!result[0].Equals("-1"))
-                        sender.FontFamily = new FontFamily(result[0]);
+                    {
+                        var ff = result[0];
+                        if (ff.StartsWith("$cf#", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            ff = ff[4..];
+                            var rf = App.AddCustomFont(ff);
+                            if (rf.Length > 0)
+                            {
+                                sender.FontFamily = new FontFamily(rf);
+                            }
+                        }
+                        else
+                        {
+                            sender.FontFamily = new FontFamily(result[0]);
+                        }
+                    }
                     if (!result[1].Equals("-1"))
                         sender.FontSize = double.Parse(result[1]);
                     sender.FontStretch = result[2] switch
@@ -1324,13 +1342,13 @@ namespace hiro
                     }
                     if (path.ToLower().StartsWith("bluetooth("))
                     {
-                        bool? situation = path.ToLower() switch
+                        bool? situation = (parameter.Count > 0 ? parameter[0].ToLower() : "") switch
                         {
-                            "bluetooth(0)" or "bluetooth(off)" => false,
-                            "bluetooth(1)" or "bluetooth(on)" => true,
+                            "0" or "off" => false,
+                            "1" or "on" => true,
                             _ => null,
                         };
-                        SetBthState(situation);
+                        SetBthState(situation, parameter.Count > 1 ? parameter[1] : null);
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("wifi("))
@@ -2689,7 +2707,7 @@ namespace hiro
         [DllImport("user32.dll")]
         static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
 
-        private async static void SetBthState(bool? bluetoothState)
+        private async static void SetBthState(bool? bluetoothState, string? bluetoothMac)
         {
             try
             {
@@ -2706,16 +2724,67 @@ namespace hiro
                     switch (bluetoothState)
                     {
                         case true:
-                            await btRadio.SetStateAsync(RadioState.On);
-                            App.Notify(new Hiro_Notice(Get_Translate("bth") + Get_Translate("dcon"), 2, Get_Translate("bth")));
-                            break;
+                            {
+                                if (bluetoothMac == null)
+                                {
+                                    await btRadio.SetStateAsync(RadioState.On);
+                                    App.Notify(new Hiro_Notice(Get_Translate("bth") + Get_Translate("dcon"), 2, Get_Translate("bth")));
+                                }
+                                else
+                                {
+                                    DeviceInformationCollection PairedBluetoothDevices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelectorFromPairingState(true));
+                                    foreach (var dev in PairedBluetoothDevices)
+                                    {
+                                        var idd = dev.Id.ToString().ToLower();
+                                        var bdd = bluetoothMac.ToLower().Replace("Bluetooth#Bluetooth", "");
+                                        if (dev.Name.ToLower().Contains(bdd) || idd.Equals(bdd.Replace(":", "")))
+                                        {
+                                            Hiro_Bluetooth.BluetoothConnection.ConnectToDevice(bdd);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
                         case false:
-                            await btRadio.SetStateAsync(RadioState.Off);
-                            App.Notify(new Hiro_Notice(Get_Translate("bth") + Get_Translate("dcoff"), 2, Get_Translate("bth")));
+                            {
+                                if (bluetoothMac == null)
+                                {
+                                    await btRadio.SetStateAsync(RadioState.Off);
+                                    App.Notify(new Hiro_Notice(Get_Translate("bth") + Get_Translate("dcoff"), 2, Get_Translate("bth")));
+                                }
+                                else
+                                {
+                                    DeviceInformationCollection PairedBluetoothDevices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelectorFromPairingState(true));
+                                    foreach (var dev in PairedBluetoothDevices)
+                                    {
+                                        var idd = dev.Id.ToString().ToLower();
+                                        var bdd = bluetoothMac.ToLower().Replace("Bluetooth#Bluetooth", "");
+                                        if (dev.Name.ToLower().Contains(bdd) || idd.Equals(bdd.Replace(":", "")))
+                                        {
+                                            Hiro_Bluetooth.BluetoothDisconnection.DisconnectBluetoothDevice(bdd);
+                                        }
+                                    }
+                                }
+                            }
                             break;
                         default:
-                            App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("bth")));
-                            break;
+                            {
+                                if (App.dflag)
+                                {
+                                    DeviceInformationCollection PairedBluetoothDevices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelectorFromPairingState(true));
+                                    foreach (var dev in PairedBluetoothDevices)
+                                    {
+                                        StringBuilder sb = new();
+                                        foreach (var k in dev.Properties.Keys)
+                                        {
+                                            sb.Append(k?.ToString() ?? "Unknow Key").Append(":").Append(dev.Properties[k]?.ToString() ?? "Unknown Value").Append("|");
+                                        }
+                                        LogtoFile($"Device: {dev.Name}|{dev.Id}|{dev.Kind}|{dev.Pairing.CanPair}|{dev.Pairing.ProtectionLevel}|{dev.Pairing.IsPaired}|{{{sb?.ToString() ?? "\"No info\""}}}");
+                                    }
+                                }
+                                App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("bth")));
+                                break;
+                            }
                     }
                 }
                 else

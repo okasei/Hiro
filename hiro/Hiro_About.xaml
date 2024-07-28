@@ -15,7 +15,7 @@
     </Page.Resources>
     <Grid>
         <Button BorderThickness="1" x:Name="chk_btn" Content="Check Update" HorizontalAlignment="Center" Margin="0,255,0,0" VerticalAlignment="Top" Cursor="Hand" Click="Chk_btn_Click" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" />
-        <Border x:Name="avatar" Margin="0,30,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="180" Width="180" CornerRadius="420" MouseLeftButtonDown="Avatar_MouseLeftButtonDown" MouseEnter="Avatar_MouseEnter" MouseLeave="Avatar_MouseLeave">
+        <Border x:Name="avatar" Margin="0,30,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="180" Width="180" CornerRadius="420" MouseEnter="Avatar_MouseEnter" MouseLeave="Avatar_MouseLeave">
             <Border.Background>
                 <ImageBrush x:Name="BaseIcon" Stretch="Uniform" ImageSource="/hiro.png"></ImageBrush>
             </Border.Background>

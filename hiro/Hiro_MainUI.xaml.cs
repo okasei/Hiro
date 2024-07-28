@@ -19,7 +19,6 @@ namespace hiro
         internal Page? current = null;
         private Label? selected = null;
         private int bflag = 0;
-        internal int touch = 0;
         internal Hiro_Home? hiro_home = null;
         internal Hiro_Items? hiro_items = null;
         internal Hiro_Schedule? hiro_schedule = null;
@@ -775,35 +774,7 @@ namespace hiro
 
         private void Closebtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (extended.Visibility == Visibility.Visible)
-            {
-                extended.IsEnabled = false;
-                extend_background.IsEnabled = false;
-                if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
-                {
-                    Storyboard? sb = new();
-                    sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extended, "Opacity", sb);
-                    sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
-                    sb.Completed += delegate
-                    {
-                        extended.Opacity = 0;
-                        extend_background.Opacity = 0;
-                        extended.Visibility = Visibility.Hidden;
-                        extend_background.Visibility = Visibility.Hidden;
-                        sb = null;
-                    };
-                    sb.Begin();
-                }
-                else
-                {
-                    extended.Opacity = 0;
-                    extend_background.Opacity = 0;
-                    extended.Visibility = Visibility.Hidden;
-                    extend_background.Visibility = Visibility.Hidden;
-                }
-
-            }
-            else if (infocenter.Visibility == Visibility.Visible)
+            if (infocenter.Visibility == Visibility.Visible)
             {
                 if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
                 {
@@ -1323,76 +1294,6 @@ namespace hiro
 
         }
 
-        private void Extend_Animation()
-        {
-            extended.IsEnabled = false;
-            System.ComponentModel.BackgroundWorker bw = new();
-            bw.RunWorkerCompleted += delegate
-            {
-                if (App.mn != null)
-                    extended.IsEnabled = true;
-            };
-            Hiro_Utils.Blur_Out(extended, bw);
-        }
-        private void Extend_background_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            extended.IsEnabled = false;
-            extend_background.IsEnabled = false;
-            Storyboard? sb = new();
-            sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extended, "Opacity", sb);
-            sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, extend_background, "Opacity", sb);
-            sb.Completed += delegate
-            {
-                extended.Opacity = 0;
-                extend_background.Opacity = 0;
-                extended.Visibility = Visibility.Hidden;
-                extend_background.Visibility = Visibility.Hidden;
-                sb = null;
-            };
-            sb.Begin();
-        }
-
-        private void Extended_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Extend_Animation();
-            touch++;
-            Hiro_Utils.RunExe($"notify(https://hiro.rexio.cn/Update/hiro.php?r=touch&t={touch}&lang={App.lang},2,{App.appTitle})", App.appTitle);
-        }
-
-        internal void Hiro_We_Extend()
-        {
-            var th = extend_background.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            extend_background.Margin = th;
-            extend_background.Width = Width;
-            extend_background.Height = Height;
-            extend_background.Background = new SolidColorBrush(Colors.Coral);
-            extended.Visibility = Visibility.Visible;
-            extend_background.Visibility = Visibility.Visible;
-            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
-            {
-                Storyboard? sb = new();
-                sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, extended, "Opacity", sb, 0);
-                sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, extend_background, "Opacity", sb, 0);
-                sb.Completed += delegate
-                {
-                    extended.Opacity = 1;
-                    extend_background.Opacity = 1;
-                    extended.IsEnabled = true;
-                    extend_background.IsEnabled = true;
-                    sb = null;
-                };
-                sb.Begin();
-            }
-            else
-            {
-                extended.Opacity = 1;
-                extend_background.Opacity = 1;
-                extended.IsEnabled = true;
-                extend_background.IsEnabled = true;
-            }
-        }
         internal void Hiro_We_Info()
         {
             var th = infoimage.Margin;

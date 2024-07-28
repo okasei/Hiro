@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -35,8 +36,8 @@ namespace hiro
         internal static string logFilePath = "C:\\1.log";
         internal static string langFilePath = "C:\\1.hlp";
         internal static int CustomUsernameFlag = 0;
-        internal static Color AppAccentColor = Colors.Coral;
-        internal static Color AppForeColor = Colors.White;
+        internal static System.Windows.Media.Color AppAccentColor = System.Windows.Media.Colors.Coral;
+        internal static System.Windows.Media.Color AppForeColor = System.Windows.Media.Colors.White;
         internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Hiro_AlarmWin> aw = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Language> la = new();
@@ -70,6 +71,8 @@ namespace hiro
         internal static int flashFlag = -1;
         internal static DateTimeOffset formerTime = DateTimeOffset.Now;
         internal static DateTime formerT = DateTime.Now;
+        internal static PrivateFontCollection pf = new();
+        internal static Dictionary<string, string> pfIndex = new();
         private static Dictionary<string, string> times = new()
         {
             {"morning",string.Empty},
@@ -101,6 +104,29 @@ namespace hiro
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        internal static string AddCustomFont(string path)
+        {
+            var p = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(path)).Trim();
+            if (File.Exists(p))
+            {
+                if (pfIndex.ContainsKey(p))
+                {
+                    return pfIndex[p];
+                }
+                else
+                {
+                    pf.AddFontFile(p);
+                    GlyphTypeface glyphTypeface = new GlyphTypeface(new Uri(p));
+                    string ffi = glyphTypeface.Win32FamilyNames[new System.Globalization.CultureInfo("en-us")];
+                    //if (dflag)
+                    Hiro_Utils.LogtoFile($"[Font]Font Added Location:{p} Index:{pfIndex.Count} FamilyName:{ffi}");
+                    pfIndex.Add(p, ffi);
+                    return ffi;
+                }
+            }
+            return string.Empty;
         }
 
         async private void Initialize_NotificationListener()
@@ -956,8 +982,8 @@ namespace hiro
                 wnd.cm ??= new()
                 {
                     CacheMode = null,
-                    Foreground = new SolidColorBrush(AppForeColor),
-                    Background = new SolidColorBrush(AppAccentColor),
+                    Foreground = new System.Windows.Media.SolidColorBrush(AppForeColor),
+                    Background = new System.Windows.Media.SolidColorBrush(AppAccentColor),
                     BorderBrush = null,
                     Style = (Style)Current.Resources["HiroContextMenu"],
                     Padding = new(1, 10, 1, 10)
@@ -975,7 +1001,7 @@ namespace hiro
                     }
                     MenuItem mu = new()
                     {
-                        Background = new SolidColorBrush(Colors.Transparent)
+                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                     };
                     if (name.ToLower().IndexOf("[s]") != -1)
                     {
@@ -1012,7 +1038,7 @@ namespace hiro
                     wnd.cm.Items.Add(new Separator());
                     MenuItem pre = new()
                     {
-                        Background = new SolidColorBrush(Colors.Transparent)
+                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                     };
                     if (page <= 0)
                         pre.IsEnabled = false;
@@ -1026,14 +1052,14 @@ namespace hiro
                     wnd.cm.Items.Add(pre);
                     MenuItem pageid = new()
                     {
-                        Background = new SolidColorBrush(Colors.Transparent)
+                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                     };
                     pageid.Header = (page + 1).ToString() + "/" + total.ToString();
                     pageid.IsEnabled = false;
                     wnd.cm.Items.Add(pageid);
                     MenuItem next = new()
                     {
-                        Background = new SolidColorBrush(Colors.Transparent)
+                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                     };
                     if (page >= total - 1)
                         next.IsEnabled = false;
@@ -1056,7 +1082,7 @@ namespace hiro
                 wnd.cm.Items.Add(new Separator());
                 MenuItem show = new()
                 {
-                    Background = new SolidColorBrush(Colors.Transparent)
+                    Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                 };
                 show.Header = Hiro_Utils.Get_Translate("menushow");
                 show.Click += delegate
@@ -1066,7 +1092,7 @@ namespace hiro
                 wnd.cm.Items.Add(show);
                 MenuItem exit = new()
                 {
-                    Background = new SolidColorBrush(Colors.Transparent)
+                    Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                 };
                 exit.Header = Hiro_Utils.Get_Translate("menuexit");
                 exit.Click += delegate
