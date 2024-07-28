@@ -101,7 +101,8 @@
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="bg_darker" Content="Darker" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="0,64,0,0"/>
                     <Slider x:Name="bg_slider" Style="{x:Null}" Margin="55,68,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="15" Maximum="510" SmallChange="5" Value="255" ValueChanged="Bg_slider_ValueChanged" LargeChange="25" AutoToolTipPlacement="None"/>
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="bg_brighter" Content="Brighter" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="360,64,0,0"/>
-                    <RadioButton x:Name="acrylic_btn" Content="Acrylic" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="195,29,0,0"  Foreground ="{DynamicResource AppFore}" VerticalContentAlignment="Top" Checked="Video_btn_Checked"/>
+                    <RadioButton x:Name="acrylic_btn" Content="Acrylic" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="195,29,0,0"  Foreground ="{DynamicResource AppFore}" VerticalContentAlignment="Top" Checked="ArcylicBtn_Checked"/>
+                    <RadioButton x:Name="video_btn" Content="Video" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="195,29,0,0"  Foreground ="{DynamicResource AppFore}" VerticalContentAlignment="Top" Checked="video_btn_Checked"/>
                 </Grid>
                 <Grid x:Name="fr_grid" Margin="0,426,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="fr_label" Content="Frame" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="0,64,0,0"/>

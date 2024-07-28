@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Vlc.DotNet.Wpf;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.Text;
@@ -19,8 +18,6 @@ namespace hiro
     /// </summary>
     public partial class Hiro_Player : Window
     {
-        internal VlcVideoSourceProvider? hiro_provider = null;
-        internal VlcVideoSourceProvider? hiro_provider2 = null;
         internal string? toplay = null;
         private int bflag = 0;
         private int rflag = 1;
@@ -120,30 +117,18 @@ namespace hiro
 
         private void Initialize_Player()
         {
-            new System.Threading.Thread(() =>
+            new Thread(() =>
             {
                 try
                 {
-                    Object? obj = null;
                     Dispatcher.Invoke(() =>
                     {
-                        obj = Player_Container.Tag;
                         Dgi.ItemsSource = playlist;
                     });
-                    hiro_provider ??= new(Dispatcher);
-                    if (obj == null)
-                    {
-                        hiro_provider.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "" });
-                        Player_Container.Dispatcher.Invoke(() =>
-                        {
-                            Player_Container.SetBinding(Image.SourceProperty,
-                            new Binding(nameof(VlcVideoSourceProvider.VideoSource)) { Source = hiro_provider });
-                        });
-                    }
-                    hiro_provider.MediaPlayer.Audio.IsMute = false;
-                    hiro_provider.MediaPlayer.EndReached += MediaPlayer_EndReached;
-                    hiro_provider.MediaPlayer.LengthChanged += MediaPlayer_LengthChanged;
-                    hiro_provider.MediaPlayer.PositionChanged += MediaPlayer_PositionChanged;
+                    Media.MediaEnded += Media_MediaEnded;
+                    Media.PositionChanged += Media_PositionChanged;
+                    Media.MediaOpened += Media_MediaOpened;
+                    Media.IsMuted = false;
                     if (toplay != null)
                     {
                         var audio = "*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm;";
@@ -166,62 +151,76 @@ namespace hiro
             }).Start();
         }
 
-        private void MediaPlayer_PositionChanged(object? sender, Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs e)
+        private void Media_MediaOpened(object? sender, Unosquare.FFME.Common.MediaOpenedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Media.Play();
+                Player_Container.Visibility = Visibility.Visible;
+                Dgi.IsEnabled = true;
+                Update_Progress();
+            });
+        }
+
+        private void Media_PositionChanged(object? sender, Unosquare.FFME.Common.PositionChangedEventArgs e)
         {
             Update_Progress();
+        }
+
+        private void Media_MediaEnded(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
+            {
+                await Media.Stop();
+                Player_Container.Visibility = Visibility.Hidden;
+                Ctrl_Progress.Width = 0;
+                Title = App.appTitle;
+                Ctrl_Time.Content = "00:00";
+            });
+            new Thread(() =>
+            {
+                Thread.Sleep(150);
+                if (index < playlist.Count - 1)
+                    PlayIndex(index + 1);
+            }).Start();
         }
 
         private void Update_Progress()
         {
             Dispatcher.Invoke(() =>
             {
-                FrameworkElement? pnlClient = Content as FrameworkElement;
-                if (hiro_provider == null)
+                try
                 {
-                    Ctrl_Progress.Width = 0;
-                    Ctrl_Time.Content = "00:00";
-                }
-                else
-                {
-                    if (Player_Container.Tag != null)
+                    bool zero = !Media.IsPlaying && !Media.IsPaused && Media.HasMediaEnded;
+                    Ctrl_Time.Content = zero ? "00:00" : ParseDuration(Media.Position.TotalSeconds) + "/" + ParseDuration(Media.MediaInfo.Duration.TotalSeconds);
+                    var wid = zero ? 0 : Ctrl_Progress_Bg.Width * Media.Position.TotalSeconds / Media.MediaInfo.Duration.TotalSeconds;
+                    wid = wid >= 0 ? wid : 0;
+                    Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
+                    if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
                     {
-                        var tag = (string)Player_Container.Tag;
-                        if (tag.Equals("Playing") || tag.Equals("Paused"))
+                        var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
+                        if (len < 150)
                         {
-                            var wid = Ctrl_Progress_Bg.Width * hiro_provider.MediaPlayer.Position;
-                            wid = wid >= 0 ? wid : 0;
-                            Ctrl_Time.Content = ParseDuration(hiro_provider.MediaPlayer.Position * hiro_provider.MediaPlayer.GetMedia().Duration.TotalSeconds) + "/" + ParseDuration(hiro_provider.MediaPlayer.GetMedia().Duration.TotalSeconds);
-                            if (pnlClient != null)
-                            {
-                                Ctrl_Progress_Bg.Width = pnlClient.ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
-                            }
-                            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
-                            {
-                                var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
-                                if (len < 150)
-                                {
-                                    Ctrl_Progress.Width = wid;
-                                    return;
-                                }
-                                Storyboard sb = new();
-                                sb = Hiro_Utils.AddDoubleAnimaton(wid, len, Ctrl_Progress, "Width", sb);
-                                sb.Begin();
-                                sb.Completed += delegate
-                                {
-                                    Ctrl_Progress.Width = wid;
-                                };
-                            }
-                            else
-                                Ctrl_Progress.Width = wid;
+                            Ctrl_Progress.Width = wid;
                             return;
                         }
+                        Storyboard sb = new();
+                        sb = Hiro_Utils.AddDoubleAnimaton(wid, len, Ctrl_Progress, "Width", sb);
+                        sb.Begin();
+                        sb.Completed += delegate
+                        {
+                            Ctrl_Progress.Width = wid;
+                        };
                     }
-                    Ctrl_Time.Content = "00:00";
-                    Ctrl_Progress.Width = 0;
+                    else
+                        Ctrl_Progress.Width = wid;
+                    return;
                 }
-                if (pnlClient != null)
+                catch (Exception e)
                 {
-                    Ctrl_Progress_Bg.Width = pnlClient.ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
+                    Hiro_Utils.LogError(e, "Hiro.Player");
+                    Ctrl_Progress.Width = 0;
+                    Ctrl_Time.Content = "00:00";
                 }
             });
         }
@@ -262,120 +261,43 @@ namespace hiro
         private void ParseCommand()
         {
             var txt = Ctrl_Text.Text;
-            if (hiro_provider != null)
+            if (txt.StartsWith("hiro.vol:"))
             {
-                if (txt.StartsWith("hiro.vol:"))
-                {
-                    hiro_provider.MediaPlayer.Audio.Volume = Convert.ToInt32(txt[9..]);
-                    Title = txt[9..];
-                }
-                else if (txt.StartsWith("hiro.speed:"))
-                {
-                    hiro_provider.MediaPlayer.Rate = float.Parse(txt[11..]);
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Rate = float.Parse(txt[11..]);
-                }
-                else
-                {
-                    Play(txt);
-                }
+                Media.Volume = Convert.ToInt32(txt[9..]) / 100;
             }
-
-        }
-
-        private void MediaPlayer_LengthChanged(object? sender, Vlc.DotNet.Core.VlcMediaPlayerLengthChangedEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
+            else if (txt.StartsWith("hiro.speed:"))
             {
-                Player_Container.Visibility = Visibility.Visible;
-                Dgi.IsEnabled = true;
-                Player_Container.Tag = "Playing";
-                Update_Progress();
-            });
+                Media.SpeedRatio = float.Parse(txt[11..]);
+            }
+            else
+            {
+                Play(txt);
+            }
         }
 
         internal void Play(string uri)
         {
             new Thread(() =>
             {
-                if (hiro_provider != null)
+                try
                 {
-                    try
+                    string? directory = Path.GetDirectoryName(uri);
+                    string vidPath = uri;
+                    Dispatcher.Invoke(async () =>
                     {
-                        string? directory = Path.GetDirectoryName(uri);
+                        playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(vidPath), vidPath, string.Empty));
+                        index = playlist.Count - 1;
+                        await Media.Open(new Uri(vidPath));
+                        Ctrl_Text.Text = vidPath;
+                        Title = Hiro_Utils.GetFileName(vidPath) + " - " + App.appTitle;
+                        Player_Container.Visibility = Visibility.Visible;
+                        Update_Progress();
+                    });
 
-                        string vidPath = uri;
-                        string audioPath = "";
-
-                        // Check if the URI ends with "audio.mts" or "video.mts"
-                        if (uri.EndsWith("audio.m4s") || uri.EndsWith("video.m4s"))
-                        {
-                            // Check if there exists a corresponding "video.mts" file
-                            string vidFilePath = Path.Combine(directory ?? "", "video.m4s");
-                            if (File.Exists(vidFilePath))
-                            {
-                                vidPath = vidFilePath;
-                            }
-                            vidFilePath = Path.Combine(directory ?? "", "audio.m4s");
-                            if (File.Exists(vidFilePath))
-                            {
-                                audioPath = vidFilePath;
-                            }
-                        }
-
-                        // Check if the URI ends with "audio.mts" or "video.mts"
-                        if (uri.EndsWith("audio.mp4") || uri.EndsWith("video.mp4"))
-                        {
-                            // Check if there exists a corresponding "video.mts" file
-                            string vidFilePath = Path.Combine(directory ?? "", "video.mp4");
-                            if (File.Exists(vidFilePath))
-                            {
-                                vidPath = vidFilePath;
-                            }
-                            vidFilePath = Path.Combine(directory ?? "", "audio.mp4");
-                            if (File.Exists(vidFilePath))
-                            {
-                                audioPath = vidFilePath;
-                            }
-                        }
-                        Dispatcher.Invoke(() =>
-                        {
-                            playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(vidPath), vidPath, string.Empty));
-                            if (hiro_provider != null)
-                            {
-                                var a = Player_Container.Tag != null && !((string)Player_Container.Tag).Equals("Playing") && !((string)Player_Container.Tag).Equals("Paused");
-                                var b = Player_Container.Tag == null;
-                                if (a || b)
-                                {
-                                    index = playlist.Count - 1;
-                                    hiro_provider.MediaPlayer.Play(new Uri(vidPath));
-                                    Ctrl_Text.Text = vidPath;
-                                    Title = Hiro_Utils.GetFileName(vidPath) + " - " + App.appTitle;
-                                    Player_Container.Visibility = Visibility.Visible;
-                                    Player_Container.Tag = "Playing";
-                                    Update_Progress();
-                                    if (audioPath.Length > 0)
-                                    {
-                                        if (hiro_provider2 == null)
-                                        {
-                                            hiro_provider2 = new(Dispatcher);
-                                            hiro_provider2.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "" });
-                                        }
-                                        hiro_provider2.MediaPlayer.Play(new Uri(audioPath));
-                                    }
-                                    else
-                                    {
-                                        hiro_provider2?.MediaPlayer.Stop();
-                                    }
-                                }
-                            }
-                        });
-
-                    }
-                    catch (Exception ex)
-                    {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlayer.Play");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlayer.Play");
                 }
             }).Start();
         }
@@ -428,40 +350,14 @@ namespace hiro
             bflag = 0;
         }
 
-        private void MediaPlayer_EndReached(object? sender, Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                Player_Container.Visibility = Visibility.Hidden;
-                Player_Container.Tag = "End";
-                Ctrl_Progress.Width = 0;
-                Title = App.appTitle;
-                Ctrl_Time.Content = "00:00";
-                Update_Progress();
-            });
-            new System.Threading.Thread(() =>
-            {
-                System.Threading.Thread.Sleep(150);
-                if (index < playlist.Count - 1)
-                    PlayIndex(index + 1);
-            }).Start();
-
-        }
-
         private void Ctrl_Progress_Bg_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.ButtonState == e.LeftButton)
             {
-                if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
+                if (Media.IsPlaying || Media.IsPaused)
                 {
                     var a = e.GetPosition(Ctrl_Progress_Bg);
-                    hiro_provider.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
-                    try
-                    {
-                        if (hiro_provider2 != null)
-                            hiro_provider2.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
-                    }
-                    catch { }
+                    Media.Position = TimeSpan.FromSeconds((float)(a.X / Ctrl_Progress_Bg.Width) * Media.MediaInfo.Duration.TotalSeconds);
                     Update_Progress();
                 }
             }
@@ -471,16 +367,10 @@ namespace hiro
         {
             if (e.ButtonState == e.LeftButton)
             {
-                if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
+                if (Media.IsPlaying || Media.IsPaused)
                 {
-                    var a = e.GetPosition(Ctrl_Progress);
-                    hiro_provider.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
-                    try
-                    {
-                        if (hiro_provider2 != null)
-                            hiro_provider2.MediaPlayer.Position = (float)(a.X / Ctrl_Progress_Bg.Width);
-                    }
-                    catch { }
+                    var a = e.GetPosition(Ctrl_Progress_Bg);
+                    Media.Position = TimeSpan.FromSeconds((float)(a.X / Ctrl_Progress_Bg.Width) * Media.MediaInfo.Duration.TotalSeconds);
                     Update_Progress();
                 }
             }
@@ -538,11 +428,12 @@ namespace hiro
             {
                 if (cflag == 1)
                 {
-                    new System.Threading.Thread(() =>
+                    new System.Threading.Thread(async () =>
                     {
                         cflag = 2;
-                        hiro_provider?.Dispose();
-                        hiro_provider = null;
+                        e.Cancel = true;
+                        await Media.Close();
+                        Media.Dispose();
                         cflag = 0;
                         Dispatcher.Invoke(() =>
                         {
@@ -579,28 +470,15 @@ namespace hiro
 
         private void PlayPause()
         {
-            if (Player_Container.Tag != null && hiro_provider != null)
+            if (Media.IsPlaying)
             {
-                if (((string)Player_Container.Tag).Equals("Playing"))
-                {
-                    if (hiro_provider.MediaPlayer.IsPausable())
-                    {
-                        hiro_provider.MediaPlayer.Pause();
-                        hiro_provider2?.MediaPlayer.Pause();
-                        Player_Container.Tag = "Paused";
-                        Player_Notify(Hiro_Utils.Get_Translate("playerpause"));
-                    }
-                }
-                else if (((string)Player_Container.Tag).Equals("Paused"))
-                {
-                    if (hiro_provider.MediaPlayer.CouldPlay)
-                    {
-                        Player_Container.Tag = "Playing";
-                        hiro_provider.MediaPlayer.Play();
-                        hiro_provider2?.MediaPlayer.Play();
-                        Player_Notify(Hiro_Utils.Get_Translate("playerplay"));
-                    }
-                }
+                Media.Pause();
+                Player_Notify(Hiro_Utils.Get_Translate("playerpause"));
+            }
+            else if (Media.IsPaused)
+            {
+                Media.Play();
+                Player_Notify(Hiro_Utils.Get_Translate("playerplay"));
             }
         }
 
@@ -616,10 +494,6 @@ namespace hiro
                 Chrome.CornerRadius = new(0);
                 Chrome.NonClientFrameEdges = (System.Windows.Shell.NonClientFrameEdges)13;
                 Chrome.GlassFrameThickness = new(0, 1, 0, 0);
-                if (hiro_provider != null)
-                {
-                    hiro_provider.MediaPlayer.Video.FullScreen = false;
-                }
                 Ctrl_Btns.Visibility = Controller.Visibility;
                 Move_Label.Visibility = Controller.Visibility;
                 rflag = 1;
@@ -634,10 +508,6 @@ namespace hiro
                 Chrome.CornerRadius = new(0);
                 Chrome.NonClientFrameEdges = 0;
                 Chrome.GlassFrameThickness = new(2);
-                if (hiro_provider != null)
-                {
-                    hiro_provider.MediaPlayer.Video.FullScreen = true;
-                }
                 Ctrl_Btns.Visibility = Visibility.Hidden;
                 Move_Label.Visibility = Visibility.Hidden;
             }
@@ -661,36 +531,19 @@ namespace hiro
         {
             if (e.KeyStates == Keyboard.GetKeyStates(Key.Right))
             {
-                if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
+                if (Media.IsPlaying || Media.IsPaused)
                 {
-                    if (hiro_provider.MediaPlayer.Position + 0.01 < 1)
-                    {
-                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position + 0.01);
-                        if (hiro_provider2 != null)
-                            try
-                            {
-                                hiro_provider2.MediaPlayer.Position = (float)(hiro_provider2.MediaPlayer.Position + 0.01);
-                            }
-                            catch { }
-                    }
+                    Media.Position = TimeSpan.FromSeconds(Math.Min(Media.Position.TotalSeconds + 0.01 * Media.MediaInfo.Duration.TotalSeconds, Media.MediaInfo.Duration.TotalSeconds));
                     Update_Progress();
-                    e.Handled = true;
                 }
+                e.Handled = true;
             }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.Left))
             {
-                if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
+                if (Media.IsPlaying || Media.IsPaused)
                 {
-                    if (hiro_provider.MediaPlayer.Position - 0.01 > 0)
-                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position - 0.01);
-                    if (hiro_provider2 != null)
-                        try
-                        {
-                            hiro_provider2.MediaPlayer.Position = (float)(hiro_provider2.MediaPlayer.Position - 0.01);
-                        }
-                        catch { }
+                    Media.Position = TimeSpan.FromSeconds(Math.Max(Media.Position.TotalSeconds - 0.01 * Media.MediaInfo.Duration.TotalSeconds, 0));
                     Update_Progress();
-                    e.Handled = true;
                 }
             }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.Space))
@@ -730,59 +583,7 @@ namespace hiro
 
         private void Hiro_Player1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyStates == Keyboard.GetKeyStates(Key.Right))
-            {
-                if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
-                {
-                    if (hiro_provider.MediaPlayer.Position + 0.01 < 1)
-                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position + 0.01);
-                    Update_Progress();
-                    e.Handled = true;
-                }
-            }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Left))
-            {
-                if (hiro_provider != null && Player_Container.Tag != null && (((string)Player_Container.Tag).Equals("Playing") || ((string)Player_Container.Tag).Equals("Paused")))
-                {
-                    if (hiro_provider.MediaPlayer.Position - 0.01 > 0)
-                        hiro_provider.MediaPlayer.Position = (float)(hiro_provider.MediaPlayer.Position - 0.01);
-                    Update_Progress();
-                    e.Handled = true;
-                }
-            }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Space))
-            {
-                PlayPause();
-                e.Handled = true;
-            }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Enter))
-            {
-                FullScreen();
-                e.Handled = true;
-            }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.Escape))
-            {
-                if (WindowStyle == WindowStyle.None)
-                {
-                    FullScreen();
-                    e.Handled = true;
-                }
-            }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.I) && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                Switch_UI();
-                e.Handled = true;
-            }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.O) && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                Switch_Bar();
-                e.Handled = true;
-            }
-            else if (e.KeyStates == Keyboard.GetKeyStates(Key.L) && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                Switch_List();
-                e.Handled = true;
-            }
+            Player_Cover_KeyDown(sender, e);
         }
 
         private void Ctrl_Time_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -1040,13 +841,8 @@ namespace hiro
             };
             uu.Click += delegate
             {
-                if (hiro_provider != null)
-                {
-                    hiro_provider.MediaPlayer.Rate = 2;
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Rate = 2;
-                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "2"));
-                }
+                Media.SpeedRatio = 2;
+                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "2"));
             };
             MenuItem u = new()
             {
@@ -1055,13 +851,8 @@ namespace hiro
             };
             u.Click += delegate
             {
-                if (hiro_provider != null)
-                {
-                    hiro_provider.MediaPlayer.Rate = 1.5f;
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Rate = 1.5f;
-                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1.5"));
-                }
+                Media.SpeedRatio = 1.5f;
+                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1.5"));
             };
             MenuItem n = new()
             {
@@ -1070,13 +861,8 @@ namespace hiro
             };
             n.Click += delegate
             {
-                if (hiro_provider != null)
-                {
-                    hiro_provider.MediaPlayer.Rate = 1;
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Rate = 1;
-                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1"));
-                }
+                Media.SpeedRatio = 1;
+                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1"));
             };
             MenuItem s = new()
             {
@@ -1085,13 +871,8 @@ namespace hiro
             };
             s.Click += delegate
             {
-                if (hiro_provider != null)
-                {
-                    hiro_provider.MediaPlayer.Rate = 0.75f;
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Rate = 0.75f;
-                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.75"));
-                }
+                Media.SpeedRatio = 0.75f;
+                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.75"));
             };
             MenuItem ss = new()
             {
@@ -1100,13 +881,8 @@ namespace hiro
             };
             ss.Click += delegate
             {
-                if (hiro_provider != null)
-                {
-                    hiro_provider.MediaPlayer.Rate = 0.5f;
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Rate = 0.5f;
-                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.5"));
-                }
+                Media.SpeedRatio = 0.5f;
+                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.5"));
             };
             speed.Items.Add(uu);
             speed.Items.Add(u);
@@ -1358,37 +1134,27 @@ namespace hiro
 
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (hiro_provider != null)
-                {
-                    var vol = hiro_provider.MediaPlayer.Rate;
-                    var del = (float)e.Delta > 0 ? 0.25f : -0.25f;
-                    if (vol + del <= 0)
-                        vol = 0.25f;
-                    else
-                        vol = vol + del;
-                    hiro_provider.MediaPlayer.Rate = vol;
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Rate = vol;
-                    Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
-                    e.Handled = true;
-                }
+                var vol = Media.SpeedRatio;
+                var del = (float)e.Delta > 0 ? 0.25f : -0.25f;
+                if (vol + del <= 0)
+                    vol = 0.25f;
+                else
+                    vol = vol + del;
+                Media.SpeedRatio = vol;
+                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
+                e.Handled = true;
             }
             else
             {
-                if (hiro_provider != null)
-                {
-                    var vol = hiro_provider.MediaPlayer.Audio.Volume;
-                    var del = e.Delta / 100;
-                    if (vol + del < 0)
-                        vol = 0;
-                    else
-                        vol = vol + del;
-                    hiro_provider.MediaPlayer.Audio.Volume = vol;
-                    if (hiro_provider2 != null)
-                        hiro_provider2.MediaPlayer.Audio.Volume = vol;
-                    Player_Notify(Hiro_Utils.Get_Translate("playervol").Replace("%v", vol.ToString()));
-                    e.Handled = true;
-                }
+                var vol = Media.Volume;
+                var del = e.Delta / 10000;
+                if (vol + del < 0)
+                    vol = 0;
+                else
+                    vol = vol + del;
+                Media.Volume = vol;
+                Player_Notify(Hiro_Utils.Get_Translate("playervol").Replace("%v", ((int)(vol * 100)).ToString()));
+                e.Handled = true;
             }
         }
 
@@ -1407,9 +1173,9 @@ namespace hiro
 
         private void PlayIndex(int i)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(async () =>
             {
-                if (hiro_provider != null && index < playlist.Count)
+                if (index < playlist.Count)
                 {
                     try
                     {
@@ -1451,24 +1217,10 @@ namespace hiro
                                 audioPath = vidFilePath;
                             }
                         }
-                        hiro_provider.MediaPlayer.Play(new Uri(vidPath));
+                        await Media.Open(new Uri(vidPath));
                         Ctrl_Text.Text = vidPath;
                         Title = Hiro_Utils.GetFileName(vidPath) + " - " + App.appTitle;
                         Player_Container.Visibility = Visibility.Visible;
-                        Player_Container.Tag = "Playing";
-                        if (audioPath.Length > 0)
-                        {
-                            if (hiro_provider2 == null)
-                            {
-                                hiro_provider2 = new(Dispatcher);
-                                hiro_provider2.CreatePlayer(new(@Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\win-vlc"), new[] { "" });
-                            }
-                            hiro_provider2.MediaPlayer.Play(new Uri(audioPath));
-                        }
-                        else
-                        {
-                            hiro_provider2?.MediaPlayer.Stop();
-                        }
 
                     }
                     catch (Exception ex)

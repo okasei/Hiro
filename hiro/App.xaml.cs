@@ -101,6 +101,7 @@ namespace hiro
                 Initialize_NotificationListener();
             });
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "FPS", "60"))));
+            Unosquare.FFME.Library.FFmpegDirectory = @Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare("<current>")) + @"\runtimes\ffmpeg\x64";
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;

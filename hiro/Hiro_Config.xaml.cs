@@ -195,6 +195,7 @@ namespace hiro
             rbtn15.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2");
             rbtn14.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("1");
             acrylic_btn.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3");
+            video_btn.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("4");
             Autorun.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "AutoRun", "0").Equals("1");
             blureff.IsChecked = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0") switch
             {
@@ -241,6 +242,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(rbtn14, "colortheme");
             Hiro_Utils.Set_Control_Location(rbtn15, "imagetheme");
             Hiro_Utils.Set_Control_Location(acrylic_btn, "acrylictheme");
+            Hiro_Utils.Set_Control_Location(video_btn, "videotheme");
             Hiro_Utils.Set_Control_Location(cb_box, "minclose");
             Hiro_Utils.Set_Control_Location(Autorun, "autorun");
             Hiro_Utils.Set_Control_Location(blureff, "blurbox");
@@ -321,6 +323,7 @@ namespace hiro
             rbtn14.Content = Hiro_Utils.Get_Translate("colortheme");
             rbtn15.Content = Hiro_Utils.Get_Translate("imagetheme");
             acrylic_btn.Content = Hiro_Utils.Get_Translate("acrylictheme");
+            video_btn.Content = Hiro_Utils.Get_Translate("videotheme");
             if (!double.TryParse(Hiro_Utils.Read_Ini(App.dConfig, "Config", "OpacityMask", "255"), out double to))
                 to = 255;
             bg_slider.Value = to;
@@ -668,6 +671,7 @@ namespace hiro
                 rbtn15.IsEnabled = false;
                 rbtn14.IsEnabled = false;
                 acrylic_btn.IsEnabled = false;
+                video_btn.IsEnabled = false;
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "2");
                 if (Hiro_Main != null)
                 {
@@ -680,6 +684,7 @@ namespace hiro
                     rbtn15.IsEnabled = true;
                     rbtn14.IsEnabled = true;
                     acrylic_btn.IsEnabled = true;
+                    video_btn.IsEnabled = true;
                     btn10.IsEnabled = true;
                 }
             }
@@ -691,6 +696,7 @@ namespace hiro
             {
                 rbtn15.IsEnabled = false;
                 rbtn14.IsEnabled = false;
+                video_btn.IsEnabled = false;
                 acrylic_btn.IsEnabled = false;
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "1");
                 if (Hiro_Main != null)
@@ -703,6 +709,7 @@ namespace hiro
                     blureff.IsEnabled = false;
                     rbtn15.IsEnabled = true;
                     rbtn14.IsEnabled = true;
+                    video_btn.IsEnabled = true;
                     acrylic_btn.IsEnabled = true;
                     btn10.IsEnabled = true;
                 }
@@ -795,6 +802,31 @@ namespace hiro
             {
                 Hiro_Main?.Set_Label(Hiro_Main.acrylicx);
             }
+            else if (video_btn.IsChecked == true)
+            {
+                Microsoft.Win32.OpenFileDialog ofd = new()
+                {
+                    Filter = Hiro_Utils.Get_Translate("vidfiles") +
+                "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;" +
+                "*.m4v;*.mkv;*.mov;*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;" +
+                "*.rec;*.rm;*.rmvb;*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
+                + Hiro_Utils.Get_Translate("audfiles") +
+                "|*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;" +
+                "*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;" +
+                "*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm|"
+                + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
+                    ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
+                    CheckFileExists = true, //验证路径的有效性
+                    CheckPathExists = true,//验证路径的有效性
+                    Multiselect = false,
+                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
+                };
+                if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
+                {
+                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "BackVideo", ofd.FileName);
+                    Hiro_Main?.Blurbgi(0);
+                }
+            }
             else
             {
                 if (Hiro_Main != null)
@@ -842,13 +874,14 @@ namespace hiro
             }
         }
 
-        private void Video_btn_Checked(object sender, RoutedEventArgs e)
+        private void ArcylicBtn_Checked(object sender, RoutedEventArgs e)
         {
             if (Load)
             {
                 rbtn15.IsEnabled = false;
                 rbtn14.IsEnabled = false;
                 acrylic_btn.IsEnabled = false;
+                video_btn.IsEnabled = false;
                 blureff.IsEnabled = false;
                 btn10.IsEnabled = false;
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "3");
@@ -856,6 +889,7 @@ namespace hiro
                 rbtn15.IsEnabled = true;
                 rbtn14.IsEnabled = true;
                 acrylic_btn.IsEnabled = true;
+                video_btn.IsEnabled = true;
                 btn10.IsEnabled = true;
             }
         }
@@ -966,6 +1000,26 @@ namespace hiro
         private void Rbtn22_Checked(object sender, RoutedEventArgs e)
         {
             Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "5");
+        }
+
+        private void video_btn_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Load)
+            {
+                rbtn15.IsEnabled = false;
+                rbtn14.IsEnabled = false;
+                acrylic_btn.IsEnabled = false;
+                video_btn.IsEnabled = false;
+                blureff.IsEnabled = false;
+                btn10.IsEnabled = false;
+                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "4");
+                Hiro_Main?.Blurbgi(0);
+                rbtn15.IsEnabled = true;
+                rbtn14.IsEnabled = true;
+                acrylic_btn.IsEnabled = true;
+                video_btn.IsEnabled = true;
+                btn10.IsEnabled = true;
+            }
         }
     }
 }

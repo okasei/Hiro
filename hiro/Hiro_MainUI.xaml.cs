@@ -5,8 +5,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Vlc.DotNet.Wpf;
-using Vlc.DotNet.Core.Interops;
 using System.Windows.Automation.Peers;
 
 namespace hiro
@@ -33,7 +31,6 @@ namespace hiro
         internal Hiro_Proxy? hiro_proxy = null;
         internal Hiro_Chat? hiro_chat = null;
         internal Hiro_Login? hiro_login = null;
-        internal VlcVideoSourceProvider? hiro_provider = null;
         internal string vlcPath = "";
         internal string currentBack = "";
         internal WindowAccentCompositor? compositor = null;
@@ -48,7 +45,38 @@ namespace hiro
             Loaded += delegate
             {
                 HiHiro();
+                Load_Video();
             };
+        }
+
+        internal void Load_Video()
+        {
+            if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("4"))
+            {
+                var video = Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Path_Prepare(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackVideo", "")));
+                var b = BackVideo.Visibility == Visibility.Visible && (BackVideo.IsPlaying || BackVideo.IsPaused) && BackVideo.MediaInfo.MediaSource.Equals(video.Trim());
+                if (System.IO.File.Exists(video) && !b)
+                {
+                    new System.Threading.Thread(async () =>
+                    {
+                        await Dispatcher.Invoke(async () =>
+                        {
+                            try
+                            {
+                                await BackVideo.Open(new Uri(video));
+                                if (Visibility != Visibility.Visible)
+                                    await BackVideo.Pause();
+                                BackVideo.Visibility = Visibility.Visible;
+                            }
+                            catch (Exception e)
+                            {
+                                Hiro_Utils.LogError(e, "Hiro.Main.Initialize.BackVideo");
+                                BackVideo.Visibility = Visibility.Collapsed;
+                            }
+                        });
+                    }).Start();
+                }
+            }
         }
 
         public void MainUI_Initialize()
@@ -72,7 +100,9 @@ namespace hiro
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
             Hiro_Utils.LogtoFile("[HIROWEGO]Main UI: Intitalized");
-            new System.Threading.Thread(() =>
+            var bg = Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1");
+            if (!bg.Equals("3") && !bg.Equals("4"))
+                new System.Threading.Thread(() =>
             {
                 var strFileName = Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", string.Empty);
                 if (System.IO.File.Exists(@strFileName))
@@ -138,13 +168,10 @@ namespace hiro
                         }
                         else
                             img.Dispose();
-                        Dispatcher.Invoke(() =>
+                        Dispatcher.Invoke(async () =>
                         {
-                            if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
-                            {
-                                Hiro_Utils.Set_Bgimage(bgimage, this);
-                                currentBack = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", "")));
-                            }
+                            Hiro_Utils.Set_Bgimage(bgimage, this);
+                            currentBack = Hiro_Utils.Path_Prepare(Hiro_Utils.Path_Prepare_EX(Hiro_Utils.Read_Ini(App.dConfig, "Config", "BackImage", "")));
                         });
                     }
                     catch (Exception ex)
@@ -782,6 +809,8 @@ namespace hiro
                     sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, infocenter, "Opacity", sb);
                     sb.Completed += delegate
                     {
+                        if (BackVideo.Visibility == Visibility.Visible)
+                            BackVideo.Play();
                         infocenter.Opacity = 0;
                         infocenter.Visibility = Visibility.Hidden;
                         if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("1"))
@@ -1124,6 +1153,8 @@ namespace hiro
             if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Min", "1").Equals("1"))
             {
                 Visibility = Visibility.Hidden;
+                if (BackVideo.Visibility == Visibility.Visible)
+                    BackVideo.Pause();
             }
             else
             {
@@ -1203,6 +1234,7 @@ namespace hiro
                 Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 Set_AcrylicStyle();
                 SetHCStatus();
+                StopVideo();
             }
             else
             {
@@ -1215,11 +1247,30 @@ namespace hiro
                     compositor.IsEnabled = false;
                 }
                 if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2"))
+                {
+
                     Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
+                    StopVideo();
+                }
+                else if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("4"))
+                    Load_Video();
                 else
+                {
+                    StopVideo();
                     SetHCStatus();
+                }
             }
             bflag = 0;
+        }
+
+        private void StopVideo()
+        {
+            if (BackVideo.Visibility == Visibility.Visible)
+            {
+                BackVideo.Visibility = Visibility.Collapsed;
+                if (BackVideo.IsPlaying || BackVideo.IsPaused)
+                    BackVideo.Stop();
+            }
         }
 
         private void SetHCStatus()
@@ -1231,6 +1282,7 @@ namespace hiro
             hc.rbtn15.IsEnabled = true;
             hc.btn10.IsEnabled = true;
             hc.acrylic_btn.IsEnabled = true;
+            hc.video_btn.IsEnabled = true;
             if (hc.rbtn15.IsChecked == true)
                 hc.blureff.IsEnabled = true;
         }
@@ -1303,6 +1355,8 @@ namespace hiro
             infocenter.Width = Width;
             infocenter.Height = Height;
             infocenter.Visibility = Visibility.Visible;
+            if (BackVideo.Visibility == Visibility.Visible)
+                BackVideo.Pause();
             if (!Hiro_Utils.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {
                 Storyboard? sb = new();
@@ -1338,10 +1392,17 @@ namespace hiro
         {
             if (WindowState == WindowState.Maximized)
                 WindowState = WindowState.Normal;
-            if (WindowState != WindowState.Minimized)
+            else if (WindowState != WindowState.Minimized)
             {
                 if (Hiro_Utils.Read_Ini(App.dConfig, "Config", "Background", "1").Equals("2"))
                     Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_Ini(App.dConfig, "Config", "Blur", "0")), false);
+                if (BackVideo.IsPaused)
+                    BackVideo.Play();
+            }
+            else
+            {
+                if (BackVideo.Visibility == Visibility.Visible)
+                    BackVideo.Pause();
             }
         }
 
@@ -1391,6 +1452,44 @@ namespace hiro
         private void Acrylicx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Set_Label(acrylicx);
+        }
+
+        private void BackVideo_MediaOpened(object sender, Unosquare.FFME.Common.MediaOpenedEventArgs e)
+        {
+
+            if (BackVideo.MediaInfo.Streams.Count > 0)
+            {
+                var w = BackVideo.MediaInfo.Streams[0].PixelWidth;
+                var h = BackVideo.MediaInfo.Streams[0].PixelHeight;
+                var ww = Width;
+                var hh = Height;
+                var wi = ww / w;
+                var hi = hh / h;
+                var www = hh * w / h;
+                var hhh = ww * h / w;
+                if (wi < hi)
+                {
+                    BackVideo.Width = www;
+                    BackVideo.Height = hh;
+                }
+                else
+                {
+                    BackVideo.Width = ww;
+                    BackVideo.Height = hhh;
+                }
+            }
+        }
+
+        private void ui_Activated(object sender, EventArgs e)
+        {
+            if (BackVideo.IsPaused)
+                BackVideo.Play();
+        }
+
+        private void ui_Deactivated(object sender, EventArgs e)
+        {
+            if (BackVideo.Visibility == Visibility.Visible)
+                BackVideo.Pause();
         }
     }
 }

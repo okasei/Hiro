@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Name="ui"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:wpf="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
+        xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="mainui" Height="450" Width="550" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" StateChanged="Ui_StateChanged">
+        Title="mainui" Height="450" Width="550" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/hiro_circle.ico" StateChanged="Ui_StateChanged" Activated="ui_Activated" Deactivated="ui_Deactivated">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
@@ -21,7 +21,8 @@
     </WindowChrome.WindowChrome>
     <Grid x:Name="BaseGrid">
         <Label x:Name="bgimage" HorizontalAlignment="Stretch" Background="Coral" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
-        <Image x:Name="bgicon" HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="Uniform" Source="/net7.png" Width="29" Height="50" Margin="0,0,110,0" Visibility="Hidden"></Image>
+        <Image x:Name="bgicon" HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="Uniform" Source="/net7.png" Width="29" Height="50" Margin="0,0,110,0" Visibility="Collapsed"></Image>
+        <ffme:MediaElement x:Name="BackVideo" HorizontalAlignment="Center" VerticalAlignment="Center" LoadedBehavior="Play" LoopingBehavior="Play" Visibility="Collapsed" UnloadedBehavior="Manual" IsMuted="True" MediaOpened="BackVideo_MediaOpened"/>
         <Label x:Name="bglabel" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" MouseDown="Bglabel_MouseDown" Height="30" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
         <Label x:Name="borderlabel" Content="" Background="{x:Null}" BorderBrush="{DynamicResource AppFore}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2,2,2,2"/>
         <Grid x:Name="stack" Width="130" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Height="420" Visibility="Hidden">
