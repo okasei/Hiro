@@ -13,6 +13,8 @@
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
     </Page.Resources>
     <Grid>
+        <Label x:Name="FakeHello" Content="Hello" FontWeight="Bold" Visibility="Collapsed" FontSize="24"/>
+        <Label x:Name="FakeCopyright" Content="Copyright" Visibility="Collapsed"/>
         <TextBlock x:Name="Hello" Text="Good morning, user!" HorizontalAlignment="Center" Margin="0,50,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontWeight="Bold" FontSize="24"/>
         <TextBlock x:Name="Copyright" Text="Copyright © N+&#xA;All Rights Reserved." HorizontalAlignment="Center" Margin="0,340,0,30" VerticalAlignment="Bottom"  Foreground ="{DynamicResource AppFore}" UseLayoutRounding="False" FontFamily="Segoe UI" FlowDirection="LeftToRight" TextWrapping="WrapWithOverflow" FontStyle="Normal" FontStretch="Normal"/>
     </Grid>

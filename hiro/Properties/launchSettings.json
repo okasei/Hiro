@@ -1,8 +1,7 @@
 {
   "profiles": {
     "hiro": {
-      "commandName": "Project",
-      "commandLineArgs": " silent pure"
+      "commandName": "Project"
     }
   }
 }

@@ -38,8 +38,8 @@ namespace hiro
         internal static string logFilePath = "C:\\1.log";
         internal static string langFilePath = "C:\\1.hlp";
         internal static int CustomUsernameFlag = 0;
-        internal static System.Windows.Media.Color AppAccentColor = System.Windows.Media.Colors.Coral;
-        internal static System.Windows.Media.Color AppForeColor = System.Windows.Media.Colors.White;
+        internal static Color AppAccentColor = Colors.Coral;
+        internal static Color AppForeColor = Colors.White;
         internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Hiro_AlarmWin> aw = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Language> la = new();
@@ -73,7 +73,7 @@ namespace hiro
         internal static int flashFlag = -1;
         internal static DateTimeOffset formerTime = DateTimeOffset.Now;
         internal static DateTime formerT = DateTime.Now;
-        internal static PrivateFontCollection pf = new();
+        //internal static PrivateFontCollection pf = new();
         internal static Dictionary<string, string> pfIndex = new();
         private static Dictionary<string, string> times = new()
         {
@@ -120,13 +120,13 @@ namespace hiro
                 }
                 else
                 {
-                    pf.AddFontFile(p);
+                    //pf.AddFontFile(p);
                     GlyphTypeface glyphTypeface = new GlyphTypeface(new Uri(p));
                     string ffi = glyphTypeface.Win32FamilyNames[new System.Globalization.CultureInfo("en-us")];
-                    //if (dflag)
-                    Hiro_Utils.LogtoFile($"[Font]Font Added Location:{p} Index:{pfIndex.Count} FamilyName:{ffi}");
-                    pfIndex.Add(p, ffi);
-                    return ffi;
+                    if (dflag)
+                        Hiro_Utils.LogtoFile($"[Font]Font Added Location:{p}#{ffi} Index:{pfIndex.Count}");
+                    pfIndex.Add(p, p + "#" + ffi);
+                    return p + "#" + ffi;
                 }
             }
             return string.Empty;
@@ -573,7 +573,7 @@ namespace hiro
             Hiro_File.CreateFolder(currentDir + "\\system\\lang\\");
             Hiro_File.CreateFolder(currentDir + "\\system\\wallpaper\\");
             logFilePath = currentDir + "\\users\\" + eUserName + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
-            System.IO.File.Delete(logFilePath);
+            File.Delete(logFilePath);
             Hiro_Utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
             dConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hus";
             sConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hsl";
@@ -863,13 +863,14 @@ namespace hiro
                 if (!Hiro_Utils.Read_DCIni("MonitorSys", "1").Equals("1"))
                     return;
                 if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1"))
-                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "0");
+                    Hiro_Utils.Write_Ini(dConfig, "Config", "Toast", "0");
                 var a = Hiro_Utils.Read_DCIni("MonitorSysPara", "0").Trim();
-                if (a.Equals("1") || a.Equals("0"))
-                    Do_Notifications(await listener?.GetNotificationsAsync(NotificationKinds.Unknown), formerTime);
-                if (a.Equals("2") || a.Equals("0"))
-                    Do_Notifications(await listener?.GetNotificationsAsync(NotificationKinds.Toast), formerTime);
+                var b = formerTime;
                 formerTime = DateTimeOffset.Now;
+                if (a.Equals("1") || a.Equals("0"))
+                    Do_Notifications(await listener?.GetNotificationsAsync(NotificationKinds.Unknown), b);
+                if (a.Equals("2") || a.Equals("0"))
+                    Do_Notifications(await listener?.GetNotificationsAsync(NotificationKinds.Toast), b);
             }
             catch (Exception ex)
             {

@@ -206,8 +206,8 @@ namespace hiro
                 Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(2, closebtn, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(0, stack, sb, -50, null);
-                if (infolabel.Visibility == Visibility.Visible)
-                    Hiro_Utils.AddPowerAnimation(0, infolabel, sb, -50, null);
+                if (infoPoly.Visibility == Visibility.Visible)
+                    Hiro_Utils.AddPowerAnimation(0, infoPoly, sb, -50, null, 150, 100);
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
@@ -219,12 +219,53 @@ namespace hiro
             Dispatcher.Invoke(() =>
             {
                 infotext.AppendText(text);
-                infolabel.Visibility = Visibility.Visible;
-                if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+                var fv = infoPoly.Visibility;
+                infoPoly.Visibility = Visibility.Visible;
+                if (fv != Visibility.Visible)
                 {
-                    Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(0, infolabel, sb, -50, null);
-                    sb.Begin();
+                    if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+                    {
+                        Storyboard sb = new();
+                        Hiro_Utils.AddPowerAnimation(0, infoPoly, sb, -50, null);
+                        sb.Begin();
+                    }
+                    Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, "tigridp", Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"));
+                }
+                else
+                {
+                    if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+                    {
+                        var s = Hiro_Utils.Get_FrameworkElement_Location("tgridt");
+                        var s2 = Hiro_Utils.Get_FrameworkElement_Location("tgridct");
+                        var sb = Hiro_Utils.AddColorAnimaton(App.AppAccentColor, s2.Left, infoPoly, "(Shape.Stroke).(SolidColorBrush.Color)", null);
+                        sb.Completed += delegate
+                        {
+                            infoPoly.Stroke = new SolidColorBrush(App.AppAccentColor);
+                            new System.Threading.Thread(() =>
+                            {
+                                System.Threading.Thread.Sleep((int)s2.Top);
+                                Dispatcher.Invoke(() =>
+                                {
+                                    var sb2 = Hiro_Utils.AddColorAnimaton(App.AppForeColor, s2.Right, infoPoly, "(Shape.Stroke).(SolidColorBrush.Color)", null);
+                                    sb2.Completed += delegate
+                                    {
+                                        infoPoly.Stroke = new SolidColorBrush(App.AppForeColor);
+                                    };
+                                    sb2.Begin();
+                                });
+                            }).Start();
+                        };
+                        sb.Begin();
+                        Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, "tigridpp", true, s.Left, 0, 0.6);
+                        new System.Threading.Thread(() =>
+                        {
+                            System.Threading.Thread.Sleep((int)s.Top);
+                            Dispatcher.Invoke(() =>
+                            {
+                                Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, infoPoly.Visibility == Visibility.Visible ? "tigridp" : "tigrid", true, s.Right, 0.9);
+                            });
+                        }).Start();
+                    }
                 }
             });
         }
@@ -263,9 +304,40 @@ namespace hiro
 
         }
 
+        internal void HideAll()
+        {
+            if (MainGrid.Visibility == Visibility.Visible)
+            {
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                {
+                    var sb = Hiro_Utils.AddPowerOutAnimation(0, MainGrid, null, null, 100);
+                    sb.Completed += delegate
+                    {
+                        MainGrid.Visibility = Visibility.Collapsed;
+                    };
+                    sb.Begin();
+                }
+                else
+                {
+                    MainGrid.Visibility = Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                MainGrid.Visibility = Visibility.Visible;
+                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                {
+                    var sb = Hiro_Utils.AddPowerAnimation(0, MainGrid, null, 100);
+                    sb.Begin();
+                }
+            }
+        }
+
         #region UI相关
         public void Load_Position()
         {
+            Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, infoPoly.Visibility == Visibility.Visible ? "tigridp" : "tigrid");
+            Hiro_Utils.Set_FrameworkElement_Location(infoPoly, "infopoly");
             Hiro_Utils.Set_Control_Location(titlelabel, "title");
             Hiro_Utils.Set_Control_Location(versionlabel, "version");
             Hiro_Utils.Set_Control_Location(infotitle, "infotitle");
@@ -543,8 +615,10 @@ namespace hiro
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
+            Resources["AppForeColor"] = App.AppForeColor;
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
             Resources["InfoAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 200));
+            infoPoly.Stroke = new SolidColorBrush(App.AppForeColor);
             #endregion
             minbtn.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 0));
             if (App.wnd != null && App.wnd.cm != null)
@@ -700,7 +774,7 @@ namespace hiro
             infotitle.Content = Hiro_Utils.Get_Translate("infotitle");
             minbtn.ToolTip = Hiro_Utils.Get_Translate("min");
             closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
-            infolabel.ToolTip = Hiro_Utils.Get_Translate("info");
+            infoPoly.ToolTip = Hiro_Utils.Get_Translate("info");
             homex.Content = Hiro_Utils.Get_Translate("home");
             itemx.Content = Hiro_Utils.Get_Translate("item");
             schedulex.Content = Hiro_Utils.Get_Translate("schedule");
@@ -715,6 +789,7 @@ namespace hiro
             loginx.Content = Hiro_Utils.Get_Translate("login");
             acrylicx.Content = Hiro_Utils.Get_Translate("acrylic");
             hiro_home?.Update_Labels();
+            hiro_home?.Load_Position();
             hiro_items?.Load_Translate();
             hiro_items?.Load_Position();
             hiro_schedule?.Load_Translate();
@@ -807,38 +882,36 @@ namespace hiro
             {
                 if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
                 {
-                    Storyboard? sb = new();
-                    sb = Hiro_Utils.AddDoubleAnimaton(0, App.blursec, infocenter, "Opacity", sb);
+                    var sb = Hiro_Utils.AddPowerOutAnimation(0, infocenter, null, null, -100, 300, 200);
                     sb.Completed += delegate
                     {
                         if (BackVideo.Visibility == Visibility.Visible && BackVideo.Visibility == Visibility.Visible)
                             BackVideo.Play();
-                        infocenter.Opacity = 0;
                         infocenter.Visibility = Visibility.Hidden;
                         if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
                         {
                             infocenter.IsEnabled = false;
                             Storyboard? sbe = new();
-                            Hiro_Utils.AddPowerAnimation(1, infolabel, sbe, null, -50);
+                            Hiro_Utils.AddPowerOutAnimation(0, infoPoly, sbe, null, -50, 150, 100);
                             sbe.Completed += delegate
                             {
-                                infolabel.Visibility = Visibility.Hidden;
+                                infoPoly.Visibility = Visibility.Collapsed;
                             };
                             sbe.Begin();
                         }
                         else
                         {
-                            infolabel.Visibility = Visibility.Hidden;
+                            infoPoly.Visibility = Visibility.Hidden;
                         }
+                        Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, "tigrid", Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"));
                         sb = null;
                     };
                     sb.Begin();
                 }
                 else
                 {
-                    infocenter.Opacity = 0;
-                    infocenter.Visibility = Visibility.Hidden;
-                    infolabel.Visibility = Visibility.Hidden;
+                    infocenter.Visibility = Visibility.Collapsed;
+                    infoPoly.Visibility = Visibility.Collapsed;
                 }
             }
             else
@@ -1168,12 +1241,7 @@ namespace hiro
 
         private void Titlelabel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var thickness = versionlabel.Margin;
-            thickness.Left = titlelabel.Margin.Left + titlelabel.ActualWidth + 2;
-            versionlabel.Margin = thickness;
-            thickness = infolabel.Margin;
-            thickness.Left = versionlabel.Margin.Left + versionlabel.ActualWidth + 2;
-            infolabel.Margin = thickness;
+
         }
 
         private void Schedulex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -1354,31 +1422,19 @@ namespace hiro
 
         internal void Hiro_We_Info()
         {
-            var th = infoimage.Margin;
-            th.Left = 0;
-            th.Top = 0;
-            infocenter.Margin = th;
-            infocenter.Width = Width;
-            infocenter.Height = Height;
+
             infocenter.Visibility = Visibility.Visible;
             if (BackVideo.Visibility == Visibility.Visible)
                 BackVideo.Pause();
+            infocenter.IsEnabled = true;
             if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
             {
-                Storyboard? sb = new();
-                sb = Hiro_Utils.AddDoubleAnimaton(1, App.blursec, infocenter, "Opacity", sb, 0);
+                Storyboard? sb = Hiro_Utils.AddPowerAnimation(0, infocenter, null, -100, null, 300, 200);
                 sb.Completed += delegate
                 {
-                    infocenter.Opacity = 1;
-                    infocenter.IsEnabled = true;
                     sb = null;
                 };
                 sb.Begin();
-            }
-            else
-            {
-                infocenter.Opacity = 1;
-                infocenter.IsEnabled = true;
             }
         }
         private void Versionlabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -1438,16 +1494,9 @@ namespace hiro
             Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
         }
 
-        private void Infolabel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Hiro_We_Info();
-        }
-
         private void Versionlabel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var thickness = infolabel.Margin;
-            thickness.Left = versionlabel.Margin.Left + versionlabel.ActualWidth + 2;
-            infolabel.Margin = thickness;
+
         }
 
         private void Loginx_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -1496,6 +1545,11 @@ namespace hiro
         {
             if (BackVideo.Visibility == Visibility.Visible)
                 BackVideo.Pause();
+        }
+
+        private void InfoPolyFake_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Hiro_We_Info();
         }
     }
 }

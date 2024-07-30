@@ -117,7 +117,6 @@ namespace hiro
                 if (frame.ToString().Equals((fr_box.Items[i] as ComboBoxItem).Content.ToString()))
                 {
                     fr_box.SelectedIndex = i;
-                    fr_name.Content = frame.ToString();
                     break;
                 }
             }
@@ -272,10 +271,8 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(bg_slider, "bgslider");
             Hiro_Utils.Set_Control_Location(fr_label, "frame");
             Hiro_Utils.Set_Control_Location(fr_box, "frbox");
-            Hiro_Utils.Set_Control_Location(fr_name, "frbox");
             Hiro_Utils.Set_Control_Location(langlabel, "language");
             Hiro_Utils.Set_Control_Location(langbox, "langbox");
-            Hiro_Utils.Set_Control_Location(langname, "langbox");
             Hiro_Utils.Set_Control_Location(moreandsoon, "morecome");
             Hiro_Utils.Set_Control_Location(btn7, "lock");
             Hiro_Utils.Set_Control_Location(btnx1, "proxybtn");
@@ -363,6 +360,7 @@ namespace hiro
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppForeReverse"] = new SolidColorBrush(App.AppForeColor == Colors.White ? Colors.Black : Colors.White);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
@@ -501,7 +499,6 @@ namespace hiro
         private void Langbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             App.lang = App.la[langbox.SelectedIndex].Name;
-            langname.Content = App.la[langbox.SelectedIndex].Langname;
             if (Load)
             {
                 App.langFilePath = App.currentDir + "\\system\\lang\\" + App.la[langbox.SelectedIndex].Name + ".hlp";
@@ -689,6 +686,7 @@ namespace hiro
                     btn10.IsEnabled = true;
                 }
             }
+            bg_slider.IsEnabled = true;
         }
 
         private void Rbtn14_Checked(object sender, RoutedEventArgs e)
@@ -715,6 +713,7 @@ namespace hiro
                     btn10.IsEnabled = true;
                 }
             }
+            bg_slider.IsEnabled = true;
         }
 
         private void Btn10_Click(object sender, RoutedEventArgs e)
@@ -893,6 +892,7 @@ namespace hiro
                 video_btn.IsEnabled = true;
                 btn10.IsEnabled = true;
             }
+            bg_slider.IsEnabled = false;
         }
 
         private void Image_compress_Checked(object sender, RoutedEventArgs e)
@@ -992,7 +992,6 @@ namespace hiro
             if (Load)
             {
                 var fritems = new String[] { "1", "2", "3", "15", "30", "45", "60", "75", "90", "120", "144", "240" };
-                fr_name.Content = fritems[fr_box.SelectedIndex];
                 Hiro_Utils.Write_Ini(App.dConfig, "Config", "FPS", fritems[fr_box.SelectedIndex]);
                 App.Notify(new(Hiro_Utils.Get_Translate("restart"), 2, Hiro_Utils.Get_Translate("frame")));
             }
@@ -1021,6 +1020,7 @@ namespace hiro
                 video_btn.IsEnabled = true;
                 btn10.IsEnabled = true;
             }
+            bg_slider.IsEnabled = false;
         }
     }
 }

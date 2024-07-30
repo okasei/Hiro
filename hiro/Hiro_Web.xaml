@@ -324,7 +324,7 @@
                                 </Label.Background>
                             </Label>
                         </Grid>
-                        <TextBox x:Name="URLBox" VerticalContentAlignment="Center" Margin="0,3,0,0" Visibility="Collapsed" Foreground="{DynamicResource AppFore}" FontStretch="{Binding FontStretch, ElementName=TitleLabel}" FontStyle="{Binding FontStyle, ElementName=TitleLabel}" FontWeight="{Binding FontWeight, ElementName=TitleLabel}" FontSize="{Binding FontSize, ElementName=TitleLabel}" FontFamily="{Binding FontFamily, ElementName=TitleLabel}" TextWrapping="NoWrap" KeyDown="URLBox_KeyDown"/>
+                        <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="URLBox" VerticalContentAlignment="Center" Margin="0,3,0,0" Visibility="Collapsed" Foreground="{DynamicResource AppFore}" FontStretch="{Binding FontStretch, ElementName=TitleLabel}" FontStyle="{Binding FontStyle, ElementName=TitleLabel}" FontWeight="{Binding FontWeight, ElementName=TitleLabel}" FontSize="{Binding FontSize, ElementName=TitleLabel}" FontFamily="{Binding FontFamily, ElementName=TitleLabel}" TextWrapping="NoWrap" KeyDown="URLBox_KeyDown"/>
                         <TextBlock x:Name ="TitleLabel" FontSize="12" Text= "{Binding Title, ElementName=window}" Foreground="{DynamicResource AppFore}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, ElementName=TitleLabel}" HorizontalAlignment="Stretch"  />
                         <Grid Width="5"/>
                     </DockPanel>

@@ -133,7 +133,7 @@
             </StackPanel>
             <Grid x:Name="Ctrl_Address" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0" Height="{Binding Height, ElementName=Ctrl_Btns}" Visibility="Hidden">
                 <Label x:Name="Ctrl_Text_Bg" Background="{DynamicResource AppForeDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>
-                <TextBox x:Name="Ctrl_Text" Foreground="{DynamicResource AppForeReverse}" KeyDown="Ctrl_Text_KeyDown" BorderThickness="0,0,0,0" Padding="6,5,6,5" FontSize="16" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Grid.IsSharedSizeScope="True"></TextBox>
+                <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="Ctrl_Text" Foreground="{DynamicResource AppForeReverse}" KeyDown="Ctrl_Text_KeyDown" BorderThickness="0,0,0,0" Padding="6,5,6,5" FontSize="16" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Grid.IsSharedSizeScope="True"></TextBox>
             </Grid>
             <DataGrid x:Name="Dgi" Visibility="Hidden" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" HeadersVisibility="None"  FontFamily="{Binding FontFamily, ElementName=Ctrl_Text}" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="{DynamicResource AppFore}" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="200" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick" FontSize="16" Drop="Dgi_Drop" AllowDrop="True" MouseLeave="Dgi_MouseLeave" MouseDown="Dgi_MouseDown">
                 <DataGrid.Columns>

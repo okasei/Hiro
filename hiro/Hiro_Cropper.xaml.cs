@@ -251,7 +251,7 @@ namespace hiro
             SetOriginalX();
         }
 
-        private bool SaveCroppedImage(string savePath)
+        private bool SaveCroppedImage(string savePath, bool noCrop = false)
         {
             try
             {
@@ -259,9 +259,16 @@ namespace hiro
                 ImageSource imageSource = Original.Source;
                 System.Drawing.Bitmap bitmap = ImageSourceToBitmap(imageSource);
                 BitmapSource bitmapSource = BitmapToBitmapImage(bitmap);
-                BitmapSource newBitmapSource = CutImage(bitmapSource, new Int32Rect(Convert.ToInt32(CropBorder.Margin.Left * resize * DPI.X / 96), Convert.ToInt32(CropBorder.Margin.Top * resize * DPI.Y / 96), Convert.ToInt32(CropBorder.Width * resize * DPI.X / 96), Convert.ToInt32(CropBorder.Height * resize * DPI.Y / 96)));
                 PngBitmapEncoder PBE = new PngBitmapEncoder();
-                PBE.Frames.Add(BitmapFrame.Create(newBitmapSource));
+                if (!noCrop)
+                {
+                    BitmapSource newBitmapSource = CutImage(bitmapSource, new Int32Rect(Convert.ToInt32(CropBorder.Margin.Left * resize * DPI.X / 96), Convert.ToInt32(CropBorder.Margin.Top * resize * DPI.Y / 96), Convert.ToInt32(CropBorder.Width * resize * DPI.X / 96), Convert.ToInt32(CropBorder.Height * resize * DPI.Y / 96)));
+                    PBE.Frames.Add(BitmapFrame.Create(newBitmapSource));
+                }
+                else
+                {
+                    PBE.Frames.Add(BitmapFrame.Create(bitmapSource));
+                }
                 using (Stream stream = File.Create(Hiro_Utils.Path_Prepare(savePath)))
                 {
                     PBE.Save(stream);
@@ -343,6 +350,13 @@ namespace hiro
             original = new Point(0, 0);
             originalThickness = new(0);
             cropFlag = 0;
+        }
+
+        private void OKBtn_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var res = SaveCroppedImage(saveTo, true);
+            Action?.Invoke(res);
+            Close();
         }
     }
 }

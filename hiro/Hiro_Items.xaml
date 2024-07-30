@@ -15,7 +15,12 @@
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
     </Page.Resources>
     <Grid>
-        <DataGrid x:Name="dgi" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Background="Transparent" HeadersVisibility="Column" FontFamily="Segoe UI" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="{DynamicResource AppFore}" SelectionMode="Single" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="410" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick">
+        <DataGrid x:Name="dgi" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Background="Transparent" HeadersVisibility="Column" 
+                  FontFamily="{Binding FontFamily, ElementName=ExCellLabel, Mode=OneWay}" FontSize="{Binding FontSize, ElementName=ExCellLabel, Mode=OneWay}"
+                  FontStretch="{Binding FontStretch, ElementName=ExCellLabel, Mode=OneWay}" FontWeight="{Binding FontWeight, ElementName=ExCellLabel, Mode=OneWay}"
+                  FontStyle="{Binding FontStyle, ElementName=ExCellLabel, Mode=OneWay}" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" 
+                  CanUserDeleteRows="False" IsReadOnly="True" Foreground="{DynamicResource AppFore}" SelectionMode="Single" CanUserResizeRows="False" EnableRowVirtualization="False" 
+                  AreRowDetailsFrozen="True" Width="410" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Page, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Page" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
                 <DataGridTextColumn Binding="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="ID" FontFamily="Segoe UI" CanUserResize="True" Width="40"/>
@@ -46,11 +51,6 @@
             </DataGrid.RowStyle>
             <DataGrid.CellStyle>
                 <Style TargetType="{x:Type DataGridCell}">
-                    <Setter Property="FontFamily" Value="{Binding FontFamily, ElementName=ExCellLabel, Mode=OneWay}"/>
-                    <Setter Property="FontSize" Value="{Binding FontSize, ElementName=ExCellLabel, Mode=OneWay}"/>
-                    <Setter Property="FontWeight" Value="{Binding FontWeight, ElementName=ExCellLabel, Mode=OneWay}"/>
-                    <Setter Property="FontStretch" Value="{Binding FontStretch, ElementName=ExCellLabel, Mode=OneWay}"/>
-                    <Setter Property="FontStyle" Value="{Binding FontStyle, ElementName=ExCellLabel, Mode=OneWay}"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="Transparent"/>

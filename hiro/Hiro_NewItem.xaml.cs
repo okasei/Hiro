@@ -119,6 +119,7 @@ namespace hiro
         public void Load_Color()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
+            Resources["AppForeReverse"] = new SolidColorBrush(App.AppForeColor == Colors.White ? Colors.Black : Colors.White);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
@@ -159,9 +160,7 @@ namespace hiro
             Hiro_Utils.Set_Control_Location(tb8, "cmdtb");
             Hiro_Utils.Set_Control_Location(klabel, "hotkey");
             Hiro_Utils.Set_Control_Location(modibox, "modifier");
-            Hiro_Utils.Set_Control_Location(modiname, "modifier");
             Hiro_Utils.Set_Control_Location(keybox, "vkey");
-            Hiro_Utils.Set_Control_Location(keylabel, "vkey");
             Hiro_Utils.Set_Control_Location(glabel, "itemname");
             Hiro_Utils.Set_Control_Location(glabel2, "command");
             Hiro_Utils.Set_Control_Location(tb9, "detailtb");
@@ -496,28 +495,10 @@ namespace hiro
 
         private void Modibox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (modibox.SelectedIndex < 0)
-            {
-                modiname.Content = "";
-                return;
-            }
-            if (modibox.Items.GetItemAt(modibox.SelectedIndex) is ComboBoxItem { Content: { } } cbi)
-            {
-                modiname.Content = cbi.Content.ToString();
-            }
         }
 
         private void Keybox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (keybox.SelectedIndex < 0)
-            {
-                keylabel.Content = "";
-                return;
-            }
-            if (keybox.Items.GetItemAt(keybox.SelectedIndex) is ComboBoxItem { Content: { } } cbi)
-            {
-                keylabel.Content = cbi.Content.ToString();
-            }
         }
 
         private void Tb8_KeyDown(object sender, KeyEventArgs e)

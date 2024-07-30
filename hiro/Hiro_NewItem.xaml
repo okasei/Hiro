@@ -13,51 +13,8 @@
     Title="Hiro_NewItem">
     <Page.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeReverse" Color="Black"></SolidColorBrush> 
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
-        <materialDesign:BrushRoundConverter x:Key="BrushRoundConverter"/>
-        <Style x:Key="FocusVisual">
-            <Setter Property="Control.Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Rectangle Margin="2 2 2 2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="True" StrokeThickness="1"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <ControlTemplate x:Key="MaterialDesignComboBoxItemTemplate" TargetType="{x:Type ComboBoxItem}">
-            <Grid x:Name="GridWrapper">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Border x:Name="BackBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
-                <Border x:Name="MouseOverBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Opacity="0" SnapsToDevicePixels="True"/>
-                <Border x:Name="SelectedBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" Opacity="0" RenderTransformOrigin="0.5,0.5"/>
-                <wpf:Ripple ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" Focusable="False" Feedback="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" HorizontalAlignment="Stretch" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" RecognizesAccessKey="False" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" VerticalAlignment="Stretch"/>
-            </Grid>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" TargetName="GridWrapper" Value="{x:Static wpf:Constants.TextBoxNotEnabledOpacity}"/>
-                </Trigger>
-                <MultiTrigger>
-                    <MultiTrigger.Conditions>
-                        <Condition Property="Tag" Value="{StaticResource AllowCollapse}"/>
-                        <Condition Property="IsSelected" Value="True"/>
-                    </MultiTrigger.Conditions>
-                    <Setter Property="Height" Value="0"/>
-                </MultiTrigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-        <Style x:Key="HiroComboBoxItemContainerStyle" TargetType="{x:Type ComboBoxItem}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Padding" Value="16 8"/>
-            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
-            <Setter Property="Template" Value="{StaticResource MaterialDesignComboBoxItemTemplate}"/>
-        </Style>
     </Page.Resources>
     <Grid>
         <Label x:Name="glabel" Style="{DynamicResource HiroLabel}" Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
@@ -78,9 +35,7 @@
         <Button x:Name="ntn7" BorderThickness="1" Content="explorer" HorizontalAlignment="Left" Margin="275,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn7_Click"/>
         <Button x:Name="ntn8" BorderThickness="1" Content="Open…" HorizontalAlignment="Left" Margin="335,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn8_Click"/>
         <Label x:Name="klabel" Content="HotKey" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
-        <Label x:Name="modiname" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent" Margin="95,145,0,0"/>
-        <ComboBox x:Name="modibox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="61,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Modibox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="33"/>
-        <Label x:Name="keylabel" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent" Margin="238,145,0,0"/>
-        <ComboBox x:Name="keybox" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="200,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Keybox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="33"/>
+        <ComboBox x:Name="modibox" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="61,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Modibox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" materialDesign:ColorZoneAssist.Background="{DynamicResource AppFore}" materialDesign:ColorZoneAssist.Foreground="{DynamicResource AppForeReverse}" Height="33"/>
+        <ComboBox x:Name="keybox" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="200,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Keybox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" materialDesign:ColorZoneAssist.Background="{DynamicResource AppFore}" materialDesign:ColorZoneAssist.Foreground="{DynamicResource AppForeReverse}" Height="33"/>
     </Grid>
 </Page>

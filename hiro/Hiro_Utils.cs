@@ -129,6 +129,9 @@ namespace hiro
         {
             try
             {
+                var logDirectory = Path_PPX(@$"<current>\users\{App.eUserName}\log\");
+                if (!Directory.Exists(logDirectory))
+                    Hiro_File.CreateFolder(App.logFilePath);
                 if (!File.Exists(App.logFilePath))
                     File.Create(App.logFilePath).Close();
                 FileStream fs = new(App.logFilePath, FileMode.Open, FileAccess.ReadWrite);
@@ -141,7 +144,6 @@ namespace hiro
                 sr.Close();
                 sr.Dispose();
                 fs.Close();
-
             }
             catch (Exception ex)
             {
@@ -527,7 +529,38 @@ namespace hiro
 
         }
 
-        public static void Set_FrameworkElement_Location(FrameworkElement sender, string val, bool animation = false, double animationTime = 150)
+        public static Thickness Get_FrameworkElement_Location(string val)
+        {
+            Thickness thickness = new(0);
+            try
+            {
+                var loc = Read_Ini(App.langFilePath, "location", val, string.Empty);
+                loc = loc.Replace(" ", "").Replace("%b", " ");
+                loc = loc[(loc.IndexOf("{") + 1)..];
+                loc = loc[..loc.LastIndexOf("}")];
+                var left = loc[..loc.IndexOf(",")];
+                loc = loc[(left.Length + 1)..];
+                var top = loc[..loc.IndexOf(",")];
+                loc = loc[(top.Length + 1)..];
+                var width = loc[..loc.IndexOf(",")];
+                loc = loc[(width.Length + 1)..];
+                var height = loc;
+                thickness.Right = width.Equals("-1") ? double.NaN : double.Parse(width);
+                thickness.Bottom = height.Equals("-1") ? double.NaN : double.Parse(height);
+                if (!left.Equals("-1"))
+                    thickness.Left = double.Parse(left);
+                if (!top.Equals("-1"))
+                    thickness.Top = double.Parse(top);
+                return thickness;
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, $"Hiro.Exception.Location.Grid{Environment.NewLine}Path: {val}");
+                return new(0);
+            }
+        }
+
+        public static void Set_FrameworkElement_Location(FrameworkElement sender, string val, bool animation = false, double animationTime = 150, double dRatio = 0.9, double aRatio = 0)
         {
             Size mSize = new();
             Thickness thickness = sender.Margin;
@@ -563,11 +596,11 @@ namespace hiro
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             Storyboard sb = new();
-                            AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb);
+                            AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb, null, dRatio, aRatio);
                             if (!double.IsNaN(mSize.Height))
-                                AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb);
+                                AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb, null, dRatio, aRatio);
                             if (!double.IsNaN(mSize.Width))
-                                AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb);
+                                AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb, null, dRatio, aRatio);
                             sb.Completed += delegate
                             {
                                 sender.Width = mSize.Width;
@@ -1081,6 +1114,17 @@ namespace hiro
                                 App.mn.closebtn.Visibility = Visibility.Hidden;
                                 App.mn.stack.Visibility = Visibility.Hidden;
                                 App.mn.Visibility = Visibility.Hidden;
+                            }
+                        });
+                        goto RunOK;
+                    }
+                    if (Hiro_Text.StartsWith(path, "switch()"))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            if (App.mn != null)
+                            {
+                                App.mn.HideAll();
                             }
                         });
                         goto RunOK;
@@ -2720,7 +2764,7 @@ namespace hiro
         #endregion
 
         #region 添加thickness动画
-        public static Storyboard AddThicknessAnimaton(Thickness? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Thickness? from = null, double DecelerationRatio = 0.9)
+        public static Storyboard AddThicknessAnimaton(Thickness? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Thickness? from = null, double DecelerationRatio = 0.9, double AccelerationRatio = 0)
         {
             sb ??= new();
             ThicknessAnimation? da = new();
@@ -2730,6 +2774,7 @@ namespace hiro
                 da.To = to;
             da.Duration = TimeSpan.FromMilliseconds(mstime);
             da.DecelerationRatio = DecelerationRatio;
+            da.AccelerationRatio = AccelerationRatio;
             Storyboard.SetTarget(da, value);
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
@@ -2767,7 +2812,21 @@ namespace hiro
         #endregion
 
         #region 增强动效
-        public static Storyboard AddPowerAnimation(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null)
+        public static Storyboard AddPowerAnimation(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null, double mstime = 450, double opacityTime = 350)
+        {
+
+            sb = AddPower(Direction, value, sb, from, to, mstime);
+            AddDoubleAnimaton(null, opacityTime, value, "Opacity", sb, 0);
+            return sb;
+        }
+        public static Storyboard AddPowerOutAnimation(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null, double mstime = 450, double opacityTime = 350)
+        {
+            sb = AddPower(Direction, value, sb, from, to, mstime);
+            AddDoubleAnimaton(0, opacityTime, value, "Opacity", sb, null);
+            return sb;
+        }
+
+        private static Storyboard AddPower(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null, double mstime = 450)
         {
             sb ??= new();
             var th1 = value.Margin;
@@ -2794,7 +2853,7 @@ namespace hiro
                     th1.Bottom += (double)from;
                     th2.Bottom += (double)to;
                 }
-                AddThicknessAnimaton(th2, 450, value, "Margin", sb, th1);
+                AddThicknessAnimaton(th2, mstime, value, "Margin", sb, th1);
             }
             if (to != null && from == null)
             {
@@ -2814,7 +2873,7 @@ namespace hiro
                 {
                     th2.Bottom += (double)to;
                 }
-                AddThicknessAnimaton(th2, 450, value, "Margin", sb, null);
+                AddThicknessAnimaton(th2, mstime, value, "Margin", sb, null);
             }
             if (to == null && from != null)
             {
@@ -2834,9 +2893,8 @@ namespace hiro
                 {
                     th1.Bottom += (double)from;
                 }
-                AddThicknessAnimaton(null, 450, value, "Margin", sb, th1);
+                AddThicknessAnimaton(null, mstime, value, "Margin", sb, th1);
             }
-            AddDoubleAnimaton(null, 350, value, "Opacity", sb, 0);
             return sb;
         }
         #endregion

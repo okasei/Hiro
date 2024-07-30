@@ -13,51 +13,8 @@
     Title="Hiro_Config">
     <Page.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeReverse" Color="Black"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
-        <materialDesign:BrushRoundConverter x:Key="BrushRoundConverter"/>
-        <Style x:Key="FocusVisual">
-            <Setter Property="Control.Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Rectangle Margin="2 2 2 2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="True" StrokeThickness="1"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <ControlTemplate x:Key="MaterialDesignComboBoxItemTemplate" TargetType="{x:Type ComboBoxItem}">
-            <Grid x:Name="GridWrapper">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Border x:Name="BackBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
-                <Border x:Name="MouseOverBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Opacity="0" SnapsToDevicePixels="True"/>
-                <Border x:Name="SelectedBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" Opacity="0" RenderTransformOrigin="0.5,0.5"/>
-                <wpf:Ripple ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" Focusable="False" Feedback="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" HorizontalAlignment="Stretch" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" RecognizesAccessKey="False" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" VerticalAlignment="Stretch"/>
-            </Grid>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" TargetName="GridWrapper" Value="{x:Static wpf:Constants.TextBoxNotEnabledOpacity}"/>
-                </Trigger>
-                <MultiTrigger>
-                    <MultiTrigger.Conditions>
-                        <Condition Property="Tag" Value="{StaticResource AllowCollapse}"/>
-                        <Condition Property="IsSelected" Value="True"/>
-                    </MultiTrigger.Conditions>
-                    <Setter Property="Height" Value="0"/>
-                </MultiTrigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-        <Style x:Key="HiroComboBoxItemContainerStyle" TargetType="{x:Type ComboBoxItem}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Padding" Value="16 8"/>
-            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
-            <Setter Property="Template" Value="{StaticResource MaterialDesignComboBoxItemTemplate}"/>
-        </Style>
     </Page.Resources>
     <Grid>
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -106,8 +63,7 @@
                 </Grid>
                 <Grid x:Name="fr_grid" Margin="0,426,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="fr_label" Content="Frame" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="0,64,0,0"/>
-                    <Label Style="{DynamicResource HiroLabel}" x:Name="fr_name" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent"/>
-                    <ComboBox x:Name="fr_box" BorderBrush ="{DynamicResource AppFore}" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="70,5,0,0" VerticalAlignment="Top" Width="120" d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="24" SelectionChanged="Fr_box_SelectionChanged">
+                    <ComboBox x:Name="fr_box" BorderBrush ="{DynamicResource AppFore}" HorizontalAlignment="Left" Margin="70,5,0,0" VerticalAlignment="Top" Width="120" d:ItemsSource="{x:Null}" IsReadOnly="True"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" materialDesign:ColorZoneAssist.Background="{DynamicResource AppFore}" materialDesign:ColorZoneAssist.Foreground="{DynamicResource AppForeReverse}" Height="24" SelectionChanged="Fr_box_SelectionChanged">
                     </ComboBox>
                 </Grid>
                 <Grid x:Name="no_grid" Margin="4,314,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
@@ -127,8 +83,7 @@
                 <CheckBox x:Name="Verbose" Content="Show More Message" HorizontalAlignment="Left" Margin="173,775,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Unchecked="Verbose_Unchecked" Checked="Verbose_Checked"/>
                 <CheckBox x:Name="animation" Content="Enable Animation" HorizontalAlignment="Left" Margin="173,805,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Checked="Animation_Checked" Unchecked="Animation_Unchecked" IsThreeState="True" Indeterminate="Animation_Indeterminate"/>
                 <Label Style="{DynamicResource HiroLabel}" x:Name="langlabel" Content="Language" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="13,865,0,0" Height="24" Width="71" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                <Label Style="{DynamicResource HiroLabel}" x:Name="langname" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="" Foreground ="{DynamicResource AppFore}" Background="Transparent"/>
-                <ComboBox x:Name="langbox" BorderBrush ="{DynamicResource AppFore}" HorizontalAlignment="Left" DisplayMemberPath="name" Margin="103,865,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True" ItemContainerStyle="{DynamicResource HiroComboBoxItemContainerStyle}" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Height="24"/>
+                <ComboBox x:Name="langbox" BorderBrush ="{DynamicResource AppFore}" HorizontalAlignment="Left" DisplayMemberPath="name" HorizontalContentAlignment="Center" Margin="103,865,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Langbox_SelectionChanged" d:ItemsSource="{x:Null}" IsReadOnly="True" materialDesign:ColorZoneAssist.Background="{DynamicResource AppFore}" materialDesign:ColorZoneAssist.Foreground="{DynamicResource AppForeReverse}" Height="24"/>
                 <CheckBox x:Name="reverse_style" Content="Reverse Foreground" HorizontalAlignment="Left" Margin="288,828,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Checked="Reverse_style_Checked" Unchecked="Reverse_style_Unchecked"/>
                 <CheckBox x:Name="tr_btn" Content="Transparent Button" HorizontalAlignment="Left" Margin="293,805,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Checked="Tr_btn_Checked"  Unchecked="Tr_btn_Unchecked"/>
                 <CheckBox x:Name="image_compress" Content="Image Compression" HorizontalAlignment="Left" Margin="293,805,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground ="{DynamicResource AppFore}" Checked="Image_compress_Checked"  Unchecked="Image_compress_Unchecked"/>

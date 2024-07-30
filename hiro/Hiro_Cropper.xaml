@@ -23,7 +23,7 @@
         </Grid>
         <Label x:Name="Mask"  MouseDown="CropBorder_MouseDown" MouseUp="CropBorder_MouseUp" MouseMove="CropBorder_MouseMove"/>
         <Label x:Name="MoveTitle" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="35" MouseDown="MoveTitle_MouseDown"></Label>
-        <Label x:Name="OKBtn" HorizontalAlignment="Right" Margin="0,0,65,0" VerticalAlignment="Top" Background="#00000000" Width="55" Height="35" HorizontalContentAlignment="Center" FontSize="24" VerticalContentAlignment="Top" MouseLeftButtonDown="OKBtn_MouseLeftButtonDown" Visibility="Visible">
+        <Label x:Name="OKBtn" HorizontalAlignment="Right" Margin="0,0,65,0" VerticalAlignment="Top" Background="#00000000" Width="55" Height="35" HorizontalContentAlignment="Center" FontSize="24" VerticalContentAlignment="Top" MouseLeftButtonDown="OKBtn_MouseLeftButtonDown" MouseRightButtonDown="OKBtn_MouseRightButtonDown" Visibility="Visible">
             <Label.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
