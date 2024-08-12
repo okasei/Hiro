@@ -47,7 +47,6 @@ namespace hiro
             e.Cancel = true;
             Media.Stop();
             Media.Close();
-            Media.Dispose();
             Hide();
             Hiro_Wallpaper.RemoveWallpaperSigns();
         }

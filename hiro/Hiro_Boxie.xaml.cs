@@ -1,4 +1,5 @@
-﻿using System;
+﻿using hiro.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -149,14 +150,22 @@ namespace hiro
             }
             else
             {
-                act = new(() =>
+                if (App.mn != null)
                 {
-                    Dispatcher.Invoke(() =>
+                    act = new(() =>
                     {
-                        Hiro_Utils.RunExe("show()", Hiro_Resources.ApplicationName, false);
+                        Dispatcher.Invoke(() =>
+                        {
+                            Hiro_Utils.RunExe("show()", Hiro_Resources.ApplicationName, false);
+                        });
                     });
-                });
-                BaseGrid.Cursor = Cursors.Hand;
+                    BaseGrid.Cursor = Cursors.Hand;
+                }
+                else
+                {
+                    Hiro_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalNullLeft"));
+                    Hiro_Extension_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalNullRight"));
+                }
             }
             var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 350, IconGrid, "Margin", null);
             Hiro_Utils.Set_FrameworkElement_Location(LocationGrid, "BoxPress");

@@ -889,6 +889,16 @@ namespace hiro
                         GC.Collect();
                         goto RunOK;
                     }
+                    if (path.ToLower().StartsWith("priority("))
+                    {
+                        Hiro_Win.SetProcessPriority(parameter[0], Get_Translate("execute"));
+                        goto RunOK;
+                    }
+                    if (path.ToLower().StartsWith("effiency("))
+                    {
+                        Hiro_Win.SetEffiencyMode(parameter[0], Get_Translate("execute"));
+                        goto RunOK;
+                    }
                     #region 调试
                     if (Hiro_Text.StartsWith(path, "debug("))
                     {
@@ -1142,10 +1152,12 @@ namespace hiro
                     {
                         HiroInvoke(() =>
                         {
-                            App.mn ??= new();
-                            App.mn.Show();
-                            App.mn.Visibility = Visibility.Visible;
-                            App.mn.HiHiro();
+                            if(App.mn != null)
+                            {
+                                App.mn.Show();
+                                App.mn.Visibility = Visibility.Visible;
+                                App.mn.HiHiro();
+                            }
                         });
                         goto RunOK;
                     }
