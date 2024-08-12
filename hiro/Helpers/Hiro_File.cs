@@ -171,6 +171,16 @@ namespace hiro.Helpers
             }
         }
 
+        internal static bool? isVideo(string? path)
+        {
+            var videoExt = "*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;*.m4v;*.mkv;*.mov;*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;*.rec;*.rm;*.rmvb;*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc,";
+            if (path == null || !File.Exists(path))
+                return null;
+            var pExt = Path.GetExtension(path).ToLower();
+            return videoExt.Contains($"*{pExt};");
+        }
+
+
 
         #region 新建完全限定路径文件夹
         internal static bool CreateFolder(string path)

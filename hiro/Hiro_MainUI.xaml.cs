@@ -1241,7 +1241,9 @@ namespace hiro
 
         private void Titlelabel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-
+            var thickness = versionlabel.Margin;
+            thickness.Left = titlelabel.Margin.Left + titlelabel.ActualWidth + 2;
+            versionlabel.Margin = thickness;
         }
 
         private void Schedulex_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

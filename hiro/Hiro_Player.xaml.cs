@@ -747,7 +747,7 @@ namespace hiro
             }
         }
 
-        private void Switch_UI()
+        internal void Switch_UI()
         {
             if (Controller.Visibility == Visibility.Hidden)
             {

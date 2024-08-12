@@ -66,7 +66,7 @@ namespace hiro
 
         public static string Read_PPIni(string iniFilePath, string Section, string Key, string defaultText)
         {
-            return Path_Prepare(Path_Prepare_EX(Read_Ini(iniFilePath, Section, Key, defaultText)));
+            return Path_Prepare_EX(Read_Ini(iniFilePath, Section, Key, defaultText));
         }
 
         public static string Read_PPDCIni(string Key, string defaultText)
@@ -745,6 +745,7 @@ namespace hiro
 
         public static string Path_Prepare_EX(string path)
         {
+            path = Path_Prepare(path);
             path = Path_Replace(path, "<yyyyy>", DateTime.Now.ToString("yyyyy"));
             path = Path_Replace(path, "<yyyy>", DateTime.Now.ToString("yyyy"));
             path = Path_Replace(path, "<yyy>", DateTime.Now.ToString("yyy"));
@@ -771,6 +772,23 @@ namespace hiro
             path = Path_Replace(path, "<me>", App.username);
             path = Path_Replace(path, "<hiro>", App.appTitle);
             path = Path_Replace(path, "<product>", Get_Translate("dlproduct"));
+            var pi = path;
+            if (pi.ToLower().EndsWith("<any>"))
+            {
+                pi = pi[..^5];
+                DirectoryInfo directory = new DirectoryInfo(pi);
+                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                var ImgList = files.Select(s => s.FullName).ToList();
+                path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+            }
+            if (pi.ToLower().EndsWith("<xany>"))
+            {
+                pi = pi[..^6];
+                DirectoryInfo directory = new DirectoryInfo(pi);
+                var files = directory.GetFiles("*", SearchOption.AllDirectories);
+                var ImgList = files.Select(s => s.FullName).ToList();
+                path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+            }
             return path;
         }
 
@@ -904,28 +922,7 @@ namespace hiro
                     }
                     if (Hiro_Text.StartsWith(path, "wallpaper("))
                     {
-                        source = Get_Translate("wallpaper");
-                        if (File.Exists(parameter[0]))
-                        {
-                            using (Microsoft.Win32.RegistryKey? key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
-                            {
-                                int[] para = new int[] { 10, 6, 22, 2, 0, 0 };
-                                int[] par = new int[] { 0, 0, 0, 0, 1, 0 };
-                                var v = Convert.ToInt32(parameter[1]);
-                                v = v < 0 ? 0 : v > 5 ? 5 : v;
-                                if (key != null)
-                                {
-                                    key.SetValue(@"WallpaperStyle", para[v].ToString());
-                                    key.SetValue(@"TileWallpaper", par[v].ToString());
-                                }
-                            }
-                            _ = SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
-                            App.Notify(new Hiro_Notice(Get_Translate("wpchanged"), 2, source));
-                        }
-                        else
-                        {
-                            RunExe($"notify({Get_Translate("wpnexist")},2)", source);
-                        }
+                        Hiro_Wallpaper.Set_Wallpaper(parameter);
                         goto RunOK;
                     }
                     #endregion
@@ -2941,21 +2938,6 @@ namespace hiro
         }
         [DllImport("user32.dll")]
         static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-        #endregion
-
-        #region 设置壁纸
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
-        public enum Style : int
-        {
-            Fill,
-            Fit,
-            Span,
-            Stretch,
-            Tile,
-            Center
-        }
         #endregion
 
         #region 获取壁纸
