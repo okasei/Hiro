@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using Hiro.Helpers;
 using Hiro.ModelViews;
 
 namespace Hiro
@@ -28,7 +29,7 @@ namespace Hiro
         {
             InitializeComponent();
             Helpers.Hiro_UI.SetCustomWindowIcon(this);
-            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
+            Title = $"{Hiro_Text.Get_Translate("notitle")} - {App.appTitle}";
             Load_Color();
             Hiro_Utils.Set_Control_Location(notinfo, "notify");
             Width = SystemParameters.PrimaryScreenWidth;
@@ -50,7 +51,7 @@ namespace Hiro
                     timer.Start();
             };
             msg = "";
-            animation[0] = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            animation[0] = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
 
         }
         private void TimerTick()
@@ -125,7 +126,7 @@ namespace Hiro
         }
         public void Load_Color()
         {
-            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
+            if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(null, this, null, compositor);
@@ -137,7 +138,7 @@ namespace Hiro
                 compositor.IsEnabled = false;
             }
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Storyboard? sc = new();
                 Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sc);

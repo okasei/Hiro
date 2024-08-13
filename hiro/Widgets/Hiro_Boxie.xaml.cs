@@ -1,4 +1,5 @@
-﻿using Hiro.Resources;
+﻿using Hiro.Helpers;
+using Hiro.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,22 +38,22 @@ namespace Hiro
             Load_Translate();
             Load_PrimaryIcon();
             Load_Icon();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Hiro_UI.SetCustomWindowIcon(this);
             new System.Threading.Thread(() =>
             {
-                if (Hiro_Utils.Read_DCIni("HiBoxAudio", "1").Equals("1"))
+                if (Hiro_Settings.Read_DCIni("HiBoxAudio", "1").Equals("1"))
                     try
                     {
-                        var fileP = Hiro_Utils.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");
+                        var fileP = Hiro_Settings.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");
                         if (!System.IO.File.Exists(fileP))
-                            //fileP = Hiro_Utils.Path_Prepare("C:\\Users\\Rex\\Downloads\\Music\\xbox_one_rare_achiev.wav");
-                            fileP = Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
+                            //fileP = Hiro_Text.Path_Prepare("C:\\Users\\Rex\\Downloads\\Music\\xbox_one_rare_achiev.wav");
+                            fileP = Hiro_Text.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
                         System.Media.SoundPlayer sndPlayer = new(fileP);
                         sndPlayer.Play();
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Sound");
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Sound");
                     }
                 Dispatcher.Invoke(() =>
                 {
@@ -65,8 +66,8 @@ namespace Hiro
 
         private void Load_PrimaryIcon()
         {
-            var icon = Hiro_Utils.Read_DCIni("CustomizeIcon", "");
-            icon = Hiro_Utils.Path_PPX(icon);
+            var icon = Hiro_Settings.Read_DCIni("CustomizeIcon", "");
+            icon = Hiro_Text.Path_PPX(icon);
             if (System.IO.File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -74,7 +75,7 @@ namespace Hiro
             }
             else
             {
-                icon = Hiro_Utils.Read_PPDCIni("UserAvatar", "");
+                icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
                 if (System.IO.File.Exists(icon) && App.Logined == true)
                 {
                     BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -134,16 +135,16 @@ namespace Hiro
         }
         internal void Load_Translate()
         {
-            Hiro_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalLeft"));
-            Hiro_Extension_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalRight"));
+            Hiro_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalLeft"));
+            Hiro_Extension_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalRight"));
         }
 
         private void Animation_Out()
         {
             if (act != null)
             {
-                Hiro_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalActLeft"));
-                Hiro_Extension_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalActRight"));
+                Hiro_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalActLeft"));
+                Hiro_Extension_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalActRight"));
             }
             else
             {
@@ -160,8 +161,8 @@ namespace Hiro
                 }
                 else
                 {
-                    Hiro_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalNullLeft"));
-                    Hiro_Extension_Title.Text = Hiro_Utils.Path_PPX(Hiro_Utils.Get_Translate("BoxFinalNullRight"));
+                    Hiro_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalNullLeft"));
+                    Hiro_Extension_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalNullRight"));
                 }
             }
             var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 350, IconGrid, "Margin", null);
@@ -304,7 +305,7 @@ namespace Hiro
                 };
             var tt = App.noticeitems[0].title?.Trim();
             if (tt == null || tt.Equals(string.Empty))
-                tt = Hiro_Utils.Get_Translate("notitle");
+                tt = Hiro_Text.Get_Translate("notitle");
             Title = tt + " - " + Hiro_Resources.ApplicationName;
             act = App.noticeitems[0].act;
             BaseGrid.Cursor = act != null ? BaseGrid.Cursor = Cursors.Hand : null;
@@ -450,7 +451,7 @@ namespace Hiro
                 }
                 else
                 {
-                    var iconLocation = Hiro_Utils.Path_PPX(icon.Location);
+                    var iconLocation = Hiro_Text.Path_PPX(icon.Location);
                     if (System.IO.File.Exists(iconLocation))
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(iconLocation);

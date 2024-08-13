@@ -10,7 +10,7 @@ namespace Hiro.Helpers
     {
         internal static void SetCustomWindowIcon(System.Windows.Window win)
         {
-            var iconP = Hiro_Utils.Read_PPDCIni("CustomIcon", "");
+            var iconP = Hiro_Settings.Read_PPDCIni("CustomIcon", "");
             if (System.IO.File.Exists(iconP))
             {
                 try
@@ -19,7 +19,7 @@ namespace Hiro.Helpers
                 }
                 catch (Exception e)
                 {
-                    Hiro_Utils.LogError(e, "Hiro.Window.CustomIcon");
+                    Hiro_Logger.LogError(e, "Hiro.Window.CustomIcon");
                 }
             }
         }

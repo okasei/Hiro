@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using static Hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.Hiro_Text;
 
 namespace Hiro
 {
@@ -28,9 +31,9 @@ namespace Hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            var animation = !Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(3, scbtn_4, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, scbtn_5, sb, -50, null);
@@ -62,20 +65,20 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            rbtn18.Content = Hiro_Utils.Get_Translate("alarmonce");
-            rbtn19.Content = Hiro_Utils.Get_Translate("alarmed");
-            rbtn20.Content = Hiro_Utils.Get_Translate("alarmew");
-            rbtn21.Content = Hiro_Utils.Get_Translate("alarmat");
-            scbtn_4.Content = Hiro_Utils.Get_Translate("screset");
-            scbtn_5.Content = Hiro_Utils.Get_Translate("scok");
-            scbtn_6.Content = Hiro_Utils.Get_Translate("scclear");
-            scbtn_7.Content = Hiro_Utils.Get_Translate("sccancel");
-            scbtn_8.Content = Hiro_Utils.Get_Translate("sc15m");
-            scbtn_9.Content = Hiro_Utils.Get_Translate("sc1h");
-            scbtn_10.Content = Hiro_Utils.Get_Translate("sc1d");
-            sclabel1.Content = Hiro_Utils.Get_Translate("scname");
-            sclabel2.Content = Hiro_Utils.Get_Translate("sctime");
-            sclabel3.Content = Hiro_Utils.Get_Translate("sccmd");
+            rbtn18.Content = Get_Translate("alarmonce");
+            rbtn19.Content = Get_Translate("alarmed");
+            rbtn20.Content = Get_Translate("alarmew");
+            rbtn21.Content = Get_Translate("alarmat");
+            scbtn_4.Content = Get_Translate("screset");
+            scbtn_5.Content = Get_Translate("scok");
+            scbtn_6.Content = Get_Translate("scclear");
+            scbtn_7.Content = Get_Translate("sccancel");
+            scbtn_8.Content = Get_Translate("sc15m");
+            scbtn_9.Content = Get_Translate("sc1h");
+            scbtn_10.Content = Get_Translate("sc1d");
+            sclabel1.Content = Get_Translate("scname");
+            sclabel2.Content = Get_Translate("sctime");
+            sclabel3.Content = Get_Translate("sccmd");
         }
 
         public void Load_Position()
@@ -144,7 +147,7 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Data.Parse");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Data.Parse");
                     re = -2.0;
                 }
             }
@@ -152,10 +155,10 @@ namespace Hiro
             {
                 var i = App.scheduleitems.Count + 1;
                 App.scheduleitems.Add(new Scheduleitem(i, tb11.Text, tb12.Text, tb13.Text, re));
-                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Name", tb11.Text);
-                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Time", tb12.Text);
-                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Command", "(" + tb13.Text + ")");
-                Hiro_Utils.Write_Ini(App.sConfig, i.ToString(), "Repeat", re.ToString());
+                Write_Ini(App.sConfig, i.ToString(), "Name", tb11.Text);
+                Write_Ini(App.sConfig, i.ToString(), "Time", tb12.Text);
+                Write_Ini(App.sConfig, i.ToString(), "Command", "(" + tb13.Text + ")");
+                Write_Ini(App.sConfig, i.ToString(), "Repeat", re.ToString());
             }
             else
             {
@@ -164,10 +167,10 @@ namespace Hiro
                 App.scheduleitems[i].Time = tb12.Text;
                 App.scheduleitems[i].Command = tb13.Text;
                 App.scheduleitems[i].re = re;
-                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Name", tb11.Text);
-                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Time", tb12.Text);
-                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Command", "(" + tb13.Text + ")");
-                Hiro_Utils.Write_Ini(App.sConfig, (i + 1).ToString(), "Repeat", re.ToString());
+                Write_Ini(App.sConfig, (i + 1).ToString(), "Name", tb11.Text);
+                Write_Ini(App.sConfig, (i + 1).ToString(), "Time", tb12.Text);
+                Write_Ini(App.sConfig, (i + 1).ToString(), "Command", "(" + tb13.Text + ")");
+                Write_Ini(App.sConfig, (i + 1).ToString(), "Repeat", re.ToString());
             }
             System.Globalization.DateTimeFormatInfo dtFormat = new()
             {
@@ -183,7 +186,7 @@ namespace Hiro
                 tb12.Text = "";
                 tb13.Text = "";
                 if (Hiro_Main != null)
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
+                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("sctimepassed"), 2, Hiro_Main.schedulex.Content.ToString()));
                 Hiro_Main?.Set_Label(Hiro_Main.schedulex);
             }
             else
@@ -198,15 +201,15 @@ namespace Hiro
                 {
                     if (day > 0)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("sctimeday").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else if (hour > 0)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("sctimehour").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                     else
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
+                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("sctimemin").Replace("%d", day.ToString()).Replace("%h", hour.ToString()).Replace("%m", minute.ToString()), 2, Hiro_Main.schedulex.Content.ToString()));
                     }
                 }
                 Hiro_Main?.Set_Label(Hiro_Main.schedulex);
@@ -269,7 +272,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Data.Parse");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Data.Parse");
             }
 
             if (Hiro_Main == null) 

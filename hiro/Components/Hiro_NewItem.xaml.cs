@@ -4,6 +4,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static Hiro.Helpers.Hiro_Text;
+using static Hiro.Helpers.Hiro_Settings;
+using Hiro.Helpers;
 
 namespace Hiro
 {
@@ -27,9 +30,9 @@ namespace Hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            var animation = !Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, ntn1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, ntn2, sb, -50, null);
@@ -67,33 +70,33 @@ namespace Hiro
             {
                 modibox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Translate(arss)
+                    Content = Get_Translate(arss)
                 });
             }
             keybox.Items.Add(new ComboBoxItem()
             {
-                Content = Hiro_Utils.Get_Translate("novkey")
+                Content = Get_Translate("novkey")
             });
             string[] crs = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
             foreach (var crss in crs)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Translate("charkey").Replace("%c", crss)
+                    Content = Get_Translate("charkey").Replace("%c", crss)
                 });
             }
             for (int nuss = 0; nuss < 10; nuss++)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Translate("numkey").Replace("%n", nuss.ToString())
+                    Content = Get_Translate("numkey").Replace("%n", nuss.ToString())
                 });
             }
             for (int nuss = 1; nuss < 13; nuss++)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Translate("fnkey").Replace("%f", "F" + nuss.ToString())
+                    Content = Get_Translate("fnkey").Replace("%f", "F" + nuss.ToString())
                 });
             }
             string[] extras = { "space", "esc", "leftkey", "upkey", "rightkey", "downkey" };
@@ -101,7 +104,7 @@ namespace Hiro
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
-                    Content = Hiro_Utils.Get_Translate(ext)
+                    Content = Get_Translate(ext)
                 });
             }
             foreach (var obj in modibox.Items)
@@ -125,21 +128,21 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            ntn1.Content = Hiro_Utils.Get_Translate("filename");
-            ntn2.Content = Hiro_Utils.Get_Translate("hide");
-            ntn3.Content = Hiro_Utils.Get_Translate("unformat");
-            ntn4.Content = Hiro_Utils.Get_Translate("ban");
-            ntn5.Content = Hiro_Utils.Get_Translate("select");
-            ntn6.Content = Hiro_Utils.Get_Translate("quot");
-            ntn7.Content = Hiro_Utils.Get_Translate("explorer");
-            ntn8.Content = Hiro_Utils.Get_Translate("openfile");
-            klabel.Content = Hiro_Utils.Get_Translate("HotKey");
-            ntn9.Content = Hiro_Utils.Get_Translate("reset");
-            ntnx.Content = Hiro_Utils.Get_Translate("clear");
-            ntnx1.Content = Hiro_Utils.Get_Translate("ok");
-            ntnx2.Content = Hiro_Utils.Get_Translate("cancel");
-            glabel.Content = Hiro_Utils.Get_Translate("itemname");
-            glabel2.Content = Hiro_Utils.Get_Translate("cmd");
+            ntn1.Content = Get_Translate("filename");
+            ntn2.Content = Get_Translate("hide");
+            ntn3.Content = Get_Translate("unformat");
+            ntn4.Content = Get_Translate("ban");
+            ntn5.Content = Get_Translate("select");
+            ntn6.Content = Get_Translate("quot");
+            ntn7.Content = Get_Translate("explorer");
+            ntn8.Content = Get_Translate("openfile");
+            klabel.Content = Get_Translate("HotKey");
+            ntn9.Content = Get_Translate("reset");
+            ntnx.Content = Get_Translate("clear");
+            ntnx1.Content = Get_Translate("ok");
+            ntnx2.Content = Get_Translate("cancel");
+            glabel.Content = Get_Translate("itemname");
+            glabel2.Content = Get_Translate("cmd");
         }
 
         public void Load_Position()
@@ -278,11 +281,11 @@ namespace Hiro
         {
             var strFileName = "";
             Microsoft.Win32.OpenFileDialog ofd = new();
-            ofd.Filter = Hiro_Utils.Get_Translate("allfiles") + "|*.*";
+            ofd.Filter = Get_Translate("allfiles") + "|*.*";
             ofd.ValidateNames = true; // 验证用户输入是否是一个有效的Windows文件名
             ofd.CheckFileExists = true; //验证路径的有效性
             ofd.CheckPathExists = true;//验证路径的有效性
-            ofd.Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle;
+            ofd.Title = Get_Translate("openfile") + " - " + App.appTitle;
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
                 strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
@@ -299,7 +302,7 @@ namespace Hiro
             }
             if (strFileName.IndexOf(" ") != -1)
                 strFileName = "\"" + strFileName + "\"";
-            strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName);
+            strFileName = Anti_Path_Prepare(strFileName);
             tb8.Text = strFileName;
             strFileName = strFileName[(strFileName.LastIndexOf("\\") + 1)..];
             if (strFileName.LastIndexOf(".") != -1)
@@ -340,9 +343,9 @@ namespace Hiro
                 var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 App.cmditems.Add(new Helpers.Hiro_Class.Cmditem(p, i, tb7.Text, tb8.Text, hk));
-                Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "Title", tb7.Text);
-                Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "Command", "(" + tb8.Text + ")");
-                Hiro_Utils.Write_Ini(App.dConfig, i.ToString(), "HotKey", hk);
+                Write_Ini(App.dConfig, i.ToString(), "Title", tb7.Text);
+                Write_Ini(App.dConfig, i.ToString(), "Command", "(" + tb8.Text + ")");
+                Write_Ini(App.dConfig, i.ToString(), "HotKey", hk);
                 if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
                 {
                     try
@@ -354,7 +357,7 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.Hotkey.RegisterFunc");
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Hotkey.RegisterFunc");
                     }
                 }
             }
@@ -362,9 +365,9 @@ namespace Hiro
             {
                 App.cmditems[index].Name = tb7.Text;
                 App.cmditems[index].Command = tb8.Text;
-                Hiro_Utils.Write_Ini(App.dConfig, (index + 1).ToString(), "Title", tb7.Text);
-                Hiro_Utils.Write_Ini(App.dConfig, (index + 1).ToString(), "Command", "(" + tb8.Text + ")");
-                Hiro_Utils.Write_Ini(App.dConfig, (index + 1).ToString(), "HotKey", hk);
+                Write_Ini(App.dConfig, (index + 1).ToString(), "Title", tb7.Text);
+                Write_Ini(App.dConfig, (index + 1).ToString(), "Command", "(" + tb8.Text + ")");
+                Write_Ini(App.dConfig, (index + 1).ToString(), "HotKey", hk);
                 if (!App.cmditems[index].HotKey.Equals(hk))
                 {
                     App.cmditems[index].HotKey = hk;
@@ -381,7 +384,7 @@ namespace Hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogError(ex, "Hiro.Exception.HotKey.RegisterFunc");
+                            Hiro_Logger.LogError(ex, "Hiro.Exception.HotKey.RegisterFunc");
                         }
                     }
                 }
@@ -544,7 +547,7 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.Data.Parse");
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Data.Parse");
                     }
                     if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
                     {

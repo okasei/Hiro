@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.Hiro_Text;
 
 namespace Hiro
 {
@@ -28,7 +30,7 @@ namespace Hiro
 
         internal void Load_Settings()
         {
-            switch (Hiro_Utils.Read_DCIni("AcrylicMode", "2"))
+            switch (Read_DCIni("AcrylicMode", "2"))
             {
                 case "0":
                     {
@@ -48,12 +50,12 @@ namespace Hiro
             }
             ColorBtn.IsEnabled = ColorCustomize.IsChecked ?? false;
             var trans = 0x47;
-            if (!int.TryParse(Hiro_Utils.Read_DCIni("AcrylicTransparency", "71"), out trans))
+            if (!int.TryParse(Read_DCIni("AcrylicTransparency", "71"), out trans))
                 trans = 0x47;
             trans = Math.Max(trans, 1);
             trans = Math.Min(trans, 255);
             TransparentSlider.Value = trans;
-            switch (Hiro_Utils.Read_DCIni("AcrylicMain", "0"))
+            switch (Read_DCIni("AcrylicMain", "0"))
             {
                 case "1":
                     {
@@ -75,9 +77,9 @@ namespace Hiro
         }
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, AcrylicTitle, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, AcrylicColorGrid, sb, -50, null);
@@ -110,19 +112,19 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            AcrylicTitle.Content = Hiro_Utils.Get_Translate("AcrylicTitle");
-            ColorTitle.Content = Hiro_Utils.Get_Translate("AcrylicColor");
-            ColorWhite.Content = Hiro_Utils.Get_Translate("AcrylicWhite");
-            ColorBlack.Content = Hiro_Utils.Get_Translate("AcrylicBlack");
-            ColorCustomize.Content = Hiro_Utils.Get_Translate("AcrylicCustomize");
-            ColorBtn.Content = Hiro_Utils.Get_Translate("AcrylicColorBtn");
-            TransparentTitle.Content = Hiro_Utils.Get_Translate("AcrylicTransparent");
-            HalfTitle.Content = Hiro_Utils.Get_Translate("AcrylicHalf");
-            HalfPure.Content = Hiro_Utils.Get_Translate("AcrylicPure");
-            HalfImage.Content = Hiro_Utils.Get_Translate("AcrylicImage");
-            NoHalf.Content = Hiro_Utils.Get_Translate("AcrylicNoHalf");
-            AcrylicCancel.Content = Hiro_Utils.Get_Translate("AcrylicCancel");
-            AcrylicOK.Content = Hiro_Utils.Get_Translate("AcrylicOK");
+            AcrylicTitle.Content = Get_Translate("AcrylicTitle");
+            ColorTitle.Content = Get_Translate("AcrylicColor");
+            ColorWhite.Content = Get_Translate("AcrylicWhite");
+            ColorBlack.Content = Get_Translate("AcrylicBlack");
+            ColorCustomize.Content = Get_Translate("AcrylicCustomize");
+            ColorBtn.Content = Get_Translate("AcrylicColorBtn");
+            TransparentTitle.Content = Get_Translate("AcrylicTransparent");
+            HalfTitle.Content = Get_Translate("AcrylicHalf");
+            HalfPure.Content = Get_Translate("AcrylicPure");
+            HalfImage.Content = Get_Translate("AcrylicImage");
+            NoHalf.Content = Get_Translate("AcrylicNoHalf");
+            AcrylicCancel.Content = Get_Translate("AcrylicCancel");
+            AcrylicOK.Content = Get_Translate("AcrylicOK");
         }
 
         public void Load_Position()
@@ -209,18 +211,18 @@ namespace Hiro
         private void AcrylicOK_Click(object sender, RoutedEventArgs e)
         {
             if (ColorWhite.IsChecked == true)
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMode", "0");
+                Write_Ini(App.dConfig, "Config", "AcrylicMode", "0");
             if (ColorBlack.IsChecked == true)
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMode", "1");
+                Write_Ini(App.dConfig, "Config", "AcrylicMode", "1");
             if (ColorCustomize.IsChecked == true)
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMode", "2");
+                Write_Ini(App.dConfig, "Config", "AcrylicMode", "2");
             if (NoHalf.IsChecked == true)
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMain", "0");
+                Write_Ini(App.dConfig, "Config", "AcrylicMain", "0");
             if (HalfPure.IsChecked == true)
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMain", "1");
+                Write_Ini(App.dConfig, "Config", "AcrylicMain", "1");
             if (HalfImage.IsChecked == true)
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicMain", "2");
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicTransparency", ((byte)TransparentSlider.Value).ToString());
+                Write_Ini(App.dConfig, "Config", "AcrylicMain", "2");
+            Write_Ini(App.dConfig, "Config", "AcrylicTransparency", ((byte)TransparentSlider.Value).ToString());
             Hiro_Main?.Set_Label(Hiro_Main.configx);
             Hiro_Main?.Blurbgi(0);
         }
@@ -247,7 +249,7 @@ namespace Hiro
             var trans = TransparentSlider.Value;
             trans = Math.Max(trans, 1);
             trans = Math.Min(trans, 255);
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "AcrylicTransparency", trans.ToString());
+            Write_Ini(App.dConfig, "Config", "AcrylicTransparency", trans.ToString());
             Update_MainUI();
         }
     }

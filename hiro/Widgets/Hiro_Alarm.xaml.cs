@@ -41,7 +41,7 @@ namespace Hiro
             {
                 if (CustomedTitle.ToLower().StartsWith("http://") || CustomedTitle.ToLower().StartsWith("https://"))
                 {
-                    ala_title.Content = Hiro_Utils.Get_Translate("msgload");
+                    ala_title.Content = Hiro_Text.Get_Translate("msgload");
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
@@ -52,7 +52,7 @@ namespace Hiro
                     {
                         ala_title.Content = CustomedTitle;
                         Title = ala_title.Content + " - " + App.appTitle;
-                        if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+                        if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
                         {
                             Storyboard sb = new();
                             Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
@@ -64,13 +64,13 @@ namespace Hiro
                     ala_title.Content = CustomedTitle;
             }
             else
-                ala_title.Content = Hiro_Utils.Get_Translate("alarmtitle");
+                ala_title.Content = Hiro_Text.Get_Translate("alarmtitle");
             Title = ala_title.Content + " - " + App.appTitle;
             if (CustomedContnet != null)
             {
                 if (CustomedContnet.ToLower().StartsWith("http://") || CustomedContnet.ToLower().StartsWith("https://"))
                 {
-                    sv.Content = Hiro_Utils.Get_Translate("msgload");
+                    sv.Content = Hiro_Text.Get_Translate("msgload");
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
@@ -81,7 +81,7 @@ namespace Hiro
                     {
                         CustomedContnet = CustomedContnet.Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
                         sv.Content = CustomedContnet;
-                        if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+                        if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
                         {
                             Storyboard sb = new();
                             Hiro_Utils.AddPowerAnimation(1, content, sb, -50, null);
@@ -99,15 +99,15 @@ namespace Hiro
             Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
             if (!App.dflag)
                 return;
-            Hiro_Utils.LogtoFile("[ALARM]Title: " + sv.Content);
+            Hiro_Logger.LogtoFile("[ALARM]Title: " + sv.Content);
             var con = content.Content?.ToString();
             if (con != null)
-                Hiro_Utils.LogtoFile("[ALARM]Content: " + con.Replace(Environment.NewLine, "\\n"));
+                Hiro_Logger.LogtoFile("[ALARM]Content: " + con.Replace(Environment.NewLine, "\\n"));
         }
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
+            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
@@ -126,24 +126,24 @@ namespace Hiro
         {
             if (OneButtonOnly == 1)
             {
-                albtn_1.Content = Hiro_Utils.Get_Translate("alarmone");
+                albtn_1.Content = Hiro_Text.Get_Translate("alarmone");
                 albtn_2.Visibility = Visibility.Hidden;
                 albtn_3.Visibility = Visibility.Hidden;
                 Hiro_Utils.Set_Control_Location(albtn_1, "alarmone", bottom: true, right: true);
             }
             else if (OneButtonOnly == 2)
             {
-                albtn_1.Content = Hiro_Utils.Get_Translate("updateok");
-                albtn_3.Content = Hiro_Utils.Get_Translate("updateskip");
+                albtn_1.Content = Hiro_Text.Get_Translate("updateok");
+                albtn_3.Content = Hiro_Text.Get_Translate("updateskip");
                 albtn_2.Visibility = Visibility.Hidden;
                 Hiro_Utils.Set_Control_Location(albtn_1, "updateok", bottom: true, right: true);
                 Hiro_Utils.Set_Control_Location(albtn_3, "updateskip", bottom: true, right: true);
             }
             else
             {
-                albtn_1.Content = Hiro_Utils.Get_Translate("alarmok");
-                albtn_2.Content = Hiro_Utils.Get_Translate("alarmdelete");
-                albtn_3.Content = Hiro_Utils.Get_Translate("alarmdelay");
+                albtn_1.Content = Hiro_Text.Get_Translate("alarmok");
+                albtn_2.Content = Hiro_Text.Get_Translate("alarmdelete");
+                albtn_3.Content = Hiro_Text.Get_Translate("alarmdelay");
                 Hiro_Utils.Set_Control_Location(albtn_1, "alarmok", bottom: true, right: true);
                 Hiro_Utils.Set_Control_Location(albtn_2, "alarmdelete", bottom: true, right: true);
                 Hiro_Utils.Set_Control_Location(albtn_3, "alarmdelay", bottom: true, right: true);
@@ -160,7 +160,7 @@ namespace Hiro
 
         public void Loadbgi(int direction)
         {
-            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
+            if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
@@ -174,7 +174,7 @@ namespace Hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this, null, null, windowChrome, compositor);
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }

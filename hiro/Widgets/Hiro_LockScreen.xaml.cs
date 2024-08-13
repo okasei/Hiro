@@ -1,4 +1,5 @@
-﻿using Hiro.Resources;
+﻿using Hiro.Helpers;
+using Hiro.Resources;
 using System;
 using System.Text;
 using System.Windows;
@@ -20,7 +21,7 @@ namespace Hiro
             InitializeComponent();
             Helpers.Hiro_UI.SetCustomWindowIcon(this);
             path = p;
-            Title = Hiro_Utils.Get_Translate("locktitle") + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("locktitle") + " - " + App.appTitle;
             Load_Colors();
             SetValue(Canvas.LeftProperty, 0.0);
             Canvas.SetTop(this, -SystemParameters.PrimaryScreenHeight);
@@ -63,7 +64,7 @@ namespace Hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogError(ex, "Hiro.Exception.LockScreen.Wallpaper");
+                            Hiro_Logger.LogError(ex, "Hiro.Exception.LockScreen.Wallpaper");
                         }
                         StringBuilder wallPaperPath = new(200);
                         if (Hiro_Utils.GetSystemParametersInfo(0x0073, 200, wallPaperPath, 0))
@@ -84,7 +85,7 @@ namespace Hiro
                         if (!System.IO.File.Exists(filep))
                             return;
                         SetAsLocalImage(filep);
-                        bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+                        bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
                         Hiro_Utils.Blur_Animation(0, animation, bgimage, this);
                     };
                     bw.RunWorkerAsync();
@@ -99,7 +100,7 @@ namespace Hiro
 
         private void SetAsLocalImage(string path)
         {
-            path = Hiro_Utils.Path_PPX(path);
+            path = Hiro_Text.Path_PPX(path);
             BitmapImage? bi = Hiro_Utils.GetBitmapImage(path);
             ImageBrush ib = new()
             {
@@ -119,7 +120,7 @@ namespace Hiro
 
         private void Run_In()
         {
-            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, 0, TimeSpan.FromMilliseconds(800));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
@@ -136,7 +137,7 @@ namespace Hiro
         private void Run_Out()
         {
             Hiro_Utils.SetCursor(1);
-            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.DoubleAnimation dou = new(-SystemParameters.PrimaryScreenHeight, TimeSpan.FromMilliseconds(600));
                 dou.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;

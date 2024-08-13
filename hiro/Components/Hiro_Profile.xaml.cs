@@ -11,12 +11,10 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using static Hiro.Helpers.Hiro_Settings;
 
 namespace Hiro
 {
-    /// <summary>
-    /// Hiro_Profile.xaml の相互作用ロジック
-    /// </summary>
     public partial class Hiro_Profile : Page
     {
         internal BackgroundWorker? whatsbw = null;
@@ -30,17 +28,17 @@ namespace Hiro
             Hiro_Initialize();
             Loaded += delegate
             {
-                SetAvatar(Hiro_Utils.Read_PPDCIni("UserAvatar", ""), false);
-                SetBackground(Hiro_Utils.Read_PPDCIni("UserBackground", ""), false);
+                SetAvatar(Read_PPDCIni("UserAvatar", ""), false);
+                SetBackground(Read_PPDCIni("UserBackground", ""), false);
                 HiHiro();
             };
         }
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(0, BaseGrid, sb, -100, null);
@@ -88,23 +86,23 @@ namespace Hiro
 
         public void Load_Data()
         {
-            msg_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_DCIni("Message", "3")));
-            disturb_level.Value = Convert.ToInt32(double.Parse(Hiro_Utils.Read_DCIni("Disturb", "2")));
-            rbtn17.IsChecked = Hiro_Utils.Read_DCIni("CustomNick", "1").Equals("2");
+            msg_level.Value = Convert.ToInt32(double.Parse(Read_DCIni("Message", "3")));
+            disturb_level.Value = Convert.ToInt32(double.Parse(Read_DCIni("Disturb", "2")));
+            rbtn17.IsChecked = Read_DCIni("CustomNick", "1").Equals("2");
             rbtn16.IsChecked = !rbtn17.IsChecked;
             if (rbtn17.IsChecked == true)
             {
-                App.appTitle = Hiro_Utils.Read_DCIni("CustomHIRO", "Hiro");
+                App.appTitle = Read_DCIni("CustomHIRO", "Hiro");
                 if (App.wnd != null)
-                    App.wnd.trayText.Text = Hiro_Utils.Read_DCIni("CustomHIRO", "Hiro");
+                    App.wnd.trayText.Text = Read_DCIni("CustomHIRO", "Hiro");
             }
-            msg_audio.IsChecked = Hiro_Utils.Read_DCIni("MessageAudio", "1").Equals("1");
-            msg_auto.IsChecked = Hiro_Utils.Read_DCIni("AutoChat", "1").Equals("1");
-            tb10.Text = Hiro_Utils.Read_DCIni("CustomHIRO", "");
-            var str = Hiro_Utils.Read_DCIni("CustomSign", string.Empty);
+            msg_audio.IsChecked = Read_DCIni("MessageAudio", "1").Equals("1");
+            msg_auto.IsChecked = Read_DCIni("AutoChat", "1").Equals("1");
+            tb10.Text = Read_DCIni("CustomHIRO", "");
+            var str = Read_DCIni("CustomSign", string.Empty);
             if (str.Trim().Equals(string.Empty))
             {
-                Profile_Signature.Content = Hiro_Utils.Get_Translate("profilesign");
+                Profile_Signature.Content = Hiro_Text.Get_Translate("profilesign");
                 Profile_Signature.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
             }
             else
@@ -112,8 +110,8 @@ namespace Hiro
                 Profile_Signature.Content = str;
                 Profile_Signature.Foreground = (SolidColorBrush)Resources["AppFore"];
             }
-            str = Hiro_Utils.Read_DCIni("CustomName", string.Empty);
-            if (Hiro_Utils.Read_DCIni("CustomUser", "1").Equals("1") || str.Trim().Equals(string.Empty))
+            str = Read_DCIni("CustomName", string.Empty);
+            if (Read_DCIni("CustomUser", "1").Equals("1") || str.Trim().Equals(string.Empty))
             {
                 Profile_Nickname.Content = App.username;
                 Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
@@ -123,7 +121,7 @@ namespace Hiro
                 Profile_Nickname.Content = str;
                 Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppFore"];
             }
-            switch (Hiro_Utils.Read_DCIni("UserAvatarStyle", "1"))
+            switch (Read_DCIni("UserAvatarStyle", "1"))
             {
                 case "0":
                     Profile_Rectangle.Visibility = Visibility.Hidden;
@@ -134,39 +132,39 @@ namespace Hiro
                     Profile_Ellipse.Visibility = Visibility.Hidden;
                     break;
             }
-            var mac = Hiro_Utils.Read_DCIni("User", Hiro_Utils.Get_Translate("idnull"));
+            var mac = Read_DCIni("User", Hiro_Text.Get_Translate("idnull"));
             Profile_Mac.Content = mac;
             Load = true;
         }
 
         public void Load_Translate()
         {
-            btn8.Content = Hiro_Utils.Get_Translate("feedback");
-            btn9.Content = Hiro_Utils.Get_Translate("whatsnew");
-            btn10.Content = Hiro_Utils.Get_Translate("lgout");
-            btn11.Content = Hiro_Utils.Get_Translate("document");
-            name_label.Content = Hiro_Utils.Get_Translate("namelabel");
-            rbtn16.Content = Hiro_Utils.Get_Translate("namehiro");
-            rbtn17.Content = Hiro_Utils.Get_Translate("namecus");
-            msg_label.Content = Hiro_Utils.Get_Translate("msglabel");
-            msg_audio.Content = Hiro_Utils.Get_Translate("msgaudio");
-            msg_auto.Content = Hiro_Utils.Get_Translate("msgauto");
+            btn8.Content = Hiro_Text.Get_Translate("feedback");
+            btn9.Content = Hiro_Text.Get_Translate("whatsnew");
+            btn10.Content = Hiro_Text.Get_Translate("lgout");
+            btn11.Content = Hiro_Text.Get_Translate("document");
+            name_label.Content = Hiro_Text.Get_Translate("namelabel");
+            rbtn16.Content = Hiro_Text.Get_Translate("namehiro");
+            rbtn17.Content = Hiro_Text.Get_Translate("namecus");
+            msg_label.Content = Hiro_Text.Get_Translate("msglabel");
+            msg_audio.Content = Hiro_Text.Get_Translate("msgaudio");
+            msg_auto.Content = Hiro_Text.Get_Translate("msgauto");
             msg_status.Content = Convert.ToInt32(msg_level.Value) switch
             {
-                1 => Hiro_Utils.Get_Translate("msghide"),
-                2 => Hiro_Utils.Get_Translate("msglock"),
-                3 => Hiro_Utils.Get_Translate("msgalways"),
-                _ => Hiro_Utils.Get_Translate("msgnever")
+                1 => Hiro_Text.Get_Translate("msghide"),
+                2 => Hiro_Text.Get_Translate("msglock"),
+                3 => Hiro_Text.Get_Translate("msgalways"),
+                _ => Hiro_Text.Get_Translate("msgnever")
             };
-            disturb_label.Content = Hiro_Utils.Get_Translate("disturblabel");
+            disturb_label.Content = Hiro_Text.Get_Translate("disturblabel");
             disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
             {
-                1 => Hiro_Utils.Get_Translate("disturbfs"),
-                2 => Hiro_Utils.Get_Translate("disturbok"),
-                _ => Hiro_Utils.Get_Translate("disturbno")
+                1 => Hiro_Text.Get_Translate("disturbfs"),
+                2 => Hiro_Text.Get_Translate("disturbok"),
+                _ => Hiro_Text.Get_Translate("disturbno")
             };
             if (Profile_Signature.Foreground == (SolidColorBrush)Resources["AppForeDisabled"])
-                Profile_Signature.Content = Hiro_Utils.Get_Translate("profilesign");
+                Profile_Signature.Content = Hiro_Text.Get_Translate("profilesign");
         }
 
         public void Load_Position()
@@ -242,7 +240,7 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Parse");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Parse");
                 }
 
             };
@@ -253,28 +251,28 @@ namespace Hiro
 
         private void Rbtn16_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomNick", "1");
+            Write_Ini(App.dConfig, "Config", "CustomNick", "1");
             tb10.IsEnabled = false;
             App.appTitle = Hiro_Resources.ApplicationName;
-            Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
             {
                 Hiro_Main.titlelabel.Content = App.appTitle;
-                Hiro_Main.Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
                 App.wnd.trayText.Text = App.appTitle;
         }
         private void Rbtn17_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomNick", "2");
+            Write_Ini(App.dConfig, "Config", "CustomNick", "2");
             tb10.IsEnabled = true;
             App.appTitle = tb10.Text;
-            Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             if (Hiro_Main != null)
             {
                 Hiro_Main.titlelabel.Content = App.appTitle;
-                Hiro_Main.Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
             }
             if (App.wnd != null)
                 App.wnd.trayText.Text = tb10.Text;
@@ -282,15 +280,15 @@ namespace Hiro
 
         private void Tb10_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Hiro_Utils.Read_DCIni("CustomNick", "1").Equals("2"))
+            if (Read_DCIni("CustomNick", "1").Equals("2"))
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomHIRO", tb10.Text);
+                Write_Ini(App.dConfig, "Config", "CustomHIRO", tb10.Text);
                 App.appTitle = tb10.Text;
-                Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 if (Hiro_Main != null)
                 {
                     Hiro_Main.titlelabel.Content = App.appTitle;
-                    Hiro_Main.Title = App.appTitle + " - " + Hiro_Utils.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                    Hiro_Main.Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
                 }
                 if (App.wnd != null)    
                     App.wnd.trayText.Text = tb10.Text;
@@ -302,13 +300,13 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Message", (Convert.ToInt32(msg_level.Value)).ToString());
+                Write_Ini(App.dConfig, "Config", "Message", (Convert.ToInt32(msg_level.Value)).ToString());
                 msg_status.Content = Convert.ToInt32(msg_level.Value) switch
                 {
-                    1 => Hiro_Utils.Get_Translate("msghide"),
-                    2 => Hiro_Utils.Get_Translate("msglock"),
-                    3 => Hiro_Utils.Get_Translate("msgalways"),
-                    _ => Hiro_Utils.Get_Translate("msgnever")
+                    1 => Hiro_Text.Get_Translate("msghide"),
+                    2 => Hiro_Text.Get_Translate("msglock"),
+                    3 => Hiro_Text.Get_Translate("msgalways"),
+                    _ => Hiro_Text.Get_Translate("msgnever")
                 };
             }
 
@@ -318,12 +316,12 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Disturb", (Convert.ToInt32(disturb_level.Value)).ToString());
+                Write_Ini(App.dConfig, "Config", "Disturb", (Convert.ToInt32(disturb_level.Value)).ToString());
                 disturb_status.Content = Convert.ToInt32(disturb_level.Value) switch
                 {
-                    1 => Hiro_Utils.Get_Translate("disturbfs"),
-                    2 => Hiro_Utils.Get_Translate("disturbok"),
-                    _ => Hiro_Utils.Get_Translate("disturbno")
+                    1 => Hiro_Text.Get_Translate("disturbfs"),
+                    2 => Hiro_Text.Get_Translate("disturbok"),
+                    _ => Hiro_Text.Get_Translate("disturbno")
                 };
             }
         }
@@ -344,7 +342,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "MessageAudio", "1");
+                Write_Ini(App.dConfig, "Config", "MessageAudio", "1");
             }
         }
 
@@ -352,7 +350,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "MessageAudio", "0");
+                Write_Ini(App.dConfig, "Config", "MessageAudio", "0");
             }
         }
 
@@ -360,7 +358,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoChat", "1");
+                Write_Ini(App.dConfig, "Config", "AutoChat", "1");
                 if (Hiro_Main != null)
                     Hiro_Main.hiro_chat ??= new(Hiro_Main);
             }
@@ -370,7 +368,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoChat", "0");
+                Write_Ini(App.dConfig, "Config", "AutoChat", "0");
             }
         }
 
@@ -398,23 +396,23 @@ namespace Hiro
                 {
                     var res = Hiro_ID.UploadProfileSettings(
                     App.loginedUser, App.loginedToken, App.username,
-                    Hiro_Utils.Read_DCIni("CustomSign", string.Empty),
-                    Hiro_Utils.Read_DCIni("UserAvatarStyle", "1"),
-                    Hiro_Utils.GetMD5(Hiro_Utils.Read_DCIni("UserBackground", "")),
-                    Hiro_Utils.GetMD5(Hiro_Utils.Read_DCIni("UserAvatar", "")),
+                    Read_DCIni("CustomSign", string.Empty),
+                    Read_DCIni("UserAvatarStyle", "1"),
+                    Hiro_Utils.GetMD5(Read_DCIni("UserBackground", "")),
+                    Hiro_Utils.GetMD5(Read_DCIni("UserAvatar", "")),
                     "update"
                     );
                     if (!res.Equals("success"))
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate("chatdeve") + ",2)", Hiro_Utils.Get_Translate("profile"));
+                            Hiro_Utils.RunExe("notify(" + Hiro_Text.Get_Translate("chatdeve") + ",2)", Hiro_Text.Get_Translate("profile"));
                         });
                     }
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Profile.Update.Nickname");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Profile.Update.Nickname");
                 }
             }).Start();
         }
@@ -425,15 +423,15 @@ namespace Hiro
             {
                 if (Profile_Nickname_Textbox.Text.Trim().Equals(string.Empty))
                 {
-                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomUser", "1");
+                    Write_Ini(App.dConfig, "Config", "CustomUser", "1");
                     App.CustomUsernameFlag = 0;
                     App.username = App.eUserName;
                     Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
                 }
                 else
                 {
-                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomUser", "2");
-                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomName", Profile_Nickname_Textbox.Text);
+                    Write_Ini(App.dConfig, "Config", "CustomUser", "2");
+                    Write_Ini(App.dConfig, "Config", "CustomName", Profile_Nickname_Textbox.Text);
                     App.CustomUsernameFlag = 1;
                     App.username = Profile_Nickname_Textbox.Text;
                     Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppFore"];
@@ -457,8 +455,8 @@ namespace Hiro
             if (e.Key == Key.Enter)
             {
                 Profile_Signature_Textbox.Text = Profile_Signature_Textbox.Text.Trim().Equals(string.Empty) ? string.Empty : Profile_Signature_Textbox.Text;
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomSign", Profile_Signature_Textbox.Text);
-                Profile_Signature.Content = Profile_Signature_Textbox.Text.Equals(string.Empty) ? Hiro_Utils.Get_Translate("profilesign") : Profile_Signature_Textbox.Text;
+                Write_Ini(App.dConfig, "Config", "CustomSign", Profile_Signature_Textbox.Text);
+                Profile_Signature.Content = Profile_Signature_Textbox.Text.Equals(string.Empty) ? Hiro_Text.Get_Translate("profilesign") : Profile_Signature_Textbox.Text;
                 Profile_Signature.Foreground = Profile_Signature_Textbox.Text.Equals(string.Empty) ? (SolidColorBrush)Resources["AppForeDisabled"] : (SolidColorBrush)Resources["AppFore"];
                 Profile_Signature.Visibility = Visibility.Visible;
                 Profile_Signature_Textbox.Visibility = Visibility.Hidden;
@@ -480,16 +478,16 @@ namespace Hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
+                    Filter = Hiro_Text.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Text.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-                    var newStrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
+                    var newStrFileName = Hiro_Text.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
                     Hiro_File.CreateFolder(newStrFileName);
                     Point pt = new(418, 235);
                     var crop = new Hiro_Cropper(strFileName, newStrFileName, pt, (x) =>
@@ -512,16 +510,16 @@ namespace Hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
+                    Filter = Hiro_Text.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Text.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
-                    var newStrFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
+                    var newStrFileName = Hiro_Text.Path_Prepare("<hiapp>\\images\\crop\\" + Path.GetFileName(strFileName));
                     Hiro_File.CreateFolder(newStrFileName);
                     new Hiro_Cropper(strFileName, newStrFileName, new Point(1, 1), (x) =>
                     {
@@ -535,21 +533,21 @@ namespace Hiro
             }
             else if (e.ButtonState == e.RightButton)
             {
-                switch (Hiro_Utils.Read_DCIni("UserAvatarStyle", "1"))
+                switch (Read_DCIni("UserAvatarStyle", "1"))
                 {
                     case "0":
                         Profile_Rectangle.Visibility = Visibility.Visible;
                         Profile_Rectangle.Fill = (ImageBrush)Resources["Avatar"];
                         Profile_Ellipse.Visibility = Visibility.Hidden;
                         Profile_Ellipse.Fill = null;
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatarStyle", "1");
+                        Write_Ini(App.dConfig, "Config", "UserAvatarStyle", "1");
                         break;
                     default:
                         Profile_Rectangle.Visibility = Visibility.Hidden;
                         Profile_Rectangle.Fill = null;
                         Profile_Ellipse.Visibility = Visibility.Visible;
                         Profile_Ellipse.Fill = (ImageBrush)Resources["Avatar"];
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatarStyle", "0");
+                        Write_Ini(App.dConfig, "Config", "UserAvatarStyle", "0");
                         break;
                 }
                 Update_Profile();
@@ -624,7 +622,7 @@ namespace Hiro
                         hh = Profile_Rectangle.Height * 2;
                     });
                     bool m = false;
-                    if (Hiro_Utils.Read_DCIni("Compression", "1").Equals("1"))
+                    if (Read_DCIni("Compression", "1").Equals("1"))
                     {
                         if (ww < w && hh < h)
                         {
@@ -661,7 +659,7 @@ namespace Hiro
                         System.Drawing.Bitmap b = new(img);
                         img.Dispose();
                         strFileName = @"<hiapp>\images\avatar\" + strFileName[strFileName.LastIndexOf("\\")..];
-                        strFileName = Hiro_Utils.Path_PPX(strFileName);
+                        strFileName = Hiro_Text.Path_PPX(strFileName);
                         Hiro_File.CreateFolder(strFileName);
                         if (System.IO.File.Exists(strFileName))
                             System.IO.File.Delete(strFileName);
@@ -698,17 +696,17 @@ namespace Hiro
                             }
                             Dispatcher.Invoke(() =>
                             {
-                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate(trfile) + ",2)", Hiro_Utils.Get_Translate("profile"));
+                                Hiro_Utils.RunExe("notify(" + Hiro_Text.Get_Translate(trfile) + ",2)", Hiro_Text.Get_Translate("profile"));
                             });
                         }).Start();
-                        strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatar", strFileName);
+                        strFileName = Hiro_Text.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
+                        Write_Ini(App.dConfig, "Config", "UserAvatar", strFileName);
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Profile.Avatar");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Profile.Avatar");
                 }
                 finally
                 {
@@ -738,7 +736,7 @@ namespace Hiro
                         hh = Profile_Background.Height * 1.5;
                     });
                     bool m = false;
-                    if (Hiro_Utils.Read_DCIni("Compression", "1").Equals("1"))
+                    if (Read_DCIni("Compression", "1").Equals("1"))
                     {
                         if (ww < w && hh < h)
                         {
@@ -774,7 +772,7 @@ namespace Hiro
                         System.Drawing.Bitmap b = new(img);
                         img.Dispose();
                         strFileName = @"<hiapp>\images\profile\" + strFileName[strFileName.LastIndexOf("\\")..];
-                        strFileName = Hiro_Utils.Path_PPX(strFileName);
+                        strFileName = Hiro_Text.Path_PPX(strFileName);
                         Hiro_File.CreateFolder(strFileName);
                         if (File.Exists(strFileName))
                             File.Delete(strFileName);
@@ -811,17 +809,17 @@ namespace Hiro
                             }
                             Dispatcher.Invoke(() =>
                             {
-                                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate(trfile) + ",2)", Hiro_Utils.Get_Translate("profile"));
+                                Hiro_Utils.RunExe("notify(" + Hiro_Text.Get_Translate(trfile) + ",2)", Hiro_Text.Get_Translate("profile"));
                             });
                         }).Start();
-                        strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserBackground", strFileName);
+                        strFileName = Hiro_Text.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
+                        Write_Ini(App.dConfig, "Config", "UserBackground", strFileName);
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Profile.Background");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Profile.Background");
                 }
             }).Start();
         }
@@ -840,17 +838,17 @@ namespace Hiro
 
         private void Profile_Nickname_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             var tag = xflag ? "profileidx" : "profileid";
             Hiro_Utils.Set_Mac_Location(Profile_Mac, tag, Profile_Nickname, animation: animation, animationTime: 250);
         }
 
         private void Profile_Mac_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!Profile_Mac.Content.Equals(Hiro_Utils.Get_Translate("idnull")))
+            if (!Profile_Mac.Content.Equals(Hiro_Text.Get_Translate("idnull")))
             {
                 Clipboard.SetText(Profile_Mac.Content.ToString());
-                Hiro_Utils.RunExe("notify(" + Hiro_Utils.Get_Translate("idcopy") + ",2)", Hiro_Utils.Get_Translate("profile"));
+                Hiro_Utils.RunExe("notify(" + Hiro_Text.Get_Translate("idcopy") + ",2)", Hiro_Text.Get_Translate("profile"));
             }
         }
 
@@ -862,7 +860,7 @@ namespace Hiro
 
         private void Profile_MouseEnter(object sender, MouseEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             xflag = true;
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilenamex", animation: animation, animationTime: 250);
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesignx", animation: animation, animationTime: 250);
@@ -875,7 +873,7 @@ namespace Hiro
 
         private void Profile_MouseLeave(object sender, MouseEventArgs e)
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             xflag = false;
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "profilename", animation: animation, animationTime: 250);
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "profilesign", animation: animation, animationTime: 250);

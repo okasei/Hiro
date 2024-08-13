@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace Hiro
                 Emoji_Platte.Margin = new Thickness(0);
                 w = Emoji_Platte.Width;
             });
-            var imgList = new DirectoryInfo(Path.GetDirectoryName(Hiro_Utils.Path_Prepare(@"<current>\system\emoji\")) ?? "")
+            var imgList = new DirectoryInfo(Path.GetDirectoryName(Hiro_Text.Path_Prepare(@"<current>\system\emoji\")) ?? "")
                 .GetFiles("*", SearchOption.TopDirectoryOnly).Select(s => s.FullName).ToList();
             foreach (var img in imgList)
             {

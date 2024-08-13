@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Hiro.Helpers;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -25,9 +26,9 @@ namespace Hiro
 
         public void HiHiro()
         {
-            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            var animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, scbtn_1, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, scbtn_2, sb, 50, null);
@@ -57,13 +58,13 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            scbtn_1.Content = Hiro_Utils.Get_Translate("scnew");
-            scbtn_2.Content = Hiro_Utils.Get_Translate("scdelete");
-            scbtn_3.Content = Hiro_Utils.Get_Translate("scmodify");
-            dgs.Columns[0].Header = Hiro_Utils.Get_Translate("sid");
-            dgs.Columns[1].Header = Hiro_Utils.Get_Translate("sname");
-            dgs.Columns[2].Header = Hiro_Utils.Get_Translate("stime");
-            dgs.Columns[3].Header = Hiro_Utils.Get_Translate("scommand");
+            scbtn_1.Content = Hiro_Text.Get_Translate("scnew");
+            scbtn_2.Content = Hiro_Text.Get_Translate("scdelete");
+            scbtn_3.Content = Hiro_Text.Get_Translate("scmodify");
+            dgs.Columns[0].Header = Hiro_Text.Get_Translate("sid");
+            dgs.Columns[1].Header = Hiro_Text.Get_Translate("sname");
+            dgs.Columns[2].Header = Hiro_Text.Get_Translate("stime");
+            dgs.Columns[3].Header = Hiro_Text.Get_Translate("scommand");
         }
 
         public void Load_Position()
@@ -90,7 +91,7 @@ namespace Hiro
             Hiro_Main.hiro_newschedule.tb12.Text = "";
             Hiro_Main.hiro_newschedule.tb13.Text = "";
             Hiro_Main.hiro_newschedule.tb14.Text = "";
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("new");
+            Hiro_Main.newx.Content = Hiro_Text.Get_Translate("new");
             Hiro_Main.current = Hiro_Main.hiro_newschedule;
             Hiro_Main.Set_Label(Hiro_Main.newx);
 
@@ -124,7 +125,7 @@ namespace Hiro
                     Hiro_Main.hiro_newschedule.tb14.Text = App.scheduleitems[dgs.SelectedIndex].re.ToString();
                     break;
             }
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("mod");
+            Hiro_Main.newx.Content = Hiro_Text.Get_Translate("mod");
             Hiro_Main.current = Hiro_Main.hiro_newschedule;
             Hiro_Main.Set_Label(Hiro_Main.newx);
         }

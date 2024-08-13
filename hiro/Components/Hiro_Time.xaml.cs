@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -29,9 +30,9 @@ namespace Hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(3, tpbtn1, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(3, tpbtn2, sb, -50, null);
@@ -59,9 +60,9 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            tp_title.Content = Hiro_Utils.Get_Translate("Time");
-            tpbtn1.Content = Hiro_Utils.Get_Translate("timeok");
-            tpbtn2.Content = Hiro_Utils.Get_Translate("timecancel");
+            tp_title.Content = Hiro_Text.Get_Translate("Time");
+            tpbtn1.Content = Hiro_Text.Get_Translate("timeok");
+            tpbtn2.Content = Hiro_Text.Get_Translate("timecancel");
         }
 
         public void Load_Position()
@@ -91,7 +92,7 @@ namespace Hiro
             catch (Exception ex)
             {
                 a = "0";
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Time.Parse");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Time.Parse");
             }
             if (a.Length > b)
             {

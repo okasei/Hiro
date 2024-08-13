@@ -85,7 +85,7 @@ namespace Hiro.Helpers
                     }
             }
             if (!mute)
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate(infoKey), 2, source));
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate(infoKey), 2, source));
         }
 
         internal static void SetEffiencyMode(string para, string? source = null, bool mute = false)
@@ -100,7 +100,7 @@ namespace Hiro.Helpers
                 if (int.Parse(versions[0]) < 10 || int.Parse(versions[2]) < 22000)
                 {
                     if (!mute)
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("effiencywin"), 2, source));
+                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("effiencywin"), 2, source));
                     return;
                 }
             }
@@ -137,7 +137,7 @@ namespace Hiro.Helpers
                     }
             }
             if (!mute)
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate(infoKey), 2, source));
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate(infoKey), 2, source));
         }
 
         // 声明导入函数

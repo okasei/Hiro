@@ -1,18 +1,7 @@
 ﻿using Hiro.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Hiro
 {
@@ -28,7 +17,7 @@ namespace Hiro
             Loaded += delegate
             {
                 Hiro_Wallpaper.SetWallpaperVideo(new WindowInteropHelper(this).Handle);
-                Media.IsMuted = Hiro_Utils.Read_DCIni("WallVideoMute", "true").Equals("true");
+                Media.IsMuted = Hiro_Settings.Read_DCIni("WallVideoMute", "true").Equals("true");
                 WindowState = WindowState.Maximized;
             };
         }
@@ -53,7 +42,7 @@ namespace Hiro
 
         private void Media_MediaOpened(object sender, Unosquare.FFME.Common.MediaOpenedEventArgs e)
         {
-            if (Media.MediaInfo.Streams.Count > 0 && Hiro_Utils.Read_DCIni("WallVideoCrop", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+            if (Media.MediaInfo.Streams.Count > 0 && Hiro_Settings.Read_DCIni("WallVideoCrop", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
             {
                 SetAutoCrop();
             }
@@ -65,14 +54,14 @@ namespace Hiro
 
         internal void DisableAutoCrop()
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "false");
+            Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "false");
             Media.Width = ActualWidth;
             Media.Height = ActualHeight;
         }
 
         internal void SetAutoCrop()
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "true");
+            Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "true");
             var w = Media.MediaInfo.Streams[0].PixelWidth;
             var h = Media.MediaInfo.Streams[0].PixelHeight;
             var ww = ActualWidth;

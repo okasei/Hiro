@@ -19,8 +19,8 @@ namespace Hiro.Helpers
                 }
                 catch (Exception ex)
                 {
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("failed"), 2, Hiro_Utils.Get_Translate("file")));
-                    Hiro_Utils.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
+                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
+                    Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
                 }
                 return;
             }
@@ -31,8 +31,8 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("failed"), 2, Hiro_Utils.Get_Translate("file")));
-                Hiro_Utils.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
+                Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
             }
         }
 
@@ -47,13 +47,13 @@ namespace Hiro.Helpers
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("failed"), 2, Hiro_Utils.Get_Translate("file")));
-                        Hiro_Utils.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
+                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
+                        Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                     }
                 else
                 {
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("syntax"), 2, Hiro_Utils.Get_Translate("file")));
-                    Hiro_Utils.LogError(new FileNotFoundException(), $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
+                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("syntax"), 2, Hiro_Text.Get_Translate("file")));
+                    Hiro_Logger.LogError(new FileNotFoundException(), $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                 }
                 return;
             }
@@ -64,8 +64,8 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("failed"), 2, Hiro_Utils.Get_Translate("file")));
-                Hiro_Utils.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
+                Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
             }
         }
 
@@ -80,11 +80,11 @@ namespace Hiro.Helpers
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("failed"), 2, Hiro_Utils.Get_Translate("file")));
-                        Hiro_Utils.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
+                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
+                        Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
                     }
                 else
-                    Hiro_Utils.LogtoFile($"[WARNING]Hiro.Warning.IO.Delete: Warning at {path} | Details: {Hiro_Utils.Get_Translate("filenotexist")}");
+                    Hiro_Logger.LogtoFile($"[WARNING]Hiro.Warning.IO.Delete: Warning at {path} | Details: {Hiro_Text.Get_Translate("filenotexist")}");
                 return;
             }
             try
@@ -93,8 +93,8 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("failed"), 2, Hiro_Utils.Get_Translate("file")));
-                Hiro_Utils.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
+                Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
             }
         }
         private static void CopyDirectory(string srcdir, string desdir)
@@ -103,7 +103,7 @@ namespace Hiro.Helpers
                 srcdir = srcdir[0..^1];
             if (desdir.ToLower().StartsWith(srcdir.ToLower()))
             {
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("syntax"), 2, Hiro_Utils.Get_Translate("file")));
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("syntax"), 2, Hiro_Text.Get_Translate("file")));
                 return;
             }
             string desfolderdir = desdir;
@@ -201,7 +201,7 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, $"Hiro.Exception.Directory.Create");
+                Hiro_Logger.LogError(ex, $"Hiro.Exception.Directory.Create");
                 return false;
             }
             return true;

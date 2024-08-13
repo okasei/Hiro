@@ -4,6 +4,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static Hiro.Helpers.Hiro_Text;
+using static Hiro.Helpers.Hiro_Settings;
+using Hiro.Helpers;
 
 namespace Hiro
 {
@@ -26,9 +29,9 @@ namespace Hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, btn1, sb, 50, null);
                 Hiro_Utils.AddPowerAnimation(1, btn2, sb, 50, null);
@@ -61,16 +64,16 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            btn1.Content = Hiro_Utils.Get_Translate("inew");
-            btn2.Content = Hiro_Utils.Get_Translate("iup");
-            btn3.Content = Hiro_Utils.Get_Translate("idown");
-            btn4.Content = Hiro_Utils.Get_Translate("ilaunch");
-            btn5.Content = Hiro_Utils.Get_Translate("idelete");
-            btn6.Content = Hiro_Utils.Get_Translate("imodify");
-            dgi.Columns[0].Header = Hiro_Utils.Get_Translate("page");
-            dgi.Columns[1].Header = Hiro_Utils.Get_Translate("id");
-            dgi.Columns[2].Header = Hiro_Utils.Get_Translate("Name");
-            dgi.Columns[3].Header = Hiro_Utils.Get_Translate("Command");
+            btn1.Content = Get_Translate("inew");
+            btn2.Content = Get_Translate("iup");
+            btn3.Content = Get_Translate("idown");
+            btn4.Content = Get_Translate("ilaunch");
+            btn5.Content = Get_Translate("idelete");
+            btn6.Content = Get_Translate("imodify");
+            dgi.Columns[0].Header = Get_Translate("page");
+            dgi.Columns[1].Header = Get_Translate("id");
+            dgi.Columns[2].Header = Get_Translate("Name");
+            dgi.Columns[3].Header = Get_Translate("Command");
         }
 
         public void Load_Position()
@@ -101,7 +104,7 @@ namespace Hiro
             Hiro_Main.hiro_newitem.tb8.Text = "";
             Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
             Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("new");
+            Hiro_Main.newx.Content = Get_Translate("new");
             Hiro_Main.current = Hiro_Main.hiro_newitem;
             Hiro_Main.Set_Label(Hiro_Main.newx);
 
@@ -119,12 +122,12 @@ namespace Hiro
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command, App.cmditems[i - 1].HotKey);
                 App.cmditems[i - 1] = nec;
                 var inipath = App.dConfig;
-                Hiro_Utils.Write_Ini(inipath, i.ToString(), "Title", nec.Name);
-                Hiro_Utils.Write_Ini(inipath, i.ToString(), "Command", "(" + nec.Command + ")");
-                Hiro_Utils.Write_Ini(inipath, i.ToString(), "HotKey", nec.HotKey);
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", App.cmditems[i].Name);
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", "(" + App.cmditems[i].Command + ")");
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
+                Write_Ini(inipath, i.ToString(), "Title", nec.Name);
+                Write_Ini(inipath, i.ToString(), "Command", "(" + nec.Command + ")");
+                Write_Ini(inipath, i.ToString(), "HotKey", nec.HotKey);
+                Write_Ini(inipath, (i + 1).ToString(), "Title", App.cmditems[i].Name);
+                Write_Ini(inipath, (i + 1).ToString(), "Command", "(" + App.cmditems[i].Command + ")");
+                Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
                 dgi.SelectedIndex = i - 1;
                 App.Load_Menu();
                 var vsi = Hiro_Utils.FindHotkeyById(i - 1);
@@ -149,12 +152,12 @@ namespace Hiro
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command, App.cmditems[i + 1].HotKey);
                 App.cmditems[i + 1] = nec;
                 var inipath = App.dConfig;
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", App.cmditems[i].Name);
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", "(" + App.cmditems[i].Command + ")");
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
-                Hiro_Utils.Write_Ini(inipath, (i + 2).ToString(), "Title", App.cmditems[i + 1].Name);
-                Hiro_Utils.Write_Ini(inipath, (i + 2).ToString(), "Command", "(" + App.cmditems[i + 1].Command + ")");
-                Hiro_Utils.Write_Ini(inipath, (i + 2).ToString(), "HotKey", App.cmditems[i + 1].HotKey);
+                Write_Ini(inipath, (i + 1).ToString(), "Title", App.cmditems[i].Name);
+                Write_Ini(inipath, (i + 1).ToString(), "Command", "(" + App.cmditems[i].Command + ")");
+                Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
+                Write_Ini(inipath, (i + 2).ToString(), "Title", App.cmditems[i + 1].Name);
+                Write_Ini(inipath, (i + 2).ToString(), "Command", "(" + App.cmditems[i + 1].Command + ")");
+                Write_Ini(inipath, (i + 2).ToString(), "HotKey", App.cmditems[i + 1].HotKey);
                 dgi.SelectedIndex = i + 1;
                 App.Load_Menu();
                 var vsi = Hiro_Utils.FindHotkeyById(i + 1);
@@ -185,9 +188,9 @@ namespace Hiro
                     App.cmditems[i].Name = App.cmditems[i + 1].Name;
                     App.cmditems[i].Command = App.cmditems[i + 1].Command;
                     App.cmditems[i].HotKey = App.cmditems[i + 1].HotKey;
-                    Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", Hiro_Utils.Read_Ini(inipath, (i + 2).ToString(), "Title", " "));
-                    Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", Hiro_Utils.Read_Ini(inipath, (i + 2).ToString(), "Command", " "));
-                    Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", Hiro_Utils.Read_Ini(inipath, (i + 2).ToString(), "HotKey", " "));
+                    Write_Ini(inipath, (i + 1).ToString(), "Title", Read_Ini(inipath, (i + 2).ToString(), "Title", " "));
+                    Write_Ini(inipath, (i + 1).ToString(), "Command", Read_Ini(inipath, (i + 2).ToString(), "Command", " "));
+                    Write_Ini(inipath, (i + 1).ToString(), "HotKey", Read_Ini(inipath, (i + 2).ToString(), "HotKey", " "));
                     i++;
                     System.Windows.Forms.Application.DoEvents();
                     var vst = Hiro_Utils.FindHotkeyById(i);
@@ -196,9 +199,9 @@ namespace Hiro
                         App.vs[vst + 1]--;
                     }
                 }
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Title", " ");
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "Command", " ");
-                Hiro_Utils.Write_Ini(inipath, (i + 1).ToString(), "HotKey", " ");
+                Write_Ini(inipath, (i + 1).ToString(), "Title", " ");
+                Write_Ini(inipath, (i + 1).ToString(), "Command", " ");
+                Write_Ini(inipath, (i + 1).ToString(), "HotKey", " ");
                 App.cmditems.RemoveAt(i);
                 var total = (App.cmditems.Count % 10 == 0) ? App.cmditems.Count / 10 : App.cmditems.Count / 10 + 1;
                 if (App.page > total - 1 && App.page > 0)
@@ -238,11 +241,11 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Items.Bind");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Items.Bind");
                 Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
                 Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
             }
-            Hiro_Main.newx.Content = Hiro_Utils.Get_Translate("mod");
+            Hiro_Main.newx.Content = Get_Translate("mod");
             Hiro_Main.current = Hiro_Main.hiro_newitem;
             Hiro_Main.Set_Label(Hiro_Main.newx);
         }

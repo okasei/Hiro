@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -22,10 +23,10 @@ namespace Hiro
             InitializeComponent();
             Helpers.Hiro_UI.SetCustomWindowIcon(this);
             Load_Colors();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
             Load_Position();
             Load_Translate();
-            Title = Hiro_Utils.Get_Translate("seqtitle") + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("seqtitle") + " - " + App.appTitle;
             var maxwidth = SystemParameters.PrimaryScreenWidth / 5;
             var btnwidth = skipbtn.Width + skipbtn.Margin.Right + 5;
             maxwidth = (maxwidth > btnwidth) ? maxwidth : btnwidth;
@@ -42,7 +43,7 @@ namespace Hiro
 
         public void HiHiro()
         {
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1") && Visibility == Visibility.Visible)
+            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1") && Visibility == Visibility.Visible)
             {
                 Storyboard sb = new();
                 Hiro_Utils.AddPowerAnimation(3, skipbtn, sb, -50, null);
@@ -56,7 +57,7 @@ namespace Hiro
 
         private void TimerTick()
         {
-            if (pausebtn.Content.Equals(Hiro_Utils.Get_Translate("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Text.Get_Translate("seqconti")))
                 return;
             tick--;
             Resizel(ci + 1, cmds.Count);                
@@ -88,10 +89,10 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            skipbtn.Content = Hiro_Utils.Get_Translate("seqskip");
-            textblock.Text = Hiro_Utils.Get_Translate("seqload");
-            pausebtn.Content = Hiro_Utils.Get_Translate("seqpause");
-            cancelbtn.Content = Hiro_Utils.Get_Translate("seqcancel");
+            skipbtn.Content = Hiro_Text.Get_Translate("seqskip");
+            textblock.Text = Hiro_Text.Get_Translate("seqload");
+            pausebtn.Content = Hiro_Text.Get_Translate("seqpause");
+            cancelbtn.Content = Hiro_Text.Get_Translate("seqcancel");
         }
         public void Load_Colors()
         {
@@ -127,22 +128,22 @@ namespace Hiro
         }
         internal void Next_CMD()
         {
-            if (pausebtn.Content.Equals(Hiro_Utils.Get_Translate("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Text.Get_Translate("seqconti")))
                 return;
             if (cmds.Count <= ci)
             {
                 Close();
                 return;
             }
-            var sc = Hiro_Utils.Path_PPX(cmds[ci]);
+            var sc = Hiro_Text.Path_PPX(cmds[ci]);
             if (App.dflag)
-                Hiro_Utils.LogtoFile("[SEQUENCE]" + sc);
+                Hiro_Logger.LogtoFile("[SEQUENCE]" + sc);
             skipbtn.Visibility = Visibility.Hidden;
             Resizel(ci + 1, cmds.Count);
             ci++;
             if (sc.ToLower().Equals("trap") || sc.ToLower().Equals("trap()"))
             {
-                pausebtn.Content = Hiro_Utils.Get_Translate("seqconti");
+                pausebtn.Content = Hiro_Text.Get_Translate("seqconti");
                 return;
             }
             if (sc.StartsWith("pause(", StringComparison.CurrentCultureIgnoreCase))
@@ -154,7 +155,7 @@ namespace Hiro
                 }
                 catch(Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Sequence.Pause");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Sequence.Pause");
                     tick = 5;
                 }
                 skipbtn.Visibility = Visibility.Visible;
@@ -198,9 +199,9 @@ namespace Hiro
                 Next_CMD();
                 return;
             }
-            Hiro_Utils.RunExe(sc, Hiro_Utils.Get_Translate("seqtitle"));
+            Hiro_Utils.RunExe(sc, Hiro_Text.Get_Translate("seqtitle"));
             if (App.dflag)
-                Hiro_Utils.LogtoFile(sc);
+                Hiro_Logger.LogtoFile(sc);
             Next_CMD();
         }
         public void ThreadSeq(String path)
@@ -223,14 +224,14 @@ namespace Hiro
             var changed = false;
             try
             {
-                var next = Hiro_Utils.Get_Translate("seqnext");
-                var sc = Hiro_Utils.Path_PPX(cmds[ci]);
-                var current = Hiro_Utils.Get_Translate("seqcurrent") + sc;
+                var next = Hiro_Text.Get_Translate("seqnext");
+                var sc = Hiro_Text.Path_PPX(cmds[ci]);
+                var current = Hiro_Text.Get_Translate("seqcurrent") + sc;
                 var inde = (ci + 1).ToString() + "/" + cmds.Count.ToString();
                 if (tick > 0)
-                    current = current + Environment.NewLine + Hiro_Utils.Get_Translate("seqcd").Replace("%s", tick.ToString());
+                    current = current + Environment.NewLine + Hiro_Text.Get_Translate("seqcd").Replace("%s", tick.ToString());
                 if (ci >= cmds.Count - 1)
-                    next += Hiro_Utils.Get_Translate("seqfinish");
+                    next += Hiro_Text.Get_Translate("seqfinish");
                 else
                     next += cmds[ci + 1];
                 changed = textblock.Text == inde + Environment.NewLine + current + Environment.NewLine + next;
@@ -269,7 +270,7 @@ namespace Hiro
                     break;
             }
 
-            if (Visibility != Visibility.Visible || !changed || !Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Visibility != Visibility.Visible || !changed || !Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
             Hiro_Utils.AddPowerAnimation(0, textblock, sb, 50, null);
@@ -302,13 +303,13 @@ namespace Hiro
 
         private void Rejectbtn_Click(object sender, RoutedEventArgs e)
         {
-            if (pausebtn.Content.Equals(Hiro_Utils.Get_Translate("seqconti")))
+            if (pausebtn.Content.Equals(Hiro_Text.Get_Translate("seqconti")))
             {
-                pausebtn.Content = Hiro_Utils.Get_Translate("seqpause");
+                pausebtn.Content = Hiro_Text.Get_Translate("seqpause");
                 Next_CMD();
             }
             else
-                pausebtn.Content = Hiro_Utils.Get_Translate("seqconti");
+                pausebtn.Content = Hiro_Text.Get_Translate("seqconti");
         }
 
         private void Cancelbtn_MouseDown(object sender, MouseButtonEventArgs e)
@@ -365,19 +366,19 @@ namespace Hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            var animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            var animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
             Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
         private void Seq_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
         }
 
         private void Seq_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            pausebtn.Content = Hiro_Utils.Get_Translate("seqconti");
+            pausebtn.Content = Hiro_Text.Get_Translate("seqconti");
             tick = 0;
             if (parent == null)
                 return;
@@ -388,7 +389,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Sequence.Parent");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Sequence.Parent");
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace Hiro
             Load_PrimaryIcon();
             Load_Color();
             Helpers.Hiro_UI.SetCustomWindowIcon(this);
-            Title = $"{Hiro_Utils.Get_Translate("notitle")} - {App.appTitle}";
+            Title = $"{Hiro_Text.Get_Translate("notitle")} - {App.appTitle}";
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.FullPrimaryScreenHeight * 9 / 10 - Height);
             Load_One();
@@ -68,7 +69,7 @@ namespace Hiro
 
         private void Load_PrimaryIcon()
         {
-            var icon = Hiro_Utils.Read_PPDCIni("CustomizeIcon", "");
+            var icon = Hiro_Settings.Read_PPDCIni("CustomizeIcon", "");
             if (File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -76,8 +77,8 @@ namespace Hiro
             }
             else
             {
-                icon = Hiro_Utils.Read_PPDCIni("UserAvatar", "");
-                if (System.IO.File.Exists(icon) && App.Logined == true)
+                icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
+                if (File.Exists(icon) && App.Logined == true)
                 {
                     BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
                     (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
@@ -116,7 +117,7 @@ namespace Hiro
                 BaseGrid.Cursor = null;
             }
             if (TitleLabel.Text == null || TitleLabel.Text.Equals(string.Empty))
-                TitleLabel.Text = Hiro_Utils.Get_Translate("notitle");
+                TitleLabel.Text = Hiro_Text.Get_Translate("notitle");
             temps = App.noticeitems[0].time;
             Reset_Width();
             Load_Icon();
@@ -157,7 +158,7 @@ namespace Hiro
                 }
                 else
                 {
-                    var iconLocation = Hiro_Utils.Path_PPX(icon.Location);
+                    var iconLocation = Hiro_Text.Path_PPX(icon.Location);
                     if (File.Exists(iconLocation))
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(iconLocation);
@@ -200,19 +201,19 @@ namespace Hiro
 
         private void Box_In()
         {
-            if (Hiro_Utils.Read_DCIni("HiBoxAudio", "1").Equals("1"))
+            if (Hiro_Settings.Read_DCIni("HiBoxAudio", "1").Equals("1"))
                 try
                 {
-                    var fileP = Hiro_Utils.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");
+                    var fileP = Hiro_Settings.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");
                     if (!System.IO.File.Exists(fileP))
                         //fileP = Hiro_Utils.Path_Prepare("C:\\Users\\Rex\\Downloads\\Music\\xbox_one_rare_achiev.wav");
-                        fileP = Hiro_Utils.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
+                        fileP = Hiro_Text.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
                     System.Media.SoundPlayer sndPlayer = new(fileP);
                     sndPlayer.Play();
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Sound");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Sound");
                 }
             InnerBorder.Margin = new Thickness(0);
             var sb = Hiro_Utils.AddDoubleAnimaton(Height, boxInLen, OuterBorder, "Height", null, 0, 0.7);

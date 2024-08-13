@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.Text;
 using System.Windows.Media.Animation;
-using System.Diagnostics;
 using System.Threading;
-using System.Windows.Shell;
 using System.IO;
 using Hiro.Helpers;
 using Hiro.ModelViews;
+using static Hiro.Helpers.Hiro_Settings;
 
 namespace Hiro
 {
@@ -45,7 +43,7 @@ namespace Hiro
             {
                 Load_Color();
                 Load_Translate();
-                Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
+                Loadbgi(Hiro_Utils.ConvertInt(Read_DCIni("Blur", "0")));
                 Initialize_Player();
                 Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
                 Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
@@ -149,7 +147,7 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlayer.Initialize");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.MediaPlayer.Initialize");
                 }
             }).Start();
         }
@@ -199,7 +197,7 @@ namespace Hiro
                     var wid = zero ? 0 : Ctrl_Progress_Bg.Width * Media.Position.TotalSeconds / Media.MediaInfo.Duration.TotalSeconds;
                     wid = wid >= 0 ? wid : 0;
                     Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
-                    if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+                    if (Read_DCIni("Ani", "2").Equals("1"))
                     {
                         var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
                         if (len < 150)
@@ -221,7 +219,7 @@ namespace Hiro
                 }
                 catch (Exception e)
                 {
-                    Hiro_Utils.LogError(e, "Hiro.Player");
+                    Hiro_Logger.LogError(e, "Hiro.Player");
                     Ctrl_Progress.Width = 0;
                     Ctrl_Time.Content = "00:00";
                 }
@@ -300,7 +298,7 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlayer.Play");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.MediaPlayer.Play");
                 }
             }).Start();
         }
@@ -334,7 +332,7 @@ namespace Hiro
 
         public void Loadbgi(int direction, bool? animation = null)
         {
-            if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
+            if (Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
                 Hiro_Utils.Set_Acrylic(bgimage, this, null, compositor);
@@ -348,7 +346,7 @@ namespace Hiro
                 return;
             bflag = 1;
             Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool ani = animation == null ? !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0") : (bool)animation;
+            bool ani = animation == null ? !Read_DCIni("Ani", "2").Equals("0") : (bool)animation;
             Hiro_Utils.Blur_Animation(direction, ani, bgimage, this);
             bflag = 0;
         }
@@ -383,7 +381,7 @@ namespace Hiro
         {
             Dgi.Visibility = Visibility.Hidden;
             Update_Progress();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")), false);
+            Loadbgi(Hiro_Utils.ConvertInt(Read_DCIni("Blur", "0")), false);
             if (rflag == 1)
             {
                 mSize.Width = Width;
@@ -452,7 +450,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.MediaPlay.Close");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.MediaPlay.Close");
             }
         }
 
@@ -476,12 +474,12 @@ namespace Hiro
             if (Media.IsPlaying)
             {
                 Media.Pause();
-                Player_Notify(Hiro_Utils.Get_Translate("playerpause"));
+                Player_Notify(Hiro_Text.Get_Translate("playerpause"));
             }
             else if (Media.IsPaused)
             {
                 Media.Play();
-                Player_Notify(Hiro_Utils.Get_Translate("playerplay"));
+                Player_Notify(Hiro_Text.Get_Translate("playerplay"));
             }
         }
 
@@ -617,20 +615,20 @@ namespace Hiro
         {
             Microsoft.Win32.OpenFileDialog ofd = new()
             {
-                Filter = Hiro_Utils.Get_Translate("vidfiles") +
+                Filter = Hiro_Text.Get_Translate("vidfiles") +
                 "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;" +
                 "*.m4v;*.mkv;*.mov;*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;" +
                 "*.rec;*.rm;*.rmvb;*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
-                + Hiro_Utils.Get_Translate("audfiles") +
+                + Hiro_Text.Get_Translate("audfiles") +
                 "|*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;" +
                 "*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;" +
                 "*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm|"
-                + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
+                + Hiro_Text.Get_Translate("allfiles") + "|*.*",
                 ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                 CheckFileExists = true, //验证路径的有效性
                 CheckPathExists = true,//验证路径的有效性
                 Multiselect = true,
-                Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
+                Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
             };
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
@@ -646,7 +644,7 @@ namespace Hiro
 
         private void Switch_List()
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             if (Dgi.Visibility == Visibility.Visible)
             {
                 Thickness to = new()
@@ -713,7 +711,7 @@ namespace Hiro
         {
             if (Ctrl_Address.Visibility == Visibility.Hidden)
             {
-                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -732,7 +730,7 @@ namespace Hiro
             }
             else
             {
-                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -752,7 +750,7 @@ namespace Hiro
         {
             if (Controller.Visibility == Visibility.Hidden)
             {
-                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Controller.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -778,7 +776,7 @@ namespace Hiro
             }
             else
             {
-                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Controller.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -822,7 +820,7 @@ namespace Hiro
             MenuItem open = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermopen")
+                Header = Hiro_Text.Get_Translate("playermopen")
             };
             open.Click += delegate
             {
@@ -835,57 +833,57 @@ namespace Hiro
                 Foreground = new SolidColorBrush(App.AppForeColor),
                 Background = new SolidColorBrush(App.AppAccentColor),
                 BorderBrush = null,
-                Header = Hiro_Utils.Get_Translate("playermspeed")
+                Header = Hiro_Text.Get_Translate("playermspeed")
             };
             MenuItem uu = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermspeeduu")
+                Header = Hiro_Text.Get_Translate("playermspeeduu")
             };
             uu.Click += delegate
             {
                 Media.SpeedRatio = 2;
-                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "2"));
+                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "2"));
             };
             MenuItem u = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermspeedu")
+                Header = Hiro_Text.Get_Translate("playermspeedu")
             };
             u.Click += delegate
             {
                 Media.SpeedRatio = 1.5f;
-                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1.5"));
+                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "1.5"));
             };
             MenuItem n = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermspeedn")
+                Header = Hiro_Text.Get_Translate("playermspeedn")
             };
             n.Click += delegate
             {
                 Media.SpeedRatio = 1;
-                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "1"));
+                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "1"));
             };
             MenuItem s = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermspeeds")
+                Header = Hiro_Text.Get_Translate("playermspeeds")
             };
             s.Click += delegate
             {
                 Media.SpeedRatio = 0.75f;
-                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.75"));
+                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "0.75"));
             };
             MenuItem ss = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermspeedss")
+                Header = Hiro_Text.Get_Translate("playermspeedss")
             };
             ss.Click += delegate
             {
                 Media.SpeedRatio = 0.5f;
-                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", "0.5"));
+                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "0.5"));
             };
             speed.Items.Add(uu);
             speed.Items.Add(u);
@@ -896,19 +894,19 @@ namespace Hiro
             MenuItem to = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermpin")
+                Header = Hiro_Text.Get_Translate("playermpin")
             };
             to.Click += delegate
             {
                 Topmost = !Topmost;
-                to.Header = Topmost == true ? Hiro_Utils.Get_Translate("playermunpin") : Hiro_Utils.Get_Translate("playermpin");
+                to.Header = Topmost == true ? Hiro_Text.Get_Translate("playermunpin") : Hiro_Text.Get_Translate("playermpin");
 
             };
             cm.Items.Add(to);
             MenuItem list = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermlist")
+                Header = Hiro_Text.Get_Translate("playermlist")
             };
             list.Click += delegate
             {
@@ -918,7 +916,7 @@ namespace Hiro
             MenuItem ui = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermui")
+                Header = Hiro_Text.Get_Translate("playermui")
             };
             ui.Click += delegate
             {
@@ -928,7 +926,7 @@ namespace Hiro
             MenuItem exi = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Utils.Get_Translate("playermexit")
+                Header = Hiro_Text.Get_Translate("playermexit")
             };
             exi.Click += delegate
             {
@@ -958,7 +956,7 @@ namespace Hiro
             {
                 if (!Ctrl_Text.Text.Equals(string.Empty))
                     ParseCommand();
-                if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
@@ -1008,10 +1006,10 @@ namespace Hiro
 
         private void Load_Translate()
         {
-            minbtn.ToolTip = Hiro_Utils.Get_Translate("Min");
-            closebtn.ToolTip = Hiro_Utils.Get_Translate("close");
-            //maxbtn.ToolTip = Hiro_Utils.Get_Translate("max");
-            //resbtn.ToolTip = Hiro_Utils.Get_Translate("restore");
+            minbtn.ToolTip = Hiro_Text.Get_Translate("Min");
+            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
+            //maxbtn.ToolTip = Hiro_Text.Get_Translate("max");
+            //resbtn.ToolTip = Hiro_Text.Get_Translate("restore");
             Load_Menu();
         }
 
@@ -1057,7 +1055,7 @@ namespace Hiro
         {
             Player_Info.Content = val;
             pcd = 2;
-            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+            if (!Read_DCIni("Ani", "2").Equals("0"))
             {
                 if (Player_Info.Visibility != Visibility.Visible)
                 {
@@ -1073,7 +1071,7 @@ namespace Hiro
                                 pcd--;
                                 System.Threading.Thread.Sleep(2000);
                             }
-                            if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                            if (!Read_DCIni("Ani", "2").Equals("0"))
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -1106,7 +1104,7 @@ namespace Hiro
                     new System.Threading.Thread(() =>
                     {
                         System.Threading.Thread.Sleep(2000);
-                        if (!Hiro_Utils.Read_DCIni("Ani", "2").Equals("0"))
+                        if (!Read_DCIni("Ani", "2").Equals("0"))
                         {
                             Dispatcher.Invoke(() =>
                             {
@@ -1144,7 +1142,7 @@ namespace Hiro
                 else
                     vol = vol + del;
                 Media.SpeedRatio = vol;
-                Player_Notify(Hiro_Utils.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
+                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
                 e.Handled = true;
             }
             else
@@ -1156,7 +1154,7 @@ namespace Hiro
                 else
                     vol = vol + del;
                 Media.Volume = vol;
-                Player_Notify(Hiro_Utils.Get_Translate("playervol").Replace("%v", ((int)(vol * 100)).ToString()));
+                Player_Notify(Hiro_Text.Get_Translate("playervol").Replace("%v", ((int)(vol * 100)).ToString()));
                 e.Handled = true;
             }
         }
@@ -1228,7 +1226,7 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogError(ex, "Hiro.Player.List.PlayIndex");
+                        Hiro_Logger.LogError(ex, "Hiro.Player.List.PlayIndex");
                     }
                 }
             });

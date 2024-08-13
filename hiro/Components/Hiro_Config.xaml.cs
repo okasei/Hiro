@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static Hiro.Helpers.Hiro_Settings;
 
 namespace Hiro
 {
@@ -28,9 +29,9 @@ namespace Hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(0, BaseGrid, sb, -100, null);
             }
@@ -110,7 +111,7 @@ namespace Hiro
                 Foreground = new SolidColorBrush(Colors.Black),
                 Content = "240"
             });
-            int frame = Convert.ToInt32(Hiro_Utils.Read_DCIni("FPS", "60"));
+            int frame = Convert.ToInt32(Read_DCIni("FPS", "60"));
             for (int i = 0; i < fr_box.Items.Count; i++)
             {
                 if (frame.ToString().Equals((fr_box.Items[i] as ComboBoxItem).Content.ToString()))
@@ -127,11 +128,11 @@ namespace Hiro
                     break;
                 }
             }
-            tb1.Text = Hiro_Utils.Read_DCIni("LeftAction", "");
-            tb2.Text = Hiro_Utils.Read_DCIni("MiddleAction", "");
-            tb3.Text = Hiro_Utils.Read_DCIni("RightAction", "");
-            tb5.Text = Hiro_Utils.Read_DCIni("AutoAction", "");
-            switch (Hiro_Utils.Read_DCIni("LeftClick", "1"))
+            tb1.Text = Read_DCIni("LeftAction", "");
+            tb2.Text = Read_DCIni("MiddleAction", "");
+            tb3.Text = Read_DCIni("RightAction", "");
+            tb5.Text = Read_DCIni("AutoAction", "");
+            switch (Read_DCIni("LeftClick", "1"))
             {
                 case "2":
                     rbtn2.IsChecked = true;
@@ -143,7 +144,7 @@ namespace Hiro
                     rbtn1.IsChecked = true;
                     break;
             }
-            switch (Hiro_Utils.Read_DCIni("MiddleClick", "2"))
+            switch (Read_DCIni("MiddleClick", "2"))
             {
                 case "2":
                     rbtn5.IsChecked = true;
@@ -155,7 +156,7 @@ namespace Hiro
                     rbtn4.IsChecked = true;
                     break;
             }
-            switch (Hiro_Utils.Read_DCIni("RightClick", "2"))
+            switch (Read_DCIni("RightClick", "2"))
             {
                 case "2":
                     rbtn8.IsChecked = true;
@@ -167,7 +168,7 @@ namespace Hiro
                     rbtn7.IsChecked = true;
                     break;
             }
-            switch (Hiro_Utils.Read_DCIni("Toast", "0"))
+            switch (Read_DCIni("Toast", "0"))
             {
                 case "1":
                     rbtn18.IsChecked = true;
@@ -188,33 +189,33 @@ namespace Hiro
                     rbtn17.IsChecked = true;
                     break;
             }
-            rbtn13.IsChecked = Hiro_Utils.Read_DCIni("Autoexe", "1").Equals("2");
+            rbtn13.IsChecked = Read_DCIni("Autoexe", "1").Equals("2");
             rbtn12.IsChecked = !rbtn13.IsChecked;
-            cb_box.IsChecked = Hiro_Utils.Read_DCIni("Min", "1").Equals("1");
-            rbtn15.IsChecked = Hiro_Utils.Read_DCIni("Background", "1").Equals("2");
-            rbtn14.IsChecked = Hiro_Utils.Read_DCIni("Background", "1").Equals("1");
-            acrylic_btn.IsChecked = Hiro_Utils.Read_DCIni("Background", "1").Equals("3");
-            video_btn.IsChecked = Hiro_Utils.Read_DCIni("Background", "1").Equals("4");
-            Autorun.IsChecked = Hiro_Utils.Read_DCIni("AutoRun", "0").Equals("1");
-            blureff.IsChecked = Hiro_Utils.Read_DCIni("Blur", "0") switch
+            cb_box.IsChecked = Read_DCIni("Min", "1").Equals("1");
+            rbtn15.IsChecked = Read_DCIni("Background", "1").Equals("2");
+            rbtn14.IsChecked = Read_DCIni("Background", "1").Equals("1");
+            acrylic_btn.IsChecked = Read_DCIni("Background", "1").Equals("3");
+            video_btn.IsChecked = Read_DCIni("Background", "1").Equals("4");
+            Autorun.IsChecked = Read_DCIni("AutoRun", "0").Equals("1");
+            blureff.IsChecked = Read_DCIni("Blur", "0") switch
             {
                 "2" => null,
                 "1" => true,
                 _ => false,
             };
-            Verbose.IsChecked = Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1");
-            animation.IsChecked = Hiro_Utils.Read_DCIni("Ani", "2") switch
+            Verbose.IsChecked = Read_DCIni("Verbose", "0").Equals("1");
+            animation.IsChecked = Read_DCIni("Ani", "2") switch
             {
                 "2" => null,
                 "1" => true,
                 _ => false,
             };
-            reverse_style.IsChecked = Hiro_Utils.Read_DCIni("Reverse", "0").Equals("1");
-            tr_btn.IsChecked = Hiro_Utils.Read_DCIni("TRBtn", "0").Equals("1");
-            image_compress.IsChecked = Hiro_Utils.Read_DCIni("Compression", "1").Equals("1");
-            UrlConfirmBox.IsChecked = Hiro_Utils.Read_DCIni("URLConfirm", "0").Equals("1");
-            MonitorSysBox.IsChecked = Hiro_Utils.Read_DCIni("MonitorSys", "1").Equals("1");
-            LowPerfermanceBox.IsChecked = Hiro_Utils.Read_DCIni("Performance", "0") switch
+            reverse_style.IsChecked = Read_DCIni("Reverse", "0").Equals("1");
+            tr_btn.IsChecked = Read_DCIni("TRBtn", "0").Equals("1");
+            image_compress.IsChecked = Read_DCIni("Compression", "1").Equals("1");
+            UrlConfirmBox.IsChecked = Read_DCIni("URLConfirm", "0").Equals("1");
+            MonitorSysBox.IsChecked = Read_DCIni("MonitorSys", "1").Equals("1");
+            LowPerfermanceBox.IsChecked = Read_DCIni("Performance", "0") switch
             {
                 "1" => null,
                 "2" => true,
@@ -305,55 +306,55 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            btn10.Content = Hiro_Utils.Get_Translate("bgcustom");
-            rbtn1.Content = Hiro_Utils.Get_Translate("showwin");
-            rbtn2.Content = Hiro_Utils.Get_Translate("showmenu");
-            rbtn3.Content = Hiro_Utils.Get_Translate("runcmd");
-            rbtn4.Content = Hiro_Utils.Get_Translate("showwin");
-            rbtn5.Content = Hiro_Utils.Get_Translate("showmenu");
-            rbtn6.Content = Hiro_Utils.Get_Translate("runcmd");
-            rbtn7.Content = Hiro_Utils.Get_Translate("showwin");
-            rbtn8.Content = Hiro_Utils.Get_Translate("showmenu");
-            rbtn9.Content = Hiro_Utils.Get_Translate("runcmd");
-            rbtn12.Content = Hiro_Utils.Get_Translate("disabled");
-            rbtn13.Content = Hiro_Utils.Get_Translate("runcmd");
-            rbtn14.Content = Hiro_Utils.Get_Translate("colortheme");
-            rbtn15.Content = Hiro_Utils.Get_Translate("imagetheme");
-            acrylic_btn.Content = Hiro_Utils.Get_Translate("acrylictheme");
-            video_btn.Content = Hiro_Utils.Get_Translate("videotheme");
-            if (!double.TryParse(Hiro_Utils.Read_DCIni("OpacityMask", "255"), out double to))
+            btn10.Content = Hiro_Text.Get_Translate("bgcustom");
+            rbtn1.Content = Hiro_Text.Get_Translate("showwin");
+            rbtn2.Content = Hiro_Text.Get_Translate("showmenu");
+            rbtn3.Content = Hiro_Text.Get_Translate("runcmd");
+            rbtn4.Content = Hiro_Text.Get_Translate("showwin");
+            rbtn5.Content = Hiro_Text.Get_Translate("showmenu");
+            rbtn6.Content = Hiro_Text.Get_Translate("runcmd");
+            rbtn7.Content = Hiro_Text.Get_Translate("showwin");
+            rbtn8.Content = Hiro_Text.Get_Translate("showmenu");
+            rbtn9.Content = Hiro_Text.Get_Translate("runcmd");
+            rbtn12.Content = Hiro_Text.Get_Translate("disabled");
+            rbtn13.Content = Hiro_Text.Get_Translate("runcmd");
+            rbtn14.Content = Hiro_Text.Get_Translate("colortheme");
+            rbtn15.Content = Hiro_Text.Get_Translate("imagetheme");
+            acrylic_btn.Content = Hiro_Text.Get_Translate("acrylictheme");
+            video_btn.Content = Hiro_Text.Get_Translate("videotheme");
+            if (!double.TryParse(Read_DCIni("OpacityMask", "255"), out double to))
                 to = 255;
             bg_slider.Value = to;
-            cb_box.Content = Hiro_Utils.Get_Translate("minclose");
-            Autorun.Content = Hiro_Utils.Get_Translate("autorun");
-            blureff.Content = Hiro_Utils.Get_Translate("blurbox");
-            no_label.Content = Hiro_Utils.Get_Translate("noticelabel");
-            rbtn17.Content = Hiro_Utils.Get_Translate("noticenormal");
-            rbtn18.Content = Hiro_Utils.Get_Translate("noticewin");
-            rbtn19.Content = Hiro_Utils.Get_Translate("noticeisland");
-            rbtn20.Content = Hiro_Utils.Get_Translate("noticeimgland");
-            rbtn21.Content = Hiro_Utils.Get_Translate("noticehibox");
-            rbtn22.Content = Hiro_Utils.Get_Translate("noticehiboxie");
-            reverse_style.Content = Hiro_Utils.Get_Translate("reversebox");
-            tr_btn.Content = Hiro_Utils.Get_Translate("trbtnbox");
-            image_compress.Content = Hiro_Utils.Get_Translate("imgzip");
-            UrlConfirmBox.Content = Hiro_Utils.Get_Translate("urlconfirm");
-            MonitorSysBox.Content = Hiro_Utils.Get_Translate("monitorsys");
-            LowPerfermanceBox.Content = Hiro_Utils.Get_Translate("performance");
-            Verbose.Content = Hiro_Utils.Get_Translate("verbosebox");
-            animation.Content = Hiro_Utils.Get_Translate("anibox");
-            lc_label.Content = Hiro_Utils.Get_Translate("leftclick");
-            mc_label.Content = Hiro_Utils.Get_Translate("middleclick");
-            rc_label.Content = Hiro_Utils.Get_Translate("rightclick");
-            ar_label.Content = Hiro_Utils.Get_Translate("autoexe");
-            bg_label.Content = Hiro_Utils.Get_Translate("background");
-            bg_darker.Content = Hiro_Utils.Get_Translate("bgdarker");
-            bg_brighter.Content = Hiro_Utils.Get_Translate("bgbrighter");
-            fr_label.Content = Hiro_Utils.Get_Translate("frame");
-            langlabel.Content = Hiro_Utils.Get_Translate("language");
-            moreandsoon.Content = Hiro_Utils.Get_Translate("morecome");
-            btn7.Content = Hiro_Utils.Get_Translate("lock");
-            btnx1.Content = Hiro_Utils.Get_Translate("proxybtn");
+            cb_box.Content = Hiro_Text.Get_Translate("minclose");
+            Autorun.Content = Hiro_Text.Get_Translate("autorun");
+            blureff.Content = Hiro_Text.Get_Translate("blurbox");
+            no_label.Content = Hiro_Text.Get_Translate("noticelabel");
+            rbtn17.Content = Hiro_Text.Get_Translate("noticenormal");
+            rbtn18.Content = Hiro_Text.Get_Translate("noticewin");
+            rbtn19.Content = Hiro_Text.Get_Translate("noticeisland");
+            rbtn20.Content = Hiro_Text.Get_Translate("noticeimgland");
+            rbtn21.Content = Hiro_Text.Get_Translate("noticehibox");
+            rbtn22.Content = Hiro_Text.Get_Translate("noticehiboxie");
+            reverse_style.Content = Hiro_Text.Get_Translate("reversebox");
+            tr_btn.Content = Hiro_Text.Get_Translate("trbtnbox");
+            image_compress.Content = Hiro_Text.Get_Translate("imgzip");
+            UrlConfirmBox.Content = Hiro_Text.Get_Translate("urlconfirm");
+            MonitorSysBox.Content = Hiro_Text.Get_Translate("monitorsys");
+            LowPerfermanceBox.Content = Hiro_Text.Get_Translate("performance");
+            Verbose.Content = Hiro_Text.Get_Translate("verbosebox");
+            animation.Content = Hiro_Text.Get_Translate("anibox");
+            lc_label.Content = Hiro_Text.Get_Translate("leftclick");
+            mc_label.Content = Hiro_Text.Get_Translate("middleclick");
+            rc_label.Content = Hiro_Text.Get_Translate("rightclick");
+            ar_label.Content = Hiro_Text.Get_Translate("autoexe");
+            bg_label.Content = Hiro_Text.Get_Translate("background");
+            bg_darker.Content = Hiro_Text.Get_Translate("bgdarker");
+            bg_brighter.Content = Hiro_Text.Get_Translate("bgbrighter");
+            fr_label.Content = Hiro_Text.Get_Translate("frame");
+            langlabel.Content = Hiro_Text.Get_Translate("language");
+            moreandsoon.Content = Hiro_Text.Get_Translate("morecome");
+            btn7.Content = Hiro_Text.Get_Translate("lock");
+            btnx1.Content = Hiro_Text.Get_Translate("proxybtn");
         }
 
         public void Load_Color()
@@ -371,22 +372,22 @@ namespace Hiro
         private void Rbtn3_Checked(object sender, RoutedEventArgs e)
         {
             tb1.IsEnabled = true;
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "LeftClick", "3");
+            Write_Ini(App.dConfig, "Config", "LeftClick", "3");
         }
 
         private void Rbtn1_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "LeftClick", "1");
+            Write_Ini(App.dConfig, "Config", "LeftClick", "1");
         }
 
         private void Rbtn2_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "LeftClick", "2");
+            Write_Ini(App.dConfig, "Config", "LeftClick", "2");
         }
 
         private void Tb1_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "LeftAction", tb1.Text);
+            Write_Ini(App.dConfig, "Config", "LeftAction", tb1.Text);
         }
 
         private void Rbtn6_Unchecked(object sender, RoutedEventArgs e)
@@ -397,23 +398,23 @@ namespace Hiro
         private void Rbtn6_Checked(object sender, RoutedEventArgs e)
         {
             tb2.IsEnabled = true;
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "MiddleClick", "3");
+            Write_Ini(App.dConfig, "Config", "MiddleClick", "3");
         }
 
         private void Rbtn4_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Middleclick", "1");
+            Write_Ini(App.dConfig, "Config", "Middleclick", "1");
         }
 
         private void Rbtn5_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Middleclick", "2");
+            Write_Ini(App.dConfig, "Config", "Middleclick", "2");
         }
 
         private void Rbtn9_Checked(object sender, RoutedEventArgs e)
         {
             tb3.IsEnabled = true;
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Rightclick", "3");
+            Write_Ini(App.dConfig, "Config", "Rightclick", "3");
         }
 
         private void Rbtn9_Unchecked(object sender, RoutedEventArgs e)
@@ -423,22 +424,22 @@ namespace Hiro
 
         private void Rbtn7_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "RightClick", "1");
+            Write_Ini(App.dConfig, "Config", "RightClick", "1");
         }
 
         private void Rbtn8_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "RightClick", "2");
+            Write_Ini(App.dConfig, "Config", "RightClick", "2");
         }
 
         private void Rbtn12_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoExe", "1");
+            Write_Ini(App.dConfig, "Config", "AutoExe", "1");
         }
 
         private void Rbtn13_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoExe", "2");
+            Write_Ini(App.dConfig, "Config", "AutoExe", "2");
             tb5.IsEnabled = true;
         }
 
@@ -449,17 +450,17 @@ namespace Hiro
 
         private void Tb5_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoAction", tb5.Text);
+            Write_Ini(App.dConfig, "Config", "AutoAction", tb5.Text);
         }
 
         private void Cb_box_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Min", "1");
+            Write_Ini(App.dConfig, "Config", "Min", "1");
         }
 
         private void Cb_box_Unchecked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Min", "0");
+            Write_Ini(App.dConfig, "Config", "Min", "0");
         }
 
         private void Btn7_Click(object sender, RoutedEventArgs e)
@@ -474,25 +475,25 @@ namespace Hiro
 
         private void Verbose_Unchecked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Verbose", "0");
+            Write_Ini(App.dConfig, "Config", "Verbose", "0");
         }
 
         private void Verbose_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Verbose", "1");
+            Write_Ini(App.dConfig, "Config", "Verbose", "1");
         }
 
         private void Animation_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Ani", "1");
+            Write_Ini(App.dConfig, "Config", "Ani", "1");
         }
         private void Animation_Indeterminate(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Ani", "2");
+            Write_Ini(App.dConfig, "Config", "Ani", "2");
         }
         private void Animation_Unchecked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Ani", "0");
+            Write_Ini(App.dConfig, "Config", "Ani", "0");
         }
 
         private void Langbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -501,10 +502,10 @@ namespace Hiro
             if (Load)
             {
                 App.langFilePath = App.currentDir + "\\system\\lang\\" + App.la[langbox.SelectedIndex].Name + ".hlp";
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Lang", App.lang);
+                Write_Ini(App.dConfig, "Config", "Lang", App.lang);
                 App.Load_Menu();
                 App.Load_LocalTime();
-                if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+                if (Read_DCIni("Ani", "2").Equals("1"))
                 {
                     if (Hiro_Main != null)
                     {
@@ -544,7 +545,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Reverse", "1");
+                Write_Ini(App.dConfig, "Config", "Reverse", "1");
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
             }
@@ -555,7 +556,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Reverse", "0");
+                Write_Ini(App.dConfig, "Config", "Reverse", "0");
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
             }
@@ -565,7 +566,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Blur", "2");
+                Write_Ini(App.dConfig, "Config", "Blur", "2");
                 App.blurradius = 25.0;
                 if (Hiro_Main != null)
                     Hiro_Main.Blurbgi(3);
@@ -576,7 +577,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Blur", "1");
+                Write_Ini(App.dConfig, "Config", "Blur", "1");
                 App.blurradius = 50.0;
                 if (Hiro_Main != null)
                     Hiro_Main.Blurbgi(1);
@@ -587,7 +588,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Blur", "0");
+                Write_Ini(App.dConfig, "Config", "Blur", "0");
                 App.blurradius = 50.0;
                 if (Hiro_Main != null)
                     Hiro_Main.Blurbgi(0);
@@ -606,7 +607,7 @@ namespace Hiro
                         System.Diagnostics.ProcessStartInfo pinfo = new()
                         {
                             UseShellExecute = true,
-                            FileName = Hiro_Utils.Path_Prepare(Hiro_Resources.ApplicationPath),
+                            FileName = Hiro_Text.Path_Prepare(Hiro_Resources.ApplicationPath),
                             Arguments = "autostart_on",
                             Verb = "runas"
                         };
@@ -616,7 +617,7 @@ namespace Hiro
                 catch (Exception ex)
                 {
                     Autorun.IsChecked = false;
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Config.Autorun");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Config.Autorun");
                 }
             }
             Autorun.Tag = "1";
@@ -634,7 +635,7 @@ namespace Hiro
                         System.Diagnostics.ProcessStartInfo pinfo = new()
                         {
                             UseShellExecute = true,
-                            FileName = Hiro_Utils.Path_Prepare(Hiro_Resources.ApplicationPath),
+                            FileName = Hiro_Text.Path_Prepare(Hiro_Resources.ApplicationPath),
                             Arguments = "autostart_off",
                             Verb = "runas"
                         };
@@ -644,7 +645,7 @@ namespace Hiro
                 catch (Exception ex)
                 {
                     Autorun.IsChecked = true;
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Config.Autorun");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Config.Autorun");
                 }
             }
             Autorun.Tag = "1";
@@ -652,12 +653,12 @@ namespace Hiro
 
         private void Tb2_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "MiddleAction", tb2.Text);
+            Write_Ini(App.dConfig, "Config", "MiddleAction", tb2.Text);
         }
 
         private void Tb3_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "RightAction", tb3.Text);
+            Write_Ini(App.dConfig, "Config", "RightAction", tb3.Text);
         }
 
 
@@ -669,11 +670,11 @@ namespace Hiro
                 rbtn14.IsEnabled = false;
                 acrylic_btn.IsEnabled = false;
                 video_btn.IsEnabled = false;
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "2");
+                Write_Ini(App.dConfig, "Config", "Background", "2");
                 if (Hiro_Main != null)
                 {
                     Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
-                    Hiro_Main.Blurbgi(Hiro_Utils.ConvertInt(Hiro_Utils.Read_DCIni("Blur", "0")));
+                    Hiro_Main.Blurbgi(Hiro_Utils.ConvertInt(Read_DCIni("Blur", "0")));
                 }
                 else
                 {
@@ -696,7 +697,7 @@ namespace Hiro
                 rbtn14.IsEnabled = false;
                 video_btn.IsEnabled = false;
                 acrylic_btn.IsEnabled = false;
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "1");
+                Write_Ini(App.dConfig, "Config", "Background", "1");
                 if (Hiro_Main != null)
                 {
                     Hiro_Main.bgimage.Background = new SolidColorBrush(App.AppAccentColor);
@@ -722,17 +723,17 @@ namespace Hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
+                    Filter = Hiro_Text.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Text.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
                     strFileName = ofd.FileName;
                     var newStrFileName = strFileName;
-                    strFileName = Hiro_Utils.Path_Prepare("<hiapp>\\images\\crop\\" + System.IO.Path.GetFileName(strFileName));
+                    strFileName = Hiro_Text.Path_Prepare("<hiapp>\\images\\crop\\" + System.IO.Path.GetFileName(strFileName));
                     Hiro_File.CreateFolder(strFileName);
                     new Hiro_Cropper(newStrFileName, strFileName, new Point(550, 450), (x) =>
                     {
@@ -757,7 +758,7 @@ namespace Hiro
                                                 hh = Hiro_Main.Height * 2;
                                             }
                                         });
-                                        if (ww < w && hh < h && Hiro_Utils.Read_DCIni("Compression", "1").Equals("1"))
+                                        if (ww < w && hh < h && Read_DCIni("Compression", "1").Equals("1"))
                                         {
                                             while (ww < w && hh < h)
                                             {
@@ -769,26 +770,26 @@ namespace Hiro
                                             img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
                                             img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
                                             strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
-                                            strFileName = Hiro_Utils.Path_PPX(strFileName);
+                                            strFileName = Hiro_Text.Path_PPX(strFileName);
                                             Hiro_File.CreateFolder(strFileName);
                                             if (System.IO.File.Exists(strFileName))
                                                 System.IO.File.Delete(strFileName);
                                             img.Save(strFileName);
                                         }
-                                        strFileName = Hiro_Utils.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
-                                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "BackImage", strFileName);
+                                        strFileName = Hiro_Text.Anti_Path_Prepare(strFileName).Replace("\\\\", "\\");
+                                        Write_Ini(App.dConfig, "Config", "BackImage", strFileName);
                                         Dispatcher.Invoke(() =>
                                         {
                                             if (Hiro_Main != null)
                                             {
                                                 Hiro_Utils.Set_Bgimage(Hiro_Main.bgimage, Hiro_Main);
-                                                Hiro_Main.Blurbgi(Convert.ToInt16(Hiro_Utils.Read_DCIni("Blur", "0")));
+                                                Hiro_Main.Blurbgi(Convert.ToInt16(Read_DCIni("Blur", "0")));
                                             }
                                         });
                                     }
                                     catch (Exception ex)
                                     {
-                                        Hiro_Utils.LogError(ex, "Hiro.Exception.Background.Image.Select");
+                                        Hiro_Logger.LogError(ex, "Hiro.Exception.Background.Image.Select");
                                     }
                                 }).Start();
                             }
@@ -805,24 +806,24 @@ namespace Hiro
             {
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Utils.Get_Translate("vidfiles") +
+                    Filter = Hiro_Text.Get_Translate("vidfiles") +
                 "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;" +
                 "*.m4v;*.mkv;*.mov;*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;" +
                 "*.rec;*.rm;*.rmvb;*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
-                + Hiro_Utils.Get_Translate("audfiles") +
+                + Hiro_Text.Get_Translate("audfiles") +
                 "|*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;" +
                 "*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;" +
                 "*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm|"
-                + Hiro_Utils.Get_Translate("allfiles") + "|*.*",
+                + Hiro_Text.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
                     Multiselect = false,
-                    Title = Hiro_Utils.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
-                    Hiro_Utils.Write_Ini(App.dConfig, "Config", "BackVideo", ofd.FileName);
+                    Write_Ini(App.dConfig, "Config", "BackVideo", ofd.FileName);
                     Hiro_Main?.Blurbgi(0);
                 }
             }
@@ -838,7 +839,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "TRBtn", "1");
+                Write_Ini(App.dConfig, "Config", "TRBtn", "1");
                 App.trval = 0;
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
@@ -849,7 +850,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "TRBtn", "0");
+                Write_Ini(App.dConfig, "Config", "TRBtn", "0");
                 App.trval = 160;
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
@@ -868,7 +869,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "OpacityMask", Convert.ToInt32(bg_slider.Value).ToString());
+                Write_Ini(App.dConfig, "Config", "OpacityMask", Convert.ToInt32(bg_slider.Value).ToString());
                 Hiro_Main?.OpacityBgi();
             }
         }
@@ -883,7 +884,7 @@ namespace Hiro
                 video_btn.IsEnabled = false;
                 blureff.IsEnabled = false;
                 btn10.IsEnabled = false;
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "3");
+                Write_Ini(App.dConfig, "Config", "Background", "3");
                 Hiro_Main?.Blurbgi(0);
                 rbtn15.IsEnabled = true;
                 rbtn14.IsEnabled = true;
@@ -899,7 +900,7 @@ namespace Hiro
             if (Load)
             {
                 image_compress.IsEnabled = false;
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Compression", "1");
+                Write_Ini(App.dConfig, "Config", "Compression", "1");
                 image_compress.IsEnabled = true;
             }
         }
@@ -908,42 +909,42 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Compression", "0");
+                Write_Ini(App.dConfig, "Config", "Compression", "0");
             }
         }
 
         private void Rbtn17_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "0");
+            Write_Ini(App.dConfig, "Config", "Toast", "0");
         }
 
         private void Rbtn18_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "1");
+            Write_Ini(App.dConfig, "Config", "Toast", "1");
         }
 
         private void Rbtn19_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "2");
+            Write_Ini(App.dConfig, "Config", "Toast", "2");
         }
 
         private void Rbtn20_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "3");
+            Write_Ini(App.dConfig, "Config", "Toast", "3");
         }
         private void Rbtn21_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "4");
+            Write_Ini(App.dConfig, "Config", "Toast", "4");
         }
 
         private void UrlConfirmBox_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "URLConfirm", "1");
+            Write_Ini(App.dConfig, "Config", "URLConfirm", "1");
         }
 
         private void UrlConfirmBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "URLConfirm", "0");
+            Write_Ini(App.dConfig, "Config", "URLConfirm", "0");
         }
         private void MonitorSysBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -953,22 +954,22 @@ namespace Hiro
                 rbtn18.IsChecked = false;
             }
             rbtn18.IsEnabled = false;
-            if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1"))
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "0");
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "MonitorSys", "1");
+            if (Read_DCIni("Toast", "0").Equals("1"))
+                Write_Ini(App.dConfig, "Config", "Toast", "0");
+            Write_Ini(App.dConfig, "Config", "MonitorSys", "1");
         }
 
         private void MonitorSysBox_Unchecked(object sender, RoutedEventArgs e)
         {
             rbtn18.IsEnabled = true;
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "MonitorSys", "0");
+            Write_Ini(App.dConfig, "Config", "MonitorSys", "0");
         }
 
         private void LowPerformBox_Checked(object sender, RoutedEventArgs e)
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Performance", "2");
+                Write_Ini(App.dConfig, "Config", "Performance", "2");
                 if (App.timer != null)
                     App.timer.Interval = TimeSpan.FromSeconds(10);
                 Hiro_Win.SetProcessPriority("idle", null, true);
@@ -980,7 +981,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Performance", "0");
+                Write_Ini(App.dConfig, "Config", "Performance", "0");
                 if (App.timer != null)
                     App.timer.Interval = TimeSpan.FromSeconds(1);
                 Hiro_Win.SetProcessPriority("normal", null, true);
@@ -992,7 +993,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Performance", "1");
+                Write_Ini(App.dConfig, "Config", "Performance", "1");
                 if (App.timer != null)
                     App.timer.Interval = TimeSpan.FromSeconds(3);
                 Hiro_Win.SetProcessPriority("belownormal", null, true);
@@ -1006,14 +1007,14 @@ namespace Hiro
             if (Load)
             {
                 var fritems = new String[] { "1", "2", "3", "15", "30", "45", "60", "75", "90", "120", "144", "240" };
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "FPS", fritems[fr_box.SelectedIndex]);
-                App.Notify(new(Hiro_Utils.Get_Translate("restart"), 2, Hiro_Utils.Get_Translate("frame")));
+                Write_Ini(App.dConfig, "Config", "FPS", fritems[fr_box.SelectedIndex]);
+                App.Notify(new(Hiro_Text.Get_Translate("restart"), 2, Hiro_Text.Get_Translate("frame")));
             }
         }
 
         private void Rbtn22_Checked(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Toast", "5");
+            Write_Ini(App.dConfig, "Config", "Toast", "5");
         }
 
         private void video_btn_Checked(object sender, RoutedEventArgs e)
@@ -1026,7 +1027,7 @@ namespace Hiro
                 video_btn.IsEnabled = false;
                 blureff.IsEnabled = false;
                 btn10.IsEnabled = false;
-                Hiro_Utils.Write_Ini(App.dConfig, "Config", "Background", "4");
+                Write_Ini(App.dConfig, "Config", "Background", "4");
                 Hiro_Main?.Blurbgi(0);
                 rbtn15.IsEnabled = true;
                 rbtn14.IsEnabled = true;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -26,9 +27,9 @@ namespace Hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Utils.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Utils.Read_DCIni("Ani", "2").Equals("1"))
+            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Hiro_Utils.AddPowerAnimation(1, color_title, sb, -50, null);
                 Hiro_Utils.AddPowerAnimation(1, color_text, sb, -50, null);
@@ -58,11 +59,11 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            color_title.Content = Hiro_Utils.Get_Translate("cotitle");
-            color_ex.Content = Hiro_Utils.Get_Translate("coex").Replace("\\n", Environment.NewLine);
-            cobtn1.Content = Hiro_Utils.Get_Translate("cook");
-            cobtn2.Content = Hiro_Utils.Get_Translate("cocancel");
-            cobtn3.Content = Hiro_Utils.Get_Translate("coreset");
+            color_title.Content = Hiro_Text.Get_Translate("cotitle");
+            color_ex.Content = Hiro_Text.Get_Translate("coex").Replace("\\n", Environment.NewLine);
+            cobtn1.Content = Hiro_Text.Get_Translate("cook");
+            cobtn2.Content = Hiro_Text.Get_Translate("cocancel");
+            cobtn3.Content = Hiro_Text.Get_Translate("coreset");
         }
 
         public void Load_Position()
@@ -79,13 +80,13 @@ namespace Hiro
 
         private void Cobtn3_Click(object sender, RoutedEventArgs e)
         {
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Lockcolor", "default");
+            Hiro_Settings.Write_Ini(App.dConfig, "Config", "Lockcolor", "default");
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
             if (Hiro_Main != null)
             {
                 Hiro_Main.Set_Label(Hiro_Main.configx);
-                if (Hiro_Utils.Read_DCIni("Background", "1").Equals("3"))
+                if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
                     Hiro_Main?.Blurbgi(0);
             }
 
@@ -94,7 +95,7 @@ namespace Hiro
         private void Cobtn1_Click(object sender, RoutedEventArgs e)
         {
             App.AppAccentColor = color_picker.Color;
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
+            Hiro_Settings.Write_Ini(App.dConfig, "Config", "Lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
             if (Hiro_Main != null)
@@ -119,7 +120,7 @@ namespace Hiro
                 return;
             color_text.Text = $"#{color_picker.Color.R:X2}{color_picker.Color.G:X2}{color_picker.Color.B:X2}";
             color_ex.Background = new SolidColorBrush(color_picker.Color);
-            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Utils.Read_DCIni("Reverse", "0").Equals("1")));
+            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, Hiro_Settings.Read_DCIni("Reverse", "0").Equals("1")));
         }
         private void Color_text_KeyUp(object sender, KeyEventArgs e)
         {
@@ -135,7 +136,7 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Color.Pick");
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Color.Pick");
                 }
             }
             Unify_Color();

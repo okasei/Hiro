@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -64,7 +65,7 @@ namespace Hiro
                 FadeIn();
                 LoadColor();
             };
-            var icon = Hiro_Utils.Path_PPX(pic);
+            var icon = Hiro_Text.Path_PPX(pic);
             if (System.IO.File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
