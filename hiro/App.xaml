@@ -1,8 +1,8 @@
-﻿<Application x:Class="hiro.App"
+﻿<Application x:Class="Hiro.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
-             xmlns:local="clr-namespace:hiro"
+             xmlns:local="clr-namespace:Hiro"
              Startup="Hiro_We_Go"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
@@ -13,7 +13,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="LightBlue" SecondaryColor="Orange" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
-                <ResourceDictionary Source="/Hiro_Styles.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Hiro_Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
         </ResourceDictionary>

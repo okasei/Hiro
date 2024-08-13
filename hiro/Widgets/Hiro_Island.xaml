@@ -1,0 +1,32 @@
+﻿<Window x:Class="Hiro.Hiro_Island"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hiro"
+        mc:Ignorable="d"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    materialDesign:ShadowAssist.CacheMode="{x:Null}"
+        Title="Hiro_Island" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Window.Resources>
+        <ImageBrush x:Key="PrimaryIcon"  Stretch="Uniform" ImageSource="/Resources/hiro.png"></ImageBrush>
+    </Window.Resources>
+    <Grid x:Name="BaseGrid">
+        <Border x:Name="BaseBorderBak" CornerRadius="25" Background="Black"/>
+        <Border x:Name="BaseBorder" CornerRadius="25" Background="Black" ClipToBounds="True">
+            <Grid x:Name="ContentGrid" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Visible">
+                <DockPanel x:Name="BasePanel" VerticalAlignment="Top" HorizontalAlignment="Left" LastChildFill="True">
+                    <Border x:Name="BaseIconBorder" Margin="5" CornerRadius="25" DockPanel.Dock="Left" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" MouseLeftButtonUp="BaseIconBorder_MouseLeftButtonUp" Cursor="{Binding Cursor, ElementName=ContentGrid}" >
+                        <Border.Background>
+                            <ImageBrush x:Name="BaseIcon" Stretch="Uniform" ImageSource="/Resources/hiro.png"></ImageBrush>
+                        </Border.Background>
+                    </Border>
+                    <Label x:Name="TitleLabel" Margin="5,5,5,0" DockPanel.Dock="Top" Content="" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="White" MouseDoubleClick="Label_MouseDoubleClick" FontFamily="Microsoft YaHei UI" FontWeight="Bold" FontSize="16" Cursor="{Binding Cursor, ElementName=ContentGrid}" MouseLeftButtonUp="TitleLabel_MouseLeftButtonUp"/>
+                    <Label x:Name="content" Margin="5,0,5,5" DockPanel.Dock="Bottom" FontFamily="Segoe UI" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"  HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gray" MouseDoubleClick="Label_MouseDoubleClick_1"  FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Auto" Cursor="{Binding Cursor, ElementName=ContentGrid}" MouseLeftButtonUp="Content_MouseLeftButtonUp">
+                        <TextBlock x:Name="ContentLabel" TextWrapping="Wrap"/>
+                    </Label>
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

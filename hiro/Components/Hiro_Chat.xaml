@@ -1,0 +1,140 @@
+﻿<Page x:Class="Hiro.Hiro_Chat"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Hiro"
+      mc:Ignorable="d" 
+      d:DesignHeight="420" d:DesignWidth="420"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:system="clr-namespace:System;assembly=netstandard"
+      materialDesign:ShadowAssist.CacheMode="{x:Null}"
+      Title="Chat">
+    <Page.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDisabled" Color="Azure"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccentDim" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="InfoAccent" Color="Coral"></SolidColorBrush>
+        <ImageBrush x:Key="ChatAvatar" Stretch="UniformToFill"/>
+    </Page.Resources>
+    <Grid Cursor="Arrow">
+        <RichTextBox x:Name="ChatContent" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionTextBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" IsUndoEnabled="False" IsDocumentEnabled="True" RenderTransformOrigin="0.5,0.5" />
+        <Grid x:Name="Profile" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Margin="0" MouseEnter="Profile_MouseEnter" MouseLeave="Profile_MouseLeave">
+            <Label x:Name="BackControl" VerticalAlignment="{Binding ElementName=Profile_Background, Path=VerticalAlignment}" HorizontalAlignment="{Binding ElementName=Profile_Background, Path=HorizontalAlignment}" Width="{Binding ElementName=Profile_Background, Path=Width}" Height="{Binding ElementName=Profile_Background, Path=Height}" Margin="{Binding ElementName=Profile_Background, Path=Margin}"></Label>
+            <Label x:Name="Profile_Background" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Height="80" Margin="0" MouseDoubleClick="Profile_Background_MouseDoubleClick">
+                <Label.OpacityMask>
+                    <SolidColorBrush Color="Coral"></SolidColorBrush>
+                </Label.OpacityMask>
+                <Label.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#AA000000" 
+                                        Storyboard.TargetName="Profile_Background"                                             
+                                        Storyboard.TargetProperty="OpacityMask.Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="Profile_Background"                                             
+                                        Storyboard.TargetProperty="OpacityMask.Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Label.Triggers>
+            </Label>
+            <Ellipse x:Name="Profile_Ellipse" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="60" Margin="10,30,0,0"  Visibility="Hidden" Stroke="{DynamicResource AppFore}" StrokeThickness="2" OpacityMask="{DynamicResource AppFore}" MouseDown="Profile_Ellipse_MouseDown">
+                <Ellipse.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To=".667" 
+                                        Storyboard.TargetName="Profile_Ellipse"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="1" 
+                                        Storyboard.TargetName="Profile_Ellipse"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Ellipse.Triggers>
+            </Ellipse>
+            <Rectangle x:Name="Profile_Rectangle" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="60" Margin="10,30,0,0"  Visibility="Visible" Stroke="{DynamicResource AppFore}" StrokeThickness="2" OpacityMask="{DynamicResource AppFore}" MouseDown="Profile_Rectangle_MouseDown" RenderTransformOrigin="0.5,0.5">
+                <Rectangle.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To=".667" 
+                                        Storyboard.TargetName="Profile_Rectangle"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="1" 
+                                        Storyboard.TargetName="Profile_Rectangle"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Rectangle.Triggers>
+            </Rectangle>
+            <Label x:Name="Profile_Nickname" Style="{DynamicResource HiroLabel}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Content="User" Foreground="{DynamicResource AppFore}"  Height="{Binding Height, ElementName=Profile_Nickname_Indexer}" Margin="{Binding Margin, ElementName=Profile_Nickname_Indexer}" FontFamily="{Binding FontFamily, ElementName=Profile_Nickname_Indexer}" FontSize="{Binding FontSize, ElementName=Profile_Nickname_Indexer}" FontWeight="{Binding FontWeight, ElementName=Profile_Nickname_Indexer}" FontStyle="{Binding FontStyle, ElementName=Profile_Nickname_Indexer}" MouseDoubleClick="Profile_Nickname_MouseDoubleClick" SizeChanged="Profile_Nickname_SizeChanged"></Label>
+            <Label x:Name="Profile_Nickname_Indexer" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Width="340" Height="30" Margin="80,45,0,0" Content="User"></Label>
+            <Label x:Name="Profile_Mac" Style="{DynamicResource HiroLabel}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Content="unknown" Foreground="{DynamicResource AppForeDisabled}" Height="30" Margin="119,44,0,0" MouseDoubleClick="Profile_Mac_MouseDoubleClick" FontSize="{Binding FontSize, ElementName=Profile_Nickname}"></Label>
+            <Label x:Name="Profile_Signature" Style="{DynamicResource HiroLabel}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Content="" Foreground="{DynamicResource AppFore}" Height="{Binding Height, ElementName=Profile_Signature_Indexer}" Margin="{Binding Margin, ElementName=Profile_Signature_Indexer}"  FontFamily="{Binding FontFamily, ElementName=Profile_Signature_Indexer}" FontSize="{Binding FontSize, ElementName=Profile_Signature_Indexer}" FontWeight="{Binding FontWeight, ElementName=Profile_Signature_Indexer}" FontStyle="{Binding FontStyle, ElementName=Profile_Signature_Indexer}"  MouseDoubleClick="Profile_Signature_MouseDoubleClick" ></Label>
+            <Label x:Name="Profile_Signature_Indexer" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Width="340" Height="30" Margin="80,75,0,0" Content="" Foreground="{DynamicResource AppFore}"></Label>
+        </Grid>
+        <TextBox x:Name="ChatContentBak" Visibility="Hidden" Margin="5,5,0,0" Width="410" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" ></TextBox>
+        <Label x:Name="ScrollViewer1" Margin="5,300,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{DynamicResource AppFore}" Height="1" Width="410"></Label>
+        <RichTextBox x:Name="SendContent" Margin="5,310,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="410" Height="75" KeyDown="SendContent_KeyDown"  SelectionTextBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" BorderBrush="Transparent" VerticalScrollBarVisibility="Auto" IsReadOnly="False" HorizontalScrollBarVisibility="Auto" IsDocumentEnabled="True" IsManipulationEnabled="True" AcceptsReturn="False" >
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </RichTextBox.Resources>
+        </RichTextBox>
+        <Button x:Name="EMojiButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="emoji" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="EMojiButton_Click"  Cursor="Hand" Visibility="Visible"></Button>
+
+        <Grid x:Name="Emoji_Container" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,5,0,0" Width="410" Height="300" Visibility="Hidden">
+            <Border Background="{DynamicResource InfoAccent}" CornerRadius="10,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0"/>
+            <ScrollViewer x:Name="scrollviewer" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                    <Border x:Name="FocusLabel" CornerRadius="5" Background="{DynamicResource AppForeDim}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-50,-50,0,0" Width="30" Height="30" Opacity="0"/>
+                    <Grid x:Name="Emoji_Platte" HorizontalAlignment="Left" Margin="5,5,5,0" VerticalAlignment="Top" Width="600" Height="450" MouseLeave="Emoji_Platte_MouseLeave">
+                    </Grid>
+                </Grid>
+                <ScrollViewer.Resources>
+                    <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">10</system:Double>
+                </ScrollViewer.Resources>
+            </ScrollViewer>
+            <ScrollViewer x:Name="CateViewer" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <Grid  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseLeave="Grid_MouseLeave" >
+                    <Border Background="{DynamicResource AppForeDim}" CornerRadius="10,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0"/>
+                    <Grid Margin="5,0,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Border x:Name="FocusLabelR" CornerRadius="5" Background="{DynamicResource AppAccentDim}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-50,-50,0,0" Width="30" Height="30" Opacity="0"/>
+                        <Grid x:Name="Emoji_Cate" HorizontalAlignment="Left" VerticalAlignment="Stretch" >
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <ScrollViewer.Resources>
+                    <system:Double x:Key="{x:Static SystemParameters.HorizontalScrollBarHeightKey}">5</system:Double>
+                </ScrollViewer.Resources>
+            </ScrollViewer>
+        </Grid>
+
+        <Button x:Name="SendButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Width="100" Height="25" Content="Send" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="SendButton_Click" Cursor="Hand"></Button>
+    </Grid>
+</Page>

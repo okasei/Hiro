@@ -1,31 +1,30 @@
-﻿using hiro.Helpers;
+﻿using Hiro.ModelViews;
+using Hiro.Resources;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Text;
-using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using Windows.Storage.Streams;
 using Windows.UI.Notifications;
 using Windows.UI.Notifications.Management;
-using static hiro.Helpers.Hiro_Class;
+using Hiro.Helpers;
+using static Hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Text;
+using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.Hiro_Logger;
 
-namespace hiro
+namespace Hiro
 {
 
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         #region 全局参数
         internal static string lang = "en-US";
@@ -38,8 +37,8 @@ namespace hiro
         internal static string logFilePath = "C:\\1.log";
         internal static string langFilePath = "C:\\1.hlp";
         internal static int CustomUsernameFlag = 0;
-        internal static Color AppAccentColor = Colors.Coral;
-        internal static Color AppForeColor = Colors.White;
+        internal static System.Windows.Media.Color AppAccentColor = System.Windows.Media.Colors.Coral;
+        internal static System.Windows.Media.Color AppForeColor = System.Windows.Media.Colors.White;
         internal static System.Collections.ObjectModel.ObservableCollection<Scheduleitem> scheduleitems = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Hiro_AlarmWin> aw = new();
         internal static System.Collections.ObjectModel.ObservableCollection<Language> la = new();
@@ -93,7 +92,7 @@ namespace hiro
         private static bool AutoChat = false;
         #endregion
 
-        private async void Hiro_We_Go(object sender, StartupEventArgs e)
+        private async void Hiro_We_Go(object sender, System.Windows.StartupEventArgs e)
         {
             InitializeInnerParameters();
             InitializeStartParameters(e);
@@ -102,8 +101,8 @@ namespace hiro
                 Initialize_Notify_Recall();
                 Initialize_NotificationListener();
             });
-            Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Hiro_Utils.Read_DCIni("FPS", "60"))));
-            Unosquare.FFME.Library.FFmpegDirectory = @Hiro_Utils.Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
+            Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Read_DCIni("FPS", "60"))));
+            Unosquare.FFME.Library.FFmpegDirectory = @Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -111,8 +110,8 @@ namespace hiro
 
         internal static string AddCustomFont(string path)
         {
-            var p = Hiro_Utils.Path_PPX(path).Trim();
-            if (File.Exists(p))
+            var p = Path_PPX(path).Trim();
+            if (System.IO.File.Exists(p))
             {
                 if (pfIndex.ContainsKey(p))
                 {
@@ -121,10 +120,10 @@ namespace hiro
                 else
                 {
                     //pf.AddFontFile(p);
-                    GlyphTypeface glyphTypeface = new GlyphTypeface(new Uri(p));
+                    System.Windows.Media.GlyphTypeface glyphTypeface = new(new Uri(p));
                     string ffi = glyphTypeface.Win32FamilyNames[new System.Globalization.CultureInfo("en-us")];
                     if (dflag)
-                        Hiro_Utils.LogtoFile($"[Font]Font Added Location:{p}#{ffi} Index:{pfIndex.Count}");
+                        LogtoFile($"[Font]Font Added Location:{p}#{ffi} Index:{pfIndex.Count}");
                     pfIndex.Add(p, p + "#" + ffi);
                     return p + "#" + ffi;
                 }
@@ -136,8 +135,8 @@ namespace hiro
         {
             if (ApiInformation.IsTypePresent("Windows.UI.Notifications.Management.UserNotificationListener"))
             {
-                if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1"))
-                    Hiro_Utils.Write_Ini(dConfig, "Config", "Toast", "0");
+                if (Read_DCIni("Toast", "0").Equals("1"))
+                    Write_Ini(dConfig, "Config", "Toast", "0");
                 listener = UserNotificationListener.Current;
                 // And request access to the user's notifications (must be called from UI thread)
                 UserNotificationListenerAccessStatus accessStatus = await listener.RequestAccessAsync();
@@ -146,20 +145,20 @@ namespace hiro
                     case UserNotificationListenerAccessStatus.Allowed:
                         {
                             listener = UserNotificationListener.Current;
-                            Hiro_Utils.LogtoFile("[INFO]Notification Listener Enabled");
+                            LogtoFile("[INFO]Notification Listener Enabled");
                             break;
                         }
                     case UserNotificationListenerAccessStatus.Denied:
-                        Hiro_Utils.LogtoFile("[INFO]Notification Listener Disabled");
+                        LogtoFile("[INFO]Notification Listener Disabled");
                         break;
                     case UserNotificationListenerAccessStatus.Unspecified:
-                        Hiro_Utils.LogtoFile("[INFO]Notification Listener Unspecified");
+                        LogtoFile("[INFO]Notification Listener Unspecified");
                         break;
                 }
             }
             else
             {
-                Hiro_Utils.LogtoFile("Notification Listener Not Supported");
+                LogtoFile("Notification Listener Not Supported");
             }
         }
 
@@ -170,12 +169,12 @@ namespace hiro
                 var exception = e.ExceptionObject as Exception;
                 if (exception != null)
                 {
-                    Hiro_Utils.LogError(exception, "Hiro.Exception.UnhandledException");
+                    LogError(exception, "Hiro.Exception.UnhandledException");
                 }
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.UnhandledException.Catch");
+                LogError(ex, "Hiro.Exception.UnhandledException.Catch");
             }
         }
 
@@ -183,11 +182,11 @@ namespace hiro
         {
             try
             {
-                Hiro_Utils.LogError(e.Exception, "Hiro.Exception.Dispatcher");
+                LogError(e.Exception, "Hiro.Exception.Dispatcher");
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Dispatcher.Catch");
+                LogError(ex, "Hiro.Exception.Dispatcher.Catch");
             }
             finally
             {
@@ -203,12 +202,12 @@ namespace hiro
                 var exception = e.Exception as Exception;
                 if (exception != null)
                 {
-                    Hiro_Utils.LogError(exception, "Hiro.Exception.UnobservedTask");
+                    LogError(exception, "Hiro.Exception.UnobservedTask");
                 }
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.UnobservedTask.Catch");
+                LogError(ex, "Hiro.Exception.UnobservedTask.Catch");
             }
             finally
             {
@@ -231,22 +230,22 @@ namespace hiro
             SocketConnection socketConnection = new(clientSocket);
             socketConnection.DataReceiveCompleted += delegate
             {
-                var recStr = Hiro_Utils.DeleteUnVisibleChar(socketConnection.receivedMsg);
+                var recStr = DeleteUnVisibleChar(socketConnection.receivedMsg);
                 var outputb = Convert.FromBase64String(recStr);
                 recStr = Encoding.Default.GetString(outputb);
-                recStr = Hiro_Utils.Path_PPX(recStr).Trim();
+                recStr = Path_PPX(recStr).Trim();
                 if (System.IO.File.Exists(recStr))
                 {
                     HiroApp ha = new();
-                    ha.msg = Hiro_Utils.Read_Ini(recStr, "App", "Msg", "nop");
-                    ha.appID = Hiro_Utils.Read_Ini(recStr, "App", "ID", "null");
-                    ha.appName = Hiro_Utils.Read_Ini(recStr, "App", "Name", "null");
-                    ha.appPackage = Hiro_Utils.Read_Ini(recStr, "App", "Package", "null");
-                    Application.Current.Dispatcher.Invoke(delegate
+                    ha.msg = Read_Ini(recStr, "App", "Msg", "nop");
+                    ha.appID = Read_Ini(recStr, "App", "ID", "null");
+                    ha.appName = Read_Ini(recStr, "App", "Name", "null");
+                    ha.appPackage = Read_Ini(recStr, "App", "Package", "null");
+                    Current.Dispatcher.Invoke(delegate
                     {
                         Hiro_Utils.RunExe(ha.msg, ha.appName);
                     });
-                    Hiro_Utils.LogtoFile("[SERVER]" + ha.ToString());
+                    LogtoFile("[SERVER]" + ha.ToString());
                 }
                 else
                 {
@@ -259,14 +258,14 @@ namespace hiro
                         ha.appID = recStrs[0];
                         ha.appName = recStrs[2];
                         ha.appPackage = recStrs[1];
-                        Application.Current.Dispatcher.Invoke(delegate
+                        Current.Dispatcher.Invoke(delegate
                         {
                             Hiro_Utils.RunExe(ha.msg, ha.appName);
                         });
-                        Hiro_Utils.LogtoFile("[SERVER]" + ha.ToString());
+                        LogtoFile("[SERVER]" + ha.ToString());
                     }
                     else
-                        Hiro_Utils.LogtoFile("[SERVER]" + recStr);
+                        LogtoFile("[SERVER]" + recStr);
                 }
                 StartServerListener(socketLister, clientSessionTable, clientSessionLock);
             };
@@ -292,7 +291,7 @@ namespace hiro
             System.Net.IPEndPoint localEndPoint = new(System.Net.IPAddress.Any, port);
             Socket socketLister = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketLister.Bind(localEndPoint);
-            Hiro_Utils.Write_Ini(dConfig, "Config", "Port", port.ToString());
+            Write_Ini(dConfig, "Config", "Port", port.ToString());
             try
             {
                 socketLister.Listen(MaxConnection);
@@ -300,11 +299,11 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Socket");
+                LogError(ex, "Hiro.Exception.Socket");
             }
         }
 
-        private static void InitializeStartParameters(StartupEventArgs e)
+        private static void InitializeStartParameters(System.Windows.StartupEventArgs e)
         {
             switch (e.Args.Length)
             {
@@ -361,44 +360,44 @@ namespace hiro
                             }
                             mn = new();
                             if (silent)
-                                Hiro_Utils.LogtoFile("[HIROWEGO]Silent Start");
+                                LogtoFile("[HIROWEGO]Silent Start");
                             else
                                 mn.Show();
-                            if (Hiro_Utils.Read_DCIni("AutoLogin", "0").Equals("1"))
+                            if (Read_DCIni("AutoLogin", "0").Equals("1"))
                             {
-                                Hiro_Utils.LogtoFile("[INFO]AutoLogin enabled");
+                                LogtoFile("[INFO]AutoLogin enabled");
                                 new System.Threading.Thread(() =>
                                 {
                                     Logined = null;
                                     var tmp = System.IO.Path.GetTempFileName();
-                                    var r = Hiro_ID.Login(loginedUser, loginedToken, true, tmp);
-                                    if (r.Equals("success") && Hiro_Utils.Read_Ini(tmp, "Login", "res", "-1").Equals("0"))
+                                    var r = Helpers.Hiro_ID.Login(loginedUser, loginedToken, true, tmp);
+                                    if (r.Equals("success") && Read_Ini(tmp, "Login", "res", "-1").Equals("0"))
                                     {
                                         Logined = true;
-                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin as " + loginedUser);
+                                        LogtoFile("[INFO]AutoLogin as " + loginedUser);
                                         Logined = true;
                                     }
                                     else
                                     {
-                                        Hiro_Utils.LogtoFile("[INFO]AutoLogin Failed " + Hiro_Utils.Read_Ini(tmp, "Config", "msg", string.Empty) + r.ToString());
+                                        LogtoFile("[INFO]AutoLogin Failed " + Read_Ini(tmp, "Config", "msg", string.Empty) + r.ToString());
                                         Logined = false;
                                     }
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
                                     if (Logined == true)
-                                        Hiro_ID.SyncProfile(loginedUser, loginedToken);
+                                        Helpers.Hiro_ID.SyncProfile(loginedUser, loginedToken);
 
                                 }).Start();
                             }
                             if (FirstUse)
                             {
                                 FirstUse = false;
-                                Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + lang + "\\welcome.hws)", Hiro_Utils.Get_Translate("infofirst").Replace("%h", appTitle));
+                                Hiro_Utils.RunExe("message(<current>\\users\\default\\app\\" + lang + "\\welcome.hws)", Get_Translate("infofirst").Replace("%h", appTitle));
                             }
                             if (autoexe)
                             {
-                                if (Hiro_Utils.Read_DCIni("AutoExe", "1").Equals("2"))
-                                    Hiro_Utils.RunExe(Hiro_Utils.Read_DCIni("AutoAction", "nop"), Hiro_Utils.Get_Translate("autoexe"));
+                                if (Read_DCIni("AutoExe", "1").Equals("2"))
+                                    Hiro_Utils.RunExe(Read_DCIni("AutoAction", "nop"), Get_Translate("autoexe"));
                             }
                             InitializeMethod();
                             Build_Socket();
@@ -411,19 +410,19 @@ namespace hiro
             return;
         }
 
-        internal static void Notify(Hiro_Class.Hiro_Notice i)
+        internal static void Notify(Hiro_Notice i)
         {
             string title = appTitle;
-            i.msg = Hiro_Utils.Path_Prepare_EX(i.msg);
+            i.msg = Path_Prepare_EX(i.msg);
             if (i.title != null)
-                title = Hiro_Utils.Path_Prepare_EX(i.title);
-            int disturb = int.Parse(Hiro_Utils.Read_DCIni("Disturb", "2"));
+                title = Path_Prepare_EX(i.title);
+            int disturb = int.Parse(Read_DCIni("Disturb", "2"));
             if ((disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0))
             {
                 var os = Hiro_Utils.Get_OSVersion();
                 if (os.IndexOf(".") != -1)
                     os = os[..os.IndexOf(".")];
-                if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
+                if (Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
                 {
                     Hiro_Utils.HiroInvoke(() =>
                     {
@@ -435,7 +434,7 @@ namespace hiro
                     });
 
                 }
-                else if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("2") || Hiro_Utils.Read_DCIni("Toast", "0").Equals("3"))
+                else if (Read_DCIni("Toast", "0").Equals("2") || Read_DCIni("Toast", "0").Equals("3"))
                 {
                     noticeitems.Add(i);
                     Hiro_Utils.HiroInvoke(() =>
@@ -444,7 +443,7 @@ namespace hiro
                         hisland.Show();
                     });
                 }
-                else if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("4"))
+                else if (Read_DCIni("Toast", "0").Equals("4"))
                 {
                     noticeitems.Add(i);
                     Hiro_Utils.HiroInvoke(() =>
@@ -453,7 +452,7 @@ namespace hiro
                         hiBox.Show();
                     });
                 }
-                else if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("5"))
+                else if (Read_DCIni("Toast", "0").Equals("5"))
                 {
                     noticeitems.Add(i);
                     Hiro_Utils.HiroInvoke(() =>
@@ -488,10 +487,10 @@ namespace hiro
             {
                 mn?.AddToInfoCenter(
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
-                        + "\t" + Hiro_Utils.Get_Translate("infocmd") + ":" + "\tnotify(" + i.msg + ")" + Environment.NewLine
-                        + "\t" + Hiro_Utils.Get_Translate("infosource") + ":" + "\t" + i.title + Environment.NewLine);
+                        + "\t" + Get_Translate("infocmd") + ":" + "\tnotify(" + i.msg + ")" + Environment.NewLine
+                        + "\t" + Get_Translate("infosource") + ":" + "\t" + i.title + Environment.NewLine);
             }
-            Hiro_Utils.LogtoFile("[NOTIFICATION]" + i.msg);
+            LogtoFile("[NOTIFICATION]" + i.msg);
         }
 
         private static void Initialize_Notify_Recall()
@@ -547,7 +546,7 @@ namespace hiro
                         switch (action)
                         {
                             case "uok":
-                                Hiro_Utils.RunExe(url, Hiro_Utils.Get_Translate("alarm"));
+                                Hiro_Utils.RunExe(url, Get_Translate("alarm"));
                                 break;
                             case "uskip":
                                 break;
@@ -573,23 +572,23 @@ namespace hiro
             Hiro_File.CreateFolder(currentDir + "\\system\\lang\\");
             Hiro_File.CreateFolder(currentDir + "\\system\\wallpaper\\");
             logFilePath = currentDir + "\\users\\" + eUserName + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
-            File.Delete(logFilePath);
-            Hiro_Utils.LogtoFile("[HIROWEGO]InitializeInnerParameters");
+            System.IO.File.Delete(logFilePath);
+            LogtoFile("[HIROWEGO]InitializeInnerParameters");
             dConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hus";
             sConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hsl";
             dConfig = dConfig.Replace("\\\\", "\\");
             sConfig = sConfig.Replace("\\\\", "\\");
-            Hiro_Utils.LogtoFile("[HIROWEGO]DConfig at " + dConfig);
-            Hiro_Utils.LogtoFile("[HIROWEGO]SConfig at " + sConfig);
+            LogtoFile("[HIROWEGO]DConfig at " + dConfig);
+            LogtoFile("[HIROWEGO]SConfig at " + sConfig);
             FirstUse = !System.IO.File.Exists(dConfig) && !System.IO.File.Exists(sConfig);
-            var str = Hiro_Utils.Read_DCIni("Lang", "");
+            var str = Read_DCIni("Lang", "");
             if (str.Equals("") || str.Equals("default"))
             {
                 lang = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
                 if (!System.IO.File.Exists(currentDir + "\\system\\lang\\" + lang + ".hlp"))
                 {
                     lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName.ToString();
-                    Hiro_Utils.LogError(new System.IO.FileNotFoundException(), "Hiro.Exception.Globalization");
+                    LogError(new System.IO.FileNotFoundException(), "Hiro.Exception.Globalization");
                     if (!System.IO.File.Exists(currentDir + "\\system\\lang\\" + lang + ".hlp"))
                     {
                         lang = "zh-CN";
@@ -603,7 +602,7 @@ namespace hiro
                 {
                     if (str.IndexOf("-") != -1)
                         lang = str[..str.IndexOf("-")];
-                    Hiro_Utils.LogError(new System.IO.FileNotFoundException(), "Hiro.Exception.Globalization");
+                    LogError(new System.IO.FileNotFoundException(), "Hiro.Exception.Globalization");
                     if (!System.IO.File.Exists(currentDir + "\\system\\lang\\" + lang + ".hlp"))
                     {
                         lang = "zh-CN";
@@ -611,15 +610,15 @@ namespace hiro
                 }
             }
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(lang);
-            Hiro_Utils.LogtoFile("[HIROWEGO]Current language: " + lang);
+            LogtoFile("[HIROWEGO]Current language: " + lang);
             langFilePath = currentDir + "\\system\\lang\\" + lang + ".hlp";
-            appTitle = Hiro_Utils.Read_DCIni("CustomNick", "1").Equals("2") ? Hiro_Utils.Read_DCIni("CustomHIRO", "Hiro") : Hiro_Resources.ApplicationName;
+            appTitle = Read_DCIni("CustomNick", "1").Equals("2") ? Read_DCIni("CustomHIRO", "Hiro") : Hiro_Resources.ApplicationName;
             System.IO.DirectoryInfo di = new(currentDir + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
             {
                 if (fi.Name.ToLower().EndsWith(".hlp"))
                 {
-                    string langname = Hiro_Utils.Read_Ini(fi.FullName, "Translate", "Lang", "null");
+                    string langname = Read_Ini(fi.FullName, "Translate", "Lang", "null");
                     string name = fi.Name.Replace(".hlp", "");
                     if (!langname.Equals("null"))
                     {
@@ -627,36 +626,36 @@ namespace hiro
                     }
                 }
             }
-            switch (Hiro_Utils.Read_DCIni("CustomUser", "1"))
+            switch (Read_DCIni("CustomUser", "1"))
             {
                 case "2":
                     CustomUsernameFlag = 1;
-                    username = Hiro_Utils.Read_DCIni("CustomName", "");
+                    username = Read_DCIni("CustomName", "");
                     break;
                 default:
                     CustomUsernameFlag = 0;
                     username = eUserName;
                     break;
             }
-            Hiro_ID.version = "v" + Hiro_Utils.Read_DCIni("AppVer", "1");
-            if (Hiro_Utils.Read_DCIni("CustomNick", "1").Equals("2"))
-                appTitle = Hiro_Utils.Read_DCIni("CustomHIRO", "Hiro");
-            if (Hiro_Utils.Read_DCIni("TRBtn", "0").Equals("1"))
+            Hiro_ID.version = "v" + Read_DCIni("AppVer", "1");
+            if (Read_DCIni("CustomNick", "1").Equals("2"))
+                appTitle = Read_DCIni("CustomHIRO", "Hiro");
+            if (Read_DCIni("TRBtn", "0").Equals("1"))
                 trval = 0;
-            if (Hiro_Utils.Read_Ini(dConfig, "Network", "Proxy", "0").Equals("1"))//IE Proxy
+            if (Read_Ini(dConfig, "Network", "Proxy", "0").Equals("1"))//IE Proxy
             {
                 hc = new();
             }
-            else if (Hiro_Utils.Read_Ini(dConfig, "Network", "Proxy", "0").Equals("2"))//Proxy
+            else if (Read_Ini(dConfig, "Network", "Proxy", "0").Equals("2"))//Proxy
             {
                 try
                 {
                     System.Net.Http.HttpClientHandler hch = new();
-                    int ProxyPort = int.Parse(Hiro_Utils.Read_Ini(dConfig, "Network", "Port", string.Empty));
-                    hch.Proxy = new System.Net.WebProxy(Hiro_Utils.Read_Ini(dConfig, "Network", "Server", string.Empty), ProxyPort);
+                    int ProxyPort = int.Parse(Read_Ini(dConfig, "Network", "Port", string.Empty));
+                    hch.Proxy = new System.Net.WebProxy(Read_Ini(dConfig, "Network", "Server", string.Empty), ProxyPort);
                     hch.UseProxy = true;
-                    string? ProxyUsername = Hiro_Utils.Read_Ini(dConfig, "Network", "Username", string.Empty);
-                    string? ProxyPwd = Hiro_Utils.Read_Ini(dConfig, "Network", "Password", string.Empty);
+                    string? ProxyUsername = Read_Ini(dConfig, "Network", "Username", string.Empty);
+                    string? ProxyPwd = Read_Ini(dConfig, "Network", "Password", string.Empty);
                     ProxyUsername = ProxyUsername.Equals(string.Empty) ? null : ProxyUsername;
                     ProxyPwd = ProxyPwd.Equals(string.Empty) ? null : ProxyPwd;
                     hch.PreAuthenticate = true;
@@ -666,7 +665,7 @@ namespace hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.LogError(ex, "Hiro.Exception.Proxy");
+                    LogError(ex, "Hiro.Exception.Proxy");
                     hc = new();
                 }
             }
@@ -676,10 +675,10 @@ namespace hiro
                 hch.UseProxy = false;
                 hc = new(hch);
             }
-            Hiro_Utils.LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
-            loginedUser = Hiro_Utils.Read_DCIni("User", string.Empty);
-            loginedToken = Hiro_Utils.Read_DCIni("Token", string.Empty);
-            AutoChat = Hiro_Utils.Read_DCIni("AutoChat", "1").Equals("1");
+            LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
+            loginedUser = Read_DCIni("User", string.Empty);
+            loginedToken = Read_DCIni("Token", string.Empty);
+            AutoChat = Read_DCIni("AutoChat", "1").Equals("1");
         }
 
         private static void InitializeMethod()
@@ -687,13 +686,27 @@ namespace hiro
             Load_LocalTime();
             timer = new()
             {
-                Interval = Hiro_Utils.Read_DCIni("Performance", "0") switch
+                Interval = Read_DCIni("Performance", "0") switch
                 {
                     "1" => TimeSpan.FromSeconds(3),
                     "2" => TimeSpan.FromSeconds(10),
                     _ => TimeSpan.FromSeconds(1)
                 }
             };
+            switch(Read_DCIni("Performance", "0"))
+            {
+                case "1":
+                    {
+                        Hiro_Win.SetProcessPriority("idle", null, true);
+                        break;
+                    }
+                case "2":
+                    {
+                        Hiro_Win.SetProcessPriority("idle", null, true);
+                        Hiro_Win.SetEffiencyMode("on", null, true);
+                        break;
+                    }
+            }
             timer.Tick += delegate
             {
                 TimerTick();
@@ -703,11 +716,11 @@ namespace hiro
 
         internal static void Load_LocalTime()
         {
-            var morning = Hiro_Utils.Read_Ini(langFilePath, "local", "morning", "[6,7,8,9,10]");
-            var noon = Hiro_Utils.Read_Ini(langFilePath, "local", "noon", "[11,12,13]");
-            var afternoon = Hiro_Utils.Read_Ini(langFilePath, "local", "afternoon", "[14,15,16,17,18]");
-            var evening = Hiro_Utils.Read_Ini(langFilePath, "local", "evening", "[19,20,21,22]");
-            var night = Hiro_Utils.Read_Ini(langFilePath, "local", "night", "[23,0,1,2,3,4,5]");
+            var morning = Read_Ini(langFilePath, "local", "morning", "[6,7,8,9,10]");
+            var noon = Read_Ini(langFilePath, "local", "noon", "[11,12,13]");
+            var afternoon = Read_Ini(langFilePath, "local", "afternoon", "[14,15,16,17,18]");
+            var evening = Read_Ini(langFilePath, "local", "evening", "[19,20,21,22]");
+            var night = Read_Ini(langFilePath, "local", "night", "[23,0,1,2,3,4,5]");
             morning = morning.Replace("[", "[,").Replace("]", ",]").Trim();
             noon = noon.Replace("[", "[,").Replace("]", ",]").Trim();
             afternoon = afternoon.Replace("[", "[,").Replace("]", ",]").Trim();
@@ -733,7 +746,7 @@ namespace hiro
                 {
                     if (mn.hiro_chat == null)
                     {
-                        Hiro_Utils.LogtoFile("[INFO]AutoChat enabled");
+                        Hiro_Logger.LogtoFile("[INFO]AutoChat enabled");
                         mn.hiro_chat ??= new(mn);
                         mn.hiro_chat.Load_Friend_Info_First();
                     }
@@ -751,8 +764,8 @@ namespace hiro
             }
             if (ls != null)
             {
-                ls.timelabel.Content = current.ToString(Hiro_Utils.Read_Ini(langFilePath, "local", "locktime", "HH:mm"));
-                ls.datelabel.Content = current.ToString(Hiro_Utils.Read_Ini(langFilePath, "local", "lockdate", "MM/dd (ddd)"));
+                ls.timelabel.Content = current.ToString(Read_Ini(langFilePath, "local", "locktime", "HH:mm"));
+                ls.datelabel.Content = current.ToString(Read_Ini(langFilePath, "local", "lockdate", "MM/dd (ddd)"));
             }
             var i = 1;
             while (i <= scheduleitems.Count)
@@ -761,7 +774,7 @@ namespace hiro
                 var scTime = DateTime.Parse(scheduleitems[i - 1].Time);
                 if (DateTime.Compare(formerT, scTime) < 0 && DateTime.Compare(current, scTime) > 0)
                 {
-                    int disturb = int.Parse(Hiro_Utils.Read_DCIni("Disturb", "2"));
+                    int disturb = int.Parse(Read_DCIni("Disturb", "2"));
                     var a = scheduleitems[i - 1].Command.ToLower().Equals("alarm") || scheduleitems[i - 1].Command.ToLower().Equals("alarm()");
                     var b = (disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0);
                     if (a && b)
@@ -769,17 +782,17 @@ namespace hiro
                         var os = Hiro_Utils.Get_OSVersion();
                         if (os.Contains(".", StringComparison.CurrentCulture))
                             os = os[..os.IndexOf(".")];
-                        if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int r) && r >= 10)
+                        if (Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int r) && r >= 10)
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)
-                            .AddText(Hiro_Utils.Get_Translate("alarmtitle"))
-                            .AddText(Hiro_Utils.Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)))
+                            .AddText(Get_Translate("alarmtitle"))
+                            .AddText(Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                        .SetContent(Hiro_Utils.Get_Translate("alarmok"))
+                                        .SetContent(Get_Translate("alarmok"))
                                         .AddArgument("action", "ok"))
                             .AddButton(new Microsoft.Toolkit.Uwp.Notifications.ToastButton()
-                                        .SetContent(Hiro_Utils.Get_Translate("alarmdelay"))
+                                        .SetContent(Get_Translate("alarmdelay"))
                                         .AddArgument("action", "delay"))
                             .AddArgument("alarmid", (i - 1).ToString())
                             .AddArgument("category", "alarm")
@@ -787,7 +800,7 @@ namespace hiro
                         }
                         else
                         {
-                            Hiro_Alarm ala = new(aw.Count, CustomedContnet: Hiro_Utils.Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)));
+                            Hiro_Alarm ala = new(aw.Count, CustomedContnet: Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)));
                             aw.Add(new Hiro_AlarmWin(ala, i - 1));
                             ala.Show();
                         }
@@ -798,8 +811,8 @@ namespace hiro
                         {
                             mn?.AddToInfoCenter(
                             scTime.ToString("yyyy-MM-dd HH:mm:ss ") + Environment.NewLine
-                            + "\t" + Hiro_Utils.Get_Translate("infocmd") + ":" + "\t" + Hiro_Utils.Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)) + Environment.NewLine
-                            + "\t" + Hiro_Utils.Get_Translate("infosource") + ":" + "\t" + Hiro_Utils.Get_Translate("alarm") + Environment.NewLine);
+                            + "\t" + Get_Translate("infocmd") + ":" + "\t" + Path_PPX(scheduleitems[i - 1].Name.Replace("\\n", Environment.NewLine)) + Environment.NewLine
+                            + "\t" + Get_Translate("infosource") + ":" + "\t" + Get_Translate("alarm") + Environment.NewLine);
                         }
                         switch (scheduleitems[i - 1].re)
                         {
@@ -807,18 +820,18 @@ namespace hiro
                                 break;
                             case -1.0:
                                 scheduleitems[i - 1].Time = scTime.AddDays(1.0).ToString("yyyy/MM/dd HH:mm:ss");
-                                Hiro_Utils.Write_Ini(sConfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
+                                Write_Ini(sConfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                             case 0.0:
                                 scheduleitems[i - 1].Time = scTime.AddDays(7.0).ToString("yyyy/MM/dd HH:mm:ss");
-                                Hiro_Utils.Write_Ini(sConfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
+                                Write_Ini(sConfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                             default:
                                 scheduleitems[i - 1].Time = scTime.AddDays(Math.Abs(scheduleitems[i - 1].re)).ToString("yyyy/MM/dd HH:mm:ss");
-                                Hiro_Utils.Write_Ini(sConfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
+                                Write_Ini(sConfig, i.ToString(), "Time", scheduleitems[i - 1].Time);
                                 break;
                         }
-                        Hiro_Utils.RunExe(scheduleitems[i - 1].Command, Hiro_Utils.Get_Translate("alarm"));
+                        Hiro_Utils.RunExe(scheduleitems[i - 1].Command, Get_Translate("alarm"));
                     }
                 }
                 i++;
@@ -834,7 +847,7 @@ namespace hiro
             {
                 case 0:
                     if (wnd != null)
-                        wnd.Hiro_Tray.IconSource = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
+                        wnd.Hiro_Tray.IconSource = new BitmapImage(new Uri("Resources/hiro_circle.ico", UriKind.Relative));
                     flashFlag = 1;
                     break;
                 case 1:
@@ -846,7 +859,7 @@ namespace hiro
                     break;
             }
             //Music
-            if (Hiro_Utils.Read_DCIni("Verbose", "0").Equals("1"))
+            if (Read_DCIni("Verbose", "0").Equals("1"))
             {
                 Music_Tick();
             }
@@ -860,11 +873,11 @@ namespace hiro
         {
             try
             {
-                if (!Hiro_Utils.Read_DCIni("MonitorSys", "1").Equals("1"))
+                if (!Read_DCIni("MonitorSys", "1").Equals("1"))
                     return;
-                if (Hiro_Utils.Read_DCIni("Toast", "0").Equals("1"))
-                    Hiro_Utils.Write_Ini(dConfig, "Config", "Toast", "0");
-                var a = Hiro_Utils.Read_DCIni("MonitorSysPara", "0").Trim();
+                if (Read_DCIni("Toast", "0").Equals("1"))
+                    Write_Ini(dConfig, "Config", "Toast", "0");
+                var a = Read_DCIni("MonitorSysPara", "0").Trim();
                 var b = formerTime;
                 formerTime = DateTimeOffset.Now;
                 if (a.Equals("1") || a.Equals("0"))
@@ -874,7 +887,7 @@ namespace hiro
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Notification.Listener");
+                LogError(ex, "Hiro.Notification.Listener");
             }
         }
 
@@ -894,14 +907,14 @@ namespace hiro
                     // We'll treat all subsequent text elements as body text,
                     // joining them together via newlines.
                     string bodyText = string.Join(Environment.NewLine, textElements.Skip(1).Select(t => t.Text));
-                    var iconFile = Hiro_Utils.Path_PPX("<current>\\system\\icons\\clsids\\") + notif.AppInfo.AppUserModelId + ".hsic";
+                    var iconFile = Path_PPX("<current>\\system\\icons\\clsids\\") + notif.AppInfo.AppUserModelId + ".hsic";
                     if (!System.IO.File.Exists(iconFile))
                     {
                         Hiro_File.CreateFolder(iconFile);
                         RandomAccessStreamReference stream = notif.AppInfo.DisplayInfo.GetLogo(new Windows.Foundation.Size(128, 128));
                         if (stream is not null)
                         {
-                            IAsyncOperation<IRandomAccessStreamWithContentType> streamOperation = stream.OpenReadAsync();
+                            Windows.Foundation.IAsyncOperation<IRandomAccessStreamWithContentType> streamOperation = stream.OpenReadAsync();
                             Task<IRandomAccessStreamWithContentType> streamTask = streamOperation.AsTask();
                             streamTask.Wait();
                             IRandomAccessStreamWithContentType content = streamTask.Result;
@@ -909,14 +922,14 @@ namespace hiro
                             {
                                 try
                                 {
-                                    FileStream TheFile = File.Create(iconFile);
+                                    System.IO.FileStream TheFile = System.IO.File.Create(iconFile);
                                     content.AsStream().Seek(0, SeekOrigin.Begin);
                                     content.AsStream().CopyTo(TheFile);
                                     TheFile.Dispose();
                                 }
                                 catch (Exception E)
                                 {
-                                    Hiro_Utils.LogError(E, "Hiro.Notification.SaveIcon");
+                                    LogError(E, "Hiro.Notification.SaveIcon");
                                 }
                             });
                         }
@@ -938,14 +951,14 @@ namespace hiro
             else if (qtitle != musicTitles[0] && qtitle != null && !qtitle.Equals("QQ音乐"))
             {
                 musicTitles[0] = qtitle;
-                Notify(new(Hiro_Utils.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\qqmusic.png" }));
+                Notify(new(Hiro_Text.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\qqmusic.png" }));
             }
             if (Initialize_Title(Ptrs[1], out string? ntitle) == 0)
                 Initialize_Ptr("cloudmusic", 1);
             else if (ntitle != musicTitles[1] && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐"))
             {
                 musicTitles[1] = ntitle;
-                Notify(new(Hiro_Utils.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\neteasemusic.png" }));
+                Notify(new(Hiro_Text.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\neteasemusic.png" }));
             }
             if (Initialize_Title(Ptrs[2], out string? kwtitle) == 0)
                 Initialize_Ptr("kwmusic", 2);
@@ -960,21 +973,21 @@ namespace hiro
                     }
                 }
                 musicTitles[2] = kwtitle;
-                Notify(new(Hiro_Utils.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kuwomusic.png" }));
+                Notify(new(Hiro_Text.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kuwomusic.png" }));
             }
             if (Initialize_Title(Ptrs[3], out string? kgtitle) == 0)
                 Initialize_Ptr("KuGou", 3);
             else if (kgtitle != musicTitles[3] && kgtitle != null && !kgtitle.Equals(string.Empty) && !kgtitle.Equals("酷狗音乐"))
             {
                 musicTitles[3] = kgtitle;
-                Notify(new(Hiro_Utils.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kgmusic.png" }));
+                Notify(new(Hiro_Text.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kgmusic.png" }));
             }
             if (Initialize_Title(Ptrs[4], out string? sptitle) == 0)
                 Ptrs[4] = Initialize_Ptr("Spotify");
             else if (sptitle != musicTitles[4] && sptitle != null && !sptitle.Equals("Spotify") && !sptitle.Equals("Spotify Premium"))
             {
                 musicTitles[4] = sptitle;
-                Notify(new(Hiro_Utils.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, Hiro_Utils.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\spotify.png" }));
+                Notify(new(Hiro_Text.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\spotify.png" }));
             }
         }
 
@@ -989,7 +1002,7 @@ namespace hiro
                     Foreground = new System.Windows.Media.SolidColorBrush(AppForeColor),
                     Background = new System.Windows.Media.SolidColorBrush(AppAccentColor),
                     BorderBrush = null,
-                    Style = (Style)Current.Resources["HiroContextMenu"],
+                    Style = (System.Windows.Style)Current.Resources["HiroContextMenu"],
                     Padding = new(1, 10, 1, 10)
                 };
                 var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;
@@ -1027,12 +1040,12 @@ namespace hiro
                         {
                             string? str = mu.Tag.ToString();
                             if (str != null)
-                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Utils.Get_Translate("menusource").Replace("%t", cmditems[int.Parse(str) - 1].Name));
+                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Text.Get_Translate("menusource").Replace("%t", cmditems[int.Parse(str) - 1].Name));
 
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogError(ex, "Hiro.Exception.Menu.Run");
+                            LogError(ex, "Hiro.Exception.Menu.Run");
                         }
                     };
                     wnd.cm.Items.Add(mu);
@@ -1046,7 +1059,7 @@ namespace hiro
                     };
                     if (page <= 0)
                         pre.IsEnabled = false;
-                    pre.Header = Hiro_Utils.Get_Translate("menupre");
+                    pre.Header = Hiro_Text.Get_Translate("menupre");
                     pre.Click += delegate
                     {
                         page--;
@@ -1067,7 +1080,7 @@ namespace hiro
                     };
                     if (page >= total - 1)
                         next.IsEnabled = false;
-                    next.Header = Hiro_Utils.Get_Translate("menunext");
+                    next.Header = Hiro_Text.Get_Translate("menunext");
                     next.Click += delegate
                     {
                         page++;
@@ -1080,7 +1093,7 @@ namespace hiro
                 {
                     MenuItem pageid = new();
                     pageid.IsEnabled = false;
-                    pageid.Header = Hiro_Utils.Get_Translate("menunull");
+                    pageid.Header = Hiro_Text.Get_Translate("menunull");
                     wnd.cm.Items.Add(pageid);
                 }
                 wnd.cm.Items.Add(new Separator());
@@ -1088,20 +1101,20 @@ namespace hiro
                 {
                     Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                 };
-                show.Header = Hiro_Utils.Get_Translate("menushow");
+                show.Header = Hiro_Text.Get_Translate("menushow");
                 show.Click += delegate
                 {
-                    Hiro_Utils.RunExe("show()", Hiro_Utils.Get_Translate("menu"));
+                    Hiro_Utils.RunExe("show()", Hiro_Text.Get_Translate("menu"));
                 };
                 wnd.cm.Items.Add(show);
                 MenuItem exit = new()
                 {
                     Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                 };
-                exit.Header = Hiro_Utils.Get_Translate("menuexit");
+                exit.Header = Hiro_Text.Get_Translate("menuexit");
                 exit.Click += delegate
                 {
-                    Hiro_Utils.RunExe("exit()", Hiro_Utils.Get_Translate("menu"));
+                    Hiro_Utils.RunExe("exit()", Hiro_Text.Get_Translate("menu"));
                 };
                 wnd.cm.Items.Add(exit);
                 foreach (var obj in wnd.cm.Items)

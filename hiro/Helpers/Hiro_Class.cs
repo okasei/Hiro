@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Class
     {

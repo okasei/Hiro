@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Wallpaper
     {
@@ -120,7 +120,7 @@ namespace hiro.Helpers
 
         internal static int Set_Wallpaper(List<string> parameter)
         {
-            var source = Hiro_Utils.Get_Translate("wallpaper");
+            var source = Hiro_Text.Get_Translate("wallpaper");
             if (wallPaperPlayer != null)
             {
                 var oflag = false;
@@ -184,7 +184,7 @@ namespace hiro.Helpers
                             Hiro_Utils.HiroInvoke(() =>
                             {
                                 wallPaperPlayer.Media.IsMuted = true;
-                                Hiro_Utils.Write_Ini(App.dConfig, "Config", "WallVideoMute", "true");
+                                Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoMute", "true");
                             });
                             oflag = true;
                             break;
@@ -195,7 +195,7 @@ namespace hiro.Helpers
                             Hiro_Utils.HiroInvoke(() =>
                             {
                                 wallPaperPlayer.Media.IsMuted = false;
-                                Hiro_Utils.Write_Ini(App.dConfig, "Config", "WallVideoMute", "false");
+                                Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoMute", "false");
                             });
                             oflag = true;
                             break;
@@ -243,7 +243,7 @@ namespace hiro.Helpers
                         }
                     }
                     _ = SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("wpchanged"), 2, source));
+                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("wpchanged"), 2, source));
                     return 0;
                 }
             }
@@ -256,7 +256,7 @@ namespace hiro.Helpers
                 }
                 else
                 {
-                    Hiro_Utils.RunExe($"notify({Hiro_Utils.Get_Translate("wpnexist")},2)", source);
+                    Hiro_Utils.RunExe($"notify({Hiro_Text.Get_Translate("wpnexist")},2)", source);
                 }
                 return -1;
             }

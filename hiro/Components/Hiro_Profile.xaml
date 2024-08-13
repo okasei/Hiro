@@ -1,0 +1,125 @@
+﻿<Page x:Class="Hiro.Hiro_Profile"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Hiro"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    materialDesign:ShadowAssist.CacheMode="{x:Null}"
+    mc:Ignorable="d" 
+    d:DesignHeight="420" d:DesignWidth="420" KeepAlive="False"
+    Title="Hiro_Profile" Cursor="Arrow">
+    <Page.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDisabled" Color="Azure"></SolidColorBrush>
+        <Color x:Key="AppForeDim" A="1" B="1" G="1" ></Color>
+        <ImageBrush x:Key="Avatar" Stretch="UniformToFill"/>
+    </Page.Resources>
+    <Grid>
+        <Grid x:Name="BaseGrid" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Margin="0">
+            <Grid x:Name="name_grid" Margin="10,150,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Cursor="Arrow">
+                <Label  Style="{DynamicResource HiroLabel}" x:Name="name_label" Content="How do you want to call me" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="0,5,0,0"/>
+                <RadioButton x:Name="rbtn16" Content="Hiro" HorizontalAlignment="Left" Margin="10,29,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Checked="Rbtn16_Checked"/>
+                <RadioButton x:Name="rbtn17" Content="Personalize" HorizontalAlignment="Left" FontFamily="Segoe UI" Margin="90,29,0,3"  Foreground ="{DynamicResource AppFore}" VerticalAlignment="Top" Checked="Rbtn17_Checked"/>
+                <TextBox x:Name="tb10" HorizontalAlignment="Left" Margin="176,25,0,0" TextWrapping="NoWrap" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" Width="211" FontFamily="Segoe UI" IsEnabled="False" TextChanged="Tb10_TextChanged"/>
+            </Grid>
+            <Grid x:Name="msg_grid" Margin="0,230,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
+                <Label Style="{DynamicResource HiroLabel}" x:Name="msg_label" Margin="5,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="11" Content="New Message Notification"></Label>
+                <Slider x:Name="msg_level" Style="{x:Null}" Margin="5,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="15" Maximum="3" SmallChange="1" Value="3" ValueChanged="Msg_level_ValueChanged" IsSnapToTickEnabled="True"/>
+                <Label Style="{DynamicResource HiroLabel}" x:Name="msg_status" Margin="320,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="11" Content="Always Show"></Label>
+                <CheckBox x:Name="msg_audio" Margin="5,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="11" Content="Play Audio" Checked="Msg_audio_Checked" Unchecked="Msg_audio_Unchecked" ></CheckBox>
+                <CheckBox x:Name="msg_auto" Margin="125,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="11" Content="Start Chat Automatically" Checked="Msg_auto_Checked" Unchecked="Msg_auto_Unchecked" ></CheckBox>
+            </Grid>
+            <Grid x:Name="disturb_grid" Margin="0,330,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
+                <Label Style="{DynamicResource HiroLabel}" x:Name="disturb_label" Margin="5,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="11" Content="Disturb Level"></Label>
+                <Slider x:Name="disturb_level" Style="{x:Null}" Margin="5,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="15" Maximum="2" SmallChange="1" Value="2" ValueChanged="Disturb_level_ValueChanged" IsSnapToTickEnabled="True"/>
+                <Label Style="{DynamicResource HiroLabel}" x:Name="disturb_status" Margin="320,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="11" Content="Free"></Label>
+            </Grid>
+            <Button x:Name="btn8" BorderThickness="1" Content="Feedback" HorizontalAlignment="Left" Margin="10,385,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Click="Btn8_Click"/>
+            <Button x:Name="btn9" BorderThickness="1" Content="What's new?" HorizontalAlignment="Left" Margin="75,385,0,0" Width="75" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Help" Click="Btn9_Click"/>
+            <Button x:Name="btn10" BorderThickness="1" Content="Log out" HorizontalAlignment="Left" Margin="236,385,0,0" Width="76" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Click="Btn10_Click"/>
+            <Button x:Name="btn11" BorderThickness="1" Content="Document" HorizontalAlignment="Left" Margin="155,385,0,0" Width="76" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Click="Btn11_Click"/>
+            <Grid x:Name="Profile" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Margin="0" MouseEnter="Profile_MouseEnter" MouseLeave="Profile_MouseLeave">
+                <Label x:Name="BackControl" VerticalAlignment="{Binding ElementName=Profile_Background, Path=VerticalAlignment}" HorizontalAlignment="{Binding ElementName=Profile_Background, Path=HorizontalAlignment}" Width="{Binding ElementName=Profile_Background, Path=Width}" Height="{Binding ElementName=Profile_Background, Path=Height}" Margin="{Binding ElementName=Profile_Background, Path=Margin}"></Label>
+                <Label x:Name="Profile_Background" VerticalAlignment="Top" HorizontalAlignment="Left" Width="420" Height="80" Margin="0" MouseDown="Profile_Background_MouseDown" AllowDrop="True" Drop="Profile_Background_Drop">
+                    <Label.OpacityMask>
+                        <SolidColorBrush Color="Coral"></SolidColorBrush>
+                    </Label.OpacityMask>
+                    <Label.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#AA000000" 
+                                        Storyboard.TargetName="Profile_Background"                                             
+                                        Storyboard.TargetProperty="OpacityMask.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="Profile_Background"                                             
+                                        Storyboard.TargetProperty="OpacityMask.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Ellipse x:Name="Profile_Ellipse" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="60" Margin="10,30,0,0"  Visibility="Visible" Stroke="{DynamicResource AppFore}" StrokeThickness="2" MouseDown="Profile_Avatar_MouseDown" OpacityMask="{DynamicResource AppFore}" AllowDrop="True" Drop="Profile_Avatar_Drop">
+                    <Ellipse.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To=".667" 
+                                        Storyboard.TargetName="Profile_Ellipse"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="1" 
+                                        Storyboard.TargetName="Profile_Ellipse"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <Rectangle x:Name="Profile_Rectangle" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="60" Margin="10,30,0,0"  Visibility="Visible" Stroke="{DynamicResource AppFore}" StrokeThickness="2" MouseDown="Profile_Avatar_MouseDown" OpacityMask="{DynamicResource AppFore}" AllowDrop="True" Drop="Profile_Avatar_Drop">
+                    <Rectangle.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To=".667" 
+                                        Storyboard.TargetName="Profile_Rectangle"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="1" 
+                                        Storyboard.TargetName="Profile_Rectangle"                                             
+                                        Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Rectangle.Triggers>
+                </Rectangle>
+                <Label x:Name="Profile_Nickname" Style="{DynamicResource HiroLabel}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Content="User" Foreground="{DynamicResource AppFore}"  Height="{Binding Height, ElementName=Profile_Nickname_Indexer}" Margin="{Binding Margin, ElementName=Profile_Nickname_Indexer}" FontFamily="{Binding FontFamily, ElementName=Profile_Nickname_Indexer}" FontSize="{Binding FontSize, ElementName=Profile_Nickname_Indexer}" FontWeight="{Binding FontWeight, ElementName=Profile_Nickname_Indexer}" FontStyle="{Binding FontStyle, ElementName=Profile_Nickname_Indexer}" MouseDoubleClick="Profile_Nickname_MouseDoubleClick" SizeChanged="Profile_Nickname_SizeChanged"></Label>
+                <Label x:Name="Profile_Nickname_Indexer" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Width="340" Height="30" Margin="80,45,0,0" Content="User"></Label>
+                <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="Profile_Nickname_Textbox" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="{Binding Width, ElementName=Profile_Nickname_Indexer}" Height="{Binding Height, ElementName=Profile_Nickname_Indexer}" Margin="{Binding Margin, ElementName=Profile_Nickname_Indexer}" FontFamily="{Binding FontFamily, ElementName=Profile_Nickname_Indexer}" FontSize="{Binding FontSize, ElementName=Profile_Nickname_Indexer}" FontWeight="{Binding FontWeight, ElementName=Profile_Nickname_Indexer}" FontStyle="{Binding FontStyle, ElementName=Profile_Nickname_Indexer}" KeyDown="Profile_Nickname_Textbox_KeyDown" LostFocus="Profile_Nickname_Textbox_LostFocus"></TextBox>
+                <Label x:Name="Profile_Mac" Style="{DynamicResource HiroLabel}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Content="unknown" Foreground="{DynamicResource AppForeDisabled}" Height="30" Margin="119,44,0,0" MouseDoubleClick="Profile_Mac_MouseDoubleClick" FontSize="{Binding FontSize, ElementName=Profile_Mac_Indexer}"></Label>
+                <Label x:Name="Profile_Signature" Style="{DynamicResource HiroLabel}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Content="" Foreground="{DynamicResource AppFore}" Height="{Binding Height, ElementName=Profile_Signature_Indexer}" Margin="{Binding Margin, ElementName=Profile_Signature_Indexer}"  FontFamily="{Binding FontFamily, ElementName=Profile_Signature_Indexer}" FontSize="{Binding FontSize, ElementName=Profile_Signature_Indexer}" FontWeight="{Binding FontWeight, ElementName=Profile_Signature_Indexer}" FontStyle="{Binding FontStyle, ElementName=Profile_Signature_Indexer}"  MouseDoubleClick="Profile_Signature_MouseDoubleClick" ></Label>
+                <Label x:Name="Profile_Signature_Indexer" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Width="340" Height="30" Margin="80,75,0,0" Content="" Foreground="{DynamicResource AppFore}"></Label>
+                <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="Profile_Signature_Textbox" Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="{Binding Width, ElementName=Profile_Signature_Indexer}" Height="{Binding Height, ElementName=Profile_Signature_Indexer}" Margin="{Binding Margin, ElementName=Profile_Signature_Indexer}"  FontFamily="{Binding FontFamily, ElementName=Profile_Signature_Indexer}" FontSize="{Binding FontSize, ElementName=Profile_Signature_Indexer}" FontWeight="{Binding FontWeight, ElementName=Profile_Signature_Indexer}" FontStyle="{Binding FontStyle, ElementName=Profile_Signature_Indexer}" KeyDown="Profile_Signature_Textbox_KeyDown" LostFocus="Profile_Signature_Textbox_LostFocus"></TextBox>
+            </Grid>
+        </Grid>
+        <ScrollBar x:Name="configbar" Width="10" Height="418" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Vertical" Margin="400,5,0,0" ValueChanged="Configbar_ValueChanged" ViewportSize="10" Maximum="100" MouseWheel="Configbar_MouseWheel"/>
+    </Grid>
+</Page>

@@ -1,0 +1,177 @@
+﻿<Window x:Name="Hiro_Player1" x:Class="Hiro.Hiro_Player"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
+        xmlns:local="clr-namespace:Hiro"
+        mc:Ignorable="d"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    materialDesign:ShadowAssist.CacheMode="{x:Null}"
+        Title="Hiro_Player" Height="450" Width="800" SizeChanged="Hiro_Player1_SizeChanged" Closing="Hiro_Player1_Closing" Background="{DynamicResource AppAccent}" WindowStyle="SingleBorderWindow" KeyDown="Hiro_Player1_KeyDown" StateChanged="Hiro_Player1_StateChanged" MouseWheel="Hiro_Player1_MouseWheel" Icon="/Resources/hiro_circle.ico">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeReverse" Color="Black"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccentDim" Color="Coral"></SolidColorBrush>
+        <Color x:Key="AppForeDimColor" A="1" B="1" G="1" ></Color>
+    </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome x:Name="Chrome"  GlassFrameThickness="0 1 0 0" NonClientFrameEdges="Left,Right,Bottom" CaptionHeight="0" UseAeroCaptionButtons="False"></WindowChrome>
+    </WindowChrome.WindowChrome>
+    <Grid Cursor="Arrow">
+        <Label x:Name="VirtualTitle" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" MouseDown="VirtualTitle_MouseDown"/>
+        <Grid  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+            <Label x:Name="bgimage" Width="{Binding ActualWidth,ElementName=window}" Height="{Binding ActualHeight,ElementName=window}" Margin="0,0,0,0" AllowDrop="True" Drop="Bgimage_Drop" MouseLeftButtonDown="Bgimage_MouseLeftButtonDown" MouseDoubleClick="Bgimage_MouseDoubleClick"/>
+            <Grid x:Name="Player_Container" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
+                <ffme:MediaElement x:Name="Media" Background="Black" LoadedBehavior="Play" UnloadedBehavior="Manual" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LoopingBehavior="Close"/>
+            </Grid>
+            <Label x:Name="Player_Cover" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseDoubleClick="Player_Cover_MouseDoubleClick" AllowDrop="True" Drop="Player_Cover_Drop" KeyDown="Player_Cover_KeyDown" MouseDown="Player_Cover_MouseDown"></Label>
+            <Grid x:Name="Controller" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,5" Height="20" Visibility="Visible">
+                <Label x:Name="Ctrl_Bg" Background="{DynamicResource AppAccentDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>
+                <Label x:Name="Ctrl_Progress_Bg" Background="{DynamicResource AppForeDim}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="730" Height="10" Margin="10,5,0,0" MouseDown="Ctrl_Progress_Bg_MouseDown"></Label>
+                <Label x:Name="Ctrl_Progress" Background="{DynamicResource AppAccent}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="0" Height="10"  Margin="{Binding Margin, ElementName=Ctrl_Progress_Bg}" MouseDown="Ctrl_Progress_MouseDown"></Label>
+                <Label x:Name="Ctrl_Time" Content="00:00" Style="{DynamicResource HiroLabel}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="22" Width="Auto" SizeChanged="Ctrl_Time_SizeChanged" Foreground="{DynamicResource AppForeReverse}"/>
+            </Grid>
+            <Label x:Name="UI_Label" Width="Auto" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="{Binding Margin, ElementName=Ctrl_Btns}" MouseDown="Move_Label_MouseDown" Height="{Binding Height, ElementName=Ctrl_Btns}" MouseDoubleClick="Move_Label_MouseDoubleClick"></Label>
+            <Label x:Name="Move_Label" Background="{DynamicResource AppAccent}" Width="Auto" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="{Binding Margin, ElementName=Ctrl_Btns}" MouseDown="Move_Label_MouseDown" Height="{Binding Height, ElementName=Ctrl_Btns}" MouseDoubleClick="Move_Label_MouseDoubleClick"></Label>
+            <Label x:Name="Player_Info" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{DynamicResource AppAccent}" Foreground="{DynamicResource AppFore}" Width="Auto" Height="Auto" Content="" Visibility="Hidden" FontWeight="Normal" FontSize="16"></Label>
+            <StackPanel x:Name="Ctrl_Btns" Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0" Orientation="Horizontal" Height="35">
+                <Label x:Name="minbtn" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Minbtn_MouseLeftButtonDown">
+                    <Label.Triggers>
+                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="minbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Label.Triggers>
+                    <Path Width="50" Height="30" Data="M 18,15 H 28" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                </Label>
+                <Label x:Name="maxbtn" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Maxbtn_MouseLeftButtonDown">
+                    <Label.Triggers>
+                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="maxbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="maxbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Label.Triggers>
+                    <Path Width="50" Height="30" Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                </Label>
+                <Label x:Name="resbtn" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{Binding Margin, ElementName=closebtn}" Background="#00000000" Foreground ="{DynamicResource AppFore}" Width="55" Height="{Binding Height, ElementName=closebtn}" HorizontalContentAlignment="Center" FontSize="10" VerticalContentAlignment="Center" Grid.RowSpan="2" MouseLeftButtonDown="Resbtn_MouseLeftButtonDown">
+                    <Label.Triggers>
+                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                                        Storyboard.TargetName="resbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="resbtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Label.Triggers>
+                    <Path Width="50" Height="30" Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                </Label>
+                <Label x:Name="closebtn" Grid.Column="2" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Center" Background="#00000000"  Foreground ="{DynamicResource AppFore}" Width="55" Height="{Binding Height, ElementName=Ctrl_Btns}" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Top" MouseLeftButtonDown="Closebtn_MouseLeftButtonDown"  Grid.RowSpan="2">
+                    <Label.Triggers>
+                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="Red" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                                        Storyboard.TargetName="closebtn"                                             
+                                        Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Label.Triggers>
+                    <Path Width="50" Height="30" Data="M 18,11 27,20 M 18,20 27,11" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Label}}}" StrokeThickness="1" />
+                </Label>
+            </StackPanel>
+            <Grid x:Name="Ctrl_Address" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0" Height="{Binding Height, ElementName=Ctrl_Btns}" Visibility="Hidden">
+                <Label x:Name="Ctrl_Text_Bg" Background="{DynamicResource AppForeDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>
+                <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="Ctrl_Text" Foreground="{DynamicResource AppForeReverse}" KeyDown="Ctrl_Text_KeyDown" BorderThickness="0,0,0,0" Padding="6,5,6,5" FontSize="16" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Grid.IsSharedSizeScope="True"></TextBox>
+            </Grid>
+            <DataGrid x:Name="Dgi" Visibility="Hidden" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" HeadersVisibility="None"  FontFamily="{Binding FontFamily, ElementName=Ctrl_Text}" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="{DynamicResource AppFore}" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="200" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick" FontSize="16" Drop="Dgi_Drop" AllowDrop="True" MouseLeave="Dgi_MouseLeave" MouseDown="Dgi_MouseDown">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Name" FontFamily="Segoe UI" CanUserResize="True" Width="*"/>
+                </DataGrid.Columns>
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value= "{DynamicResource AppFore}"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value= "{DynamicResource AppFore}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value= "{DynamicResource AppForeDim}"/>
+                                <Setter Property="Foreground" Value= "{DynamicResource AppFore}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value= "{DynamicResource AppForeDim}"/>
+                                <Setter Property="Foreground" Value= "{DynamicResource AppFore}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.CellStyle>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.CellStyle>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

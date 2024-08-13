@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Hiro.Resources;
+using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
+using static Hiro.Helpers.Hiro_Settings;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_ID
     {
@@ -18,7 +17,7 @@ namespace hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Utils.Get_Translate("webnotinitial"));
+                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 string t = token ? "token" : "pwd";
@@ -53,7 +52,7 @@ namespace hiro.Helpers
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogError(ex, "Hiro.Exception.Login.Save");
+                            Hiro_Logger.LogError(ex, "Hiro.Exception.Login.Save");
                             throw new Exception(ex.Message);
                         }
                     }
@@ -75,7 +74,7 @@ namespace hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Login");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Login");
                 return "error";
             }
         }
@@ -86,12 +85,12 @@ namespace hiro.Helpers
             App.loginedToken = string.Empty;
             App.username = App.eUserName;
             App.CustomUsernameFlag = 0;
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "Token", string.Empty);
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "AutoLogin", "0");
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomUser", "0");
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomName", string.Empty);
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomSign", string.Empty);
-            Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatarStyle", string.Empty);
+            Write_Ini(App.dConfig, "Config", "Token", string.Empty);
+            Write_Ini(App.dConfig, "Config", "AutoLogin", "0");
+            Write_Ini(App.dConfig, "Config", "CustomUser", "0");
+            Write_Ini(App.dConfig, "Config", "CustomName", string.Empty);
+            Write_Ini(App.dConfig, "Config", "CustomSign", string.Empty);
+            Write_Ini(App.dConfig, "Config", "UserAvatarStyle", string.Empty);
         }
 
         public static string UploadProfileImage(string file, string user, string token, string type)
@@ -100,7 +99,7 @@ namespace hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Utils.Get_Translate("webnotinitial"));
+                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
                 FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
                 byte[] bytebuffer;
                 bytebuffer = new byte[fs.Length];
@@ -147,7 +146,7 @@ namespace hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Profile");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile");
                 return "error";
             }
         }
@@ -158,7 +157,7 @@ namespace hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Utils.Get_Translate("webnotinitial"));
+                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
@@ -195,7 +194,7 @@ namespace hiro.Helpers
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Profile.Settings.Save");
+                            Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Settings.Save");
                             throw new Exception(ex.Message);
                         }
                     }
@@ -217,7 +216,7 @@ namespace hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Profile.Settings");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Settings");
                 return "error";
             }
         }
@@ -228,7 +227,7 @@ namespace hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Utils.Get_Translate("webnotinitial"));
+                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
@@ -254,31 +253,33 @@ namespace hiro.Helpers
                                 stream.CopyTo(fileStream);
                             }
                         }
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomUser", "2");
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomName", Hiro_Utils.Read_Ini(saveto, "Profile", "Name", string.Empty));
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "CustomSign", Hiro_Utils.Read_Ini(saveto, "Profile", "Sign", string.Empty));
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatarStyle", Hiro_Utils.Read_Ini(saveto, "Profile", "Avatar", "1"));
-                        App.username = Hiro_Utils.Read_Ini(saveto, "Profile", "Name", string.Empty);
+                        Write_Ini(App.dConfig, "Config", "CustomUser", "2");
+                        Write_Ini(App.dConfig, "Config", "CustomName", Read_Ini(saveto, "Profile", "Name", string.Empty));
+                        Write_Ini(App.dConfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty));
+                        Write_Ini(App.dConfig, "Config", "UserAvatarStyle", Read_Ini(saveto, "Profile", "Avatar", "1"));
+                        App.username = Read_Ini(saveto, "Profile", "Name", string.Empty);
                         App.CustomUsernameFlag = 1;
                         var usrAvatar = "<hiapp>\\images\\avatar\\" + user + ".hap";
                         var usrBack = "<hiapp>\\images\\background\\" + user + ".hpp";
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserAvatar", usrAvatar);
-                        Hiro_Utils.Write_Ini(App.dConfig, "Config", "UserBackground", usrBack);
-                        Hiro_File.CreateFolder(Hiro_Utils.Path_Prepare(usrAvatar));
-                        Hiro_File.CreateFolder(Hiro_Utils.Path_Prepare(usrBack));
-                        if (File.Exists(Hiro_Utils.Path_Prepare(usrAvatar)))
-                            File.Delete(Hiro_Utils.Path_Prepare(usrAvatar));
-                        if (File.Exists(Hiro_Utils.Path_Prepare(usrBack)))
-                            File.Delete(Hiro_Utils.Path_Prepare(usrBack));
-                        Hiro_Net.GetWebContent(Hiro_Utils.Read_Ini(saveto, "Profile", "Iavavtar", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hap"), true, Hiro_Utils.Path_Prepare(usrAvatar));
-                        Hiro_Net.GetWebContent(Hiro_Utils.Read_Ini(saveto, "Profile", "Back", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hpp"), true, Hiro_Utils.Path_Prepare(usrBack));
+                        Write_Ini(App.dConfig, "Config", "UserAvatar", usrAvatar);
+                        Write_Ini(App.dConfig, "Config", "UserBackground", usrBack);
+                        usrAvatar = Hiro_Text.Path_Prepare(usrAvatar);
+                        usrBack = Hiro_Text.Path_Prepare(usrBack);
+                        Hiro_File.CreateFolder(usrAvatar);
+                        Hiro_File.CreateFolder(usrBack);
+                        if (File.Exists(usrAvatar))
+                            File.Delete(usrAvatar);
+                        if (File.Exists(usrBack))
+                            File.Delete(usrBack);
+                        Hiro_Net.GetWebContent(Read_Ini(saveto, "Profile", "Iavavtar", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hap"), true, usrAvatar);
+                        Hiro_Net.GetWebContent(Read_Ini(saveto, "Profile", "Back", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hpp"), true, usrBack);
                         if (File.Exists(saveto))
                             File.Delete(saveto);
                         return "success";
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Profile.Sync.Save");
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Sync.Save");
                         if (File.Exists(saveto))
                             File.Delete(saveto);
                         throw new Exception(ex.Message);
@@ -289,7 +290,7 @@ namespace hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Update.Profile.Sync");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Sync");
                 return "error";
             }
         }
@@ -300,7 +301,7 @@ namespace hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Utils.Get_Translate("webnotinitial"));
+                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] eof = Encoding.UTF8.GetBytes(
@@ -334,7 +335,7 @@ namespace hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Send");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Send");
                 return "error";
             }
         }
@@ -346,7 +347,7 @@ namespace hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Utils.Get_Translate("webnotinitial"));
+                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] eof = Encoding.UTF8.GetBytes(
@@ -377,7 +378,7 @@ namespace hiro.Helpers
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Get.Save");
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Get.Save");
                         throw new Exception(ex.Message);
                     }
                 }
@@ -386,7 +387,7 @@ namespace hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, "Hiro.Exception.Chat.Get");
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Get");
                 return "error";
             }
         }

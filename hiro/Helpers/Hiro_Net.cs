@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Hiro.Resources;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Net
     {
@@ -37,16 +35,16 @@ namespace hiro.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Utils.RunExe($"alarm({Hiro_Utils.Get_Translate("error")},{ex})");
-                    Hiro_Utils.LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
+                    Hiro_Utils.RunExe($"alarm({Hiro_Text.Get_Translate("error")},{ex})");
+                    Hiro_Logger.LogError(ex, $"Hiro.Exception.Wallpaper.HttpClient{Environment.NewLine}Path: {path}");
                 }
                 if (!File.Exists(parameter[0]))
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("unknown"), 2, Hiro_Utils.Get_Translate("wallpaper")));
+                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("unknown"), 2, Hiro_Text.Get_Translate("wallpaper")));
                 else
-                    App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("wpsaved"), 2, Hiro_Utils.Get_Translate("wallpaper")));
+                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("wpsaved"), 2, Hiro_Text.Get_Translate("wallpaper")));
             }
             else
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("wpexist"), 2, Hiro_Utils.Get_Translate("wallpaper")));
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("wpexist"), 2, Hiro_Text.Get_Translate("wallpaper")));
         }
 
         internal static void Save(string? source, List<string> parameter)
@@ -55,9 +53,9 @@ namespace hiro.Helpers
             Hiro_File.CreateFolder(parameter[1]);
             result = GetWebContent(parameter[0], true, parameter[1]);
             if (result.ToLower().Equals("error"))
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("error"), 2, source));
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("error"), 2, source));
             else
-                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("success"), 2, source));
+                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("success"), 2, source));
         }
 
         #region 获取网络内容
@@ -76,7 +74,7 @@ namespace hiro.Helpers
             ServicePointManager.DefaultConnectionLimit = 100;
             ServicePointManager.Expect100Continue = false;
             if (App.hc == null)
-                throw new Exception(Hiro_Utils.Get_Translate("webnotinitial"));
+                throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
             try
             {
                 HttpResponseMessage response = App.hc.Send(request);
@@ -97,7 +95,7 @@ namespace hiro.Helpers
                             }
                             catch (Exception ex)
                             {
-                                Hiro_Utils.LogError(ex, $"Hiro.Exception.Web.Get");
+                                Hiro_Logger.LogError(ex, $"Hiro.Exception.Web.Get");
                                 throw new Exception(ex.Message);
                             }
                         }
@@ -111,13 +109,13 @@ namespace hiro.Helpers
                 }
                 else
                 {
-                    Hiro_Utils.LogError(new ArgumentNullException(), $"Hiro.Exception.Web.Respose");
-                    return Hiro_Utils.Get_Translate("error");
+                    Hiro_Logger.LogError(new ArgumentNullException(), $"Hiro.Exception.Web.Respose");
+                    return Hiro_Text.Get_Translate("error");
                 }
             }
             catch (Exception ex)
             {
-                Hiro_Utils.LogError(ex, $"Hiro.Exception.Web.HttpClient");
+                Hiro_Logger.LogError(ex, $"Hiro.Exception.Web.HttpClient");
                 throw new Exception(ex.Message);
             }
         }
