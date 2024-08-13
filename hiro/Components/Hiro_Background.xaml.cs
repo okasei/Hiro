@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// background.xaml の相互作用ロジック

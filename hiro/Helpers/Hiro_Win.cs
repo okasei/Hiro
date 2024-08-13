@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Win
     {

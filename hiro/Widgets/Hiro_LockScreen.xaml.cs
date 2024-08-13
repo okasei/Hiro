@@ -1,4 +1,4 @@
-﻿using hiro.Resources;
+﻿using Hiro.Resources;
 using System;
 using System.Text;
 using System.Windows;
@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace hiro
+namespace Hiro
 {
     public partial class Hiro_LockScreen : Window
     {

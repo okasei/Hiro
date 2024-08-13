@@ -1,5 +1,5 @@
-﻿using hiro.Helpers;
-using hiro.ModelViews;
+﻿using Hiro.Helpers;
+using Hiro.ModelViews;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Windows.UI.Composition;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// alarm.xaml の相互作用ロジック

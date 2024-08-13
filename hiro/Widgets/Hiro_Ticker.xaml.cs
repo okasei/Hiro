@@ -9,9 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using hiro.ModelViews;
+using Hiro.ModelViews;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Ticker.xaml 的交互逻辑

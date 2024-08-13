@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace hiro.Resources {
+namespace Hiro.Resources {
     using System;
     
     

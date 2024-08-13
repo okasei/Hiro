@@ -5,7 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Items.xaml の相互作用ロジック

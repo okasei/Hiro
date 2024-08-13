@@ -10,10 +10,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Shell;
 using System.IO;
-using hiro.Helpers;
-using hiro.ModelViews;
+using Hiro.Helpers;
+using Hiro.ModelViews;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Player.xaml 的交互逻辑

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Text
     {

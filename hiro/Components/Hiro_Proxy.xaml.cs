@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Internet.xaml の相互作用ロジック

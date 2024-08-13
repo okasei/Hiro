@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Splash.xaml 的交互逻辑

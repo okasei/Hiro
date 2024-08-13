@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace hiro.ModelViews
+namespace Hiro.ModelViews
 {
     public class Hiro_Socket
     {

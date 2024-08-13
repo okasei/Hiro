@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Bluetooth
     {

@@ -1,5 +1,5 @@
-﻿using hiro.Helpers;
-using hiro.Resources;
+﻿using Hiro.Helpers;
+using Hiro.Resources;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Profile.xaml の相互作用ロジック

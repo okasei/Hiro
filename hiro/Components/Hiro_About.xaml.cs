@@ -1,5 +1,5 @@
-﻿using hiro.Helpers;
-using hiro.Resources;
+﻿using Hiro.Helpers;
+using Hiro.Resources;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace hiro
+namespace Hiro
 {
     public partial class Hiro_About : Page
     {

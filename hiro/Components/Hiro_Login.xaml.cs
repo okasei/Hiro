@@ -1,4 +1,4 @@
-﻿using hiro.Helpers;
+﻿using Hiro.Helpers;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,7 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Login.xaml 的交互逻辑

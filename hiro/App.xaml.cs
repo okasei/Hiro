@@ -1,6 +1,6 @@
-﻿using hiro.Helpers;
-using hiro.ModelViews;
-using hiro.Resources;
+﻿using Hiro.Helpers;
+using Hiro.ModelViews;
+using Hiro.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,9 +21,9 @@ using Windows.Foundation.Metadata;
 using Windows.Storage.Streams;
 using Windows.UI.Notifications;
 using Windows.UI.Notifications.Management;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro
+namespace Hiro
 {
 
     public partial class App : Application

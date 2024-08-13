@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hiro.ModelViews
+namespace Hiro.ModelViews
 {
     using System;
     using System.Windows;

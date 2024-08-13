@@ -4,11 +4,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using hiro.Helpers;
-using hiro.ModelViews;
-using hiro.Resources;
+using Hiro.Helpers;
+using Hiro.ModelViews;
+using Hiro.Resources;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// mainui.xaml の相互作用ロジック

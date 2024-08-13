@@ -1,12 +1,12 @@
-﻿using hiro.Helpers;
-using hiro.Resources;
+﻿using Hiro.Helpers;
+using Hiro.Resources;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Config.xaml の相互作用ロジック

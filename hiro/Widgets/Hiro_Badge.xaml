@@ -1,10 +1,10 @@
-﻿<Window x:Name="window" x:Class="hiro.Hiro_Badge"
+﻿<Window x:Name="window" x:Class="Hiro.Hiro_Badge"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:hiro"
-        xmlns:hc="clr-namespace:hiro.ModelViews"
+        xmlns:local="clr-namespace:Hiro"
+        xmlns:hc="clr-namespace:Hiro.ModelViews"
         mc:Ignorable="d"
         Title="Hiro_Badge" Height="400" Width="400"  ResizeMode="NoResize" Topmost="True" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True" Background="Transparent" WindowStartupLocation="Manual" Closing="window_Closing">
     <Window.Resources>

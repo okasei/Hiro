@@ -1,13 +1,13 @@
-﻿using hiro.Resources;
+﻿using Hiro.Resources;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Net;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Net
     {

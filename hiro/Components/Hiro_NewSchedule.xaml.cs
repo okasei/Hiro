@@ -4,9 +4,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_NewSchedule.xaml の相互作用ロジック

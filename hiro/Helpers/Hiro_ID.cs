@@ -1,11 +1,11 @@
-﻿using hiro.Resources;
+﻿using Hiro.Resources;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_ID
     {

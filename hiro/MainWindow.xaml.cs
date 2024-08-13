@@ -2,9 +2,9 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

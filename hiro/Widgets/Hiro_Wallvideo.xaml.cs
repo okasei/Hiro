@@ -1,4 +1,4 @@
-﻿using hiro.Helpers;
+﻿using Hiro.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Wallvideo.xaml 的交互逻辑

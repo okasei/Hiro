@@ -1,5 +1,5 @@
-﻿using hiro.Helpers;
-using hiro.ModelViews;
+﻿using Hiro.Helpers;
+using Hiro.ModelViews;
 using Microsoft.Web.WebView2.Core;
 using System;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 
-namespace hiro
+namespace Hiro
 {
     public partial class Hiro_Web : Window
     {

@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Test.xaml 的交互逻辑

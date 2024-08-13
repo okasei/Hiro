@@ -21,14 +21,14 @@ using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using System.Security.Cryptography;
 using System.Windows.Shell;
-using hiro.Helpers;
+using Hiro.Helpers;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
-using static hiro.Helpers.Hiro_Class;
-using hiro.ModelViews;
-using hiro.Resources;
+using static Hiro.Helpers.Hiro_Class;
+using Hiro.ModelViews;
+using Hiro.Resources;
 
-namespace hiro
+namespace Hiro
 {
     public partial class Hiro_Utils : Component
     {

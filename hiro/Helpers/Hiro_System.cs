@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_System
     {

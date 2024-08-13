@@ -1,14 +1,14 @@
-﻿using hiro.Helpers;
-using hiro.Resources;
-using hiro.ModelViews;
+﻿using Hiro.Helpers;
+using Hiro.Resources;
+using Hiro.ModelViews;
 using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Download.xaml の相互作用ロジック

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace hiro.Properties {
+namespace Hiro.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

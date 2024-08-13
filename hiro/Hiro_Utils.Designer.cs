@@ -1,4 +1,4 @@
-﻿namespace hiro
+﻿namespace Hiro
 {
     partial class Hiro_Utils
     {

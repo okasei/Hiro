@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Blur.xaml 的交互逻辑

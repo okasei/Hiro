@@ -1,5 +1,5 @@
-﻿using hiro.Helpers;
-using hiro.Resources;
+﻿using Hiro.Helpers;
+using Hiro.Resources;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Chat.xaml 的交互逻辑

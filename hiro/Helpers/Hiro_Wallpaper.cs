@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro.Helpers
+namespace Hiro.Helpers
 {
     internal class Hiro_Wallpaper
     {

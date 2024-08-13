@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Threading;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Timer.xaml 的交互逻辑

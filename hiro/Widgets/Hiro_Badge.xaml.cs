@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Windows.Devices.AllJoyn;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Badge.xaml 的交互逻辑

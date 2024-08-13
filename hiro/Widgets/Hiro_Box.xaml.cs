@@ -14,10 +14,10 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Logique d'interaction pour Hiro_Box.xaml

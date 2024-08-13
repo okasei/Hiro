@@ -1,4 +1,4 @@
-﻿using hiro.Resources;
+﻿using Hiro.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using static hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.Hiro_Class;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Boxie.xaml 的交互逻辑

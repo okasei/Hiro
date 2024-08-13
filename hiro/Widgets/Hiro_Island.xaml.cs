@@ -18,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// Hiro_Island.xaml の相互作用ロジック

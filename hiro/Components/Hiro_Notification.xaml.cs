@@ -5,9 +5,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-using hiro.ModelViews;
+using Hiro.ModelViews;
 
-namespace hiro
+namespace Hiro
 {
     /// <summary>
     /// notification.xaml の相互作用ロジック

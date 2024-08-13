@@ -6,7 +6,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using Windows.Graphics.Printing;
 
-namespace hiro.ModelViews
+namespace Hiro.ModelViews
 {
     public class WindowAccentCompositor
     {
