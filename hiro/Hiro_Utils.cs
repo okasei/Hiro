@@ -25,6 +25,8 @@ using hiro.Helpers;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
 using static hiro.Helpers.Hiro_Class;
+using hiro.ModelViews;
+using hiro.Resources;
 
 namespace hiro
 {
@@ -779,7 +781,8 @@ namespace hiro
                 DirectoryInfo directory = new DirectoryInfo(pi);
                 var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
                 var ImgList = files.Select(s => s.FullName).ToList();
-                path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                if (ImgList.Count > 1)
+                    path = ImgList[new Random().Next(0, ImgList.Count - 1)];
             }
             if (pi.ToLower().EndsWith("<xany>"))
             {
@@ -787,7 +790,8 @@ namespace hiro
                 DirectoryInfo directory = new DirectoryInfo(pi);
                 var files = directory.GetFiles("*", SearchOption.AllDirectories);
                 var ImgList = files.Select(s => s.FullName).ToList();
-                path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                if (ImgList.Count > 1)
+                    path = ImgList[new Random().Next(0, ImgList.Count - 1)];
             }
             return path;
         }
@@ -844,7 +848,8 @@ namespace hiro
                             DirectoryInfo directory = new DirectoryInfo(pi);
                             var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
                             var ImgList = files.Select(s => s.FullName).ToList();
-                            parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                            if (ImgList.Count > 1)
+                                parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
                         }
                         if (pi.ToLower().EndsWith("<xany>"))
                         {
@@ -852,7 +857,8 @@ namespace hiro
                             DirectoryInfo directory = new DirectoryInfo(pi);
                             var files = directory.GetFiles("*", SearchOption.AllDirectories);
                             var ImgList = files.Select(s => s.FullName).ToList();
-                            parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                            if (ImgList.Count > 1)
+                                parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
                         }
                     }
                     #endregion
@@ -891,12 +897,12 @@ namespace hiro
                     }
                     if (path.ToLower().StartsWith("priority("))
                     {
-                        Hiro_Win.SetProcessPriority(parameter[0], Get_Translate("execute"));
+                        Hiro_Win.SetProcessPriority(parameter[0], Get_Translate("prority"));
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("effiency("))
                     {
-                        Hiro_Win.SetEffiencyMode(parameter[0], Get_Translate("execute"));
+                        Hiro_Win.SetEffiencyMode(parameter[0], Get_Translate("effiency"));
                         goto RunOK;
                     }
                     #region 调试
@@ -1152,7 +1158,7 @@ namespace hiro
                     {
                         HiroInvoke(() =>
                         {
-                            if(App.mn != null)
+                            if (App.mn != null)
                             {
                                 App.mn.Show();
                                 App.mn.Visibility = Visibility.Visible;

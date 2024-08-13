@@ -6,13 +6,13 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
-    <ApplicationIcon>hiro_circle.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\hiro_circle.ico</ApplicationIcon>
     <Copyright>Copyright ©2024 Hiro</Copyright>
     <Authors>Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.4.0</FileVersion>
-    <AssemblyVersion>2.4.0</AssemblyVersion>
-    <Version>2.4.0</Version>
+    <FileVersion>2.4.1</FileVersion>
+    <AssemblyVersion>2.4.1</AssemblyVersion>
+    <Version>2.4.1</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
@@ -105,10 +105,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Hiro_Encrypter.xaml.cs">
+    <Compile Update="Widgets\Hiro_Encrypter.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Hiro_Resources.Designer.cs">
+    <Compile Update="Resources\Hiro_Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Hiro_Resources.resx</DependentUpon>
@@ -133,21 +133,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="hiro.png" />
-    <Resource Include="hiro_circle.ico">
+    <Resource Include="Resources\hiro.png" />
+    <Resource Include="Resources\hiro_circle.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Hiro_Resources.resx">
+    <EmbeddedResource Update="Resources\Hiro_Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Hiro_Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Hiro_Encrypter.xaml">
+    <Page Update="Widgets\Hiro_Encrypter.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

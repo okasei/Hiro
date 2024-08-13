@@ -10,9 +10,9 @@
         Title="Initalizing - " Height="270" Width="480"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 
-        Closing="Main_Closing" Icon="/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
+        Closing="Main_Closing" Icon="Resources/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
     <Grid>
-        <tb:TaskbarIcon x:Name="Hiro_Tray" Visibility="Visible" IconSource="/hiro_circle.ico">
+        <tb:TaskbarIcon x:Name="Hiro_Tray" Visibility="Visible" IconSource="Resources/hiro_circle.ico">
             <tb:TaskbarIcon.TrayToolTip>
                 <Border
                     x:Name="trayBorder"

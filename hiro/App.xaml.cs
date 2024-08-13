@@ -1,8 +1,9 @@
 ﻿using hiro.Helpers;
+using hiro.ModelViews;
+using hiro.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -694,6 +695,20 @@ namespace hiro
                     _ => TimeSpan.FromSeconds(1)
                 }
             };
+            switch(Hiro_Utils.Read_DCIni("Performance", "0"))
+            {
+                case "1":
+                    {
+                        Hiro_Win.SetProcessPriority("idle", null, true);
+                        break;
+                    }
+                case "2":
+                    {
+                        Hiro_Win.SetProcessPriority("idle", null, true);
+                        Hiro_Win.SetEffiencyMode("on", null, true);
+                        break;
+                    }
+            }
             timer.Tick += delegate
             {
                 TimerTick();
@@ -834,7 +849,7 @@ namespace hiro
             {
                 case 0:
                     if (wnd != null)
-                        wnd.Hiro_Tray.IconSource = new BitmapImage(new Uri("/hiro_circle.ico", UriKind.Relative));
+                        wnd.Hiro_Tray.IconSource = new BitmapImage(new Uri("Resources/hiro_circle.ico", UriKind.Relative));
                     flashFlag = 1;
                     break;
                 case 1:

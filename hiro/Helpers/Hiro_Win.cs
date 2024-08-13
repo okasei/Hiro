@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using static hiro.Helpers.Hiro_Class;
 
 namespace hiro.Helpers
@@ -14,8 +15,9 @@ namespace hiro.Helpers
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetProcessEfficiencyMode(int mode);
 
-        internal static void SetProcessPriority(string para, string? source = null)
+        internal static void SetProcessPriority(string para, string? source = null, bool mute = false)
         {
+            string? infoKey = null;
             switch (para.Trim().ToLower())
             {
                 case "realtime":
@@ -24,6 +26,7 @@ namespace hiro.Helpers
                 case "5":
                     {
                         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
+                        infoKey = "prorityreal";
                         break;
                     }
                 case "high":
@@ -32,14 +35,17 @@ namespace hiro.Helpers
                 case "4":
                     {
                         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+                        infoKey = "prorityhigh";
                         break;
                     }
                 case "abovenormal":
+                case "an":
                 case "above":
                 case "32768":
                 case "3":
                     {
                         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
+                        infoKey = "prorityan";
                         break;
                     }
                 case "normal":
@@ -48,14 +54,17 @@ namespace hiro.Helpers
                 case "2":
                     {
                         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+                        infoKey = "proritynormal";
                         break;
                     }
                 case "belownormal":
+                case "bn":
                 case "below":
                 case "16384":
                 case "1":
                     {
                         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
+                        infoKey = "proritybn";
                         break;
                     }
                 case "idle":
@@ -66,18 +75,36 @@ namespace hiro.Helpers
                 case "0":
                     {
                         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Idle;
+                        infoKey = "prorityidle";
                         break;
                     }
                 default:
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("error"), 2, source));
+                        infoKey = "prorityerror";
                         break;
                     }
             }
+            if (!mute)
+                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate(infoKey), 2, source));
         }
 
-        internal static void SetEffiencyMode(string para, string? source = null)
+        internal static void SetEffiencyMode(string para, string? source = null, bool mute = false)
         {
+            var osDescription = RuntimeInformation.OSDescription;
+            var osDescs = osDescription.Split(' ');
+            foreach (var osDesc in osDescs)
+            {
+                if (!osDesc.Contains(".")) continue;
+                var versions = osDesc.Split('.');
+                if (versions.Length < 2) continue;
+                if (int.Parse(versions[0]) < 10 || int.Parse(versions[2]) < 22000)
+                {
+                    if (!mute)
+                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("effiencywin"), 2, source));
+                    return;
+                }
+            }
+            string? infoKey = null;
             switch (para.Trim().ToLower())
             {
                 case "normal":
@@ -88,6 +115,7 @@ namespace hiro.Helpers
                 case "0":
                     {
                         SetProcessEcoQoS(Process.GetCurrentProcess().Handle, false);
+                        infoKey = "effiencynormal";
                         break;
                     }
                 case "lowpower":
@@ -99,14 +127,17 @@ namespace hiro.Helpers
                 case "1":
                     {
                         SetProcessEcoQoS(Process.GetCurrentProcess().Handle, true);
+                        infoKey = "effiencyeco";
                         break;
                     }
                 default:
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate("error"), 2, source));
+                        infoKey = "effiencyerror";
                         break;
                     }
             }
+            if (!mute)
+                App.Notify(new Hiro_Notice(Hiro_Utils.Get_Translate(infoKey), 2, source));
         }
 
         // 声明导入函数
@@ -134,7 +165,7 @@ namespace hiro.Helpers
         }
 
         //实现
-        public static bool SetProcessEcoQoS(IntPtr hProcess, bool bFlag)
+        static bool SetProcessEcoQoS(IntPtr hProcess, bool bFlag)
         {
             // 此结构有三个字段Version，ControlMask 和 StateMask
             uint controlMask = 0x1; //非权重开关
