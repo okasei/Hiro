@@ -30,6 +30,7 @@ using static Hiro.Helpers.Hiro_Logger;
 using static Hiro.Helpers.Hiro_Settings;
 using Hiro.ModelViews;
 using Hiro.Resources;
+using System.Windows.Media.Media3D;
 
 namespace Hiro
 {
@@ -394,17 +395,74 @@ namespace Hiro
                         Top = (!result[6].Equals("-1")) ? double.Parse(result[6]) : name.Margin.Top,
                         Bottom = 0
                     };
+                    var width = (!result[7].Equals("-1")) ? double.Parse(result[7]) : double.NaN;
+                    var height = (!result[8].Equals("-1")) ? double.Parse(result[8]) : double.NaN;
                     if (!animation)
                     {
                         mac.Margin = thickness;
+                        mac.Width = width;
+                        mac.Height = height;
                     }
                     else
                     {
                         Storyboard sb = new();
                         AddThicknessAnimaton(thickness, animationTime, mac, "Margin", sb);
+                        if (!double.IsNaN(height))
+                            AddDoubleAnimaton(height, animationTime, mac, "Height", sb, null);
+                        if (!double.IsNaN(width))
+                            AddDoubleAnimaton(width, animationTime, mac, "Width", sb, null);
                         sb.Completed += delegate
                         {
                             mac.Margin = thickness;
+                            mac.Width = width;
+                            mac.Height = height;
+                        };
+                        sb.Begin();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, $"Hiro.Exception.Location{Environment.NewLine}Path: {mval}");
+            }
+
+        }
+
+        public static void Set_MacFrame_Location(FrameworkElement mac, string mval, Control name, bool animation = false, double animationTime = 150)
+        {
+            try
+            {
+                if (mac != null && name != null)
+                {
+                    var result = HiroParse(Read_Ini(App.langFilePath, "location", mval, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
+                    Thickness thickness = new()
+                    {
+                        Left = (!result[0].Equals("-1")) ? double.Parse(result[0]) + name.Margin.Left + name.ActualWidth + 5 : name.Margin.Left + name.ActualWidth + 5,
+                        Right = 0,
+                        Top = (!result[1].Equals("-1")) ? double.Parse(result[1]) : name.Margin.Top,
+                        Bottom = 0
+                    };
+                    var width = (!result[2].Equals("-1")) ? double.Parse(result[2]) : double.NaN;
+                    var height = (!result[3].Equals("-1")) ? double.Parse(result[3]) : double.NaN;
+                    if (!animation)
+                    {
+                        mac.Margin = thickness;
+                        mac.Width = width;
+                        mac.Height = height;
+                    }
+                    else
+                    {
+                        Storyboard sb = new();
+                        AddThicknessAnimaton(thickness, animationTime, mac, "Margin", sb);
+                        if (!double.IsNaN(height))
+                            AddDoubleAnimaton(height, animationTime, mac, "Height", sb, null);
+                        if (!double.IsNaN(width))
+                            AddDoubleAnimaton(width, animationTime, mac, "Width", sb, null);
+                        sb.Completed += delegate
+                        {
+                            mac.Margin = thickness;
+                            mac.Width = width;
+                            mac.Height = height;
                         };
                         sb.Begin();
                     }
@@ -1030,7 +1088,7 @@ namespace Hiro
                     {
                         HiroInvoke(() =>
                         {
-                            new Hiro_Blur().Show();
+                            new Hiro_Timer().Show();
                         });
                         goto RunOK;
                     }

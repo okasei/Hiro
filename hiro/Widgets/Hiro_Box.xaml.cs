@@ -70,19 +70,27 @@ namespace Hiro
         private void Load_PrimaryIcon()
         {
             var icon = Hiro_Settings.Read_PPDCIni("CustomizeIcon", "");
-            if (File.Exists(icon))
+            icon = Hiro_Text.Path_PPX(icon);
+            try
             {
-                BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
-            }
-            else
-            {
-                icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
-                if (File.Exists(icon) && App.Logined == true)
+                if (System.IO.File.Exists(icon))
                 {
                     BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
                     (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
                 }
+                else
+                {
+                    icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
+                    if (System.IO.File.Exists(icon) && App.Logined == true)
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                        (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
             }
         }
 

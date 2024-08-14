@@ -1,5 +1,7 @@
-﻿using Hiro.Helpers;
+﻿using FFmpeg.AutoGen;
+using Hiro.Helpers;
 using Hiro.Resources;
+using MaterialDesignColors;
 using System;
 using System.IO;
 using System.Linq;
@@ -254,6 +256,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 {
                     ChatContentBak.Text = File.Exists(file) ? File.ReadAllText(file) : "";
                     Profile_Mac.Content = UserId;
+                    Load_IdentificationTips();
                 });
                 Load_Avatar();
                 LogtoFile("[INFO]Hiro.Chat.Avatar Initialized");
@@ -262,9 +265,113 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 Load_Profile();
                 LogtoFile("[INFO]Hiro.Chat.Profile Initialized");
                 Load_Chat();
+                LogtoFile("[INFO]Hiro.Chat.Chat Initialized");
+                Load_Identification();
+                LogtoFile("[INFO]Hiro.Chat.Identification Initialized");
+                Load_Affiliation();
+                LogtoFile("[INFO]Hiro.Chat.Affiliation Initialized");
+                Dispatcher.Invoke(() =>
+                {
+                    ResizeExtraControls();
+                });
                 load = true;
             }).Start();
         }
+
+        private void Load_IdentificationTips()
+        {
+            var StrFileName = Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+            StrFileName = Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "Profile", string.Empty));
+            var a = Hiro_Text.Get_Translate("chatVerified").Replace("%i", Hiro_Text.Path_PPX(Read_Ini(StrFileName, "Config", "VerifiedID", string.Empty)));
+            if (!a.Equals(Profile_IDRectangle.ToolTip))
+                Profile_IDRectangle.ToolTip = a;
+            a = Hiro_Text.Get_Translate("chatAff").Replace("%i", Hiro_Text.Path_PPX(Read_Ini(StrFileName, "Config", "AffID", string.Empty)));
+            if (!a.Equals(Profile_AffRectangle.ToolTip))
+                Profile_AffRectangle.ToolTip = a;
+        }
+
+        private void Load_Identification()
+        {
+            var StrFileName = Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+            StrFileName = Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "VerifiedImage", string.Empty));
+            try
+            {
+                if (File.Exists(StrFileName))
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(StrFileName);
+                        ImageBrush ib = new()
+                        {
+                            Stretch = Stretch.UniformToFill,
+                            ImageSource = bi
+                        };
+                        Profile_IDRectangle.Fill = ib;
+
+                        Profile_IDRectangle.Visibility = Visibility.Visible;
+                        Hiro_Utils.Set_FrameworkElement_Location(Profile_IDRectangle, "chatVerified", true);
+                        ResizeExtraControls();
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Profile_IDRectangle.Visibility = Visibility.Collapsed;
+                        ResizeExtraControls();
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, "Hiro.Exception.Chat.Update.Friend.Identification");
+            }
+        }
+
+        private void Load_Affiliation()
+        {
+            var StrFileName = Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
+            StrFileName = Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "AffImage", string.Empty));
+            try
+            {
+                if (File.Exists(StrFileName))
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(StrFileName);
+                        ImageBrush ib = new()
+                        {
+                            Stretch = Stretch.UniformToFill,
+                            ImageSource = bi
+                        };
+                        Profile_AffRectangle.Fill = ib;
+                        Profile_AffRectangle.Visibility = Visibility.Visible;
+                        if (Profile_IDRectangle.Visibility != Visibility.Visible)
+                        {
+                            Hiro_Utils.Set_FrameworkElement_Location(Profile_AffRectangle, "chatAffS", true);
+                        }
+                        else
+                        {
+                            Hiro_Utils.Set_FrameworkElement_Location(Profile_AffRectangle, "chatAff", true);
+                        }
+                        ResizeExtraControls();
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Profile_AffRectangle.Visibility = Visibility.Collapsed;
+                        ResizeExtraControls();
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, "Hiro.Exception.Chat.Update.Friend.Identification");
+            }
+        }
+
 
         private void Load_Avatar()
         {
@@ -418,6 +525,8 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     Hiro_File.CreateFolder(Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\profile\\"));
                     Hiro_File.CreateFolder(Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\back\\"));
                     Hiro_File.CreateFolder(Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\"));
+                    Hiro_File.CreateFolder(Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\verified\\"));
+                    Hiro_File.CreateFolder(Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\aff\\"));
                     var hus = Guid.NewGuid();
                     var StrFileName = Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
                     var baseDir = Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\profile\\");
@@ -426,6 +535,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     {
                         hus = Guid.NewGuid();
                     }
+                    var _profile = baseDir + hus + ".hus";
                     var tmp = System.IO.Path.GetTempFileName();
                     var res = Hiro_ID.UploadProfileSettings(
                         UserId, "token", Aite,
@@ -433,41 +543,19 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                         Read_Ini(pformer, "Config", "Avatar", "1"),
                         Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "Avatar", string.Empty))).Replace("-", ""),
                         Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "BackImage", string.Empty))).Replace("-", ""),
+                        Read_Ini(pformer, "Config", "VerifiedID", string.Empty),
+                        Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "VerifiedImage", string.Empty))).Replace("-", ""),
+                        Read_Ini(pformer, "Config", "AffID", string.Empty),
+                        Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "AffImage", string.Empty))).Replace("-", ""),
                         "check",
                         tmp
                         );
                     var u = false;
-                    var r = Read_Ini(tmp, "Profile", "Name", string.Empty);
-                    if (!r.Equals(string.Empty))
-                    {
-                        Aite = r;
-                        Write_Ini(baseDir + hus + ".hus", "Config", "Name", r);
-                        u = true;
-                    }
-                    else
-                    {
-                        Write_Ini(baseDir + hus + ".hus", "Config", "Name", Aite);
-                    }
-                    r = Read_Ini(tmp, "Profile", "Sign", string.Empty);
-                    if (!r.Equals(string.Empty))
-                    {
-                        Write_Ini(baseDir + hus + ".hus", "Config", "Signature", r);
-                        u = true;
-                    }
-                    else
-                    {
-                        Write_Ini(baseDir + hus + ".hus", "Config", "Signature", Read_Ini(pformer, "Config", "Signature", string.Empty));
-                    }
-                    r = Read_Ini(tmp, "Profile", "Avatar", string.Empty);
-                    if (!r.Equals(string.Empty))
-                    {
-                        Write_Ini(baseDir + hus + ".hus", "Config", "Avatar", r);
-                        u = true;
-                    }
-                    else
-                    {
-                        Write_Ini(baseDir + hus + ".hus", "Config", "Avatar", Read_Ini(pformer, "Config", "Avatar", "1"));
-                    }
+                    u = u || UpdateProfileText(pformer, _profile, "Name", Read_Ini(tmp, "Profile", "Name", string.Empty), Aite);
+                    u = u || UpdateProfileText(pformer, _profile, "Signature", Read_Ini(tmp, "Profile", "Sign", string.Empty), string.Empty);
+                    u = u || UpdateProfileText(pformer, _profile, "Avatar", Read_Ini(tmp, "Profile", "Avatar", string.Empty), "1");
+                    u = u || UpdateProfileText(pformer, _profile, "VerifiedID", Read_Ini(tmp, "Profile", "VerifiedID", string.Empty), string.Empty);
+                    u = u || UpdateProfileText(pformer, _profile, "AffID", Read_Ini(tmp, "Profile", "AffID", string.Empty), string.Empty);
                     if (u)
                     {
                         if (File.Exists(pformer))
@@ -477,38 +565,18 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     }
                     else
                     {
-                        File.Delete(baseDir + hus + ".hus");
+                        File.Delete(_profile);
                     }
-                    baseDir = Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\avatar\\");
-                    while (File.Exists(baseDir + hus + ".hap"))
-                    {
-                        hus = Guid.NewGuid();
-                    }
-                    r = Read_Ini(tmp, "Profile", "Iavatar", string.Empty);
-                    if (!r.Equals(string.Empty))
-                    {
-                        var former = Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "Avatar", string.Empty));
-                        if (File.Exists(former))
-                            File.Delete(former);
-                        Write_Ini(StrFileName, UserId, "Avatar", "<hiapp>\\chat\\friends\\avatar\\" + hus + ".hap");
-                        Hiro_Net.GetWebContent(r, true, baseDir + hus + ".hap");
+                    if (UpdateImage(StrFileName, "Avatar", Read_Ini(tmp, "Profile", "Iavatar", string.Empty), "<hiapp>\\chat\\friends\\avatar\\", "hap"))
                         Load_Avatar();
-                    }
-                    baseDir = Hiro_Text.Path_Prepare("<hiapp>\\chat\\friends\\back\\");
-                    while (File.Exists(baseDir + hus + ".hpp"))
-                    {
-                        hus = Guid.NewGuid();
-                    }
-                    r = Read_Ini(tmp, "Profile", "Back", string.Empty);
-                    if (!r.Equals(string.Empty))
-                    {
-                        var former = Hiro_Text.Path_PPX(Read_Ini(StrFileName, UserId, "BackImage", string.Empty));
-                        if (File.Exists(former))
-                            File.Delete(former);
-                        Write_Ini(StrFileName, UserId, "BackImage", "<hiapp>\\chat\\friends\\back\\" + hus + ".hpp");
-                        Hiro_Net.GetWebContent(r, true, baseDir + hus + ".hpp");
+                    if (UpdateImage(StrFileName, "BackImage", Read_Ini(tmp, "Profile", "Back", string.Empty), "<hiapp>\\chat\\friends\\back\\", "hpp"))
                         Load_Background();
-                    }
+                    if (UpdateImage(StrFileName, "VerifiedImage", Read_Ini(tmp, "Profile", "Verified", string.Empty), "<hiapp>\\chat\\friends\\verified\\", "hvp"))
+                        Load_Identification();
+                    if (UpdateImage(StrFileName, "AffImage", Read_Ini(tmp, "Profile", "Aff", string.Empty), "<hiapp>\\chat\\friends\\aff\\", "hfp"))
+                        Load_Affiliation();
+                    if (App.dflag)
+                        LogtoFile(File.ReadAllText(tmp));
                     File.Delete(tmp);
                     var hcf = Hiro_Text.Path_Prepare("<hiapp>\\chat\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("MM-dd") + "\\" + UserId + ".hcf");
                     var content = Hiro_ID.GetChat(App.loginedUser, App.loginedToken, UserId, hcf);
@@ -540,6 +608,40 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     });
                 }
             }).Start();
+        }
+
+
+        private bool UpdateProfileText(string formerConfig, string newConfig, string section, string newValue, string defaultValue)
+        {
+            if (!newValue.Equals(string.Empty))
+            {
+                Write_Ini(newConfig, "Config", section, newValue);
+                return true;
+            }
+            else
+            {
+                Write_Ini(newConfig, "Config", section, Read_Ini(formerConfig, "Config", section, defaultValue));
+                return false;
+            }
+        }
+        private bool UpdateImage(string friendList, string section, string url, string downloadFolder, string ext)
+        {
+            if (!url.Equals(string.Empty))
+            {
+                var hus = Guid.NewGuid();
+                var dlReal = Hiro_Text.Path_PPX(downloadFolder);
+                while (File.Exists($"{dlReal}{hus}.{ext}"))
+                {
+                    hus = Guid.NewGuid();
+                }
+                var former = Hiro_Text.Path_PPX(Read_Ini(friendList, UserId, section, string.Empty));
+                if (File.Exists(former))
+                    File.Delete(former);
+                Write_Ini(friendList, UserId, section, $"{downloadFolder}{hus}.{ext}");
+                Hiro_Net.GetWebContent(url, true, $"{dlReal}{hus}.{ext}");
+                return true;
+            }
+            return false;
         }
 
         private void AddErrorMsg(string user, string msg)
@@ -714,6 +816,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 }
                 Dispatcher.Invoke(() =>
                 {
+                    Load_IdentificationTips();
                     ChatContent.ScrollToEnd();
                 });
                 ernum = 0;
@@ -848,6 +951,10 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                     Read_DCIni("UserAvatarStyle", "1"),
                     Hiro_Utils.GetMD5(Read_DCIni("UserBackground", "")),
                     Hiro_Utils.GetMD5(Read_DCIni("UserAvatar", "")),
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
                     "update"
                     );
                 if (!res.Equals("success"))
@@ -956,7 +1063,8 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             if (Hiro_Text.StartsWith(text, "version:"))
             {
                 Hiro_ID.version = "v" + text[8..];
-                LogtoFile("[INFO]Chat Version Updated " + "v" + text[8..]);
+                if (App.dflag)
+                    LogtoFile("[INFO]Chat Version Updated " + "v" + text[8..]);
                 Write_Ini(App.dConfig, "Config", "AppVer", text[8..]);
                 Hiro_Get_Chat();
                 return;
@@ -964,7 +1072,8 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             if (Hiro_Text.StartsWith(text, "talkto:"))
             {
                 UserId = text[7..];
-                LogtoFile("[INFO]Talk to " + UserId);
+                if (App.dflag)
+                    LogtoFile("[INFO]Talk to " + UserId);
                 Write_Ini(App.dConfig, "Config", "ChatID", UserId);
                 SendContent.Document.Blocks.Clear();
                 Load_Friend_Info_First();
@@ -1291,8 +1400,43 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
 
         private void Profile_Nickname_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            if (load)
+            {
+                ResizeExtraControls();
+            }
+        }
+
+        private void ResizeExtraControls()
+        {
             bool animation = !Read_DCIni("Ani", "2").Equals("0");
-            var tag = xflag ? "chatidx" : "chatid";
+            var vVis = Profile_IDRectangle.Visibility == Visibility.Visible;
+            var iVis = Profile_AffRectangle.Visibility == Visibility.Visible;
+            var tag = string.Empty;
+            if (vVis)
+            {
+                Hiro_Utils.Set_MacFrame_Location(Profile_IDRectangle, xflag ? "chatverifiedx" : "chatverified", Profile_Nickname, animation: animation, animationTime: 250);
+                if (iVis)
+                {
+                    Hiro_Utils.Set_MacFrame_Location(Profile_AffRectangle, xflag ? "chataffx" : "chataff", Profile_Nickname, animation: animation, animationTime: 250);
+                    tag = xflag ? "chatidulx" : "chatidul";
+                }
+                else
+                {
+                    tag = xflag ? "chatidlx" : "chatidl";
+                }
+            }
+            else
+            {
+                if (iVis)
+                {
+                    Hiro_Utils.Set_MacFrame_Location(Profile_AffRectangle, xflag ? "chataffsx" : "chataffs", Profile_Nickname, animation: animation, animationTime: 250);
+                    tag = xflag ? "chatidux" : "chatidu";
+                }
+                else
+                {
+                    tag = xflag ? "chatidx" : "chatid";
+                }
+            }
             Hiro_Utils.Set_Mac_Location(Profile_Mac, tag, Profile_Nickname, animation: animation, animationTime: 250);
         }
 

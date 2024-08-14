@@ -41,19 +41,27 @@ namespace Hiro
             InitializeComponent();
             Helpers.Hiro_UI.SetCustomWindowIcon(this);
             var icon = Hiro_Settings.Read_PPDCIni("CustomizeIcon", "");
-            if (File.Exists(icon))
+            icon = Hiro_Text.Path_PPX(icon);
+            try
             {
-                BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
-            }
-            else
-            {
-                icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
-                if (File.Exists(icon) && App.Logined == true)
+                if (System.IO.File.Exists(icon))
                 {
                     BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
                     (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
                 }
+                else
+                {
+                    icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
+                    if (System.IO.File.Exists(icon) && App.Logined == true)
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                        (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
             }
             ContentLabel.MaxWidth = SystemParameters.FullPrimaryScreenWidth * 4 / 5;
             Title = $"{Hiro_Text.Get_Translate("notitle")} - {App.appTitle}";

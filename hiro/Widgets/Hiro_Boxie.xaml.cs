@@ -53,7 +53,7 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Sound");
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Boxie.Sound");
                     }
                 Dispatcher.Invoke(() =>
                 {
@@ -68,19 +68,26 @@ namespace Hiro
         {
             var icon = Hiro_Settings.Read_DCIni("CustomizeIcon", "");
             icon = Hiro_Text.Path_PPX(icon);
-            if (System.IO.File.Exists(icon))
+            try
             {
-                BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
-            }
-            else
-            {
-                icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
-                if (System.IO.File.Exists(icon) && App.Logined == true)
+                if (System.IO.File.Exists(icon))
                 {
                     BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
                     (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
                 }
+                else
+                {
+                    icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
+                    if (System.IO.File.Exists(icon) && App.Logined == true)
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                        (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Hiro_Logger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
             }
         }
 
