@@ -400,6 +400,10 @@ namespace Hiro
                     Read_DCIni("UserAvatarStyle", "1"),
                     Hiro_Utils.GetMD5(Read_DCIni("UserBackground", "")),
                     Hiro_Utils.GetMD5(Read_DCIni("UserAvatar", "")),
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
                     "update"
                     );
                     if (!res.Equals("success"))

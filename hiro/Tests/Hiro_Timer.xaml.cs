@@ -19,20 +19,20 @@ namespace Hiro
             Loaded += delegate
             {
                 dt = new();
-                dt.Interval = new TimeSpan(5000000);
+                dt.Interval = new TimeSpan(1000000);
                 dt.Tick += delegate
                 {
                     TickLabel.Content = DateTime.Now.ToString(timeFomratTick);
                     TimeLabel.Content = DateTime.Now.ToString(timeFomrat);
-                    if (flag == 0)
+                    if (flag == 10)
                     {
                         TickLabel.Visibility = Visibility.Hidden; 
-                        flag = 1;
+                        flag = 0;
                     }
                     else
                     {
                         TickLabel.Visibility = Visibility.Visible;
-                        flag = 0;
+                        flag++;
                     }
                 };
                 dt.Start();

@@ -151,7 +151,7 @@ namespace Hiro.Helpers
             }
         }
 
-        public static string UploadProfileSettings(string user, string token, string name, string signature, string avatar, string iavatar, string back, string method = "update", string? saveto = null)
+        public static string UploadProfileSettings(string user, string token, string name, string signature, string avatar, string iavatar, string back, string verifiedID, string verifiedPic, string affID, string affPic, string method = "update", string? saveto = null)
         {
             var url = "https://hiro.rexio.cn/Chat/update.php";
             try
@@ -169,6 +169,10 @@ namespace Hiro.Helpers
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + avatar + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + iavatar + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + back + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"verifiedID\"" + Enter + Enter + "" + verifiedID + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"verifiedPic\"" + Enter + Enter + "" + verifiedPic + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"affID\"" + Enter + Enter + "" + affID + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"affPic\"" + Enter + Enter + "" + affPic + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"method\"" + Enter + Enter + "" + method + "" + Enter + "--" + boundary + "--"
                     );
                 HttpRequestMessage request = new(HttpMethod.Post, url);
