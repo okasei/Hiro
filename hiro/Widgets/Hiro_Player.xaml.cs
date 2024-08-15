@@ -10,6 +10,7 @@ using System.IO;
 using Hiro.Helpers;
 using Hiro.ModelViews;
 using static Hiro.Helpers.Hiro_Settings;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace Hiro
 {
@@ -125,11 +126,11 @@ namespace Hiro
                     Dispatcher.Invoke(() =>
                     {
                         Dgi.ItemsSource = playlist;
+                        Media.MediaEnded += Media_MediaEnded;
+                        Media.PositionChanged += Media_PositionChanged;
+                        Media.MediaOpened += Media_MediaOpened;
+                        Media.IsMuted = false;
                     });
-                    Media.MediaEnded += Media_MediaEnded;
-                    Media.PositionChanged += Media_PositionChanged;
-                    Media.MediaOpened += Media_MediaOpened;
-                    Media.IsMuted = false;
                     if (toplay != null)
                     {
                         var audio = "*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm;";
@@ -142,7 +143,10 @@ namespace Hiro
                                 Height = 500;
                             });
                         }
-                        Play(toplay);
+                        Dispatcher.Invoke(() =>
+                        {
+                            Play(toplay);
+                        });
                     }
                 }
                 catch (Exception ex)

@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using static Hiro.Helpers.Hiro_Class;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace Hiro
 {
@@ -30,6 +32,9 @@ namespace Hiro
         private bool successflag = true;
         private int index = 0;
         internal WindowAccentCompositor? compositor = null;
+        private string nextTitle = string.Empty;
+        private double nextProgess = 0;
+        private DispatcherTimer? _timer = null;
         public Hiro_Download(int i, string st)
         {
             InitializeComponent();
@@ -39,7 +44,7 @@ namespace Hiro
             Load_Colors();
             Load_Position();
             Load_Translate();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Hiro_UI.SetCustomWindowIcon(this);
             Loaded += delegate
             {
                 HiHiro();
@@ -127,7 +132,7 @@ namespace Hiro
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
         }
 
-        public async void StartDownload()
+        private bool DownloadUIActions()
         {
             //获取http下载路径
             stopflag = 0;
@@ -141,14 +146,14 @@ namespace Hiro
                 {
                     mSaveFileName = rurl;
                     Stop_Download(true);
-                    return;
+                    return false;
                 }
                 else
                 {
                     App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("syntax"), 2, Hiro_Text.Get_Translate("download")));
                     textBoxHttpUrl.Focus();//url地址栏获取焦点
                     Stop_Download(false);
-                    return;
+                    return false;
                 }
             }
             var strFileName = rurl;
@@ -179,124 +184,179 @@ namespace Hiro
             if (System.IO.File.Exists(mSaveFileName) || App.hc == null)
             {
                 Stop_Download(true);
-                return;
+                return false;
             }
-            var response = await App.hc.GetAsync(rurl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
-            var totalLength = response.Content.Headers.ContentLength;
-            System.IO.FileStream? fileStream;
-            try
-            {
-                fileStream = System.IO.File.OpenWrite(mSaveFileName + ".hdp");
-            }
-            catch (Exception ex)
-            {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Continue");
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("dlerror"), 2, Hiro_Text.Get_Translate("download")));
-                Stop_Download(false);
-                return;
-            }
-            if (totalLength > 0)
-            {
-                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                if (System.IO.File.Exists(mSaveFileName + ".hdp"))//文件已经存在就继续下载
-                {
-                    try
-                    {
-                        if (null == fileStream)
-                            startpos = 0;
-                        else
-                        {
-                            startpos = fileStream.Length;
-                            fileStream.Seek(startpos, System.IO.SeekOrigin.Begin);
-                        }
+            return true;
+        }
 
-                    }
-                    catch (Exception ex)
-                    {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Stream");
-                        startpos = 0;
-                    }
-                }
-            }
-            else
+        public void StartDownload()
+        {
+            if (!DownloadUIActions())
+                return;
+            _timer = new DispatcherTimer()
             {
-                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Indeterminate, new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                startpos = 0;
-            }
-            if (startpos > 0)
-            {
-                System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, rurl);
-                request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
-                if (startpos >= totalLength)
+                Interval =  Hiro_Settings.Read_DCIni("Performance", "0") switch
                 {
-                    successflag = true;
-                    goto DownloadFinish;
+                    "1" => TimeSpan.FromMilliseconds(150),
+                    "2" => TimeSpan.FromMilliseconds(500),
+                    _ => TimeSpan.FromMilliseconds(15)
                 }
-                request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(startpos, totalLength);
-                response = await App.hc.SendAsync(request, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
-            }
-            var contentStream = await response.Content.ReadAsStreamAsync();
-            var buffer = new byte[4 * 1024];//4KB缓存
-            long readLength = 0L;
-            int length;
-            successflag = true;
-            while ((length = await contentStream.ReadAsync(buffer)) > 0)
+            };
+            _timer.Tick += delegate
             {
-                readLength += length;
+                UpdateTitle();
+            };
+            _timer.Start();
+            new Thread(async () =>
+            {
+                var response = await App.hc.GetAsync(rurl, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
+                var totalLength = response.Content.Headers.ContentLength;
+                System.IO.FileStream? fileStream;
                 try
                 {
-                    fileStream?.Write(buffer, 0, length);
+                    fileStream = System.IO.File.OpenWrite(mSaveFileName + ".hdp");
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Write");
-                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("dlerror"), 2, Hiro_Text.Get_Translate("download")));
-                    successflag = false;
-                    break;
+                    Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Continue");
+                    Dispatcher.Invoke(() =>
+                    {
+                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("dlerror"), 2, Hiro_Text.Get_Translate("download")));
+                        Stop_Download(false);
+                    });
+                    return;
                 }
                 if (totalLength > 0)
                 {
-                    ala_title.Content = progress +
-                                        $"{Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2):F2}" + "%" + "(" + FormateSize(readLength + startpos) + "/" + FormateSize(totalLength.Value) + ")";
-                    Title = ala_title.Content.ToString() + " - " + App.appTitle;
-                    pb.Value = Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2);
-                    pb.IsIndeterminate = false;
-                    Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)(((double)readLength + startpos) / totalLength.Value * 100), 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                    if (readLength + startpos >= totalLength)
+                    Dispatcher.Invoke(() =>
                     {
-                        break;
+                        Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                    });
+                    if (System.IO.File.Exists(mSaveFileName + ".hdp"))//文件已经存在就继续下载
+                    {
+                        try
+                        {
+                            if (null == fileStream)
+                                startpos = 0;
+                            else
+                            {
+                                startpos = fileStream.Length;
+                                fileStream.Seek(startpos, System.IO.SeekOrigin.Begin);
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Stream");
+                            startpos = 0;
+                        }
                     }
                 }
                 else
                 {
-                    ala_title.Content = progress + FormateSize(readLength + startpos) + "/" + Hiro_Text.Get_Translate("dlunknown");
-                    Title = ala_title.Content.ToString() + " - " + App.appTitle;
+                    Dispatcher.Invoke(() =>
+                    {
+                        Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Indeterminate, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                    });
+                    startpos = 0;
+                }
+                if (startpos > 0)
+                {
+                    System.Net.Http.HttpRequestMessage request = new(System.Net.Http.HttpMethod.Get, rurl);
+                    request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
+                    if (startpos >= totalLength)
+                    {
+                        successflag = true;
+                        goto DownloadFinish;
+                    }
+                    request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(startpos, totalLength);
+                    response = await App.hc.SendAsync(request, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
+                }
+                var contentStream = await response.Content.ReadAsStreamAsync();
+                var buffer = new byte[4 * 1024];//4KB缓存
+                long readLength = 0L;
+                int length;
+                successflag = true;
+                while ((length = await contentStream.ReadAsync(buffer)) > 0)
+                {
+                    readLength += length;
+                    try
+                    {
+                        fileStream?.Write(buffer, 0, length);
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Write");
+                        Dispatcher.Invoke(() =>
+                        {
+                            App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("dlerror"), 2, Hiro_Text.Get_Translate("download")));
+                        });
+                        successflag = false;
+                        break;
+                    }
+                    if (totalLength > 0)
+                    {
+                        nextTitle = progress +
+                                        $"{Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2):F2}" + "%" + "(" + FormateSize(readLength + startpos) + "/" + FormateSize(totalLength.Value) + ")";
+                        nextProgess = Math.Round(((double)readLength + startpos) / totalLength.Value * 100, 2);
+                        if (readLength + startpos >= totalLength)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        nextTitle = progress + FormateSize(readLength + startpos) + "/" + Hiro_Text.Get_Translate("dlunknown");
+                        nextProgess = -1;
+                    }
+                    if (stopflag != 0)
+                    {
+                        successflag = false;
+                        break;
+                    }
+                }
+                fileStream?.Close();
+            DownloadFinish:
+                if (successflag)
+                {
+                    try
+                    {
+                        System.IO.FileInfo file = new(mSaveFileName + ".hdp");
+                        file.MoveTo(mSaveFileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Save");
+                    }
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    Stop_Download(successflag);
+                });
+            }).Start();
+        }
+
+        private void UpdateTitle()
+        {
+            ala_title.Content = nextTitle;
+            Title = nextTitle + " - " + App.appTitle;
+            if (nextProgess >= 0 && nextProgess <= 100)
+            {
+                pb.Value = nextProgess;
+                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)nextProgess, 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            }
+            else
+            {
+                if (!pb.IsIndeterminate)
+                {
                     pb.IsIndeterminate = true;
                 }
-                if (stopflag != 0)
-                {
-                    successflag = false;
-                    break;
-                }
             }
-            fileStream?.Close();
-        DownloadFinish:
-            if (successflag)
-            {
-                try
-                {
-                    System.IO.FileInfo file = new(mSaveFileName + ".hdp");
-                    file.MoveTo(mSaveFileName);
-                }
-                catch (Exception ex)
-                {
-                    Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Save");
-                }
-            }
-            Stop_Download(successflag);
         }
         private void Stop_Download(bool success)
         {
+            _timer?.Stop();
+            _timer = null;
             if (success && mSaveFileName.ToLower().EndsWith(".hidl"))
             {
                 if (current < 0)

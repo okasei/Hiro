@@ -8,7 +8,7 @@
         xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
         materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
-        Title="mainui" Height="450" Width="550" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/Resources/hiro_circle.ico" StateChanged="Ui_StateChanged" Activated="ui_Activated" Deactivated="ui_Deactivated">
+        Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/Resources/hiro_circle.ico" StateChanged="Ui_StateChanged" Activated="ui_Activated" Deactivated="ui_Deactivated">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>

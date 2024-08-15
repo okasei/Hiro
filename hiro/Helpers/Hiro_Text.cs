@@ -163,20 +163,26 @@ namespace Hiro.Helpers
             if (pi.ToLower().EndsWith("<any>"))
             {
                 pi = pi[..^5];
-                DirectoryInfo directory = new DirectoryInfo(pi);
-                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
-                var ImgList = files.Select(s => s.FullName).ToList();
-                if (ImgList.Count > 1)
-                    path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                if (Directory.Exists(pi))
+                {
+                    DirectoryInfo directory = new DirectoryInfo(pi);
+                    var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                    var ImgList = files.Select(s => s.FullName).ToList();
+                    if (ImgList.Count > 1)
+                        path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                }
             }
             if (pi.ToLower().EndsWith("<xany>"))
             {
                 pi = pi[..^6];
-                DirectoryInfo directory = new DirectoryInfo(pi);
-                var files = directory.GetFiles("*", SearchOption.AllDirectories);
-                var ImgList = files.Select(s => s.FullName).ToList();
-                if (ImgList.Count > 1)
-                    path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                if (Directory.Exists(pi))
+                {
+                    DirectoryInfo directory = new DirectoryInfo(pi);
+                    var files = directory.GetFiles("*", SearchOption.AllDirectories);
+                    var ImgList = files.Select(s => s.FullName).ToList();
+                    if (ImgList.Count > 1)
+                        path = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                }
             }
             return path;
         }

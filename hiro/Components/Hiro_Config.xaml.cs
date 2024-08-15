@@ -723,7 +723,7 @@ namespace Hiro
                 string strFileName = "";
                 Microsoft.Win32.OpenFileDialog ofd = new()
                 {
-                    Filter = Hiro_Text.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.bmp;*.gif;*.png|" + Hiro_Text.Get_Translate("allfiles") + "|*.*",
+                    Filter = Hiro_Text.Get_Translate("picfiles") + "|*.jpg;*.jpeg;*.jpe;*.jfif;*.bmp;*.dib;*.gif;*.png;*.apng;*.tiff;*.heic;*.heif|" + Hiro_Text.Get_Translate("allfiles") + "|*.*",
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性

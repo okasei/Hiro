@@ -978,6 +978,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
         {
             SendButton.Content = Hiro_Text.Get_Translate("chatsend");
             EMojiButton.Content = Hiro_Text.Get_Translate("emojibtn");
+            Load_IdentificationTips();
         }
 
         public void Load_Position()
@@ -988,7 +989,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             Hiro_Utils.Set_Control_Location(EMojiButton, "emojibtn", right: false, bottom: true);
             Hiro_Utils.Set_Control_Location(Profile_Nickname_Indexer, "chatname");
             Hiro_Utils.Set_Control_Location(Profile_Signature_Indexer, "chatsign");
-            Hiro_Utils.Set_Control_Location(Profile_Mac, "chatid");
+            ResizeExtraControls();
             Hiro_Utils.Set_Control_Location(Profile_Background, "chatback");
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Ellipse, "chatavatar");
             Hiro_Utils.Set_FrameworkElement_Location(Profile_Rectangle, "chatavatar");
