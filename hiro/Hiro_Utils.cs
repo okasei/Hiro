@@ -31,6 +31,7 @@ using static Hiro.Helpers.Hiro_Settings;
 using Hiro.ModelViews;
 using Hiro.Resources;
 using System.Windows.Media.Media3D;
+using hiro.Widgets;
 
 namespace Hiro
 {
@@ -598,6 +599,13 @@ namespace Hiro
             return aext.IndexOf(ext) != -1;
         }
 
+        private static bool isImageFile(string file)
+        {
+            var ext = $",{Path.GetExtension(file).ToLower()},";
+            var aext = ",.png,.jpg,.jpeg,.bmp,.ico,.tiff,.apng,.jpe,.jfif,.dib,.heic,.heif,";
+            return aext.IndexOf(ext) != -1;
+        }
+
 
         public static void RunExe(string RunPath, string? source = null, bool autoClose = true, bool urlCheck = true)
         {
@@ -616,20 +624,26 @@ namespace Hiro
                         if (pi.ToLower().EndsWith("<any>"))
                         {
                             pi = pi[..^5];
-                            DirectoryInfo directory = new DirectoryInfo(pi);
-                            var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
-                            var ImgList = files.Select(s => s.FullName).ToList();
-                            if (ImgList.Count > 1)
-                                parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                            if (Directory.Exists(pi))
+                            {
+                                DirectoryInfo directory = new DirectoryInfo(pi);
+                                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                                var ImgList = files.Select(s => s.FullName).ToList();
+                                if (ImgList.Count > 1)
+                                    parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                            }
                         }
                         if (pi.ToLower().EndsWith("<xany>"))
                         {
                             pi = pi[..^6];
-                            DirectoryInfo directory = new DirectoryInfo(pi);
-                            var files = directory.GetFiles("*", SearchOption.AllDirectories);
-                            var ImgList = files.Select(s => s.FullName).ToList();
-                            if (ImgList.Count > 1)
-                                parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                            if (Directory.Exists(pi))
+                            {
+                                DirectoryInfo directory = new DirectoryInfo(pi);
+                                var files = directory.GetFiles("*", SearchOption.AllDirectories);
+                                var ImgList = files.Select(s => s.FullName).ToList();
+                                if (ImgList.Count > 1)
+                                    parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
+                            }
                         }
                     }
                     #endregion
@@ -639,8 +653,16 @@ namespace Hiro
                     {
                         if (isMediaFile(path))
                         {
-                            LogtoFile("[RUN]Media file detected");
+                            if (App.dflag)
+                                LogtoFile("[RUN]Media file detected");
                             path = $"play(\"{path}\")";
+                            parameter = HiroCmdParse(path);
+                        }
+                        else if (isImageFile(path))
+                        {
+                            if (App.dflag)
+                            LogtoFile("[RUN]Image file detected");
+                            path = $"image(\"{path}\")";
                             parameter = HiroCmdParse(path);
                         }
                         else
@@ -1802,6 +1824,14 @@ namespace Hiro
                         }
 
 
+                        goto RunOK;
+                    }
+                    if (Hiro_Text.StartsWith(path, "image("))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            new Hiro_ImageViewer(parameter[0]).Show();
+                        });
                         goto RunOK;
                     }
                     if (Hiro_Text.StartsWith(path, "editor()"))
