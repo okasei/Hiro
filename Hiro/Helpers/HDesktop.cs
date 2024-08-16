@@ -3,43 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Interop;
-using System.Windows.Threading;
-using static Hiro.Helpers.Hiro_Class;
+using static Hiro.APIs.ADesktop;
+using static Hiro.Helpers.HClass;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_Wallpaper
+    internal class HDesktop
     {
         static PerformanceCounter? _performanceCounter = null;
         static Hiro_Wallvideo? wallPaperPlayer = null;
         static IntPtr wallPaperPlayerIntPtr = IntPtr.Zero;
         static nint programHandle = 0;
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindow(string className, string winName);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr SendMessageTimeout(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, uint fuFlage, uint timeout, IntPtr result);
-
-        //查找窗口的委托 查找逻辑
-        public delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
-        [DllImport("user32.dll")]
-        public static extern bool EnumWindows(EnumWindowsProc proc, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string className, string winName);
-
-        [DllImport("user32.dll")]
-        public static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetParent(IntPtr hwnd, IntPtr parentHwnd);
 
         internal static void SendMsgToProgman()
         {
@@ -120,7 +94,7 @@ namespace Hiro.Helpers
 
         internal static int Set_Wallpaper(List<string> parameter)
         {
-            var source = Hiro_Text.Get_Translate("wallpaper");
+            var source = HText.Get_Translate("wallpaper");
             if (wallPaperPlayer != null)
             {
                 var oflag = false;
@@ -184,7 +158,7 @@ namespace Hiro.Helpers
                             Hiro_Utils.HiroInvoke(() =>
                             {
                                 wallPaperPlayer.Media.IsMuted = true;
-                                Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoMute", "true");
+                                HSet.Write_Ini(App.dConfig, "Config", "WallVideoMute", "true");
                             });
                             oflag = true;
                             break;
@@ -195,7 +169,7 @@ namespace Hiro.Helpers
                             Hiro_Utils.HiroInvoke(() =>
                             {
                                 wallPaperPlayer.Media.IsMuted = false;
-                                Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoMute", "false");
+                                HSet.Write_Ini(App.dConfig, "Config", "WallVideoMute", "false");
                             });
                             oflag = true;
                             break;
@@ -206,7 +180,7 @@ namespace Hiro.Helpers
             }
             if (File.Exists(parameter[0]))
             {
-                if (Hiro_File.isVideo(parameter[0]) == true)
+                if (HFile.isVideo(parameter[0]) == true)
                 {
                     if (wallPaperPlayer != null)
                     {
@@ -243,7 +217,7 @@ namespace Hiro.Helpers
                         }
                     }
                     _ = SystemParametersInfo(20, 0, parameter[0], 0x01 | 0x02);
-                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("wpchanged"), 2, source));
+                    App.Notify(new Hiro_Notice(HText.Get_Translate("wpchanged"), 2, source));
                     return 0;
                 }
             }
@@ -256,25 +230,10 @@ namespace Hiro.Helpers
                 }
                 else
                 {
-                    Hiro_Utils.RunExe($"notify({Hiro_Text.Get_Translate("wpnexist")},2)", source);
+                    Hiro_Utils.RunExe($"notify({HText.Get_Translate("wpnexist")},2)", source);
                 }
                 return -1;
             }
         }
-
-        #region 设置壁纸
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
-        public enum Style : int
-        {
-            Fill,
-            Fit,
-            Span,
-            Stretch,
-            Tile,
-            Center
-        }
-        #endregion
     }
 }

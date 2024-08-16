@@ -9,7 +9,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HSet;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
@@ -31,7 +31,7 @@ namespace Hiro
         {
             InitializeComponent();
             SourceInitialized += OnSourceInitialized;
-            Hiro_UI.SetCustomWindowIcon(this);
+            HUI.SetCustomWindowIcon(this);
             Load_Color();
             Loaded += delegate
             {
@@ -46,10 +46,10 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            minbtn.ToolTip = Hiro_Text.Get_Translate("Min");
-            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
-            maxbtn.ToolTip = Hiro_Text.Get_Translate("max");
-            resbtn.ToolTip = Hiro_Text.Get_Translate("restore");
+            minbtn.ToolTip = HText.Get_Translate("Min");
+            closebtn.ToolTip = HText.Get_Translate("close");
+            maxbtn.ToolTip = HText.Get_Translate("max");
+            resbtn.ToolTip = HText.Get_Translate("restore");
         }
 
         private void LoadPicIndex(string? filePath)
@@ -76,7 +76,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.PicViewer.LoadList");
+                HLogger.LogError(ex, "Hiro.Exception.PicViewer.LoadList");
                 files?.Clear();
                 files ??= new();
                 files.Add(filePath);
@@ -93,12 +93,12 @@ namespace Hiro
                 Title = App.appTitle;
                 return;
             }
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
             var t1 = Math.Max(140 + ActualWidth / SystemParameters.PrimaryScreenWidth * 560, 700);
             var t2 = Math.Max(200 + ActualWidth / SystemParameters.PrimaryScreenWidth * 600, 800);
             if (File.Exists(filePath))
             {
-                Title = Hiro_Text.Get_Translate("imageTitle").Replace("%t", new FileInfo(filePath).Name).Replace("%a", App.appTitle);
+                Title = HText.Get_Translate("imageTitle").Replace("%t", new FileInfo(filePath).Name).Replace("%a", App.appTitle);
                 if (imageContiner.Visibility == Visibility.Visible)
                 {
                     if (animation)
@@ -106,10 +106,10 @@ namespace Hiro
                         imageContiner2.Visibility = Visibility.Visible;
                         imageContiner2.Margin = new Thickness(-ActualWidth, 0, 0, 0);
                         imageContiner2.Source = Hiro_Utils.GetBitmapImage(filePath);
-                        var sb = Hiro_Utils.AddDoubleAnimaton(1, t1, imageContiner2, "Opacity", null);
-                        sb = Hiro_Utils.AddDoubleAnimaton(0, t1, imageContiner, "Opacity", sb);
-                        sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), t2, imageContiner2, "Margin", sb, fromLeft ? null : new Thickness(ActualWidth, 0, 0, 0));
-                        sb = Hiro_Utils.AddThicknessAnimaton(fromLeft ? new Thickness(ActualWidth, 0, 0, 0) : new Thickness(-ActualWidth, 0, 0, 0), t2, imageContiner, "Margin", sb);
+                        var sb = HAnimation.AddDoubleAnimaton(1, t1, imageContiner2, "Opacity", null);
+                        sb = HAnimation.AddDoubleAnimaton(0, t1, imageContiner, "Opacity", sb);
+                        sb = HAnimation.AddThicknessAnimaton(new Thickness(0), t2, imageContiner2, "Margin", sb, fromLeft ? null : new Thickness(ActualWidth, 0, 0, 0));
+                        sb = HAnimation.AddThicknessAnimaton(fromLeft ? new Thickness(ActualWidth, 0, 0, 0) : new Thickness(-ActualWidth, 0, 0, 0), t2, imageContiner, "Margin", sb);
                         sb.Completed += delegate
                         {
                             imageContiner.Source = null;
@@ -136,10 +136,10 @@ namespace Hiro
                         imageContiner.Visibility = Visibility.Visible;
                         imageContiner.Margin = new Thickness(-ActualWidth, 0, 0, 0);
                         imageContiner.Source = Hiro_Utils.GetBitmapImage(filePath);
-                        var sb = Hiro_Utils.AddDoubleAnimaton(1, t1, imageContiner, "Opacity", null);
-                        sb = Hiro_Utils.AddDoubleAnimaton(0, t1, imageContiner2, "Opacity", sb);
-                        sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), t2, imageContiner, "Margin", sb, fromLeft ? null : new Thickness(ActualWidth, 0, 0, 0));
-                        sb = Hiro_Utils.AddThicknessAnimaton(fromLeft ? new Thickness(ActualWidth, 0, 0, 0) : new Thickness(-ActualWidth, 0, 0, 0), t2, imageContiner2, "Margin", sb);
+                        var sb = HAnimation.AddDoubleAnimaton(1, t1, imageContiner, "Opacity", null);
+                        sb = HAnimation.AddDoubleAnimaton(0, t1, imageContiner2, "Opacity", sb);
+                        sb = HAnimation.AddThicknessAnimaton(new Thickness(0), t2, imageContiner, "Margin", sb, fromLeft ? null : new Thickness(ActualWidth, 0, 0, 0));
+                        sb = HAnimation.AddThicknessAnimaton(fromLeft ? new Thickness(ActualWidth, 0, 0, 0) : new Thickness(-ActualWidth, 0, 0, 0), t2, imageContiner2, "Margin", sb);
                         sb.Completed += delegate
                         {
                             imageContiner2.Source = null;
@@ -198,7 +198,7 @@ namespace Hiro
             if (Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 return;
             }
             if (compositor != null)
@@ -208,8 +208,8 @@ namespace Hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
-            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
+            HAnimation.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
@@ -298,10 +298,10 @@ namespace Hiro
         private void Bounce(bool fromLeft)
         {
             dealed = false;
-            var sb = Hiro_Utils.AddThicknessAnimaton(fromLeft ? new Thickness(250, 0, 0, 0) : new Thickness(-250, 0, 0, 0), 350, imageContiner.Visibility == Visibility.Visible ? imageContiner : imageContiner2, "Margin", null);
+            var sb = HAnimation.AddThicknessAnimaton(fromLeft ? new Thickness(250, 0, 0, 0) : new Thickness(-250, 0, 0, 0), 350, imageContiner.Visibility == Visibility.Visible ? imageContiner : imageContiner2, "Margin", null);
             sb.Completed += delegate
             {
-                var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 350, imageContiner.Visibility == Visibility.Visible ? imageContiner : imageContiner2, "Margin", null, fromLeft ? new Thickness(250, 0, 0, 0) : new Thickness(-250, 0, 0, 0));
+                var s = HAnimation.AddThicknessAnimaton(new Thickness(0), 350, imageContiner.Visibility == Visibility.Visible ? imageContiner : imageContiner2, "Margin", null, fromLeft ? new Thickness(250, 0, 0, 0) : new Thickness(-250, 0, 0, 0));
                 s.Completed += delegate
                 {
                     dealed = true;

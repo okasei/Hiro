@@ -12,16 +12,16 @@ namespace Hiro
         {
             InitializeComponent();
             Title = App.appTitle;
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void Back_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
-                sb = Hiro_Utils.AddDoubleAnimaton(0.7, 300, this, "Opacity", sb, 0);
+                sb = HAnimation.AddDoubleAnimaton(0.7, 300, this, "Opacity", sb, 0);
                 sb.Completed += delegate
                 {
                     Opacity = 0.7;
@@ -34,10 +34,10 @@ namespace Hiro
 
         internal void Fade_Out()
         {
-            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 System.Windows.Media.Animation.Storyboard? sb = new();
-                sb = Hiro_Utils.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
+                sb = HAnimation.AddDoubleAnimaton(0, 300, this, "Opacity", sb);
                 sb.Completed += delegate
                 {
                     Close();

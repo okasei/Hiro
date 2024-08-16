@@ -24,10 +24,10 @@ using System.Windows.Shell;
 using Hiro.Helpers;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
-using static Hiro.Helpers.Hiro_Class;
-using static Hiro.Helpers.Hiro_Text;
-using static Hiro.Helpers.Hiro_Logger;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HClass;
+using static Hiro.Helpers.HText;
+using static Hiro.Helpers.HLogger;
+using static Hiro.Helpers.HSet;
 using Hiro.ModelViews;
 using Hiro.Resources;
 using System.Windows.Media.Media3D;
@@ -37,7 +37,6 @@ namespace Hiro
 {
     public partial class Hiro_Utils : Component
     {
-
         static int keyid = 0;
 
         #region 自动生成
@@ -52,526 +51,6 @@ namespace Hiro
 
             InitializeComponent();
         }
-        #endregion
-
-        #region 配置相关
-
-        #region UI 相关
-        public static void Get_Text_Visual_Width(ContentControl sender, double pixelPerDip, out Size size)
-        {
-            var formattedText = new FormattedText(
-                sender.Content.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, new Typeface(sender.FontFamily, sender.FontStyle, sender.FontWeight, sender.FontStretch),
-                sender.FontSize, Brushes.Black, pixelPerDip);
-            size.Width = formattedText.Width + sender.Padding.Left + sender.Padding.Right;
-            size.Height = formattedText.Height + sender.Padding.Top + sender.Padding.Bottom;
-        }
-
-        public static void Set_Acrylic(Label? sender, Window win, WindowChrome? windowChrome = null, WindowAccentCompositor? compositor = null)
-        {
-            if (win != null && compositor != null)
-            {
-                win.Background = null;
-                if (sender != null)
-                    sender.Visibility = Visibility.Collapsed;
-                if (windowChrome != null)
-                    windowChrome.GlassFrameThickness = new(0, 0, 1, 0);
-                var colorOptions = Read_Ini(App.dConfig, "Config", "AcrylicMode", "2");//0 - White, 1 - Black, 2 = Customize
-                var colorTransparency = 0;
-                if (!int.TryParse(Read_Ini(App.dConfig, "Config", "AcrylicTransparency", "71"), out colorTransparency))
-                    colorTransparency = 0x47;
-                colorTransparency = Math.Max(colorTransparency, 1);
-                colorTransparency = Math.Min(colorTransparency, 255);
-                Color acrylicColor = (colorOptions) switch
-                {
-                    "0" => Colors.White,
-                    "1" => Colors.Black,
-                    _ => App.AppAccentColor
-                };
-                compositor.Color = Color.FromArgb((byte)colorTransparency, acrylicColor.R, acrylicColor.G, acrylicColor.B);
-                compositor.IsEnabled = true;
-                if (windowChrome != null)
-                    windowChrome.GlassFrameThickness = new(0);
-                return;
-            }
-        }
-        public static void Set_Bgimage(Label sender, Window win, string? strFileName = null, bool? ignoreAnimation = false, WindowChrome? windowChrome = null, WindowAccentCompositor? compositor = null)
-        {
-            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
-            {
-                sender.Visibility = Visibility.Collapsed;
-                win.Background = null;
-                return;
-            }
-            if (sender.Visibility != Visibility.Visible)
-                sender.Visibility = Visibility.Visible;
-            //Bgimage
-            Set_Opacity(sender, win);
-            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dConfig, "Config", "BackImage", "")));
-            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
-            {
-                if (ignoreAnimation != false && !Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
-                {
-                    Storyboard? sb = new();
-                    try
-                    {
-                        sb = AddColorAnimaton(App.AppAccentColor, 150, sender, "Background.Color", sb);
-                        sb.Completed += delegate
-                        {
-                            sender.Background = new SolidColorBrush(App.AppAccentColor);
-                            sb = null;
-                        };
-                        sb.Begin();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError(ex, "Hiro.Exception.Animation");
-                        sender.Background = new SolidColorBrush(App.AppAccentColor);
-                    }
-
-                }
-                else
-                    sender.Background = new SolidColorBrush(App.AppAccentColor);
-            }
-            else
-            {
-                BitmapImage? bi = Hiro_Utils.GetBitmapImage(strFileName);
-                ImageBrush ib = new()
-                {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = bi
-                };
-                sender.Background = ib;
-            }
-
-        }
-        public static Brush Set_Bgimage(Brush sender, Control win, string? strFileName = null)
-        {
-            //Bgimage
-            strFileName ??= Path_Prepare(Path_Prepare_EX(Read_Ini(App.dConfig, "Config", "BackImage", "")));
-            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("1") || !File.Exists(strFileName))
-            {
-                if (!Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
-                {
-                    Storyboard? sb = new();
-                    try
-                    {
-                        sb = AddColorAnimaton(App.AppAccentColor, 150, sender, "Color", sb);
-                        sb.Completed += delegate
-                        {
-                            sender = new SolidColorBrush(App.AppAccentColor);
-                            sb = null;
-                        };
-                        sb.Begin();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError(ex, "Hiro.Exception.Animation");
-                        sender = new SolidColorBrush(App.AppAccentColor);
-                    }
-
-                }
-                else
-                    sender = new SolidColorBrush(App.AppAccentColor);
-            }
-            else
-            {
-                BitmapImage? bi = Hiro_Utils.GetBitmapImage(strFileName);
-                ImageBrush ib = new()
-                {
-                    Stretch = Stretch.UniformToFill,
-                    ImageSource = bi
-                };
-                sender = ib;
-            }
-            return sender;
-        }
-
-        public static void Set_Opacity(FrameworkElement sender, Control? win = null)
-        {
-            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
-            {
-                return;
-            }
-            if (!double.TryParse(Read_Ini(App.dConfig, "Config", "OpacityMask", "255"), out double to))
-                to = 255;
-            Color bg = Colors.White;
-            switch (to)
-            {
-                case > 255:
-                    to = 510 - to;
-                    bg = Colors.White;
-                    break;
-                case < 255:
-                    bg = Colors.Black;
-                    break;
-                default:
-                    break;
-            }
-            Color dest = (to >= 0 && to <= 255) ?
-                Color.FromArgb(Convert.ToByte(to), 0, 0, 0) : Color.FromArgb(255, 0, 0, 0);
-            if (win != null)
-                win.Background = new SolidColorBrush(bg);
-            sender.OpacityMask = new SolidColorBrush(dest);
-        }
-        public static void Set_Foreground_Opacity(Border sender, Control? win = null)
-        {
-            if (!double.TryParse(Read_Ini(App.dConfig, "Config", "OpacityMask", "255"), out double to))
-                to = 255;
-            Color bg = Colors.White;
-            switch (to)
-            {
-                case > 255:
-                    to = 510 - to;
-                    bg = Colors.White;
-                    break;
-                case < 255:
-                    bg = Colors.Black;
-                    break;
-                default:
-                    break;
-            }
-            sender.Background = new SolidColorBrush(bg);
-            sender.Opacity = 1 - to / 255;
-            if (win != null)
-                win.Background = new SolidColorBrush(bg);
-            //sender.OpacityMask = new SolidColorBrush(dest);
-        }
-        public static void Set_Control_Location(Control sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false, bool location = true, bool animation = false, double animationTime = 150)
-        {
-            if (extra == false || path == null || !File.Exists(path))
-                path = App.langFilePath;
-            try
-            {
-                if (sender != null)
-                {
-                    if (right == true)
-                        sender.HorizontalAlignment = HorizontalAlignment.Right;
-                    if (bottom == true)
-                        sender.VerticalAlignment = VerticalAlignment.Bottom;
-                    var result = HiroParse(Read_Ini(path, "location", val, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
-                    if (!result[0].Equals("-1"))
-                    {
-                        var ff = result[0];
-                        if (ff.StartsWith("$cf#", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            ff = ff[4..];
-                            var rf = App.AddCustomFont(ff);
-                            if (rf.Length > 0)
-                            {
-                                sender.FontFamily = new FontFamily(rf);
-                            }
-                        }
-                        else
-                        {
-                            sender.FontFamily = new FontFamily(result[0]);
-                        }
-                    }
-                    if (!result[1].Equals("-1"))
-                        sender.FontSize = double.Parse(result[1]);
-                    sender.FontStretch = result[2] switch
-                    {
-                        "1" => FontStretches.UltraCondensed,
-                        "2" => FontStretches.ExtraCondensed,
-                        "3" => FontStretches.Condensed,
-                        "4" => FontStretches.SemiCondensed,
-                        "5" => FontStretches.Medium,
-                        "6" => FontStretches.SemiExpanded,
-                        "7" => FontStretches.Expanded,
-                        "8" => FontStretches.ExtraExpanded,
-                        "9" => FontStretches.UltraExpanded,
-                        _ => FontStretches.Normal
-                    };
-                    sender.FontWeight = result[3] switch
-                    {
-                        "1" => FontWeights.Thin,
-                        "2" => FontWeights.UltraLight,
-                        "3" => FontWeights.Light,
-                        "4" => FontWeights.Medium,
-                        "5" => FontWeights.SemiBold,
-                        "6" => FontWeights.Bold,
-                        "7" => FontWeights.UltraBold,
-                        "8" => FontWeights.Black,
-                        "9" => FontWeights.UltraBlack,
-                        _ => FontWeights.Normal
-                    };
-                    sender.FontStyle = result[4] switch
-                    {
-                        "1" => FontStyles.Italic,
-                        "2" => FontStyles.Oblique,
-                        _ => FontStyles.Normal
-                    };
-                    if (location)
-                    {
-                        Size mSize = new();
-                        var auto = result[7].ToLower().Equals("auto") || result[7].ToLower().Equals("nan") || result[7].Equals("-2") || result[7].Equals("0");
-                        mSize.Width = auto ? double.NaN : (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
-                        auto = result[8].ToLower().Equals("auto") || result[8].ToLower().Equals("nan") || result[8].Equals("-2") || result[8].Equals("0");
-                        mSize.Height = auto ? double.NaN : (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
-                        Thickness thickness = new()
-                        {
-                            Left = (!result[5].Equals("-1")) ? right ? 0.0 : double.Parse(result[5]) : sender.Margin.Left,
-                            Right = (!result[5].Equals("-1")) ? !right ? sender.Margin.Right : double.Parse(result[5]) : sender.Margin.Right,
-                            Top = (!result[6].Equals("-1")) ? bottom ? 0.0 : double.Parse(result[6]) : sender.Margin.Top,
-                            Bottom = (!result[6].Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(result[6]) : sender.Margin.Bottom
-                        };
-                        if (!animation)
-                        {
-                            sender.Width = mSize.Width;
-                            sender.Height = mSize.Height;
-                            sender.Margin = thickness;
-                        }
-                        else
-                        {
-                            Storyboard sb = new();
-                            AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb);
-                            if (!double.IsNaN(mSize.Height))
-                                AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb);
-                            if (!double.IsNaN(mSize.Width))
-                                AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb);
-                            sb.Completed += delegate
-                            {
-                                sender.Width = mSize.Width;
-                                sender.Height = mSize.Height;
-                                sender.Margin = thickness;
-                            };
-                            sb.Begin();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, $"Hiro.Exception.Location{Environment.NewLine}Path: {val}");
-            }
-
-        }
-
-        public static void Set_Mac_Location(Control mac, string mval, Control name, bool animation = false, double animationTime = 150)
-        {
-            try
-            {
-                if (mac != null && name != null)
-                {
-                    var result = HiroParse(Read_Ini(App.langFilePath, "location", mval, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
-                    if (!result[0].Equals("-1"))
-                        mac.FontFamily = new FontFamily(result[0]);
-                    if (!result[1].Equals("-1"))
-                        mac.FontSize = double.Parse(result[1]);
-                    mac.FontStretch = result[2] switch
-                    {
-                        "1" => FontStretches.UltraCondensed,
-                        "2" => FontStretches.ExtraCondensed,
-                        "3" => FontStretches.Condensed,
-                        "4" => FontStretches.SemiCondensed,
-                        "5" => FontStretches.Medium,
-                        "6" => FontStretches.SemiExpanded,
-                        "7" => FontStretches.Expanded,
-                        "8" => FontStretches.ExtraExpanded,
-                        "9" => FontStretches.UltraExpanded,
-                        _ => FontStretches.Normal
-                    };
-                    mac.FontWeight = result[3] switch
-                    {
-                        "1" => FontWeights.Thin,
-                        "2" => FontWeights.UltraLight,
-                        "3" => FontWeights.Light,
-                        "4" => FontWeights.Medium,
-                        "5" => FontWeights.SemiBold,
-                        "6" => FontWeights.Bold,
-                        "7" => FontWeights.UltraBold,
-                        "8" => FontWeights.Black,
-                        "9" => FontWeights.UltraBlack,
-                        _ => FontWeights.Normal
-                    };
-                    mac.FontStyle = result[4] switch
-                    {
-                        "1" => FontStyles.Italic,
-                        "2" => FontStyles.Oblique,
-                        _ => FontStyles.Normal
-                    };
-                    Thickness thickness = new()
-                    {
-                        Left = (!result[5].Equals("-1")) ? double.Parse(result[5]) + name.Margin.Left + name.ActualWidth + 5 : name.Margin.Left + name.ActualWidth + 5,
-                        Right = 0,
-                        Top = (!result[6].Equals("-1")) ? double.Parse(result[6]) : name.Margin.Top,
-                        Bottom = 0
-                    };
-                    var width = (!result[7].Equals("-1")) ? double.Parse(result[7]) : double.NaN;
-                    var height = (!result[8].Equals("-1")) ? double.Parse(result[8]) : double.NaN;
-                    if (!animation)
-                    {
-                        mac.Margin = thickness;
-                        mac.Width = width;
-                        mac.Height = height;
-                    }
-                    else
-                    {
-                        Storyboard sb = new();
-                        AddThicknessAnimaton(thickness, animationTime, mac, "Margin", sb);
-                        if (!double.IsNaN(height))
-                            AddDoubleAnimaton(height, animationTime, mac, "Height", sb, null);
-                        if (!double.IsNaN(width))
-                            AddDoubleAnimaton(width, animationTime, mac, "Width", sb, null);
-                        sb.Completed += delegate
-                        {
-                            mac.Margin = thickness;
-                            mac.Width = width;
-                            mac.Height = height;
-                        };
-                        sb.Begin();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, $"Hiro.Exception.Location{Environment.NewLine}Path: {mval}");
-            }
-
-        }
-
-        public static void Set_MacFrame_Location(FrameworkElement mac, string mval, Control name, bool animation = false, double animationTime = 150)
-        {
-            try
-            {
-                if (mac != null && name != null)
-                {
-                    var result = HiroParse(Read_Ini(App.langFilePath, "location", mval, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
-                    Thickness thickness = new()
-                    {
-                        Left = (!result[0].Equals("-1")) ? double.Parse(result[0]) + name.Margin.Left + name.ActualWidth + 5 : name.Margin.Left + name.ActualWidth + 5,
-                        Right = 0,
-                        Top = (!result[1].Equals("-1")) ? double.Parse(result[1]) : name.Margin.Top,
-                        Bottom = 0
-                    };
-                    var width = (!result[2].Equals("-1")) ? double.Parse(result[2]) : double.NaN;
-                    var height = (!result[3].Equals("-1")) ? double.Parse(result[3]) : double.NaN;
-                    if (!animation)
-                    {
-                        mac.Margin = thickness;
-                        mac.Width = width;
-                        mac.Height = height;
-                    }
-                    else
-                    {
-                        Storyboard sb = new();
-                        AddThicknessAnimaton(thickness, animationTime, mac, "Margin", sb);
-                        if (!double.IsNaN(height))
-                            AddDoubleAnimaton(height, animationTime, mac, "Height", sb, null);
-                        if (!double.IsNaN(width))
-                            AddDoubleAnimaton(width, animationTime, mac, "Width", sb, null);
-                        sb.Completed += delegate
-                        {
-                            mac.Margin = thickness;
-                            mac.Width = width;
-                            mac.Height = height;
-                        };
-                        sb.Begin();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, $"Hiro.Exception.Location{Environment.NewLine}Path: {mval}");
-            }
-
-        }
-
-        public static Thickness Get_FrameworkElement_Location(string val)
-        {
-            Thickness thickness = new(0);
-            try
-            {
-                var loc = Read_Ini(App.langFilePath, "location", val, string.Empty);
-                loc = loc.Replace(" ", "").Replace("%b", " ");
-                loc = loc[(loc.IndexOf("{") + 1)..];
-                loc = loc[..loc.LastIndexOf("}")];
-                var left = loc[..loc.IndexOf(",")];
-                loc = loc[(left.Length + 1)..];
-                var top = loc[..loc.IndexOf(",")];
-                loc = loc[(top.Length + 1)..];
-                var width = loc[..loc.IndexOf(",")];
-                loc = loc[(width.Length + 1)..];
-                var height = loc;
-                thickness.Right = width.Equals("-1") ? double.NaN : double.Parse(width);
-                thickness.Bottom = height.Equals("-1") ? double.NaN : double.Parse(height);
-                if (!left.Equals("-1"))
-                    thickness.Left = double.Parse(left);
-                if (!top.Equals("-1"))
-                    thickness.Top = double.Parse(top);
-                return thickness;
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, $"Hiro.Exception.Location.Grid{Environment.NewLine}Path: {val}");
-                return new(0);
-            }
-        }
-
-        public static void Set_FrameworkElement_Location(FrameworkElement sender, string val, bool animation = false, double animationTime = 150, double dRatio = 0.9, double aRatio = 0)
-        {
-            Size mSize = new();
-            Thickness thickness = sender.Margin;
-            try
-            {
-                if (sender != null)
-                {
-                    var loc = Read_Ini(App.langFilePath, "location", val, string.Empty);
-                    loc = loc.Replace(" ", "").Replace("%b", " ");
-                    loc = loc[(loc.IndexOf("{") + 1)..];
-                    loc = loc[..loc.LastIndexOf("}")];
-                    var left = loc[..loc.IndexOf(",")];
-                    loc = loc[(left.Length + 1)..];
-                    var top = loc[..loc.IndexOf(",")];
-                    loc = loc[(top.Length + 1)..];
-                    var width = loc[..loc.IndexOf(",")];
-                    loc = loc[(width.Length + 1)..];
-                    var height = loc;
-                    mSize.Width = width.Equals("-1") ? double.NaN : double.Parse(width);
-                    mSize.Height = height.Equals("-1") ? double.NaN : double.Parse(height);
-                    if (!left.Equals("-1"))
-                        thickness.Left = double.Parse(left);
-                    if (!top.Equals("-1"))
-                        thickness.Top = double.Parse(top);
-                    if (!animation)
-                    {
-                        sender.Width = mSize.Width;
-                        sender.Height = mSize.Height;
-                        sender.Margin = thickness;
-                    }
-                    else
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            Storyboard sb = new();
-                            AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb, null, dRatio, aRatio);
-                            if (!double.IsNaN(mSize.Height))
-                                AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb, null, dRatio, aRatio);
-                            if (!double.IsNaN(mSize.Width))
-                                AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb, null, dRatio, aRatio);
-                            sb.Completed += delegate
-                            {
-                                sender.Width = mSize.Width;
-                                sender.Height = mSize.Height;
-                                sender.Margin = thickness;
-                            };
-                            sb.Begin();
-                        });
-
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                sender.Width = mSize.Width;
-                sender.Height = mSize.Height;
-                sender.Margin = thickness;
-                LogError(ex, $"Hiro.Exception.Location.Grid{Environment.NewLine}Path: {val}");
-            }
-
-        }
-        #endregion
-
         #endregion
 
         #region 延时
@@ -590,26 +69,6 @@ namespace Hiro
         public static void HiroInvoke(Action callback)
         {
             Application.Current.Dispatcher.Invoke(callback);
-        }
-
-        private static bool isMediaFile(string file)
-        {
-            var ext = $",{Path.GetExtension(file).ToLower()},";
-            var aext = ",.3g2,.3gp,.3gp2,.3gpp,.amv,.asf,.avi,.bik,.crf,.dav,.divx,.drc,.dv,.dvr-ms,.evo,.f4v,.flv,.gvi,.gxf,.m1v,.m2v,.m2t,.m2ts,.m4v,.mkv,.mov,.mp2,.mp2v,.mp4,.mp4v,.mpe,.mpeg,.mpeg1,.mpeg2,.mpeg4,.mpg,.mpv2,.mts,.mtv,.mxf,.mxg,.nsv,.nuv,.ogm,.ogv,.ogx,.ps,.rec,.rm,.rmvb,.rpl,.thp,.tod,.tp,.ts,.tts,.txd,.vob,.vro,.webm,.wm,.wmv,.wtv,.xesc,.3ga,.669,.a52,.aac,.ac3,.adt,.adts,.aif,.aifc,.aiff,.amb,.amr,.aob,.ape,.au,.awb,.caf,.dts,.flac,.it,.kar,.m4a,.m4b,.m4p,.m5p,.mid,.mka,.mlp,.mod,.mpa,.mp1,.mp2,.mp3,.mpc,.mpga,.mus,.oga,.ogg,.oma,.opus,.qcp,.ra,.rmi,.s3m,.sid,.spx,.tak,.thd,.tta,.voc,.vqf,.w64,.wav,.wma,.wv,.xa,.xm,";
-            return aext.IndexOf(ext) != -1;
-        }
-
-        private static bool isImageFile(string file)
-        {
-            var ext = $",{Path.GetExtension(file).ToLower()},";
-            var aext = ",.png,.jpg,.jpeg,.bmp,.ico,.tiff,.apng,.jpe,.jfif,.dib,.heic,.heif,.hvp,.hpp,.hap,.hfp,";
-            return aext.IndexOf(ext) != -1;
-        }
-        private static bool isTextFile(string file)
-        {
-            var ext = $",{Path.GetExtension(file).ToLower()},";
-            var aext = ",.txt,.ini,.log,.inf,.c,.h,.cpp,.cc,.cxx,.c++,.cs,.sln,.xml,.xaml,.htm,.html,.yaml,.json,.csproj,.py,.r,.php,.lock,.cfg,.hlp,.hus,.hsf,.csv,.java,.asp,.project,.classpath.,jsp.,js.,conf,.svn,.gitignore,.css,";
-            return aext.IndexOf(ext) != -1;
         }
 
 
@@ -660,27 +119,27 @@ namespace Hiro
                     #endregion
                     int disturb = int.Parse(Read_Ini(App.dConfig, "Config", "Disturb", "2"));
                     #region 识别文件类型
-                    if (File.Exists(path))
+                    if (File.Exists(HFile.TryTrimFilePath(path)))
                     {
-                        if (isMediaFile(path))
+                        if (HFile.isMediaFile(path))
                         {
                             if (App.dflag)
                                 LogtoFile("[RUN]Media file detected");
-                            path = $"play(\"{path}\")";
+                            path = $"play(\"{HFile.TryTrimFilePath(path)}\")";
                             parameter = HiroCmdParse(path);
                         }
-                        else if (isImageFile(path))
+                        else if (HFile.isImageFile(path))
                         {
                             if (App.dflag)
                                 LogtoFile("[RUN]Image file detected");
-                            path = $"image(\"{path}\")";
+                            path = $"image(\"{HFile.TryTrimFilePath(path)}\")";
                             parameter = HiroCmdParse(path);
                         }
-                        else if (isTextFile(path))
+                        else if (HFile.isTextFile(path))
                         {
                             if (App.dflag)
                                 LogtoFile("[RUN]Text file detected");
-                            path = $"text(\"{path}\")";
+                            path = $"text(\"{HFile.TryTrimFilePath(path)}\")";
                             parameter = HiroCmdParse(path);
                         }
                         else
@@ -708,19 +167,19 @@ namespace Hiro
                     }
                     if (path.ToLower().StartsWith("priority("))
                     {
-                        Hiro_Win.SetProcessPriority(parameter[0], Get_Translate("prority"));
+                        HWin.SetProcessPriority(parameter[0], Get_Translate("prority"));
                         goto RunOK;
                     }
                     if (path.ToLower().StartsWith("effiency("))
                     {
-                        Hiro_Win.SetEffiencyMode(parameter[0], Get_Translate("effiency"));
+                        HWin.SetEffiencyMode(parameter[0], Get_Translate("effiency"));
                         goto RunOK;
                     }
                     #region 调试
-                    if (Hiro_Text.StartsWith(path, "debug("))
+                    if (HText.StartsWith(path, "debug("))
                     {
                         source = Get_Translate("debug");
-                        if (!Hiro_Text.StartsWith(path, "debug()"))
+                        if (!HText.StartsWith(path, "debug()"))
                         {
                             RunExe($"notify({path},2)", source);
                         }
@@ -734,44 +193,53 @@ namespace Hiro
                         }
                         goto RunOK;
                     }
+                    if (HText.StartsWith(path, "hotkey()"))
+                    {
+                        if (App.dflag)
+                            foreach (var hk in HHotKeys.hotkeys)
+                            {
+                                LogtoFile($"[Hotkeys] {hk.KeyID} => {hk.ItemID}");
+                            }
+                        goto RunOK;
+                    }
                     #endregion
-                    if (Hiro_Text.StartsWith(path, "save("))
+                    if (HText.StartsWith(path, "save("))
                     {
                         source = Get_Translate("download");
-                        Hiro_Net.Save(source, parameter);
+                        HNet.Save(source, parameter);
                         goto RunOK;
                     }
                     #region 壁纸相关
-                    if (Hiro_Text.StartsWith(path, "bingw("))
+                    if (HText.StartsWith(path, "bingw("))
                     {
-                        Hiro_Net.BingWp(path, parameter);
+                        HNet.BingWp(path, parameter);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "wallpaper("))
+                    if (HText.StartsWith(path, "wallpaper("))
                     {
-                        Hiro_Wallpaper.Set_Wallpaper(parameter);
+                        HDesktop.Set_Wallpaper(parameter);
                         goto RunOK;
                     }
                     #endregion
                     #region 文件操作
-                    if (Hiro_Text.StartsWith(path, "delete("))
+                    if (HText.StartsWith(path, "delete("))
                     {
-                        Hiro_File.DeleteFile(path, parameter);
+                        HFile.DeleteFile(path, parameter);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "move("))
+                    if (HText.StartsWith(path, "move("))
                     {
-                        Hiro_File.MoveFile(path, parameter);
+                        HFile.MoveFile(path, parameter);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "copy("))
+                    if (HText.StartsWith(path, "copy("))
                     {
-                        Hiro_File.CopyFile(path, parameter);
+                        HFile.CopyFile(path, parameter);
                         goto RunOK;
                     }
                     #endregion
                     #region 系统环境
-                    if (Hiro_Text.StartsWith(path, "vol("))
+                    if (HText.StartsWith(path, "vol("))
                     {
                         switch (path.ToLower())
                         {
@@ -792,7 +260,7 @@ namespace Hiro
                         }
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "bluetooth("))
+                    if (HText.StartsWith(path, "bluetooth("))
                     {
                         bool? situation = (parameter.Count > 0 ? parameter[0].ToLower() : "") switch
                         {
@@ -803,7 +271,7 @@ namespace Hiro
                         SetBthState(situation, parameter.Count > 1 ? parameter[1] : null);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "wifi("))
+                    if (HText.StartsWith(path, "wifi("))
                     {
                         int situation = path.ToLower() switch
                         {
@@ -827,7 +295,7 @@ namespace Hiro
                             SetWiFiState(situation);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "media("))
+                    if (HText.StartsWith(path, "media("))
                     {
                         System.Windows.Input.Key situation = path.ToLower() switch
                         {
@@ -851,7 +319,7 @@ namespace Hiro
                         keybd_event(keyi, MapVirtualKey(keyi, 0), 0x0001 | 0x0002, 0);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "key("))
+                    if (HText.StartsWith(path, "key("))
                     {
                         List<byte> modi = new();
                         int pathi = int.Parse(parameter[0]);
@@ -895,22 +363,22 @@ namespace Hiro
                         goto RunOK;
                     }
                     #endregion
-                    if (Hiro_Text.StartsWith(path, "ini("))
+                    if (HText.StartsWith(path, "ini("))
                     {
                         Write_Ini(parameter[0], parameter[1], parameter[2], parameter[3]);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "zip("))
+                    if (HText.StartsWith(path, "zip("))
                     {
-                        Hiro_File.Zip(source, parameter);
+                        HFile.Zip(source, parameter);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "unzip("))
+                    if (HText.StartsWith(path, "unzip("))
                     {
-                        Hiro_File.Unzip(source, parameter);
+                        HFile.Unzip(source, parameter);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "exit()"))
+                    if (HText.StartsWith(path, "exit()"))
                     {
                         try
                         {
@@ -926,7 +394,7 @@ namespace Hiro
                         }
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "hide()"))
+                    if (HText.StartsWith(path, "hide()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -942,7 +410,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "switch()"))
+                    if (HText.StartsWith(path, "switch()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -953,7 +421,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "menu()"))
+                    if (HText.StartsWith(path, "menu()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -965,7 +433,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "show()"))
+                    if (HText.StartsWith(path, "show()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1010,7 +478,7 @@ namespace Hiro
                         goto RunOK;
                     }
                     //sequence(uri)
-                    if (Hiro_Text.StartsWith(path, "seq("))
+                    if (HText.StartsWith(path, "seq("))
                     {
 
                         var ca = parameter.Count < 2 || (!parameter[1].ToLower().Equals("hide") && !parameter[1].ToLower().Equals("h"));
@@ -1024,7 +492,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "item(") && !Hiro_Text.StartsWith(path, "item()"))
+                    if (HText.StartsWith(path, "item(") && !HText.StartsWith(path, "item()"))
                     {
                         var RealPath = parameter[0];
                         for (int i = 1; i < parameter.Count; i++)
@@ -1044,7 +512,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "run("))
+                    if (HText.StartsWith(path, "run("))
                     {
                         if (parameter.Count == 0)
                         {
@@ -1092,7 +560,7 @@ namespace Hiro
                             RunExe("exit()");
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "lock()"))
+                    if (HText.StartsWith(path, "lock()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1104,7 +572,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "weather("))
+                    if (HText.StartsWith(path, "weather("))
                     {
                         source = Get_Translate("weather");
                         path = path.ToLower() switch
@@ -1116,11 +584,11 @@ namespace Hiro
                         RunExe(path, source);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "sync()"))
+                    if (HText.StartsWith(path, "sync()"))
                     {
                         if (App.Logined == true)
                         {
-                            if (Hiro_ID.SyncProfile(App.loginedUser, App.loginedToken).Equals("success"))
+                            if (HID.SyncProfile(App.loginedUser, App.loginedToken).Equals("success"))
                             {
                                 HiroInvoke(() =>
                                 {
@@ -1128,14 +596,14 @@ namespace Hiro
                                     {
                                         App.mn.hiro_profile?.UpdateProfile();
                                     }
-                                    App.Notify(new(Hiro_Text.Get_Translate("syncsucc"), 2, Hiro_Text.Get_Translate("sync")));
+                                    App.Notify(new(HText.Get_Translate("syncsucc"), 2, HText.Get_Translate("sync")));
                                 });
                             }
                             else
                             {
                                 HiroInvoke(() =>
                                 {
-                                    App.Notify(new(Hiro_Text.Get_Translate("syncfailed"), 2, Hiro_Text.Get_Translate("sync")));
+                                    App.Notify(new(HText.Get_Translate("syncfailed"), 2, HText.Get_Translate("sync")));
                                 });
                             }
                         }
@@ -1143,7 +611,7 @@ namespace Hiro
                         {
                             HiroInvoke(() =>
                             {
-                                App.Notify(new(Hiro_Text.Get_Translate("synclogin"), 2, Hiro_Text.Get_Translate("sync")));
+                                App.Notify(new(HText.Get_Translate("synclogin"), 2, HText.Get_Translate("sync")));
                                 App.mn?.Set_Label(App.mn.loginx);
                             });
                         }
@@ -1165,19 +633,19 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "badge("))
+                    if (HText.StartsWith(path, "badge("))
                     {
-                        Hiro_System.ShowBadge(parameter);
+                        HSystem.ShowBadge(parameter);
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "invoke("))
+                    if (HText.StartsWith(path, "invoke("))
                     {
                         if (parameter.Count > 0)
                         {
                             var pa = parameter[0];
-                            if (Hiro_Text.StartsWith(pa, "http://") || Hiro_Text.StartsWith(pa, "https://"))
+                            if (HText.StartsWith(pa, "http://") || HText.StartsWith(pa, "https://"))
                             {
-                                pa = Hiro_Net.GetWebContent(pa).Replace("\\n", string.Empty).Replace("<br>", string.Empty);
+                                pa = HNet.GetWebContent(pa).Replace("\\n", string.Empty).Replace("<br>", string.Empty);
                                 if (App.dflag)
                                     LogtoFile("[INVOKE]" + pa);
                             }
@@ -1193,7 +661,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "decrypt("))
+                    if (HText.StartsWith(path, "decrypt("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1226,7 +694,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "decrypto("))
+                    if (HText.StartsWith(path, "decrypto("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1264,7 +732,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "encrypt("))
+                    if (HText.StartsWith(path, "encrypt("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1297,7 +765,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "encrypto("))
+                    if (HText.StartsWith(path, "encrypto("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1335,7 +803,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "ticker("))
+                    if (HText.StartsWith(path, "ticker("))
                     {
                         var adflag = false;
                         if (parameter.Count < 1)
@@ -1418,7 +886,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "hiroad("))
+                    if (HText.StartsWith(path, "hiroad("))
                     {
                         source = Get_Translate("update");
                         HiroInvoke(() =>
@@ -1435,7 +903,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "download("))
+                    if (HText.StartsWith(path, "download("))
                     {
                         source = Get_Translate("download");
                         HiroInvoke(() =>
@@ -1449,7 +917,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "alarm("))
+                    if (HText.StartsWith(path, "alarm("))
                     {
                         var pa = parameter[0];
                         var os = Get_OSVersion();
@@ -1458,17 +926,17 @@ namespace Hiro
                         var boo = Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10;
                         if (boo)
                         {
-                            if (Hiro_Text.StartsWith(pa, "http://") || Hiro_Text.StartsWith(pa, "https://"))
+                            if (HText.StartsWith(pa, "http://") || HText.StartsWith(pa, "https://"))
                             {
-                                pa = Hiro_Net.GetWebContent(pa);
+                                pa = HNet.GetWebContent(pa);
                             }
                             if (parameter.Count > 1)
                             {
                                 var par = parameter[1];
 
-                                if ((Hiro_Text.StartsWith(par, "http://") || Hiro_Text.StartsWith(par, "https://")) && boo)
+                                if ((HText.StartsWith(par, "http://") || HText.StartsWith(par, "https://")) && boo)
                                 {
-                                    par = Hiro_Net.GetWebContent(par).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
+                                    par = HNet.GetWebContent(par).Replace("\\n", Environment.NewLine).Replace("<br>", Environment.NewLine);
                                 }
                             }
                             if (parameter.Count > 1)
@@ -1510,7 +978,7 @@ namespace Hiro
                         }
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "splash("))
+                    if (HText.StartsWith(path, "splash("))
                     {
                         var pa = parameter[0];
                         HiroInvoke(() =>
@@ -1521,7 +989,7 @@ namespace Hiro
                                 if (!int.TryParse(parameter.Count >= 5 ? parameter[4] : "-1", out tick))
                                     tick = -1;
                                 new Hiro_Splash(parameter[0], parameter[1],
-                                    parameter.Count >= 3 ? parameter[2] : Hiro_Text.Get_Translate("spLoading"),
+                                    parameter.Count >= 3 ? parameter[2] : HText.Get_Translate("spLoading"),
                                     parameter.Count >= 4 ? parameter[3] : "",
                                     tick,
                                     parameter.Count >= 6 ? parameter[5].Equals("true", StringComparison.CurrentCultureIgnoreCase) : false,
@@ -1538,7 +1006,7 @@ namespace Hiro
                     }
                     if (App.mn != null)
                     {
-                        if (Hiro_Text.StartsWith(path, "home()"))
+                        if (HText.StartsWith(path, "home()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1548,7 +1016,7 @@ namespace Hiro
                             });
                             goto RunOK;
                         }
-                        if (Hiro_Text.StartsWith(path, "item()"))
+                        if (HText.StartsWith(path, "item()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1558,7 +1026,7 @@ namespace Hiro
                             });
                             goto RunOK;
                         }
-                        if (Hiro_Text.StartsWith(path, "schedule()"))
+                        if (HText.StartsWith(path, "schedule()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1568,7 +1036,7 @@ namespace Hiro
                             });
                             goto RunOK;
                         }
-                        if (Hiro_Text.StartsWith(path, "config()"))
+                        if (HText.StartsWith(path, "config()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1578,7 +1046,7 @@ namespace Hiro
                             });
                             goto RunOK;
                         }
-                        if (Hiro_Text.StartsWith(path, "chat()"))
+                        if (HText.StartsWith(path, "chat()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1588,7 +1056,7 @@ namespace Hiro
                             });
                             goto RunOK;
                         }
-                        if (Hiro_Text.StartsWith(path, "me()"))
+                        if (HText.StartsWith(path, "me()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1598,7 +1066,7 @@ namespace Hiro
                             });
                             goto RunOK;
                         }
-                        if (Hiro_Text.StartsWith(path, "about()"))
+                        if (HText.StartsWith(path, "about()"))
                         {
                             HiroInvoke(() =>
                             {
@@ -1609,7 +1077,7 @@ namespace Hiro
                             goto RunOK;
                         }
                     }
-                    if (Hiro_Text.StartsWith(path, "restart("))
+                    if (HText.StartsWith(path, "restart("))
                     {
                         if (App.mn == null)
                         {
@@ -1643,7 +1111,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "message("))
+                    if (HText.StartsWith(path, "message("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1666,7 +1134,7 @@ namespace Hiro
                                 BackgroundWorker bw = new();
                                 bw.DoWork += delegate
                                 {
-                                    parameter[0] = Hiro_Net.GetWebContent(parameter[0]).Replace("<br>", "\\n");
+                                    parameter[0] = HNet.GetWebContent(parameter[0]).Replace("<br>", "\\n");
                                 };
                                 bw.RunWorkerCompleted += delegate
                                 {
@@ -1684,7 +1152,7 @@ namespace Hiro
                         goto RunOK;
                     }
 
-                    if (path.Length > 7 && Hiro_Text.StartsWith(path, "notify("))
+                    if (path.Length > 7 && HText.StartsWith(path, "notify("))
                     {
                         string titile = Get_Translate("syntax");
                         int duration = -1;
@@ -1697,7 +1165,7 @@ namespace Hiro
                                 titile = parameter[0];
                                 if (titile.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || titile.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
                                 {
-                                    titile = Hiro_Net.GetWebContent(titile).Replace("<br>", "\\n");
+                                    titile = HNet.GetWebContent(titile).Replace("<br>", "\\n");
                                 }
                                 Action? act = null;
                                 if (parameter.Count > 3)
@@ -1731,7 +1199,7 @@ namespace Hiro
                         }
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "play("))
+                    if (HText.StartsWith(path, "play("))
                     {
                         if (App.mn != null)
                         {
@@ -1749,7 +1217,7 @@ namespace Hiro
                         }
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "web("))
+                    if (HText.StartsWith(path, "web("))
                     {
                         if (Read_Ini(App.dConfig, "Config", "URLConfirm", "0").Equals("1") && urlCheck && App.mn == null)
                         {
@@ -1777,7 +1245,7 @@ namespace Hiro
                                     BackgroundWorker bw = new();
                                     bw.DoWork += delegate
                                     {
-                                        confrimWin = Hiro_Net.GetWebContent(confrimWin).Replace("<br>", "\\n");
+                                        confrimWin = HNet.GetWebContent(confrimWin).Replace("<br>", "\\n");
                                     };
                                     bw.RunWorkerCompleted += delegate
                                     {
@@ -1877,7 +1345,7 @@ namespace Hiro
 
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "image("))
+                    if (HText.StartsWith(path, "image("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1885,7 +1353,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "text("))
+                    if (HText.StartsWith(path, "text("))
                     {
                         HiroInvoke(() =>
                         {
@@ -1893,7 +1361,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "editor()"))
+                    if (HText.StartsWith(path, "editor()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1902,7 +1370,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "lockscr("))
+                    if (HText.StartsWith(path, "lockscr("))
                     {
                         var location = parameter.Count > 0 && !parameter[0].Trim().Equals(string.Empty) ? parameter[0] : null;
                         HiroInvoke(() =>
@@ -1912,7 +1380,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "auth("))
+                    if (HText.StartsWith(path, "auth("))
                     {
                         Action sc = new(() =>
                         {
@@ -1948,7 +1416,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Hiro_Text.StartsWith(path, "hirowego()") || Hiro_Text.StartsWith(path, "finder()") || Hiro_Text.StartsWith(path, "start()"))
+                    if (HText.StartsWith(path, "hirowego()") || HText.StartsWith(path, "finder()") || HText.StartsWith(path, "start()"))
                     {
                         HiroInvoke(() =>
                         {
@@ -1969,7 +1437,7 @@ namespace Hiro
                     || (parameter[0].ToLower().Equals("yandex") && (parameter[2].ToLower().StartsWith("https://") || parameter[2].ToLower().StartsWith("http://"))))
                     && urlCheck)
                     {
-                        Hiro_System.ShowWebConfirmDialog(autoClose, path, source);
+                        HSystem.ShowWebConfirmDialog(autoClose, path, source);
                         autoClose = false;
                         goto RunOK;
                     }
@@ -2216,7 +1684,7 @@ namespace Hiro
                                         var bdd = bluetoothMac.ToLower().Replace("Bluetooth#Bluetooth", "");
                                         if (dev.Name.ToLower().Contains(bdd) || idd.Equals(bdd.Replace(":", "")))
                                         {
-                                            Hiro_Bluetooth.BluetoothConnection.ConnectToDevice(bdd);
+                                            Hiro.APIs.ABluetooth.BluetoothConnection.ConnectToDevice(bdd);
                                         }
                                     }
                                 }
@@ -2238,7 +1706,7 @@ namespace Hiro
                                         var bdd = bluetoothMac.ToLower().Replace("Bluetooth#Bluetooth", "");
                                         if (dev.Name.ToLower().Contains(bdd) || idd.Equals(bdd.Replace(":", "")))
                                         {
-                                            Hiro_Bluetooth.BluetoothDisconnection.DisconnectBluetoothDevice(bdd);
+                                            Hiro.APIs.ABluetooth.BluetoothDisconnection.DisconnectBluetoothDevice(bdd);
                                         }
                                     }
                                 }
@@ -2488,387 +1956,6 @@ namespace Hiro
                 return;
             }
         }
-        #endregion
-
-        #region 动画相关
-
-        #region 模糊动画
-        public static void Blur_Animation(int direction, bool animation, Control label, Window win, BackgroundWorker? bw = null)
-        {
-            if (Read_Ini(App.dConfig, "Config", "Background", "1").Equals("3"))
-            {
-                if (bw != null)
-                    bw.RunWorkerAsync();
-                return;
-            }
-            //0: 25->0 12s  1:0->50 25s 2:0->25 12s 3:50->25 12s
-            double start = direction switch
-            {
-                1 => 0.0,
-                2 => 0.0,
-                3 => 50.0,
-                _ => 25.0
-            };
-            double end = direction switch
-            {
-                1 => 50.0,
-                2 => 25.0,
-                3 => 25.0,
-                _ => 0.0
-            };
-            double time = direction switch
-            {
-                1 => 500.0,
-                _ => 250.0
-            };
-            if (!animation)
-            {
-                Set_Animation_Label(end, label, win);
-                if (bw != null)
-                    bw.RunWorkerAsync();
-                return;
-            }
-            else
-            {
-                bool comp = win.Width > win.Height;
-                double dest = comp ? -end : -end * win.Height / win.Width;
-                double stat = comp ? -start : -start * win.Height / win.Width;
-                double desl = !comp ? -end : -end * win.Width / win.Height;
-                double stal = !comp ? -start : -start * win.Width / win.Height;
-                Set_Animation_Label(start, label, win);
-                Storyboard? sb = new();
-                sb = AddDoubleAnimaton(end, time, label, "Effect.Radius", sb, start);
-                sb = AddDoubleAnimaton(win.Height - dest * 2, time, label, "Height", sb, win.Height - stat * 2);
-                sb = AddDoubleAnimaton(win.Width - desl * 2, time, label, "Width", sb, win.Width - stal * 2);
-                sb = AddThicknessAnimaton(new(desl, dest, 0, 0), time, label, "Margin", sb, new(stal, stat, 0, 0));
-                sb.Completed += delegate
-                {
-                    Set_Animation_Label(end, label, win);
-                    if (bw != null)
-                        bw.RunWorkerAsync();
-                    sb = null;
-                };
-                sb.Begin();
-            }
-        }
-
-        public static void Blur_Out(Control ct, BackgroundWorker? bw = null)
-        {
-            if (!Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
-            {
-                ct.Effect = new System.Windows.Media.Effects.BlurEffect()
-                {
-                    Radius = App.blurradius,
-                    RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
-                };
-                Storyboard? sb = new();
-                DoubleAnimation? da = new()
-                {
-                    From = App.blurradius,
-                    To = 0.0,
-                    Duration = TimeSpan.FromMilliseconds(App.blursec)
-                };
-                da.EasingFunction = GetEasingFunction(da.EasingFunction, true);
-                Storyboard.SetTarget(da, ct);
-                Storyboard.SetTargetProperty(da, new PropertyPath("Effect.Radius"));
-                sb.Children.Add(da);
-                sb.Completed += delegate
-                {
-                    ct.Effect = null;
-                    if (bw != null)
-                        bw.RunWorkerAsync();
-                    da = null;
-                    sb = null;
-                };
-                sb.Begin();
-            }
-            else
-            {
-                if (bw != null)
-                    bw.RunWorkerAsync();
-            }
-        }
-        private static void Set_Animation_Label(double rd, Control label, Window win)
-        {
-            label.Effect = new System.Windows.Media.Effects.BlurEffect()
-            {
-                Radius = rd,
-                RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance
-            };
-            Thickness tn = label.Margin;
-            var WinWidth = win.WindowState == WindowState.Maximized ? win.ActualWidth : win.Width;
-            var WinHeight = win.WindowState == WindowState.Maximized ? win.ActualHeight : win.Height;
-            if (WinWidth > WinHeight)
-            {
-                tn.Top = -rd;
-                tn.Left = -rd * WinWidth / WinHeight;
-            }
-            else
-            {
-                tn.Left = -rd;
-                tn.Top = -rd * WinHeight / WinWidth;
-            }
-            label.Margin = tn;
-            label.Width = WinWidth - tn.Left * 2;
-            label.Height = WinHeight - tn.Top * 2;
-        }
-        #endregion
-
-        #region 添加double动画
-        public static Storyboard AddDoubleAnimaton(double? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, double? from = null, double decelerationRatio = 0.9, double accelerationRatio = 0)
-        {
-            sb ??= new();
-            DoubleAnimation? da = new();
-            if (from != null)
-                da.From = from;
-            if (to != null)
-                da.To = to;
-            da.Duration = TimeSpan.FromMilliseconds(mstime);
-            da.DecelerationRatio = decelerationRatio;
-            da.AccelerationRatio = accelerationRatio;
-            da.EasingFunction = GetEasingFunction(da.EasingFunction, !".width;.height;.opacity;".Contains($".{PropertyPath};", StringComparison.CurrentCultureIgnoreCase));
-            Storyboard.SetTarget(da, value);
-            Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
-            sb.Children.Add(da);
-            sb.FillBehavior = FillBehavior.Stop;
-            sb.Completed += (sender, args) =>
-            {
-                da = null;
-                sb = null;
-            };
-            return sb;
-        }
-        #endregion
-
-        #region 添加thickness动画
-        public static Storyboard AddThicknessAnimaton(Thickness? to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Thickness? from = null, double DecelerationRatio = 0.9, double AccelerationRatio = 0)
-        {
-            sb ??= new();
-            ThicknessAnimation? da = new();
-            if (from != null)
-                da.From = from;
-            if (to != null)
-                da.To = to;
-            da.Duration = TimeSpan.FromMilliseconds(mstime);
-            da.DecelerationRatio = DecelerationRatio;
-            da.AccelerationRatio = AccelerationRatio;
-            da.EasingFunction = GetEasingFunction(da.EasingFunction, true);
-            Storyboard.SetTarget(da, value);
-            Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
-            sb.Children.Add(da);
-            sb.FillBehavior = FillBehavior.Stop;
-            sb.Completed += delegate
-            {
-                da = null;
-                sb = null;
-            };
-            return sb;
-        }
-        #endregion 
-
-        #region 添加Color动画
-        public static Storyboard AddColorAnimaton(Color to, double mstime, DependencyObject value, string PropertyPath, Storyboard? sb, Color? from = null)
-        {
-            sb ??= new();
-            ColorAnimation? da;
-            if (from != null)
-                da = new((Color)from, to, TimeSpan.FromMilliseconds(mstime));
-            else
-                da = new(to, TimeSpan.FromMilliseconds(mstime));
-            da.DecelerationRatio = 0.9;
-            da.EasingFunction = GetEasingFunction(da.EasingFunction, true);
-            Storyboard.SetTarget(da, value);
-            Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
-            sb.Children.Add(da);
-            sb.FillBehavior = FillBehavior.Stop;
-            sb.Completed += delegate
-            {
-                da = null;
-                sb = null;
-            };
-            return sb;
-        }
-        #endregion
-
-        #region 重设缓动函数
-
-        private static IEasingFunction GetEasingFunction(IEasingFunction _former, bool canBeNegative)
-        {
-            double _par = 0;
-            int _ipar = 0;
-            return (Read_DCIni("EasingFunction", string.Empty)) switch
-            {
-                "0" => new BackEase()
-                {
-                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
-                    {
-                        "1" => EasingMode.EaseOut,
-                        "2" => EasingMode.EaseInOut,
-                        _ => EasingMode.EaseIn
-                    },
-                    Amplitude = canBeNegative ? (double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? _par : 1) : 0
-                },
-
-                "1" => new BounceEase()
-                {
-                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
-                    {
-                        "1" => EasingMode.EaseOut,
-                        "2" => EasingMode.EaseInOut,
-                        _ => EasingMode.EaseIn
-                    },
-                    Bounces = int.TryParse(Read_DCIni("EasingExtra", "0"), out _ipar) ? _ipar : 1,
-                    Bounciness = double.TryParse(Read_DCIni("EasingExtraP", "0"), out _par) ? _par : 1
-                },
-
-                "2" => new CircleEase()
-                {
-                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
-                    {
-                        "1" => EasingMode.EaseOut,
-                        "2" => EasingMode.EaseInOut,
-                        _ => EasingMode.EaseIn
-                    }
-                },
-
-                "3" => new PowerEase()
-                {
-                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
-                    {
-                        "1" => EasingMode.EaseOut,
-                        "2" => EasingMode.EaseInOut,
-                        _ => EasingMode.EaseIn
-                    },
-                    Power = double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? _par : 1
-                },
-
-                "4" => new ElasticEase()
-                {
-                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
-                    {
-                        "1" => EasingMode.EaseOut,
-                        "2" => EasingMode.EaseInOut,
-                        _ => EasingMode.EaseIn
-                    },
-                    Springiness = double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? Math.Abs(_par) : 1,
-                    Oscillations = int.TryParse(Read_DCIni("EasingExtraP", "0"), out _ipar) ? Math.Abs(_ipar) : 1
-                },
-
-                "5" => new ExponentialEase()
-                {
-                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
-                    {
-                        "1" => EasingMode.EaseOut,
-                        "2" => EasingMode.EaseInOut,
-                        _ => EasingMode.EaseIn
-                    },
-                    Exponent = double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? _par : 1
-                },
-
-                "6" => new SineEase()
-                {
-                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
-                    {
-                        "1" => EasingMode.EaseOut,
-                        "2" => EasingMode.EaseInOut,
-                        _ => EasingMode.EaseIn
-                    }
-                },
-                _ => _former
-
-            };
-        }
-
-        #endregion
-
-        #region 增强动效
-        public static Storyboard AddPowerAnimation(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null, double mstime = 450, double opacityTime = 350)
-        {
-
-            sb = AddPower(Direction, value, sb, from, to, mstime);
-            AddDoubleAnimaton(null, opacityTime, value, "Opacity", sb, 0);
-            return sb;
-        }
-        public static Storyboard AddPowerOutAnimation(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null, double mstime = 450, double opacityTime = 350)
-        {
-            sb = AddPower(Direction, value, sb, from, to, mstime);
-            AddDoubleAnimaton(0, opacityTime, value, "Opacity", sb, null);
-            return sb;
-        }
-
-        private static Storyboard AddPower(int Direction, FrameworkElement value, Storyboard? sb, double? from = null, double? to = null, double mstime = 450)
-        {
-            sb ??= new();
-            var th1 = value.Margin;
-            var th2 = value.Margin;
-            if (to != null && from != null)
-            {
-                if (Direction == 0)
-                {
-                    th1.Left += (double)from;
-                    th2.Left += (double)to;
-                }
-                if (Direction == 1)
-                {
-                    th1.Top += (double)from;
-                    th2.Top += (double)to;
-                }
-                if (Direction == 2)
-                {
-                    th1.Right += (double)from;
-                    th2.Right += (double)to;
-                }
-                if (Direction == 3)
-                {
-                    th1.Bottom += (double)from;
-                    th2.Bottom += (double)to;
-                }
-                AddThicknessAnimaton(th2, mstime, value, "Margin", sb, th1);
-            }
-            if (to != null && from == null)
-            {
-                if (Direction == 0)
-                {
-                    th2.Left += (double)to;
-                }
-                if (Direction == 1)
-                {
-                    th2.Top += (double)to;
-                }
-                if (Direction == 2)
-                {
-                    th2.Right += (double)to;
-                }
-                if (Direction == 3)
-                {
-                    th2.Bottom += (double)to;
-                }
-                AddThicknessAnimaton(th2, mstime, value, "Margin", sb, null);
-            }
-            if (to == null && from != null)
-            {
-                if (Direction == 0)
-                {
-                    th1.Left += (double)from;
-                }
-                if (Direction == 1)
-                {
-                    th1.Top += (double)from;
-                }
-                if (Direction == 2)
-                {
-                    th1.Right += (double)from;
-                }
-                if (Direction == 3)
-                {
-                    th1.Bottom += (double)from;
-                }
-                AddThicknessAnimaton(null, mstime, value, "Margin", sb, th1);
-            }
-            return sb;
-        }
-        #endregion
-
         #endregion
 
         #region 获取命令翻译
@@ -3177,327 +2264,6 @@ namespace Hiro
         }
         #endregion
 
-        #region 图像压缩
-        /// <summary>
-        /// 压缩图片至200 Kb以下
-        /// </summary>
-        /// <param name="img">图片</param>
-        /// <param name="format">图片格式</param>
-        /// <param name="targetLen">压缩后大小</param>
-        /// <param name="srcLen">原始大小</param>
-        /// <returns>压缩后的图片</returns>
-        public static System.Drawing.Image ZipImage(System.Drawing.Image img, ImageFormat format, long targetLen, long srcLen = 0)
-        {
-            //设置大小偏差幅度 10kb
-            const long nearlyLen = 10240;
-            //内存流  如果参数中原图大小没有传递 则使用内存流读取
-            var ms = new MemoryStream();
-            if (0 == srcLen)
-            {
-                img.Save(ms, format);
-                srcLen = ms.Length;
-            }
-
-            //单位 由Kb转为byte 若目标大小高于原图大小，则满足条件退出
-            targetLen *= 1024;
-            if (targetLen > srcLen)
-            {
-                ms.SetLength(0);
-                ms.Position = 0;
-                img.Save(ms, format);
-                img = System.Drawing.Image.FromStream(ms);
-                return img;
-            }
-
-            //获取目标大小最低值
-            var exitLen = targetLen - nearlyLen;
-
-            //初始化质量压缩参数 图像 内存流等
-            var quality = (long)Math.Floor(100.00 * targetLen / srcLen);
-            var parms = new EncoderParameters(1);
-
-            //获取编码器信息
-            ImageCodecInfo? formatInfo = null;
-            var encoders = ImageCodecInfo.GetImageEncoders();
-            foreach (ImageCodecInfo icf in encoders)
-            {
-                if (icf.FormatID == format.Guid)
-                {
-                    formatInfo = icf;
-                    break;
-                }
-            }
-
-            //使用二分法进行查找 最接近的质量参数
-            long startQuality = quality;
-            long endQuality = 100;
-            quality = (startQuality + endQuality) / 2;
-
-            while (true)
-            {
-                //设置质量
-                parms.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-
-                //清空内存流 然后保存图片
-                ms.SetLength(0);
-                ms.Position = 0;
-                if (formatInfo != null)
-                    img.Save(ms, formatInfo, parms);
-
-                //若压缩后大小低于目标大小，则满足条件退出
-                if (ms.Length >= exitLen && ms.Length <= targetLen)
-                {
-                    break;
-                }
-                else if (startQuality >= endQuality) //区间相等无需再次计算
-                {
-                    break;
-                }
-                else if (ms.Length < exitLen) //压缩过小,起始质量右移
-                {
-                    startQuality = quality;
-                }
-                else //压缩过大 终止质量左移
-                {
-                    endQuality = quality;
-                }
-
-                //重新设置质量参数 如果计算出来的质量没有发生变化，则终止查找。这样是为了避免重复计算情况{start:16,end:18} 和 {start:16,endQuality:17}
-                var newQuality = (startQuality + endQuality) / 2;
-                if (newQuality == quality)
-                {
-                    break;
-                }
-                quality = newQuality;
-                //Console.WriteLine("start:{0} end:{1} current:{2}", startQuality, endQuality, quality);
-            }
-            img = System.Drawing.Image.FromStream(ms);
-            return img;
-        }
-
-        /// <summary>
-        ///获取图片格式
-        /// </summary>
-        /// <param name="img">图片</param>
-        /// <returns>默认返回JPEG</returns>
-        public static ImageFormat GetImageFormat(System.Drawing.Image img)
-        {
-            if (img.RawFormat.Equals(ImageFormat.Jpeg))
-            {
-                return ImageFormat.Jpeg;
-            }
-            if (img.RawFormat.Equals(ImageFormat.Gif))
-            {
-                return ImageFormat.Gif;
-            }
-            if (img.RawFormat.Equals(ImageFormat.Png))
-            {
-                return ImageFormat.Png;
-            }
-            if (img.RawFormat.Equals(ImageFormat.Bmp))
-            {
-                return ImageFormat.Bmp;
-            }
-            return ImageFormat.Jpeg;//根据实际情况选择返回指定格式还是null
-        }
-
-        /// <summary>
-        /// 不管多大的图片都能在指定大小picturebox控件中显示
-        /// </summary>
-        /// <param name="bitmap">图片</param>
-        /// <param name="destHeight">picturebox控件高</param>
-        /// <param name="destWidth">picturebox控件宽</param>
-        /// <returns></returns>
-        public static System.Drawing.Image ZoomImage(System.Drawing.Image bitmap, int destHeight, int destWidth)
-        {
-            try
-            {
-                System.Drawing.Image sourImage = bitmap;
-                int width = 0, height = 0;
-                //按比例缩放             
-                int sourWidth = sourImage.Width;
-                int sourHeight = sourImage.Height;
-                if (sourHeight > destHeight || sourWidth > destWidth)
-                {
-                    if ((sourWidth * destHeight) > (sourHeight * destWidth))
-                    {
-                        width = destWidth;
-                        height = (destWidth * sourHeight) / sourWidth;
-                    }
-                    else
-                    {
-                        height = destHeight;
-                        width = (sourWidth * destHeight) / sourHeight;
-                    }
-                }
-                else
-                {
-                    width = sourWidth;
-                    height = sourHeight;
-                }
-                System.Drawing.Bitmap destBitmap = new(destWidth, destHeight);
-                System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(destBitmap);
-                g.Clear(System.Drawing.Color.Transparent);
-                //设置画布的描绘质量           
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(sourImage, new System.Drawing.Rectangle((destWidth - width) / 2, (destHeight - height) / 2, width, height), 0, 0, sourImage.Width, sourImage.Height, System.Drawing.GraphicsUnit.Pixel);
-                //g.DrawImage(sourImage, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(0, 0, sourImage.Width, sourImage.Height), GraphicsUnit.Pixel);
-                g.Dispose();
-                //设置压缩质量       
-                EncoderParameters encoderParams = new();
-                long[] quality = new long[1];
-                quality[0] = 100;
-                EncoderParameter encoderParam = new(System.Drawing.Imaging.Encoder.Quality, quality);
-                encoderParams.Param[0] = encoderParam;
-                sourImage.Dispose();
-                return destBitmap;
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Hiro.Exception.Utils.ZoomImage");
-                return bitmap;
-            }
-        }
-
-
-        #endregion
-
-        #region 热键相关
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-
-        public enum HotkeyModifiers
-        {
-            MOD_NONE = 0x0,
-            MOD_ALT = 0x1,
-            MOD_CONTROL = 0x2,
-            MOD_SHIFT = 0x4,
-            MOD_WIN = 0x8
-        }
-
-        public static int RegisterKey(uint modi, System.Windows.Input.Key id, int cid)
-        {
-            int kid = keyid;
-            keyid += 2;
-            var vk = System.Windows.Input.KeyInterop.VirtualKeyFromKey(id);
-            if (!RegisterHotKey(App.WND_Handle, kid, modi, (uint)vk))
-            {
-                string msg = "";
-                IntPtr tempptr = IntPtr.Zero;
-                int sa = Marshal.GetLastWin32Error();
-                _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
-                RunExe("notify(" + Get_Translate("regfailed").Replace("%n", sa.ToString()) + ",2)");
-                LogError(new NotSupportedException(), $"Hiro.Exception.Hotkey.Register{Environment.NewLine}Extra: {sa} - {msg.Replace(Environment.NewLine, "")}");
-            }
-            App.vs.Add(kid);
-            App.vs.Add(cid);
-            return kid;
-        }
-
-        public static bool UnregisterKey(int id)
-        {
-            if (id < 0)
-                return false;
-            bool a = UnregisterHotKey(App.WND_Handle, App.vs[id]);
-            App.vs.RemoveAt(id);
-            App.vs.RemoveAt(id);
-            if (!a)
-            {
-                string msg = "";
-                IntPtr tempptr = IntPtr.Zero;
-                int sa = Marshal.GetLastWin32Error();
-                _ = FormatMessage(0x1300, ref tempptr, sa, 0, ref msg, 255, ref tempptr);
-                RunExe("notify(" + Get_Translate("unregfailed").Replace("%n", sa.ToString()) + ",2)");
-                LogError(new NotSupportedException(), $"Hiro.Exception.Hotkey.Unregister{Environment.NewLine}Extra: {sa} - {msg.Replace(Environment.NewLine, "")}");
-            }
-            else
-                LogtoFile("[REGISTER]Successfully unregistered.");
-            return a;
-        }
-
-        public static int Index_Modifier(bool direction, int val)
-        {
-            //all provide!
-            //alt - 1
-            //shft - 2
-            //ctrl - 4
-            //win - 8
-            //shit+alt - 3
-            //ctrl +alt - 5
-            //ctrl+shift = 6
-            //win + alt = 9
-            //win + shift = 10
-            //win + ctrl = 12
-
-            //ctrl+alt+shift = 7
-            //win+alt+shift = 11
-            //win+ctrl+alt = 13
-
-            //win+ctrl+shift+alt = 15
-            int[] mo = { 0, 1, 2, 4, 8, 3, 5, 6, 9, 10, 12, 7, 11, 13, 15 };
-            if (direction)
-            {
-                if (val > -1 && val < mo.Length)
-                    return mo[val];
-            }
-            else
-            {
-                for (int mos = 0; mos < mo.Length; mos++)
-                {
-                    if (mo[mos] == val)
-                    {
-                        return mos;
-                    }
-                }
-            }
-            return 0;
-        }
-        public static int Index_vKey(bool direction, int val)
-        {
-            int[] mo = { 0, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
-                                34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
-                                90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101,
-                                18, 13,
-                                23, 24, 25, 26};
-            if (direction)
-            {
-                if (val > -1 && val < mo.Length)
-                    return mo[val];
-            }
-            else
-            {
-                for (int mos = 0; mos < mo.Length; mos++)
-                {
-                    if (mo[mos] == val)
-                    {
-                        return mos;
-                    }
-                }
-            }
-            return 0;
-        }
-
-        public static int FindHotkeyById(int id)
-        {
-            for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
-            {
-                if (App.vs[vsi + 1] == id)
-                    return vsi;
-            }
-            return -1;
-        }
-
-        [DllImport("Kernel32.dll", CharSet = CharSet.Unicode)]
-        extern static int FormatMessage(int flag, ref IntPtr source, int msgid, int langid, ref string buf, int size, ref IntPtr args);
-        #endregion
-
         #region 检测全屏程序
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
@@ -3526,46 +2292,6 @@ namespace Hiro
             IntPtr hWnd = (IntPtr)GetForegroundWindow();
             GetWindowRect(new HandleRef(null, hWnd), ref rect);
             return screen != null && screen.Bounds.Width == (rect.right - rect.left) && screen.Bounds.Height == (rect.bottom - rect.top);
-        }
-        #endregion
-
-        #region 获取文件名
-        public static string GetFileName(string file, bool ext = false)
-        {
-            return ext ? System.IO.Path.GetFileName(file) : System.IO.Path.GetFileNameWithoutExtension(file);
-        }
-        #endregion
-
-        #region 计算MD5
-        public static string GetMD5(string file)
-        {
-            if (!System.IO.File.Exists(file))
-                return string.Empty;
-            using (FileStream fs = File.OpenRead(file))
-            {
-                using (var crypto = System.Security.Cryptography.MD5.Create())
-                {
-                    var md5Hash = crypto.ComputeHash(fs);
-                    return DeleteUnVisibleChar(BitConverter.ToString(md5Hash));
-                }
-            }
-        }
-        #endregion
-
-        #region 获取拓展名
-        public static string GetExtensionName(string file)
-        {
-            var d = file.IndexOf(".");
-            var s = file.IndexOf("\\");
-            if (d <= s)
-                return string.Empty;
-            else
-            {
-                if (d >= file.Length - 1)
-                    return string.Empty;
-                else
-                    return file.Substring(d + 1);
-            }
         }
         #endregion
 

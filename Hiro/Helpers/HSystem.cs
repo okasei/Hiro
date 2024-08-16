@@ -11,34 +11,34 @@ using System.Windows.Forms;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_System
+    internal class HSystem
     {
         internal static void ShowWebConfirmDialog(bool autoClose, string path, string? source)
         {
             var acbak = autoClose;
-            var confrimWin = Hiro_Text.Path_PPX("<capp>\\<lang>\\url.hms");
+            var confrimWin = HText.Path_PPX("<capp>\\<lang>\\url.hms");
             Hiro_Utils.HiroInvoke(() =>
             {
                 Hiro_Background? bg = null;
-                if (Hiro_Settings.Read_Ini(confrimWin, "Action", "Background", "true").ToLower().Equals("true"))
+                if (HSet.Read_Ini(confrimWin, "Action", "Background", "true").ToLower().Equals("true"))
                     bg = new();
                 Hiro_Msg msg = new(confrimWin)
                 {
                     bg = bg,
-                    Title =  Hiro_Text.Get_Translate("msgTitle").Replace("%t", Hiro_Text.Path_PPX(Hiro_Settings.Read_Ini(confrimWin, "Message", "Title", Hiro_Text.Get_Translate("syntax")))).Replace("%a",App.appTitle)
+                    Title =  HText.Get_Translate("msgTitle").Replace("%t", HText.Path_PPX(HSet.Read_Ini(confrimWin, "Message", "Title", HText.Get_Translate("syntax")))).Replace("%a",App.appTitle)
                 };
-                msg.backtitle.Content = Hiro_Settings.Read_PPIni(confrimWin, "Message", "Title", Hiro_Text.Get_Translate("syntax"));
-                msg.acceptbtn.Content = Hiro_Settings.Read_Ini(confrimWin, "Message", "accept", Hiro_Text.Get_Translate("msgaccept"));
-                msg.rejectbtn.Content = Hiro_Settings.Read_Ini(confrimWin, "Message", "reject", Hiro_Text.Get_Translate("msgreject"));
-                msg.cancelbtn.Content = Hiro_Settings.Read_Ini(confrimWin, "Message", "cancel", Hiro_Text.Get_Translate("msgcancel"));
-                confrimWin = Hiro_Settings.Read_PPIni(confrimWin, "Message", "content", Hiro_Text.Get_Translate("syntax"));
-                if (Hiro_Text.StartsWith(confrimWin,"http://") || Hiro_Text.StartsWith(confrimWin, "https://"))
+                msg.backtitle.Content = HSet.Read_PPIni(confrimWin, "Message", "Title", HText.Get_Translate("syntax"));
+                msg.acceptbtn.Content = HSet.Read_Ini(confrimWin, "Message", "accept", HText.Get_Translate("msgaccept"));
+                msg.rejectbtn.Content = HSet.Read_Ini(confrimWin, "Message", "reject", HText.Get_Translate("msgreject"));
+                msg.cancelbtn.Content = HSet.Read_Ini(confrimWin, "Message", "cancel", HText.Get_Translate("msgcancel"));
+                confrimWin = HSet.Read_PPIni(confrimWin, "Message", "content", HText.Get_Translate("syntax"));
+                if (HText.StartsWith(confrimWin,"http://") || HText.StartsWith(confrimWin, "https://"))
                 {
-                    msg.sv.Content = Hiro_Text.Get_Translate("msgload");
+                    msg.sv.Content = HText.Get_Translate("msgload");
                     BackgroundWorker bw = new();
                     bw.DoWork += delegate
                     {
-                        confrimWin = Hiro_Net.GetWebContent(confrimWin).Replace("<br>", "\\n");
+                        confrimWin = HNet.GetWebContent(confrimWin).Replace("<br>", "\\n");
                     };
                     bw.RunWorkerCompleted += delegate
                     {
@@ -47,7 +47,7 @@ namespace Hiro.Helpers
                     bw.RunWorkerAsync();
                 }
                 else if (System.IO.File.Exists(confrimWin))
-                    msg.sv.Content = Hiro_Text.Path_PPX(System.IO.File.ReadAllText(confrimWin)).Replace("\\n", Environment.NewLine);
+                    msg.sv.Content = HText.Path_PPX(System.IO.File.ReadAllText(confrimWin)).Replace("\\n", Environment.NewLine);
                 else
                     msg.sv.Content = confrimWin.Replace("\\n", Environment.NewLine);
                 msg.Load_Position();

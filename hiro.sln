@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hiro", "hiro\hiro.csproj", "{ED51129D-2324-4202-84F5-329E8D9F33DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hiro", "Hiro\Hiro.csproj", "{ED51129D-2324-4202-84F5-329E8D9F33DC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiroUpdater", "..\..\HiroUpdater\HiroUpdater\HiroUpdater.csproj", "{CA4B6E21-DD3E-45F7-88A0-23F8E881107B}"
 EndProject

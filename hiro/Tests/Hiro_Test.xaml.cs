@@ -25,7 +25,7 @@ namespace Hiro
         public Hiro_Test()
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             Load_Emoji();
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 180));
@@ -45,7 +45,7 @@ namespace Hiro
                 Emoji_Platte.Margin = new Thickness(0);
                 w = Emoji_Platte.Width;
             });
-            var imgList = new DirectoryInfo(Path.GetDirectoryName(Hiro_Text.Path_Prepare(@"<current>\system\emoji\")) ?? "")
+            var imgList = new DirectoryInfo(Path.GetDirectoryName(HText.Path_Prepare(@"<current>\system\emoji\")) ?? "")
                 .GetFiles("*", SearchOption.TopDirectoryOnly).Select(s => s.FullName).ToList();
             foreach (var img in imgList)
             {
@@ -163,10 +163,10 @@ namespace Hiro
                     Dispatcher.Invoke(() =>
                     {
                         Storyboard sb = new();
-                        Hiro_Utils.AddThicknessAnimaton(im.Margin, 250, FocusLabel, "Margin", sb);
-                        Hiro_Utils.AddDoubleAnimaton(im.Height, 250, FocusLabel, "Height", sb);
-                        Hiro_Utils.AddDoubleAnimaton(im.Width, 250, FocusLabel, "Width", sb);
-                        Hiro_Utils.AddDoubleAnimaton(1, 250, FocusLabel, "Opacity", sb);
+                        HAnimation.AddThicknessAnimaton(im.Margin, 250, FocusLabel, "Margin", sb);
+                        HAnimation.AddDoubleAnimaton(im.Height, 250, FocusLabel, "Height", sb);
+                        HAnimation.AddDoubleAnimaton(im.Width, 250, FocusLabel, "Width", sb);
+                        HAnimation.AddDoubleAnimaton(1, 250, FocusLabel, "Opacity", sb);
                         sb.Completed += delegate
                         {
                             FocusLabel.Width = im.Width;
@@ -204,7 +204,7 @@ namespace Hiro
             if (sender == Emoji_Platte)
             {
                 Storyboard sb = new();
-                Hiro_Utils.AddDoubleAnimaton(0, 250, FocusLabel, "Opacity", sb);
+                HAnimation.AddDoubleAnimaton(0, 250, FocusLabel, "Opacity", sb);
                 sb.Completed += delegate
                 {
                     FocusLabel.Opacity = 0;

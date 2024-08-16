@@ -28,10 +28,10 @@ namespace Hiro
         public Hiro_Notification()
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
-            Title = $"{Hiro_Text.Get_Translate("notitle")} - {App.appTitle}";
+            Helpers.HUI.SetCustomWindowIcon(this);
+            Title = $"{HText.Get_Translate("notitle")} - {App.appTitle}";
             Load_Color();
-            Hiro_Utils.Set_Control_Location(notinfo, "notify");
+            HUI.Set_Control_Location(notinfo, "notify");
             Width = SystemParameters.PrimaryScreenWidth;
             Height = 32;
             timer = new()
@@ -51,7 +51,7 @@ namespace Hiro
                     timer.Start();
             };
             msg = "";
-            animation[0] = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
+            animation[0] = !HSet.Read_DCIni("Ani", "2").Equals("0");
 
         }
         private void TimerTick()
@@ -126,10 +126,10 @@ namespace Hiro
         }
         public void Load_Color()
         {
-            if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
+            if (HSet.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(null, this, null, compositor);
+                HUI.Set_Acrylic(null, this, null, compositor);
                 notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
                 return;
             }
@@ -138,10 +138,10 @@ namespace Hiro
                 compositor.IsEnabled = false;
             }
             notinfo.Foreground = new SolidColorBrush(App.AppForeColor);
-            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Storyboard? sc = new();
-                Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sc);
+                HAnimation.AddColorAnimaton(App.AppAccentColor, 150, this, "Background.Color", sc);
                 sc.Completed += delegate
                 {
                     Background = new SolidColorBrush(App.AppAccentColor);
@@ -214,7 +214,7 @@ namespace Hiro
         private void Load_Noti_Position(bool first = false)
         {
             Size msize = new();
-            Hiro_Utils.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+            HUI.Get_Text_Visual_Width(notinfo, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
             var th = notinfo.Margin;
             notinfo.Width = msize.Width;
             th.Left = ActualWidth / 2 - msize.Width / 2;
@@ -226,7 +226,7 @@ namespace Hiro
                     animation[1] = true;
                     double time = (notinfo.Content != null) ? ((string)notinfo.Content).Length * 50 : 3000;
                     sb = new();
-                    sb = Hiro_Utils.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom), 0);
+                    sb = HAnimation.AddThicknessAnimaton(th, time, notinfo, "Margin", sb, new(Width, th.Top, th.Right, th.Bottom), 0);
                     sb.Completed += delegate
                     {
                         sb = null;
@@ -254,7 +254,7 @@ namespace Hiro
         private void Ani()
         {
             Load_Noti_Position();
-            Hiro_Utils.Blur_Out(notinfo);
+            HAnimation.Blur_Out(notinfo);
         }
         private void Noti_Loaded(object sender, RoutedEventArgs e)
         {

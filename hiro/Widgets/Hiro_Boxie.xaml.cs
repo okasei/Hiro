@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using static Hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.HClass;
 
 namespace Hiro
 {
@@ -38,22 +38,22 @@ namespace Hiro
             Load_Translate();
             Load_PrimaryIcon();
             Load_Icon();
-            Hiro_UI.SetCustomWindowIcon(this);
+            HUI.SetCustomWindowIcon(this);
             new System.Threading.Thread(() =>
             {
-                if (Hiro_Settings.Read_DCIni("HiBoxAudio", "1").Equals("1"))
+                if (HSet.Read_DCIni("HiBoxAudio", "1").Equals("1"))
                     try
                     {
-                        var fileP = Hiro_Settings.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");
+                        var fileP = HSet.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");
                         if (!System.IO.File.Exists(fileP))
-                            //fileP = Hiro_Text.Path_Prepare("C:\\Users\\Rex\\Downloads\\Music\\xbox_one_rare_achiev.wav");
-                            fileP = Hiro_Text.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
+                            //fileP = HText.Path_Prepare("C:\\Users\\Rex\\Downloads\\Music\\xbox_one_rare_achiev.wav");
+                            fileP = HText.Path_Prepare("<win>\\Media\\Windows Notify Messaging.wav");
                         System.Media.SoundPlayer sndPlayer = new(fileP);
                         sndPlayer.Play();
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Boxie.Sound");
+                        HLogger.LogError(ex, "Hiro.Exception.Boxie.Sound");
                     }
                 Dispatcher.Invoke(() =>
                 {
@@ -66,8 +66,8 @@ namespace Hiro
 
         private void Load_PrimaryIcon()
         {
-            var icon = Hiro_Settings.Read_DCIni("CustomizeIcon", "");
-            icon = Hiro_Text.Path_PPX(icon);
+            var icon = HSet.Read_DCIni("CustomizeIcon", "");
+            icon = HText.Path_PPX(icon);
             try
             {
                 if (System.IO.File.Exists(icon))
@@ -77,7 +77,7 @@ namespace Hiro
                 }
                 else
                 {
-                    icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
+                    icon = HSet.Read_PPDCIni("UserAvatar", "");
                     if (System.IO.File.Exists(icon) && App.Logined == true)
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -87,7 +87,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
+                HLogger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
             }
         }
 
@@ -99,9 +99,9 @@ namespace Hiro
             Get_Obj_Storyboard(Icon_Background_1, 78, 65, t + tt);
             Get_Obj_Storyboard(Icon_Background_2, 74, 65, t + tt * 2);
             Get_Obj_Storyboard(Icon_Background_3, 70, 65, t + tt * 3);
-            var sb = Hiro_Utils.AddDoubleAnimaton(1, 1000 * (t + tt * 4), BaseIconBorder, "Opacity", null, 0);
-            sb = Hiro_Utils.AddDoubleAnimaton(60, 1000 * (t + tt * 4), BaseIconBorder, "Width", sb, 40);
-            sb = Hiro_Utils.AddDoubleAnimaton(60, 1000 * (t + tt * 4), BaseIconBorder, "Height", sb, 40);
+            var sb = HAnimation.AddDoubleAnimaton(1, 1000 * (t + tt * 4), BaseIconBorder, "Opacity", null, 0);
+            sb = HAnimation.AddDoubleAnimaton(60, 1000 * (t + tt * 4), BaseIconBorder, "Width", sb, 40);
+            sb = HAnimation.AddDoubleAnimaton(60, 1000 * (t + tt * 4), BaseIconBorder, "Height", sb, 40);
             sb.Completed += delegate
             {
                 BaseIconBorder.Width = 60;
@@ -116,26 +116,26 @@ namespace Hiro
 
         internal void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(Test_Text_Display, "BoxText", location: false);
-            Hiro_UI.CopyFontFromLabel(Test_Text_Display, Text_Display_0);
-            Hiro_UI.CopyFontFromLabel(Test_Text_Display, Text_Display_1);
-            Hiro_Utils.Set_Control_Location(Hiro_Title_Label, "BoxFinal", location: false);
-            Hiro_Utils.Set_Control_Location(Hiro_Extension_Title_Label, "BoxFinal", location: false);
-            Hiro_UI.CopyFontFromLabel(Hiro_Title_Label, Hiro_Title);
-            Hiro_UI.CopyFontFromLabel(Hiro_Extension_Title_Label, Hiro_Extension_Title);
+            HUI.Set_Control_Location(Test_Text_Display, "BoxText", location: false);
+            HUI.CopyFontFromLabel(Test_Text_Display, Text_Display_0);
+            HUI.CopyFontFromLabel(Test_Text_Display, Text_Display_1);
+            HUI.Set_Control_Location(Hiro_Title_Label, "BoxFinal", location: false);
+            HUI.Set_Control_Location(Hiro_Extension_Title_Label, "BoxFinal", location: false);
+            HUI.CopyFontFromLabel(Hiro_Title_Label, Hiro_Title);
+            HUI.CopyFontFromLabel(Hiro_Extension_Title_Label, Hiro_Extension_Title);
         }
         internal void Load_Translate()
         {
-            Hiro_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalLeft"));
-            Hiro_Extension_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalRight"));
+            Hiro_Title.Text = HText.Path_PPX(HText.Get_Translate("BoxFinalLeft"));
+            Hiro_Extension_Title.Text = HText.Path_PPX(HText.Get_Translate("BoxFinalRight"));
         }
 
         private void Animation_Out()
         {
             if (act != null)
             {
-                Hiro_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalActLeft"));
-                Hiro_Extension_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalActRight"));
+                Hiro_Title.Text = HText.Path_PPX(HText.Get_Translate("BoxFinalActLeft"));
+                Hiro_Extension_Title.Text = HText.Path_PPX(HText.Get_Translate("BoxFinalActRight"));
             }
             else
             {
@@ -152,16 +152,16 @@ namespace Hiro
                 }
                 else
                 {
-                    Hiro_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalNullLeft"));
-                    Hiro_Extension_Title.Text = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("BoxFinalNullRight"));
+                    Hiro_Title.Text = HText.Path_PPX(HText.Get_Translate("BoxFinalNullLeft"));
+                    Hiro_Extension_Title.Text = HText.Path_PPX(HText.Get_Translate("BoxFinalNullRight"));
                 }
             }
-            var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 350, IconGrid, "Margin", null);
-            Hiro_Utils.Set_FrameworkElement_Location(LocationGrid, "BoxPress");
+            var s = HAnimation.AddThicknessAnimaton(new Thickness(0), 350, IconGrid, "Margin", null);
+            HUI.Set_FrameworkElement_Location(LocationGrid, "BoxPress");
             var w = LocationGrid.Width;
             Width = Math.Max(Width, w);
             Canvas.SetLeft(this, SystemParameters.FullPrimaryScreenWidth / 2 - Width / 2);
-            s = Hiro_Utils.AddDoubleAnimaton(w, 300 + 0.5 * Math.Abs(Width - w), BackgroundBorder, "Width", s, BackgroundBorder.Width > 100 ? null : 100);
+            s = HAnimation.AddDoubleAnimaton(w, 300 + 0.5 * Math.Abs(Width - w), BackgroundBorder, "Width", s, BackgroundBorder.Width > 100 ? null : 100);
             s.Completed += delegate
             {
                 IconGrid.Margin = new Thickness(0);
@@ -174,10 +174,10 @@ namespace Hiro
                 Extension_Grid.Margin = new Thickness(Width / 2 + Icon_Background_3.Width / 2, 0, 0, 0);
                 Title_Grid.Visibility = Visibility.Visible;
                 Extension_Grid.Visibility = Visibility.Visible;
-                var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 450, Hiro_Title, "Margin", null, new Thickness(-100, 0, 0, 0));
-                s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 450, Hiro_Extension_Title, "Margin", s, new Thickness(100, 0, 0, 0));
-                s = Hiro_Utils.AddDoubleAnimaton(1, 250, Hiro_Title, "Opacity", s, 0);
-                s = Hiro_Utils.AddDoubleAnimaton(1, 250, Hiro_Extension_Title, "Opacity", s, 0);
+                var s = HAnimation.AddThicknessAnimaton(new Thickness(0), 450, Hiro_Title, "Margin", null, new Thickness(-100, 0, 0, 0));
+                s = HAnimation.AddThicknessAnimaton(new Thickness(0), 450, Hiro_Extension_Title, "Margin", s, new Thickness(100, 0, 0, 0));
+                s = HAnimation.AddDoubleAnimaton(1, 250, Hiro_Title, "Opacity", s, 0);
+                s = HAnimation.AddDoubleAnimaton(1, 250, Hiro_Extension_Title, "Opacity", s, 0);
                 s.Completed += delegate
                 {
                     Hiro_Title.Margin = new Thickness(0);
@@ -199,14 +199,14 @@ namespace Hiro
 
         private void GoOut()
         {
-            var s = Hiro_Utils.AddDoubleAnimaton(0, 350, Title_Grid, "Opacity", null);
-            s = Hiro_Utils.AddDoubleAnimaton(0, 350, Extension_Grid, "Opacity", s);
+            var s = HAnimation.AddDoubleAnimaton(0, 350, Title_Grid, "Opacity", null);
+            s = HAnimation.AddDoubleAnimaton(0, 350, Extension_Grid, "Opacity", s);
             s.Completed += delegate
             {
                 Title_Grid.Visibility = Visibility.Collapsed;
                 Extension_Grid.Visibility = Visibility.Collapsed;
-                var t = Hiro_Utils.AddDoubleAnimaton(50, 450, BackgroundBorder, "Width", null);
-                t = Hiro_Utils.AddDoubleAnimaton(0, 450, BackgroundBorder, "Opacity", t);
+                var t = HAnimation.AddDoubleAnimaton(50, 450, BackgroundBorder, "Width", null);
+                t = HAnimation.AddDoubleAnimaton(0, 450, BackgroundBorder, "Opacity", t);
                 t.Completed += delegate
                 {
                     BackgroundBorder.Visibility = Visibility.Collapsed;
@@ -216,11 +216,11 @@ namespace Hiro
                     Icon_Background_1.Visibility = Visibility.Collapsed;
                     Get_Obj_Storyboard(Icon_Background_3, 0, 0, t + tt);
                     Get_Obj_Storyboard(Icon_Background_0, 0, 0, t + tt * 2);
-                    var o = Hiro_Utils.AddDoubleAnimaton(0, 700, Icon_Background_0, "Opacity", null);
-                    o = Hiro_Utils.AddDoubleAnimaton(0, 700, Icon_Background_3, "Opacity", o);
-                    var p = Hiro_Utils.AddDoubleAnimaton(0, 400, BaseIconBorder, "Width", null);
-                    p = Hiro_Utils.AddDoubleAnimaton(0, 400, BaseIconBorder, "Height", p);
-                    p = Hiro_Utils.AddDoubleAnimaton(0, 200, BaseIconBorder, "Opacity", p);
+                    var o = HAnimation.AddDoubleAnimaton(0, 700, Icon_Background_0, "Opacity", null);
+                    o = HAnimation.AddDoubleAnimaton(0, 700, Icon_Background_3, "Opacity", o);
+                    var p = HAnimation.AddDoubleAnimaton(0, 400, BaseIconBorder, "Width", null);
+                    p = HAnimation.AddDoubleAnimaton(0, 400, BaseIconBorder, "Height", p);
+                    p = HAnimation.AddDoubleAnimaton(0, 200, BaseIconBorder, "Opacity", p);
                     p.Completed += delegate
                     {
                         BaseIconBorder.Visibility = Visibility.Collapsed;
@@ -296,8 +296,8 @@ namespace Hiro
                 };
             var tt = App.noticeitems[0].title?.Trim();
             if (tt == null || tt.Equals(string.Empty))
-                tt = Hiro_Text.Get_Translate("notitle");
-            Title = Hiro_Text.Get_Translate("boixeTitle").Replace("%t", tt).Replace("%a", App.appTitle);
+                tt = HText.Get_Translate("notitle");
+            Title = HText.Get_Translate("boixeTitle").Replace("%t", tt).Replace("%a", App.appTitle);
             act = App.noticeitems[0].act;
             BaseGrid.Cursor = act != null ? BaseGrid.Cursor = Cursors.Hand : null;
             temps = App.noticeitems[0].time;
@@ -306,7 +306,7 @@ namespace Hiro
             {
                 Size msize = new();
                 Test_Text_Display.Content = w;
-                Hiro_Utils.Get_Text_Visual_Width(Test_Text_Display, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+                HUI.Get_Text_Visual_Width(Test_Text_Display, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
                 maxW = Math.Max(maxW, msize.Width);
             }
             Size tsize = new();
@@ -320,14 +320,14 @@ namespace Hiro
                 Test_Text_Display.Content = tt;
                 formerTitle = tt;
             }
-            Hiro_Utils.Get_Text_Visual_Width(Test_Text_Display, VisualTreeHelper.GetDpi(this).PixelsPerDip, out tsize);
+            HUI.Get_Text_Visual_Width(Test_Text_Display, VisualTreeHelper.GetDpi(this).PixelsPerDip, out tsize);
             maxW = Math.Max(maxW, tsize.Width);
             Reset_Width(true);
             App.noticeitems.RemoveAt(0);
         }
         private void HiroGoLeft(double time, double targetWidth)
         {
-            var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(Icon_Background_3.Width - targetWidth + 5, 0, 0, 0), time, IconGrid, "Margin", null);
+            var s = HAnimation.AddThicknessAnimaton(new Thickness(Icon_Background_3.Width - targetWidth + 5, 0, 0, 0), time, IconGrid, "Margin", null);
             s.Completed += delegate
             {
                 IconGrid.Margin = new Thickness(Icon_Background_3.Width - targetWidth + 5, 0, 0, 0);
@@ -346,8 +346,8 @@ namespace Hiro
                     {
                         channel = 0;
                         Text_Display_0.Text = Test_Text_Display.Content.ToString();
-                        var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_0, "Margin", null, new Thickness(0, 150, 0, 0));
-                        s = Hiro_Utils.AddDoubleAnimaton(1, 400, Text_Display_0, "Opacity", s, 0);
+                        var s = HAnimation.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_0, "Margin", null, new Thickness(0, 150, 0, 0));
+                        s = HAnimation.AddDoubleAnimaton(1, 400, Text_Display_0, "Opacity", s, 0);
                         s.Completed += delegate
                         {
                             Text_Display_0.Margin = new Thickness(0);
@@ -363,10 +363,10 @@ namespace Hiro
                     {
                         channel = 1;
                         Text_Display_1.Text = Test_Text_Display.Content.ToString();
-                        var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_1, "Margin", null, null);
-                        s = Hiro_Utils.AddDoubleAnimaton(1, 400, Text_Display_1, "Opacity", s, 0);
-                        s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_0, "Margin", s, null);
-                        s = Hiro_Utils.AddDoubleAnimaton(0, 400, Text_Display_0, "Opacity", s, 1);
+                        var s = HAnimation.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_1, "Margin", null, null);
+                        s = HAnimation.AddDoubleAnimaton(1, 400, Text_Display_1, "Opacity", s, 0);
+                        s = HAnimation.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_0, "Margin", s, null);
+                        s = HAnimation.AddDoubleAnimaton(0, 400, Text_Display_0, "Opacity", s, 1);
                         s.Completed += delegate
                         {
                             Text_Display_1.Margin = new Thickness(0);
@@ -381,10 +381,10 @@ namespace Hiro
                     {
                         channel = 0;
                         Text_Display_0.Text = Test_Text_Display.Content.ToString();
-                        var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_0, "Margin", null, null);
-                        s = Hiro_Utils.AddDoubleAnimaton(1, 400, Text_Display_0, "Opacity", s, 0);
-                        s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_1, "Margin", s, null);
-                        s = Hiro_Utils.AddDoubleAnimaton(0, 400, Text_Display_1, "Opacity", s, 1);
+                        var s = HAnimation.AddThicknessAnimaton(new Thickness(0), 600, Text_Display_0, "Margin", null, null);
+                        s = HAnimation.AddDoubleAnimaton(1, 400, Text_Display_0, "Opacity", s, 0);
+                        s = HAnimation.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_1, "Margin", s, null);
+                        s = HAnimation.AddDoubleAnimaton(0, 400, Text_Display_1, "Opacity", s, 1);
                         s.Completed += delegate
                         {
                             Text_Display_0.Margin = new Thickness(0);
@@ -423,7 +423,7 @@ namespace Hiro
                 if (icon != formerIcon)
                 {
                     formerIcon = icon;
-                    var sb = Hiro_Utils.AddDoubleAnimaton(1, 300, BaseIconBorder, "Opacity", null, 0, 0.7);
+                    var sb = HAnimation.AddDoubleAnimaton(1, 300, BaseIconBorder, "Opacity", null, 0, 0.7);
                     Set_Icon(icon);
                     sb.Begin();
                 }
@@ -442,7 +442,7 @@ namespace Hiro
                 }
                 else
                 {
-                    var iconLocation = Hiro_Text.Path_PPX(icon.Location);
+                    var iconLocation = HText.Path_PPX(icon.Location);
                     if (System.IO.File.Exists(iconLocation))
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(iconLocation);
@@ -477,8 +477,8 @@ namespace Hiro
                         {
                             case 0:
                                 {
-                                    var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_0, "Margin", null, null);
-                                    s = Hiro_Utils.AddDoubleAnimaton(0, 400, Text_Display_0, "Opacity", s, 1);
+                                    var s = HAnimation.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_0, "Margin", null, null);
+                                    s = HAnimation.AddDoubleAnimaton(0, 400, Text_Display_0, "Opacity", s, 1);
                                     s.Completed += delegate
                                     {
                                         Text_Display_0.Margin = new Thickness(0, 150, 0, 0);
@@ -492,8 +492,8 @@ namespace Hiro
                                 {
                                     channel = 0;
                                     Text_Display_0.Text = Test_Text_Display.Content.ToString();
-                                    var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_1, "Margin", null, null);
-                                    s = Hiro_Utils.AddDoubleAnimaton(0, 400, Text_Display_1, "Opacity", s, 1);
+                                    var s = HAnimation.AddThicknessAnimaton(new Thickness(0, -Text_Grid.ActualHeight - 10, 0, 0), 600, Text_Display_1, "Margin", null, null);
+                                    s = HAnimation.AddDoubleAnimaton(0, 400, Text_Display_1, "Opacity", s, 1);
                                     s.Completed += delegate
                                     {
                                         Text_Display_1.Margin = new Thickness(0, 150, 0, 0);
@@ -512,7 +512,7 @@ namespace Hiro
                     }
                     else
                     {
-                        var s = Hiro_Utils.AddDoubleAnimaton(0, 350, Text_Grid, "Opacity", null);
+                        var s = HAnimation.AddDoubleAnimaton(0, 350, Text_Grid, "Opacity", null);
                         s.Completed += delegate
                         {
                             Text_Grid.Visibility = Visibility.Collapsed;
@@ -532,9 +532,9 @@ namespace Hiro
                 {
                     if (first)
                         HiroGoLeft(350 + 3 * Math.Abs(Width - w), w);
-                    var s = Hiro_Utils.AddDoubleAnimaton(w, 350 + 3 * Math.Abs(Width - w), BackgroundBorder, "Width", null, BackgroundBorder.Width > 100 ? null : 100);
+                    var s = HAnimation.AddDoubleAnimaton(w, 350 + 3 * Math.Abs(Width - w), BackgroundBorder, "Width", null, BackgroundBorder.Width > 100 ? null : 100);
                     if (BackgroundBorder.Opacity < 1)
-                        s = Hiro_Utils.AddDoubleAnimaton(1, 350, BackgroundBorder, "Opacity", s);
+                        s = HAnimation.AddDoubleAnimaton(1, 350, BackgroundBorder, "Opacity", s);
                     s.Completed += delegate
                     {
                         BackgroundBorder.Width = w;

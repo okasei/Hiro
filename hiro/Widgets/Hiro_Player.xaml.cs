@@ -9,7 +9,7 @@ using System.Threading;
 using System.IO;
 using Hiro.Helpers;
 using Hiro.ModelViews;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HSet;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace Hiro
@@ -25,7 +25,7 @@ namespace Hiro
         private Size mSize = new(450, 800);
         private int cflag = 1;
         internal ContextMenu? cm = null;
-        internal static System.Collections.ObjectModel.ObservableCollection<Hiro_Class.Cmditem> playlist = new();
+        internal static System.Collections.ObjectModel.ObservableCollection<HClass.Cmditem> playlist = new();
         internal int index = -1;
         internal int pcd = -1;
         internal WindowAccentCompositor? compositor = null;
@@ -37,7 +37,7 @@ namespace Hiro
         public Hiro_Player(string? play = null)
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             toplay = play;
             Title = App.appTitle;
             Loaded += delegate
@@ -107,7 +107,7 @@ namespace Hiro
             };
             Controller.Children.Add(label);
             Storyboard sb = new();
-            Hiro_Utils.AddThicknessAnimaton(new(-label.ActualWidth, label.Margin.Top, 0, 0), 150, label, "Margin", sb);
+            HAnimation.AddThicknessAnimaton(new(-label.ActualWidth, label.Margin.Top, 0, 0), 150, label, "Margin", sb);
             sb.Completed += delegate
             {
                 label.DataContext = null;
@@ -151,7 +151,7 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Logger.LogError(ex, "Hiro.Exception.MediaPlayer.Initialize");
+                    HLogger.LogError(ex, "Hiro.Exception.MediaPlayer.Initialize");
                 }
             }).Start();
         }
@@ -210,7 +210,7 @@ namespace Hiro
                             return;
                         }
                         Storyboard sb = new();
-                        sb = Hiro_Utils.AddDoubleAnimaton(wid, len, Ctrl_Progress, "Width", sb);
+                        sb = HAnimation.AddDoubleAnimaton(wid, len, Ctrl_Progress, "Width", sb);
                         sb.Begin();
                         sb.Completed += delegate
                         {
@@ -223,7 +223,7 @@ namespace Hiro
                 }
                 catch (Exception e)
                 {
-                    Hiro_Logger.LogError(e, "Hiro.Player");
+                    HLogger.LogError(e, "Hiro.Player");
                     Ctrl_Progress.Width = 0;
                     Ctrl_Time.Content = "00:00";
                 }
@@ -294,7 +294,7 @@ namespace Hiro
                         index = playlist.Count - 1;
                         await Media.Open(new Uri(vidPath));
                         Ctrl_Text.Text = vidPath;
-                        Title = Hiro_Text.Get_Translate("playerTitle").Replace("%t", Hiro_Utils.GetFileName(vidPath)).Replace("%a", App.appTitle);
+                        Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(vidPath)).Replace("%a", App.appTitle);
                         Player_Container.Visibility = Visibility.Visible;
                         Update_Progress();
                     });
@@ -302,7 +302,7 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Logger.LogError(ex, "Hiro.Exception.MediaPlayer.Play");
+                    HLogger.LogError(ex, "Hiro.Exception.MediaPlayer.Play");
                 }
             }).Start();
         }
@@ -339,7 +339,7 @@ namespace Hiro
             if (Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, null, compositor);
+                HUI.Set_Acrylic(bgimage, this, null, compositor);
                 return;
             }
             if (compositor != null)
@@ -349,9 +349,9 @@ namespace Hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
             bool ani = animation == null ? !Read_DCIni("Ani", "2").Equals("0") : (bool)animation;
-            Hiro_Utils.Blur_Animation(direction, ani, bgimage, this);
+            HAnimation.Blur_Animation(direction, ani, bgimage, this);
             bflag = 0;
         }
 
@@ -454,7 +454,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.MediaPlay.Close");
+                HLogger.LogError(ex, "Hiro.Exception.MediaPlay.Close");
             }
         }
 
@@ -478,12 +478,12 @@ namespace Hiro
             if (Media.IsPlaying)
             {
                 Media.Pause();
-                Player_Notify(Hiro_Text.Get_Translate("playerpause"));
+                Player_Notify(HText.Get_Translate("playerpause"));
             }
             else if (Media.IsPaused)
             {
                 Media.Play();
-                Player_Notify(Hiro_Text.Get_Translate("playerplay"));
+                Player_Notify(HText.Get_Translate("playerplay"));
             }
         }
 
@@ -619,20 +619,20 @@ namespace Hiro
         {
             Microsoft.Win32.OpenFileDialog ofd = new()
             {
-                Filter = Hiro_Text.Get_Translate("vidfiles") +
+                Filter = HText.Get_Translate("vidfiles") +
                 "|*.3g2;*.3gp;*.3gp2;*.3gpp;*.amv;*.asf;*.avi;*.bik;*.bin;*.crf;*.dav;*.divx;*.drc;*.dv;*.dvr-ms;*.evo;*.f4v;*.flv;*.gvi;*.gxf;*.m1v;*.m2v;*.m2t;*.m2ts;" +
                 "*.m4v;*.mkv;*.mov;*.mp2;*.mp2v;*.mp4;*.mp4v;*.mpe;*.mpeg;*.mpeg1;*.mpeg2;*.mpeg4;*.mpg;*.mpv2;*.mts;*.mtv;*.mxf;*.mxg;*.nsv;*.nuv;*.ogm;*.ogv;*.ogx;*.ps;" +
                 "*.rec;*.rm;*.rmvb;*.rpl;*.thp;*.tod;*.tp;*.ts;*.tts;*.txd;*.vob;*.vro;*.webm;*.wm;*.wmv;*.wtv;*.xesc|"
-                + Hiro_Text.Get_Translate("audfiles") +
+                + HText.Get_Translate("audfiles") +
                 "|*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;" +
                 "*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;" +
                 "*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm|"
-                + Hiro_Text.Get_Translate("allfiles") + "|*.*",
+                + HText.Get_Translate("allfiles") + "|*.*",
                 ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                 CheckFileExists = true, //验证路径的有效性
                 CheckPathExists = true,//验证路径的有效性
                 Multiselect = true,
-                Title = Hiro_Text.Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle)
+                Title = HText.Get_Translate("ofdTitle").Replace("%t", HText.Get_Translate("openfile")).Replace("%a", App.appTitle)
             };
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
@@ -665,7 +665,7 @@ namespace Hiro
                 if (animation)
                 {
                     Storyboard sb = new();
-                    Hiro_Utils.AddThicknessAnimaton(to, 150, Dgi, "Margin", sb, from);
+                    HAnimation.AddThicknessAnimaton(to, 150, Dgi, "Margin", sb, from);
                     sb.Completed += delegate
                     {
                         Dgi.Margin = to;
@@ -697,7 +697,7 @@ namespace Hiro
                 if (animation)
                 {
                     Storyboard sb = new();
-                    Hiro_Utils.AddThicknessAnimaton(from, 150, Dgi, "Margin", sb, to);
+                    HAnimation.AddThicknessAnimaton(from, 150, Dgi, "Margin", sb, to);
                     sb.Completed += delegate
                     {
                         Dgi.Margin = from;
@@ -719,7 +719,7 @@ namespace Hiro
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(1, Ctrl_Address, sb, -30, null);
+                    HAnimation.AddPowerAnimation(1, Ctrl_Address, sb, -30, null);
                     sb.Completed += delegate
                     {
                         Ctrl_Address.Focus();
@@ -738,7 +738,7 @@ namespace Hiro
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(1, Ctrl_Address, sb, null, -30);
+                    HAnimation.AddPowerAnimation(1, Ctrl_Address, sb, null, -30);
                     sb.Completed += delegate
                     {
                         Ctrl_Address.Visibility = Visibility.Hidden;
@@ -762,10 +762,10 @@ namespace Hiro
                     {
                         Ctrl_Btns.Visibility = Visibility.Visible;
                         Move_Label.Visibility = Visibility.Visible;
-                        Hiro_Utils.AddPowerAnimation(1, Ctrl_Btns, sb, -30, null);
-                        Hiro_Utils.AddPowerAnimation(1, Move_Label, sb, -30, null);
+                        HAnimation.AddPowerAnimation(1, Ctrl_Btns, sb, -30, null);
+                        HAnimation.AddPowerAnimation(1, Move_Label, sb, -30, null);
                     }
-                    Hiro_Utils.AddPowerAnimation(3, Controller, sb, -30, null);
+                    HAnimation.AddPowerAnimation(3, Controller, sb, -30, null);
                     sb.Begin();
                 }
                 else
@@ -788,10 +788,10 @@ namespace Hiro
                     {
                         Ctrl_Btns.Visibility = Visibility.Visible;
                         Move_Label.Visibility = Visibility.Visible;
-                        Hiro_Utils.AddPowerAnimation(1, Ctrl_Btns, sb, null, -30);
-                        Hiro_Utils.AddPowerAnimation(1, Move_Label, sb, null, -30);
+                        HAnimation.AddPowerAnimation(1, Ctrl_Btns, sb, null, -30);
+                        HAnimation.AddPowerAnimation(1, Move_Label, sb, null, -30);
                     }
-                    Hiro_Utils.AddPowerAnimation(3, Controller, sb, null, -30);
+                    HAnimation.AddPowerAnimation(3, Controller, sb, null, -30);
                     sb.Completed += delegate
                     {
                         Controller.Visibility = Visibility.Hidden;
@@ -824,7 +824,7 @@ namespace Hiro
             MenuItem open = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermopen")
+                Header = HText.Get_Translate("playermopen")
             };
             open.Click += delegate
             {
@@ -837,57 +837,57 @@ namespace Hiro
                 Foreground = new SolidColorBrush(App.AppForeColor),
                 Background = new SolidColorBrush(App.AppAccentColor),
                 BorderBrush = null,
-                Header = Hiro_Text.Get_Translate("playermspeed")
+                Header = HText.Get_Translate("playermspeed")
             };
             MenuItem uu = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermspeeduu")
+                Header = HText.Get_Translate("playermspeeduu")
             };
             uu.Click += delegate
             {
                 Media.SpeedRatio = 2;
-                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "2"));
+                Player_Notify(HText.Get_Translate("playerspeed").Replace("%s", "2"));
             };
             MenuItem u = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermspeedu")
+                Header = HText.Get_Translate("playermspeedu")
             };
             u.Click += delegate
             {
                 Media.SpeedRatio = 1.5f;
-                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "1.5"));
+                Player_Notify(HText.Get_Translate("playerspeed").Replace("%s", "1.5"));
             };
             MenuItem n = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermspeedn")
+                Header = HText.Get_Translate("playermspeedn")
             };
             n.Click += delegate
             {
                 Media.SpeedRatio = 1;
-                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "1"));
+                Player_Notify(HText.Get_Translate("playerspeed").Replace("%s", "1"));
             };
             MenuItem s = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermspeeds")
+                Header = HText.Get_Translate("playermspeeds")
             };
             s.Click += delegate
             {
                 Media.SpeedRatio = 0.75f;
-                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "0.75"));
+                Player_Notify(HText.Get_Translate("playerspeed").Replace("%s", "0.75"));
             };
             MenuItem ss = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermspeedss")
+                Header = HText.Get_Translate("playermspeedss")
             };
             ss.Click += delegate
             {
                 Media.SpeedRatio = 0.5f;
-                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", "0.5"));
+                Player_Notify(HText.Get_Translate("playerspeed").Replace("%s", "0.5"));
             };
             speed.Items.Add(uu);
             speed.Items.Add(u);
@@ -898,19 +898,19 @@ namespace Hiro
             MenuItem to = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermpin")
+                Header = HText.Get_Translate("playermpin")
             };
             to.Click += delegate
             {
                 Topmost = !Topmost;
-                to.Header = Topmost == true ? Hiro_Text.Get_Translate("playermunpin") : Hiro_Text.Get_Translate("playermpin");
+                to.Header = Topmost == true ? HText.Get_Translate("playermunpin") : HText.Get_Translate("playermpin");
 
             };
             cm.Items.Add(to);
             MenuItem list = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermlist")
+                Header = HText.Get_Translate("playermlist")
             };
             list.Click += delegate
             {
@@ -920,7 +920,7 @@ namespace Hiro
             MenuItem ui = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermui")
+                Header = HText.Get_Translate("playermui")
             };
             ui.Click += delegate
             {
@@ -930,7 +930,7 @@ namespace Hiro
             MenuItem exi = new()
             {
                 Background = new SolidColorBrush(Colors.Transparent),
-                Header = Hiro_Text.Get_Translate("playermexit")
+                Header = HText.Get_Translate("playermexit")
             };
             exi.Click += delegate
             {
@@ -941,13 +941,13 @@ namespace Hiro
             {
                 if (obj is MenuItem mi)
                 {
-                    Hiro_Utils.Set_Control_Location(mi, "context", location: false);
+                    HUI.Set_Control_Location(mi, "context", location: false);
                     if (mi.Items.Count > 0)
                     {
                         foreach (var mobj in cm.Items)
                         {
                             if (mobj is MenuItem mii)
-                                Hiro_Utils.Set_Control_Location(mii, "context", location: false);
+                                HUI.Set_Control_Location(mii, "context", location: false);
                         }
                     }
                 }
@@ -964,7 +964,7 @@ namespace Hiro
                 {
                     Ctrl_Address.Visibility = Visibility.Visible;
                     Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(1, Ctrl_Address, sb, null, -30);
+                    HAnimation.AddPowerAnimation(1, Ctrl_Address, sb, null, -30);
                     sb.Completed += delegate
                     {
                         Ctrl_Address.Visibility = Visibility.Hidden;
@@ -1010,10 +1010,10 @@ namespace Hiro
 
         private void Load_Translate()
         {
-            minbtn.ToolTip = Hiro_Text.Get_Translate("Min");
-            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
-            //maxbtn.ToolTip = Hiro_Text.Get_Translate("max");
-            //resbtn.ToolTip = Hiro_Text.Get_Translate("restore");
+            minbtn.ToolTip = HText.Get_Translate("Min");
+            closebtn.ToolTip = HText.Get_Translate("close");
+            //maxbtn.ToolTip = HText.Get_Translate("max");
+            //resbtn.ToolTip = HText.Get_Translate("restore");
             Load_Menu();
         }
 
@@ -1065,7 +1065,7 @@ namespace Hiro
                 {
                     Player_Info.Visibility = Visibility.Visible;
                     Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(1, Player_Info, sb, -30, null);
+                    HAnimation.AddPowerAnimation(1, Player_Info, sb, -30, null);
                     sb.Completed += delegate
                     {
                         new System.Threading.Thread(() =>
@@ -1080,7 +1080,7 @@ namespace Hiro
                                 Dispatcher.Invoke(() =>
                                 {
                                     Storyboard sb = new();
-                                    Hiro_Utils.AddPowerAnimation(1, Player_Info, sb, null, -30);
+                                    HAnimation.AddPowerAnimation(1, Player_Info, sb, null, -30);
                                     sb.Completed += delegate
                                     {
                                         Player_Info.Visibility = Visibility.Hidden;
@@ -1113,7 +1113,7 @@ namespace Hiro
                             Dispatcher.Invoke(() =>
                             {
                                 Storyboard sb = new();
-                                Hiro_Utils.AddPowerAnimation(1, Player_Info, sb, null, -30);
+                                HAnimation.AddPowerAnimation(1, Player_Info, sb, null, -30);
                                 sb.Completed += delegate
                                 {
                                     Player_Info.Visibility = Visibility.Hidden;
@@ -1146,7 +1146,7 @@ namespace Hiro
                 else
                     vol = vol + del;
                 Media.SpeedRatio = vol;
-                Player_Notify(Hiro_Text.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
+                Player_Notify(HText.Get_Translate("playerspeed").Replace("%s", vol.ToString()));
                 e.Handled = true;
             }
             else
@@ -1158,7 +1158,7 @@ namespace Hiro
                 else
                     vol = vol + del;
                 Media.Volume = vol;
-                Player_Notify(Hiro_Text.Get_Translate("playervol").Replace("%v", ((int)(vol * 100)).ToString()));
+                Player_Notify(HText.Get_Translate("playervol").Replace("%v", ((int)(vol * 100)).ToString()));
                 e.Handled = true;
             }
         }
@@ -1224,13 +1224,13 @@ namespace Hiro
                         }
                         await Media.Open(new Uri(vidPath));
                         Ctrl_Text.Text = vidPath;
-                        Title = Hiro_Text.Get_Translate("playerTitle").Replace("%t", Hiro_Utils.GetFileName(vidPath)).Replace("%a", App.appTitle);
+                        Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(vidPath)).Replace("%a", App.appTitle);
                         Player_Container.Visibility = Visibility.Visible;
 
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Player.List.PlayIndex");
+                        HLogger.LogError(ex, "Hiro.Player.List.PlayIndex");
                     }
                 }
             });
