@@ -872,6 +872,15 @@ namespace Hiro
             {
                 Notification_Tick();
             }
+            if (mn != null && mn.DropInfo.Visibility == System.Windows.Visibility.Visible)
+            {
+                if (!mn._dragFlag)
+                    mn.HideDropInfo();
+                else
+                {
+                    mn._dragFlag = false;
+                }
+            }
         }
 
         async private static void Notification_Tick()

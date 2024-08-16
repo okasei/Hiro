@@ -37,6 +37,7 @@ namespace Hiro
         internal string vlcPath = "";
         internal string currentBack = "";
         internal WindowAccentCompositor? compositor = null;
+        internal bool _dragFlag = false;
 
         public Hiro_MainUI()
         {
@@ -341,6 +342,7 @@ namespace Hiro
         {
             Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, infoPoly.Visibility == Visibility.Visible ? "tigridp" : "tigrid");
             Hiro_Utils.Set_FrameworkElement_Location(infoPoly, "infopoly");
+            Hiro_Utils.Set_FrameworkElement_Location(DropInfo, "dropg");
             Hiro_Utils.Set_Control_Location(titlelabel, "title");
             Hiro_Utils.Set_Control_Location(versionlabel, "version");
             Hiro_Utils.Set_Control_Location(infotitle, "infotitle");
@@ -357,6 +359,7 @@ namespace Hiro
             Hiro_Utils.Set_Control_Location(proxyx, "proxy", location: false);
             Hiro_Utils.Set_Control_Location(chatx, "chat", location: false);
             Hiro_Utils.Set_Control_Location(loginx, "login", location: false);
+            Hiro_Utils.Set_Control_Location(dropIci, "dropInfo", location: false);
         }
 
         internal void Set_AcrylicStyle(bool preview = false, int type = 0)
@@ -791,6 +794,7 @@ namespace Hiro
             chatx.Content = Hiro_Text.Get_Translate("chat");
             loginx.Content = Hiro_Text.Get_Translate("login");
             acrylicx.Content = Hiro_Text.Get_Translate("acrylic");
+            dropIci.Content = Hiro_Text.Get_Translate("dropInfo");
             hiro_home?.Update_Labels();
             hiro_home?.Load_Position();
             hiro_items?.Load_Translate();
@@ -1577,6 +1581,7 @@ namespace Hiro
 
         private void BaseGrid_Drop(object sender, DragEventArgs e)
         {
+            HideDropInfo();
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
@@ -1591,6 +1596,45 @@ namespace Hiro
                 var f = (string)e.Data.GetData(DataFormats.Text);
                 Hiro_Utils.RunExe(f, "Windows");
                 e.Handled = true;
+            }
+        }
+
+        private void BaseGrid_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+            _dragFlag = true;
+            if (DropInfo.Visibility != Visibility.Visible)
+            {
+                if (!Read_DCIni("Ani", "2").Equals("0"))
+                {
+                    DropInfo.Visibility = Visibility.Visible;
+                    var s = Hiro_Utils.AddPowerAnimation(0, DropInfo, null, -50, null, 250, 150);
+                    s.Begin();
+                }
+                else
+                {
+                    DropInfo.Visibility = Visibility.Visible;
+                }
+            }
+            e.Handled = true;
+        }
+
+        internal void HideDropInfo()
+        {
+            if (DropInfo.Visibility == Visibility.Visible)
+            {
+                if (!Read_DCIni("Ani", "2").Equals("0"))
+                {
+                    var s = Hiro_Utils.AddPowerOutAnimation(0, DropInfo, null, null, -50, 250, 150);
+                    s.Completed += delegate
+                    {
+                        DropInfo.Visibility = Visibility.Collapsed;
+                    };
+                    s.Begin();
+                }
+                else
+                {
+                    dropIci.Visibility = Visibility.Collapsed;
+                }
             }
         }
     }

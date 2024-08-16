@@ -31,6 +31,7 @@ using static Hiro.Helpers.Hiro_Settings;
 using Hiro.ModelViews;
 using Hiro.Resources;
 using System.Windows.Media.Media3D;
+using System.Buffers.Text;
 
 namespace Hiro
 {
@@ -621,6 +622,11 @@ namespace Hiro
                 var path = Path_Prepare_EX(Path_Prepare(RunPath));
                 try
                 {
+                    if (StartsWith(path, "base("))
+                    {
+                        path = path.Substring(5, path.Length - 6);
+                        path = Encoding.Default.GetString(Convert.FromBase64String(path));
+                    }
                     var parameter = HiroCmdParse(path);
                     #region 预处理参数
                     for (var i = 0; i < parameter.Count; i++)
@@ -1729,7 +1735,7 @@ namespace Hiro
                     {
                         if (App.mn != null)
                         {
-                            RunExe("run(\"" + Hiro_Resources.ApplicationPath + "\",,\"" + path + "" + "\" utils)");
+                            RunExe($"run(\"{Hiro_Resources.ApplicationPath}\",,\"base({Convert.ToBase64String(Encoding.Default.GetBytes(path))})\" utils)");
                         }
                         else
                         {
@@ -1805,7 +1811,7 @@ namespace Hiro
                         {
                             if (App.mn != null)
                             {
-                                RunExe(@"run(" + Hiro_Resources.ApplicationPath + ",,\"" + path + "" + "\" utils)");
+                                RunExe($"run(\"{Hiro_Resources.ApplicationPath}\",,\"base({Convert.ToBase64String(Encoding.Default.GetBytes(path))})\" utils)");
                             }
                             else
                             {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-        Title="Hiro_Text" Height="480" Width="600" ResizeMode="CanResize"  WindowStyle="None" Icon="/Resources/hiro_circle.ico" WindowStartupLocation="Manual" SizeChanged="Window_SizeChanged" MouseDoubleClick="VirtualTitle_MouseDoubleClick">
+        Title="Hiro_Text" Height="480" Width="600" ResizeMode="CanResize"  WindowStyle="None" Icon="/Resources/hiro_circle.ico" WindowStartupLocation="CenterScreen" SizeChanged="Window_SizeChanged" MouseDoubleClick="VirtualTitle_MouseDoubleClick">
     <WindowChrome.WindowChrome>
         <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="Left,Right,Bottom" CornerRadius="0" />
     </WindowChrome.WindowChrome>
