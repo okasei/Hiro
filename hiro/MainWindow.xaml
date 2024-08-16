@@ -12,7 +12,7 @@
         ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 
         Closing="Main_Closing" Icon="Resources/hiro_circle.ico" MaxWidth="1" MaxHeight="1" ShowInTaskbar="False" ShowActivated="False" LocationChanged="Window_LocationChanged">
     <Grid>
-        <tb:TaskbarIcon x:Name="Hiro_Tray" Visibility="Visible" IconSource="Resources/hiro_circle.ico">
+        <tb:TaskbarIcon x:Name="Hiro_Tray" Visibility="Visible" IconSource="Resources/hiro_circle.ico" AllowDrop="True" ToolTip="{Binding Text, ElementName=trayText}">
             <tb:TaskbarIcon.TrayToolTip>
                 <Border
                     x:Name="trayBorder"

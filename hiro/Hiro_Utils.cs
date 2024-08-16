@@ -31,7 +31,6 @@ using static Hiro.Helpers.Hiro_Settings;
 using Hiro.ModelViews;
 using Hiro.Resources;
 using System.Windows.Media.Media3D;
-using hiro.Widgets;
 
 namespace Hiro
 {
@@ -602,7 +601,13 @@ namespace Hiro
         private static bool isImageFile(string file)
         {
             var ext = $",{Path.GetExtension(file).ToLower()},";
-            var aext = ",.png,.jpg,.jpeg,.bmp,.ico,.tiff,.apng,.jpe,.jfif,.dib,.heic,.heif,";
+            var aext = ",.png,.jpg,.jpeg,.bmp,.ico,.tiff,.apng,.jpe,.jfif,.dib,.heic,.heif,.hvp,.hpp,.hap,.hfp,";
+            return aext.IndexOf(ext) != -1;
+        }
+        private static bool isTextFile(string file)
+        {
+            var ext = $",{Path.GetExtension(file).ToLower()},";
+            var aext = ",.txt,.ini,.log,.inf,.c,.h,.cpp,.cc,.cxx,.c++,.cs,.sln,.xml,.xaml,.htm,.html,.yaml,.json,.csproj,.py,.r,.php,.lock,.cfg,.hlp,.hus,.hsf,.csv,.java,.asp,.project,.classpath.,jsp.,js.,conf,.svn,.gitignore,.css,";
             return aext.IndexOf(ext) != -1;
         }
 
@@ -661,8 +666,15 @@ namespace Hiro
                         else if (isImageFile(path))
                         {
                             if (App.dflag)
-                            LogtoFile("[RUN]Image file detected");
+                                LogtoFile("[RUN]Image file detected");
                             path = $"image(\"{path}\")";
+                            parameter = HiroCmdParse(path);
+                        }
+                        else if (isTextFile(path))
+                        {
+                            if (App.dflag)
+                                LogtoFile("[RUN]Text file detected");
+                            path = $"text(\"{path}\")";
                             parameter = HiroCmdParse(path);
                         }
                         else
@@ -1096,6 +1108,39 @@ namespace Hiro
                             _ => "notify(" + Get_Translate("syntax") + ",2)"
                         };
                         RunExe(path, source);
+                        goto RunOK;
+                    }
+                    if (Hiro_Text.StartsWith(path, "sync()"))
+                    {
+                        if (App.Logined == true)
+                        {
+                            if (Hiro_ID.SyncProfile(App.loginedUser, App.loginedToken).Equals("success"))
+                            {
+                                HiroInvoke(() =>
+                                {
+                                    if (App.mn != null)
+                                    {
+                                        App.mn.hiro_profile?.UpdateProfile();
+                                    }
+                                    App.Notify(new(Hiro_Text.Get_Translate("syncsucc"), 2, Hiro_Text.Get_Translate("sync")));
+                                });
+                            }
+                            else
+                            {
+                                HiroInvoke(() =>
+                                {
+                                    App.Notify(new(Hiro_Text.Get_Translate("syncfailed"), 2, Hiro_Text.Get_Translate("sync")));
+                                });
+                            }
+                        }
+                        else
+                        {
+                            HiroInvoke(() =>
+                            {
+                                App.Notify(new(Hiro_Text.Get_Translate("synclogin"), 2, Hiro_Text.Get_Translate("sync")));
+                                App.mn?.Set_Label(App.mn.loginx);
+                            });
+                        }
                         goto RunOK;
                     }
                     if (path.ToLower() == "nop" || path.ToLower() == "nop()") goto RunOK;
@@ -1602,7 +1647,7 @@ namespace Hiro
                             Hiro_Msg msg = new(parameter[0])
                             {
                                 bg = bg,
-                                Title = Path_Prepare(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))) + " - " + App.appTitle
+                                Title = Get_Translate("msgTitle").Replace("%t", Path_PPX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))).Replace("%a", App.appTitle)
                             };
                             msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))));
                             msg.acceptbtn.Content = Read_Ini(parameter[0], "Message", "accept", Get_Translate("msgaccept"));
@@ -1713,7 +1758,7 @@ namespace Hiro
                                 Hiro_Msg msg = new(confrimWin)
                                 {
                                     bg = bg,
-                                    Title = Path_Prepare(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))) + " - " + App.appTitle
+                                    Title = Get_Translate("msgTitle").Replace("%t", Path_PPX(Read_Ini(parameter[0], "Message", "Title", Get_Translate("syntax")))).Replace("%a", App.appTitle)
                                 };
                                 msg.backtitle.Content = Path_Prepare(Path_Prepare_EX(Path_Prepare_EX(Read_Ini(confrimWin, "Message", "Title", Get_Translate("syntax")))));
                                 msg.acceptbtn.Content = Read_Ini(confrimWin, "Message", "accept", Get_Translate("msgaccept"));
@@ -1787,7 +1832,7 @@ namespace Hiro
                                         {
                                             1 or 2 => new(parameter[0]),
                                             > 2 => new(parameter[0], null, parameter[2]),
-                                            _ => new("https://www.rexio.cn/"),
+                                            _ => new("https://rex.as/"),
                                         };
                                     }
                                     if (webpara.IndexOf("s") != -1)
@@ -1831,6 +1876,14 @@ namespace Hiro
                         HiroInvoke(() =>
                         {
                             new Hiro_ImageViewer(parameter[0]).Show();
+                        });
+                        goto RunOK;
+                    }
+                    if (Hiro_Text.StartsWith(path, "text("))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            new Hiro_TextEditor(parameter[0]).Show();
                         });
                         goto RunOK;
                     }
@@ -1907,7 +1960,7 @@ namespace Hiro
                     || parameter[0].ToLower().Equals("chrome")
                     || parameter[0].ToLower().Equals("msedge")
                     || parameter[0].ToLower().Equals("iexplore")
-                    || (parameter[0].ToLower().Equals("explorer") && (parameter[2].ToLower().StartsWith("https://") || parameter[2].ToLower().StartsWith("http://"))))
+                    || (parameter[0].ToLower().Equals("yandex") && (parameter[2].ToLower().StartsWith("https://") || parameter[2].ToLower().StartsWith("http://"))))
                     && urlCheck)
                     {
                         Hiro_System.ShowWebConfirmDialog(autoClose, path, source);
@@ -2509,6 +2562,7 @@ namespace Hiro
                     To = 0.0,
                     Duration = TimeSpan.FromMilliseconds(App.blursec)
                 };
+                da.EasingFunction = GetEasingFunction(da.EasingFunction, true);
                 Storyboard.SetTarget(da, ct);
                 Storyboard.SetTargetProperty(da, new PropertyPath("Effect.Radius"));
                 sb.Children.Add(da);
@@ -2566,6 +2620,7 @@ namespace Hiro
             da.Duration = TimeSpan.FromMilliseconds(mstime);
             da.DecelerationRatio = decelerationRatio;
             da.AccelerationRatio = accelerationRatio;
+            da.EasingFunction = GetEasingFunction(da.EasingFunction, !".width;.height;.opacity;".Contains($".{PropertyPath};", StringComparison.CurrentCultureIgnoreCase));
             Storyboard.SetTarget(da, value);
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
@@ -2591,6 +2646,7 @@ namespace Hiro
             da.Duration = TimeSpan.FromMilliseconds(mstime);
             da.DecelerationRatio = DecelerationRatio;
             da.AccelerationRatio = AccelerationRatio;
+            da.EasingFunction = GetEasingFunction(da.EasingFunction, true);
             Storyboard.SetTarget(da, value);
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
@@ -2614,6 +2670,7 @@ namespace Hiro
             else
                 da = new(to, TimeSpan.FromMilliseconds(mstime));
             da.DecelerationRatio = 0.9;
+            da.EasingFunction = GetEasingFunction(da.EasingFunction, true);
             Storyboard.SetTarget(da, value);
             Storyboard.SetTargetProperty(da, new PropertyPath(PropertyPath));
             sb.Children.Add(da);
@@ -2625,6 +2682,97 @@ namespace Hiro
             };
             return sb;
         }
+        #endregion
+
+        #region 重设缓动函数
+
+        private static IEasingFunction GetEasingFunction(IEasingFunction _former, bool canBeNegative)
+        {
+            double _par = 0;
+            int _ipar = 0;
+            return (Read_DCIni("EasingFunction", string.Empty)) switch
+            {
+                "0" => new BackEase()
+                {
+                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
+                    {
+                        "1" => EasingMode.EaseOut,
+                        "2" => EasingMode.EaseInOut,
+                        _ => EasingMode.EaseIn
+                    },
+                    Amplitude = canBeNegative ? (double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? _par : 1) : 0
+                },
+
+                "1" => new BounceEase()
+                {
+                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
+                    {
+                        "1" => EasingMode.EaseOut,
+                        "2" => EasingMode.EaseInOut,
+                        _ => EasingMode.EaseIn
+                    },
+                    Bounces = int.TryParse(Read_DCIni("EasingExtra", "0"), out _ipar) ? _ipar : 1,
+                    Bounciness = double.TryParse(Read_DCIni("EasingExtraP", "0"), out _par) ? _par : 1
+                },
+
+                "2" => new CircleEase()
+                {
+                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
+                    {
+                        "1" => EasingMode.EaseOut,
+                        "2" => EasingMode.EaseInOut,
+                        _ => EasingMode.EaseIn
+                    }
+                },
+
+                "3" => new PowerEase()
+                {
+                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
+                    {
+                        "1" => EasingMode.EaseOut,
+                        "2" => EasingMode.EaseInOut,
+                        _ => EasingMode.EaseIn
+                    },
+                    Power = double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? _par : 1
+                },
+
+                "4" => new ElasticEase()
+                {
+                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
+                    {
+                        "1" => EasingMode.EaseOut,
+                        "2" => EasingMode.EaseInOut,
+                        _ => EasingMode.EaseIn
+                    },
+                    Springiness = double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? Math.Abs(_par) : 1,
+                    Oscillations = int.TryParse(Read_DCIni("EasingExtraP", "0"), out _ipar) ? Math.Abs(_ipar) : 1
+                },
+
+                "5" => new ExponentialEase()
+                {
+                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
+                    {
+                        "1" => EasingMode.EaseOut,
+                        "2" => EasingMode.EaseInOut,
+                        _ => EasingMode.EaseIn
+                    },
+                    Exponent = double.TryParse(Read_DCIni("EasingExtra", "0"), out _par) ? _par : 1
+                },
+
+                "6" => new SineEase()
+                {
+                    EasingMode = (Read_DCIni("EasingMode", "0")) switch
+                    {
+                        "1" => EasingMode.EaseOut,
+                        "2" => EasingMode.EaseInOut,
+                        _ => EasingMode.EaseIn
+                    }
+                },
+                _ => _former
+
+            };
+        }
+
         #endregion
 
         #region 增强动效

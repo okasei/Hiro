@@ -28,10 +28,15 @@ namespace Hiro
             Hiro_Initialize();
             Loaded += delegate
             {
-                SetAvatar(Read_PPDCIni("UserAvatar", ""), false);
-                SetBackground(Read_PPDCIni("UserBackground", ""), false);
+                UpdateProfile();
                 HiHiro();
             };
+        }
+
+        internal void UpdateProfile()
+        {
+            SetAvatar(Read_PPDCIni("UserAvatar", ""), false);
+            SetBackground(Read_PPDCIni("UserBackground", ""), false);
         }
 
         public void HiHiro()
@@ -225,7 +230,7 @@ namespace Hiro
             var wps = "";
             whatsbw.DoWork += delegate
             {
-                wps = Hiro_Net.GetWebContent("https://hiro.rexio.cn/Update/new.php?ver=" + Hiro_Resources.ApplicationVersion + "&lang=" + App.lang);
+                wps = Hiro_Net.GetWebContent("https://hi.rex.as/update/new.php?ver=" + Hiro_Resources.ApplicationVersion + "&lang=" + App.lang);
             };
             whatsbw.RunWorkerCompleted += delegate
             {
@@ -254,11 +259,11 @@ namespace Hiro
             Write_Ini(App.dConfig, "Config", "CustomNick", "1");
             tb10.IsEnabled = false;
             App.appTitle = Hiro_Resources.ApplicationName;
-            Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = Hiro_Text.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion));
             if (Hiro_Main != null)
             {
                 Hiro_Main.titlelabel.Content = App.appTitle;
-                Hiro_Main.Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.Title = Title;
             }
             if (App.wnd != null)
                 App.wnd.trayText.Text = App.appTitle;
@@ -268,11 +273,11 @@ namespace Hiro
             Write_Ini(App.dConfig, "Config", "CustomNick", "2");
             tb10.IsEnabled = true;
             App.appTitle = tb10.Text;
-            Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = Hiro_Text.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion)); ;
             if (Hiro_Main != null)
             {
                 Hiro_Main.titlelabel.Content = App.appTitle;
-                Hiro_Main.Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Hiro_Main.Title = Title;
             }
             if (App.wnd != null)
                 App.wnd.trayText.Text = tb10.Text;
@@ -284,13 +289,13 @@ namespace Hiro
             {
                 Write_Ini(App.dConfig, "Config", "CustomHIRO", tb10.Text);
                 App.appTitle = tb10.Text;
-                Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                Title = Hiro_Text.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion));
                 if (Hiro_Main != null)
                 {
                     Hiro_Main.titlelabel.Content = App.appTitle;
-                    Hiro_Main.Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+                    Hiro_Main.Title = Title;
                 }
-                if (App.wnd != null)    
+                if (App.wnd != null)
                     App.wnd.trayText.Text = tb10.Text;
             }
 
@@ -398,8 +403,8 @@ namespace Hiro
                     App.loginedUser, App.loginedToken, App.username,
                     Read_DCIni("CustomSign", string.Empty),
                     Read_DCIni("UserAvatarStyle", "1"),
-                    Hiro_Utils.GetMD5(Read_DCIni("UserBackground", "")),
-                    Hiro_Utils.GetMD5(Read_DCIni("UserAvatar", "")),
+                    Hiro_Utils.GetMD5(Read_DCIni("UserBackground", "")).Replace("-", ""),
+                    Hiro_Utils.GetMD5(Read_DCIni("UserAvatar", "")).Replace("-", ""),
                     string.Empty,
                     string.Empty,
                     string.Empty,
@@ -486,7 +491,7 @@ namespace Hiro
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle)
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
@@ -518,7 +523,7 @@ namespace Hiro
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle)
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {

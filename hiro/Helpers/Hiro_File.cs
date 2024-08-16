@@ -156,9 +156,9 @@ namespace Hiro.Helpers
             {
                 var para = parameter[2].ToLower();
                 if (para.IndexOf("s") != -1)
-                    Hiro_Utils.RunExe(parameter[1]);
+                    Hiro_Utils.RunExe(parameter[1], Hiro_Text.Get_Translate("file"));
                 if (para.IndexOf("d") != -1)
-                    Hiro_Utils.RunExe($"Delete({parameter[0]})");
+                    Hiro_Utils.RunExe($"Delete({parameter[0]})", Hiro_Text.Get_Translate("file"));
             }
             if (parameter.Count > 3)
             {

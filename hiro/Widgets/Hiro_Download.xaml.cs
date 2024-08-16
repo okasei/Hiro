@@ -92,7 +92,7 @@ namespace Hiro
         }
         void Load_Translate()
         {
-            Title = Hiro_Text.Get_Translate("dltitle") + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("dlTitle").Replace("%t", Hiro_Text.Get_Translate("dltitle")).Replace("%a", App.appTitle);
             ala_title.Content = Hiro_Text.Get_Translate("dltitle");
             albtn_1.Content = Hiro_Text.Get_Translate("dlstart");
             urllabel.Content = mode == 1 ? Hiro_Text.Get_Translate("dlupdate").Replace("%u", product) : Hiro_Text.Get_Translate("dllink");
@@ -195,7 +195,7 @@ namespace Hiro
                 return;
             _timer = new DispatcherTimer()
             {
-                Interval =  Hiro_Settings.Read_DCIni("Performance", "0") switch
+                Interval = Hiro_Settings.Read_DCIni("Performance", "0") switch
                 {
                     "1" => TimeSpan.FromMilliseconds(150),
                     "2" => TimeSpan.FromMilliseconds(500),
@@ -339,7 +339,7 @@ namespace Hiro
         private void UpdateTitle()
         {
             ala_title.Content = nextTitle;
-            Title = nextTitle + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("dlTitle").Replace("%t", nextTitle).Replace("%a", App.appTitle);
             if (nextProgess >= 0 && nextProgess <= 100)
             {
                 pb.Value = nextProgess;
@@ -413,7 +413,7 @@ namespace Hiro
             textBoxHttpUrl.IsEnabled = true;
             SavePath.IsEnabled = true;
             ala_title.Content = progress + (success ? Hiro_Text.Get_Translate("dlsuccess") : Hiro_Text.Get_Translate("dltitle"));
-            Title = ala_title.Content.ToString() + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("dlTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
             stopflag = 1;
             if (success)
             {

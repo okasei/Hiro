@@ -51,7 +51,7 @@ namespace Hiro
                     bw.RunWorkerCompleted += delegate
                     {
                         ala_title.Content = CustomedTitle;
-                        Title = ala_title.Content + " - " + App.appTitle;
+                        Title = Hiro_Text.Get_Translate("alarmTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
                         if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
                         {
                             Storyboard sb = new();
@@ -65,7 +65,7 @@ namespace Hiro
             }
             else
                 ala_title.Content = Hiro_Text.Get_Translate("alarmtitle");
-            Title = ala_title.Content + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("alarmTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
             if (CustomedContnet != null)
             {
                 if (CustomedContnet.ToLower().StartsWith("http://") || CustomedContnet.ToLower().StartsWith("https://"))

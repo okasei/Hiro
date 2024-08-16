@@ -772,7 +772,7 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            Title = App.appTitle + " - " + Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion);
+            Title = Hiro_Text.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion));
             titlelabel.Content = App.appTitle;
             infotitle.Content = Hiro_Text.Get_Translate("infotitle");
             minbtn.ToolTip = Hiro_Text.Get_Translate("min");
@@ -1292,6 +1292,15 @@ namespace Hiro
                         case Hiro_Splash j:
                             j.Loadbgi(direction);
                             break;
+                        case Hiro_Encrypter k:
+                            k.Loadbgi(direction);
+                            break;
+                        case Hiro_ImageViewer l:
+                            l.Loadbgi(direction, false);
+                            break;
+                        case Hiro_TextEditor m:
+                            m.Loadbgi(direction, false);
+                            break;
                     }
 
                     System.Windows.Forms.Application.DoEvents();
@@ -1401,6 +1410,15 @@ namespace Hiro
                         break;
                     case Hiro_Ticker i:
                         Hiro_Utils.Set_Opacity(i.bgimage, i);
+                        break;
+                    case Hiro_Encrypter k:
+                        Hiro_Utils.Set_Opacity(k.bgimage, k);
+                        break;
+                    case Hiro_ImageViewer l:
+                        Hiro_Utils.Set_Opacity(l.bgimage, l);
+                        break;
+                    case Hiro_TextEditor m:
+                        Hiro_Utils.Set_Opacity(m.bgimage, m);
                         break;
                 }
                 if (hiro_profile != null)
@@ -1555,6 +1573,25 @@ namespace Hiro
         private void InfoPolyFake_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Hiro_We_Info();
+        }
+
+        private void BaseGrid_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (filePaths.Length > 0)
+                {
+                    Hiro_Utils.RunExe(filePaths[0], "Windows");
+                    e.Handled = true;
+                }
+            }
+            if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                var f = (string)e.Data.GetData(DataFormats.Text);
+                Hiro_Utils.RunExe(f, "Windows");
+                e.Handled = true;
+            }
         }
     }
 }

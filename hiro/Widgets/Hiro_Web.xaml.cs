@@ -96,7 +96,7 @@ namespace Hiro
                             {
                                 if (uri.Trim().Equals(string.Empty))
                                 {
-                                    uri = Read_Ini(configPath, "Web", "Home", "https://rexio.cn/");
+                                    uri = Read_Ini(configPath, "Web", "Home", "https://rex.as/");
                                 }
 
                                 try

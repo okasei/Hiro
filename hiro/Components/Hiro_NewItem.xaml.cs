@@ -100,7 +100,7 @@ namespace Hiro
                 });
             }
             string[] extras = { "space", "esc", "leftkey", "upkey", "rightkey", "downkey" };
-            foreach(var ext in extras)
+            foreach (var ext in extras)
             {
                 keybox.Items.Add(new ComboBoxItem()
                 {
@@ -285,7 +285,7 @@ namespace Hiro
             ofd.ValidateNames = true; // 验证用户输入是否是一个有效的Windows文件名
             ofd.CheckFileExists = true; //验证路径的有效性
             ofd.CheckPathExists = true;//验证路径的有效性
-            ofd.Title = Get_Translate("openfile") + " - " + App.appTitle;
+            ofd.Title = Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle);
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
                 strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
@@ -395,105 +395,6 @@ namespace Hiro
             if (Hiro_Main != null)
                 Hiro_Main.Set_Label(Hiro_Main.itemx);
         }
-        private void Tb8_Drop(object sender, DragEventArgs e)
-        {
-            var data = e.Data;
-            var formats = data.GetData(DataFormats.FileDrop).GetType().ToString();
-            if (formats.Equals("System.String[]"))
-            {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String[];
-                if (info != null && info.Length > 0)
-                {
-                    tb8.Text = info[0];
-                    if (tb7.Text == "")
-                        Ntn1_Click(sender, e);
-                }
-            }
-            else if (formats.Equals("System.String"))
-            {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String;
-                if (info != null)
-                {
-                    tb8.Text = info;
-                    if (tb7.Text == "")
-                        Ntn1_Click(sender, e);
-                }
-            }
-        }
-
-        private void Tb7_Drop(object sender, DragEventArgs e)
-        {
-            var data = e.Data;
-            var formats = data.GetData(DataFormats.FileDrop).GetType().ToString();
-            if (formats.Equals("System.String[]"))
-            {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String[];
-                if (info != null && info.Length > 0)
-                {
-                    tb8.Text = info[0];
-                    if (tb7.Text == "")
-                        Ntn1_Click(sender, e);
-                }
-            }
-            else if (formats.Equals("System.String"))
-            {
-                var info = e.Data.GetData(DataFormats.FileDrop) as String;
-                if (info != null)
-                {
-                    tb8.Text = info;
-                    if (tb7.Text == "")
-                        Ntn1_Click(sender, e);
-                }
-            }
-        }
-
-        private void Tb7_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effects = DragDropEffects.Copy;
-            }
-            else
-            {
-                e.Effects = DragDropEffects.None;
-            }
-        }
-
-        private void Tb8_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effects = DragDropEffects.Link;
-            }
-            else
-            {
-                e.Effects = DragDropEffects.None;
-            }
-        }
-
-        private void Tb8_DragOver(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effects = DragDropEffects.Link;
-            }
-            else
-            {
-                e.Effects = DragDropEffects.None;
-            }
-        }
-
-        private void Tb7_DragOver(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effects = DragDropEffects.All;
-            }
-            else
-            {
-                e.Effects = DragDropEffects.None;
-            }
-        }
 
 
         private void Modibox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -565,6 +466,29 @@ namespace Hiro
         {
             tb9.Text = Hiro_Utils.Get_CMD_Translation(tb8.Text);
             tb9.Visibility = tb9.Text.Equals("") ? Visibility.Hidden : Visibility.Visible;
+        }
+
+        private void Grid_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (filePaths.Length > 0)
+                {
+                    tb8.Text = filePaths[0];
+                    if (tb7.Text == "")
+                        Ntn1_Click(sender, e);
+                    e.Handled = true;
+                }
+            }
+            if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                var f = (string)e.Data.GetData(DataFormats.Text);
+                tb8.Text = f;
+                if (tb7.Text == "")
+                    Ntn1_Click(sender, e);
+                e.Handled = true;
+            }
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Hiro
             Helpers.Hiro_UI.SetCustomWindowIcon(this);
             editpage = int.Parse(Hiro_Settings.Read_DCIni("EditPage", "0"));
             Load_Position();
-            Title = Hiro_Text.Get_Translate("edititle") + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("editorTitle").Replace("%t", Hiro_Text.Get_Translate("edititle")).Replace("%a", App.appTitle);
             Load();
             con.Focus();
             slider.Value = double.Parse(Hiro_Settings.Read_DCIni("EditOpacity", "1"));

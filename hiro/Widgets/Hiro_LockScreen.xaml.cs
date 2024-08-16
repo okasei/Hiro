@@ -21,7 +21,7 @@ namespace Hiro
             InitializeComponent();
             Helpers.Hiro_UI.SetCustomWindowIcon(this);
             path = p;
-            Title = Hiro_Text.Get_Translate("locktitle") + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("locksTitle").Replace("%t", Hiro_Text.Get_Translate("locktitle")).Replace("%a", App.appTitle);
             Load_Colors();
             SetValue(Canvas.LeftProperty, 0.0);
             Canvas.SetTop(this, -SystemParameters.PrimaryScreenHeight);

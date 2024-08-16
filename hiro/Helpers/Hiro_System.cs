@@ -25,7 +25,7 @@ namespace Hiro.Helpers
                 Hiro_Msg msg = new(confrimWin)
                 {
                     bg = bg,
-                    Title = Hiro_Text.Path_PPX(Hiro_Settings.Read_Ini(confrimWin, "Message", "Title", Hiro_Text.Get_Translate("syntax")) + " - " + App.appTitle)
+                    Title =  Hiro_Text.Get_Translate("msgTitle").Replace("%t", Hiro_Text.Path_PPX(Hiro_Settings.Read_Ini(confrimWin, "Message", "Title", Hiro_Text.Get_Translate("syntax")))).Replace("%a",App.appTitle)
                 };
                 msg.backtitle.Content = Hiro_Settings.Read_PPIni(confrimWin, "Message", "Title", Hiro_Text.Get_Translate("syntax"));
                 msg.acceptbtn.Content = Hiro_Settings.Read_Ini(confrimWin, "Message", "accept", Hiro_Text.Get_Translate("msgaccept"));

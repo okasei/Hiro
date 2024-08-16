@@ -147,7 +147,7 @@ namespace Hiro
         private void LoadTimer()
         {
             SourceInitialized += OnSourceInitialized;
-            Title = ala_title.Content.ToString() + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("splashTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
             Load_Color();
             ContentRendered += (e, args) =>
             {

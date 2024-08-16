@@ -20,7 +20,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
     </WindowChrome.WindowChrome>
-    <Grid x:Name="BaseGrid">
+    <Grid x:Name="BaseGrid" AllowDrop="True" Drop="BaseGrid_Drop">
         <Label x:Name="bgimage" HorizontalAlignment="Stretch" Background="Coral" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Image x:Name="bgicon" HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="Uniform" Source="/Resources/hiro.png" Width="29" Height="50" Margin="0,0,110,0" Visibility="Collapsed"></Image>
         <ffme:MediaElement x:Name="BackVideo" HorizontalAlignment="Center" VerticalAlignment="Center" LoadedBehavior="Play" LoopingBehavior="Play" Visibility="Collapsed" UnloadedBehavior="Manual" IsMuted="True" MediaOpened="BackVideo_MediaOpened"/>

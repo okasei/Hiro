@@ -392,6 +392,12 @@ namespace Hiro
                     case Hiro_Badge l:
                         l.LoadColor();
                         break;
+                    case Hiro_ImageViewer m:
+                        m.Load_Color();
+                        break;
+                    case Hiro_TextEditor n:
+                        n.Load_Color();
+                        break;
                 }
                 System.Windows.Forms.Application.DoEvents();
             }
@@ -509,5 +515,10 @@ namespace Hiro
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool RemoveClipboardFormatListener(IntPtr hWnd);
         #endregion
+
+        private void Hiro_Tray_Drop(object sender, DragEventArgs e)
+        {
+            Hiro_Utils.RunExe(e.Data.ToString());
+        }
     }
 }
