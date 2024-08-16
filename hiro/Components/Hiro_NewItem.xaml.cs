@@ -4,8 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static Hiro.Helpers.Hiro_Text;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HText;
+using static Hiro.Helpers.HSet;
 using Hiro.Helpers;
 
 namespace Hiro
@@ -34,24 +34,24 @@ namespace Hiro
             Storyboard sb = new();
             if (Read_DCIni("Ani", "2").Equals("1"))
             {
-                Hiro_Utils.AddPowerAnimation(1, ntn1, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, ntn2, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, ntn3, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, ntn4, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, ntn5, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(2, ntn6, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(2, ntn7, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(2, ntn8, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, ntn9, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, ntnx1, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, ntnx2, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, ntnx, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, ntn1, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, ntn2, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, ntn3, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, ntn4, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, ntn5, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, ntn6, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, ntn7, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, ntn8, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, ntn9, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, ntnx, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, ntnx1, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, ntnx2, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, ntnx, sb, -50, null);
             }
 
             if (!animation)
                 return;
-            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            HAnimation.AddPowerAnimation(0, this, sb, 50, null);
             sb.Begin();
         }
 
@@ -110,12 +110,12 @@ namespace Hiro
             foreach (var obj in modibox.Items)
             {
                 if (obj is ComboBoxItem mi)
-                    Hiro_Utils.Set_Control_Location(mi, "moditem", location: false);
+                    HUI.Set_Control_Location(mi, "moditem", location: false);
             }
             foreach (var obj in keybox.Items)
             {
                 if (obj is ComboBoxItem mi)
-                    Hiro_Utils.Set_Control_Location(mi, "vkeyitem", location: false);
+                    HUI.Set_Control_Location(mi, "vkeyitem", location: false);
             }
         }
 
@@ -147,26 +147,26 @@ namespace Hiro
 
         public void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(ntn1, "filename", right: true);
-            Hiro_Utils.Set_Control_Location(ntn2, "hide", right: true);
-            Hiro_Utils.Set_Control_Location(ntn3, "unformat", right: true);
-            Hiro_Utils.Set_Control_Location(ntn4, "ban", right: true);
-            Hiro_Utils.Set_Control_Location(ntn5, "select", right: true);
-            Hiro_Utils.Set_Control_Location(ntn6, "quot", right: true);
-            Hiro_Utils.Set_Control_Location(ntn7, "explorer", right: true);
-            Hiro_Utils.Set_Control_Location(ntn8, "openfile", right: true);
-            Hiro_Utils.Set_Control_Location(ntn9, "reset", bottom: true);
-            Hiro_Utils.Set_Control_Location(ntnx, "clear", bottom: true, right: true);
-            Hiro_Utils.Set_Control_Location(ntnx1, "ok", bottom: true, right: true);
-            Hiro_Utils.Set_Control_Location(ntnx2, "cancel", bottom: true, right: true);
-            Hiro_Utils.Set_Control_Location(tb7, "nametb");
-            Hiro_Utils.Set_Control_Location(tb8, "cmdtb");
-            Hiro_Utils.Set_Control_Location(klabel, "hotkey");
-            Hiro_Utils.Set_Control_Location(modibox, "modifier");
-            Hiro_Utils.Set_Control_Location(keybox, "vkey");
-            Hiro_Utils.Set_Control_Location(glabel, "itemname");
-            Hiro_Utils.Set_Control_Location(glabel2, "command");
-            Hiro_Utils.Set_Control_Location(tb9, "detailtb");
+            HUI.Set_Control_Location(ntn1, "filename", right: true);
+            HUI.Set_Control_Location(ntn2, "hide", right: true);
+            HUI.Set_Control_Location(ntn3, "unformat", right: true);
+            HUI.Set_Control_Location(ntn4, "ban", right: true);
+            HUI.Set_Control_Location(ntn5, "select", right: true);
+            HUI.Set_Control_Location(ntn6, "quot", right: true);
+            HUI.Set_Control_Location(ntn7, "explorer", right: true);
+            HUI.Set_Control_Location(ntn8, "openfile", right: true);
+            HUI.Set_Control_Location(ntn9, "reset", bottom: true);
+            HUI.Set_Control_Location(ntnx, "clear", bottom: true, right: true);
+            HUI.Set_Control_Location(ntnx1, "ok", bottom: true, right: true);
+            HUI.Set_Control_Location(ntnx2, "cancel", bottom: true, right: true);
+            HUI.Set_Control_Location(tb7, "nametb");
+            HUI.Set_Control_Location(tb8, "cmdtb");
+            HUI.Set_Control_Location(klabel, "hotkey");
+            HUI.Set_Control_Location(modibox, "modifier");
+            HUI.Set_Control_Location(keybox, "vkey");
+            HUI.Set_Control_Location(glabel, "itemname");
+            HUI.Set_Control_Location(glabel2, "command");
+            HUI.Set_Control_Location(tb9, "detailtb");
         }
 
         private void Ntn1_Click(object sender, RoutedEventArgs e)
@@ -285,7 +285,7 @@ namespace Hiro
             ofd.ValidateNames = true; // 验证用户输入是否是一个有效的Windows文件名
             ofd.CheckFileExists = true; //验证路径的有效性
             ofd.CheckPathExists = true;//验证路径的有效性
-            ofd.Title = Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle);
+            ofd.Title = Get_Translate("ofdTitle").Replace("%t", HText.Get_Translate("openfile")).Replace("%a", App.appTitle);
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
                 strFileName = ofd.FileName;//获取在文件对话框中选定的路径或者字符串
@@ -337,12 +337,12 @@ namespace Hiro
             {
                 return;
             }
-            var hk = Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + Hiro_Utils.Index_vKey(true, keybox.SelectedIndex).ToString();
+            var hk = HHotKeys.Index_Modifier(true, modibox.SelectedIndex).ToString() + "," + HHotKeys.Index_vKey(true, keybox.SelectedIndex).ToString();
             if (ntn9.Visibility == Visibility.Hidden)
             {
                 var i = App.cmditems.Count + 1;
                 var p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
-                App.cmditems.Add(new Helpers.Hiro_Class.Cmditem(p, i, tb7.Text, tb8.Text, hk));
+                App.cmditems.Add(new Helpers.HClass.Cmditem(p, i, tb7.Text, tb8.Text, hk));
                 Write_Ini(App.dConfig, i.ToString(), "Title", tb7.Text);
                 Write_Ini(App.dConfig, i.ToString(), "Command", "(" + tb8.Text + ")");
                 Write_Ini(App.dConfig, i.ToString(), "HotKey", hk);
@@ -352,12 +352,12 @@ namespace Hiro
                     {
                         if (App.wnd != null)
                         {
-                            Hiro_Utils.RegisterKey((uint)Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex), (Key)Hiro_Utils.Index_vKey(true, keybox.SelectedIndex), i);
+                            HHotKeys.RegisterKey((uint)HHotKeys.Index_Modifier(true, modibox.SelectedIndex), (Key)HHotKeys.Index_vKey(true, keybox.SelectedIndex), i - 1);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Hotkey.RegisterFunc");
+                        HLogger.LogError(ex, "Hiro.Exception.Hotkey.RegisterFunc");
                     }
                 }
             }
@@ -371,20 +371,19 @@ namespace Hiro
                 if (!App.cmditems[index].HotKey.Equals(hk))
                 {
                     App.cmditems[index].HotKey = hk;
-                    var keyid = Hiro_Utils.FindHotkeyById(index);
-                    Hiro_Utils.UnregisterKey(keyid);
+                    HHotKeys.UnregisterIfExist(index);
                     if (modibox.SelectedIndex > 0 && keybox.SelectedIndex > 0)
                     {
                         try
                         {
                             if (App.wnd != null)
                             {
-                                Hiro_Utils.RegisterKey((uint)Hiro_Utils.Index_Modifier(true, modibox.SelectedIndex), (Key)Hiro_Utils.Index_vKey(true, keybox.SelectedIndex), index);
+                                HHotKeys.RegisterKey((uint)HHotKeys.Index_Modifier(true, modibox.SelectedIndex), (Key)HHotKeys.Index_vKey(true, keybox.SelectedIndex), index);
                             }
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Logger.LogError(ex, "Hiro.Exception.HotKey.RegisterFunc");
+                            HLogger.LogError(ex, "Hiro.Exception.HotKey.RegisterFunc");
                         }
                     }
                 }
@@ -448,7 +447,7 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Data.Parse");
+                        HLogger.LogError(ex, "Hiro.Exception.Data.Parse");
                     }
                     if (allowed[uin].IndexOf("," + modn.ToString() + ",") != -1)
                     {

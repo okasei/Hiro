@@ -30,17 +30,17 @@ namespace Hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
             Storyboard sb = new();
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
-                Hiro_Utils.AddPowerAnimation(3, tpbtn1, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, tpbtn2, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, tp_title, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, tpbtn1, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, tpbtn2, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, tp_title, sb, -50, null);
             }
             if (animation)
             {
-                Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+                HAnimation.AddPowerAnimation(0, this, sb, 50, null);
                 sb.Begin();
             }
         }
@@ -60,22 +60,22 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            tp_title.Content = Hiro_Text.Get_Translate("Time");
-            tpbtn1.Content = Hiro_Text.Get_Translate("timeok");
-            tpbtn2.Content = Hiro_Text.Get_Translate("timecancel");
+            tp_title.Content = HText.Get_Translate("Time");
+            tpbtn1.Content = HText.Get_Translate("timeok");
+            tpbtn2.Content = HText.Get_Translate("timecancel");
         }
 
         public void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(tp_title, "timet");
-            Hiro_Utils.Set_Control_Location(year, "timeyear");
-            Hiro_Utils.Set_Control_Location(month, "timemonth");
-            Hiro_Utils.Set_Control_Location(day, "timeday");
-            Hiro_Utils.Set_Control_Location(hour, "timehour");
-            Hiro_Utils.Set_Control_Location(minute, "timemin");
-            Hiro_Utils.Set_Control_Location(second, "timesec");
-            Hiro_Utils.Set_Control_Location(tpbtn1, "timeok", bottom: true, right: true);
-            Hiro_Utils.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
+            HUI.Set_Control_Location(tp_title, "timet");
+            HUI.Set_Control_Location(year, "timeyear");
+            HUI.Set_Control_Location(month, "timemonth");
+            HUI.Set_Control_Location(day, "timeday");
+            HUI.Set_Control_Location(hour, "timehour");
+            HUI.Set_Control_Location(minute, "timemin");
+            HUI.Set_Control_Location(second, "timesec");
+            HUI.Set_Control_Location(tpbtn1, "timeok", bottom: true, right: true);
+            HUI.Set_Control_Location(tpbtn2, "timecancel", bottom: true, right: true);
         }
 
         private void Tp_Cancel(object sender, RoutedEventArgs e)
@@ -92,7 +92,7 @@ namespace Hiro
             catch (Exception ex)
             {
                 a = "0";
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Time.Parse");
+                HLogger.LogError(ex, "Hiro.Exception.Time.Parse");
             }
             if (a.Length > b)
             {

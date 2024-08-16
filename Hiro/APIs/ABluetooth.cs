@@ -5,28 +5,28 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hiro.Helpers
+namespace Hiro.APIs
 {
-    internal class Hiro_Bluetooth
+    internal class ABluetooth
     {
         public class BluetoothConnection
         {
             [DllImport("bthprops.cpl", CharSet = CharSet.Auto)]
-            private static extern int BluetoothFindFirstDevice(ref BLUETOOTH_DEVICE_SEARCH_PARAMS searchParams, out IntPtr deviceInfo);
+            private static extern int BluetoothFindFirstDevice(ref BLUETOOTH_DEVICE_SEARCH_PARAMS searchParams, out nint deviceInfo);
 
             [DllImport("bthprops.cpl", CharSet = CharSet.Auto)]
-            private static extern bool BluetoothFindNextDevice(IntPtr hRadio, out IntPtr deviceInfo);
+            private static extern bool BluetoothFindNextDevice(nint hRadio, out nint deviceInfo);
 
             [DllImport("bthprops.cpl", CharSet = CharSet.Auto)]
-            private static extern bool BluetoothFindDeviceClose(IntPtr hRadio);
+            private static extern bool BluetoothFindDeviceClose(nint hRadio);
 
             [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-            public struct BLUETOOTH_DEVICE_SEARCH_PARAMS
+            internal struct BLUETOOTH_DEVICE_SEARCH_PARAMS
             {
                 public uint dwSize;
                 public uint uFlags;
                 public uint cTimeoutMultiplier;
-                public IntPtr hRadio;
+                public nint hRadio;
                 public bool fReturnAuthenticated;
                 public bool fReturnRemembered;
                 public bool fReturnUnknown;
@@ -39,7 +39,7 @@ namespace Hiro.Helpers
 
             // You should define BLUETOOTH_DEVICE_INFO and other structures as needed
 
-            public static void ConnectToDevice(string deviceAddress)
+            internal static void ConnectToDevice(string deviceAddress)
             {
                 // Initialize search parameters and device info
                 var searchParams = new BLUETOOTH_DEVICE_SEARCH_PARAMS
@@ -53,7 +53,7 @@ namespace Hiro.Helpers
                     fReturnNewDevices = true,
                 };
 
-                IntPtr deviceInfo = IntPtr.Zero;
+                nint deviceInfo = nint.Zero;
 
                 if (BluetoothFindFirstDevice(ref searchParams, out deviceInfo) > 0)
                 {
@@ -67,16 +67,16 @@ namespace Hiro.Helpers
                 }
             }
         }
-        public class BluetoothDisconnection
+        internal class BluetoothDisconnection
         {
             [DllImport("bthprops.cpl", CharSet = CharSet.Auto)]
-            private static extern int BluetoothFindFirstDevice(ref BLUETOOTH_DEVICE_SEARCH_PARAMS searchParams, out IntPtr deviceInfo);
+            private static extern int BluetoothFindFirstDevice(ref BLUETOOTH_DEVICE_SEARCH_PARAMS searchParams, out nint deviceInfo);
 
             [DllImport("bthprops.cpl", CharSet = CharSet.Auto)]
-            private static extern bool BluetoothFindNextDevice(IntPtr hRadio, out IntPtr deviceInfo);
+            private static extern bool BluetoothFindNextDevice(nint hRadio, out nint deviceInfo);
 
             [DllImport("bthprops.cpl", CharSet = CharSet.Auto)]
-            private static extern bool BluetoothFindDeviceClose(IntPtr hRadio);
+            private static extern bool BluetoothFindDeviceClose(nint hRadio);
 
             [DllImport("bthprops.cpl", CharSet = CharSet.Auto)]
             private static extern int BluetoothRemoveDevice(ref BLUETOOTH_ADDRESS address);
@@ -87,7 +87,7 @@ namespace Hiro.Helpers
                 public uint dwSize;
                 public uint uFlags;
                 public uint cTimeoutMultiplier;
-                public IntPtr hRadio;
+                public nint hRadio;
                 public bool fReturnAuthenticated;
                 public bool fReturnRemembered;
                 public bool fReturnUnknown;
@@ -117,7 +117,7 @@ namespace Hiro.Helpers
                     fReturnNewDevices = true
                 };
 
-                IntPtr deviceInfo = IntPtr.Zero;
+                nint deviceInfo = nint.Zero;
 
                 // Find the device
                 if (BluetoothFindFirstDevice(ref searchParams, out deviceInfo) > 0)

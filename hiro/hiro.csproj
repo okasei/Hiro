@@ -50,7 +50,7 @@
     <!-- see https://github.com/nulastudio/NetBeauty2#customize-apphost for more details -->
     <!-- relative path based on AppHostDir -->
     <!-- .NET Core Non Single-File Only -->
-    <!-- <BeautyAppHostEntry>runtimes/hiro/Hiro.dll</BeautyAppHostEntry>-->
+    <BeautyAppHostEntry>runtimes/win-x64/native/Hiro.dll</BeautyAppHostEntry>
     <!-- relative path based on BeautyDir -->
     <!-- .NET Core Non Single-File Only -->
     <!-- <BeautyAppHostDir>..</BeautyAppHostDir> -->

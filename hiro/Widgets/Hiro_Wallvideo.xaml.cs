@@ -16,8 +16,8 @@ namespace Hiro
             InitializeComponent();
             Loaded += delegate
             {
-                Hiro_Wallpaper.SetWallpaperVideo(new WindowInteropHelper(this).Handle);
-                Media.IsMuted = Hiro_Settings.Read_DCIni("WallVideoMute", "true").Equals("true");
+                HDesktop.SetWallpaperVideo(new WindowInteropHelper(this).Handle);
+                Media.IsMuted = HSet.Read_DCIni("WallVideoMute", "true").Equals("true");
                 WindowState = WindowState.Maximized;
             };
         }
@@ -37,12 +37,12 @@ namespace Hiro
             Media.Stop();
             Media.Close();
             Hide();
-            Hiro_Wallpaper.RemoveWallpaperSigns();
+            HDesktop.RemoveWallpaperSigns();
         }
 
         private void Media_MediaOpened(object sender, Unosquare.FFME.Common.MediaOpenedEventArgs e)
         {
-            if (Media.MediaInfo.Streams.Count > 0 && Hiro_Settings.Read_DCIni("WallVideoCrop", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+            if (Media.MediaInfo.Streams.Count > 0 && HSet.Read_DCIni("WallVideoCrop", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
             {
                 SetAutoCrop();
             }
@@ -54,14 +54,14 @@ namespace Hiro
 
         internal void DisableAutoCrop()
         {
-            Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "false");
+            HSet.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "false");
             Media.Width = ActualWidth;
             Media.Height = ActualHeight;
         }
 
         internal void SetAutoCrop()
         {
-            Hiro_Settings.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "true");
+            HSet.Write_Ini(App.dConfig, "Config", "WallVideoCrop", "true");
             var w = Media.MediaInfo.Streams[0].PixelWidth;
             var h = Media.MediaInfo.Streams[0].PixelHeight;
             var ww = ActualWidth;

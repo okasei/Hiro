@@ -4,7 +4,7 @@ using System.Windows.Media.Imaging;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_Class
+    internal class HClass
     {
 
         #region 命令项目定义
@@ -303,6 +303,23 @@ namespace Hiro.Helpers
             }
         }
 
+        #endregion
+
+        #region 热键项目定义
+        public class HotKey
+        {
+            private int _keyid = -1;
+            private int _itemid = -1;
+
+            public int KeyID
+            {
+                get => _keyid; set => _keyid = value;
+            }
+            public int ItemID
+            {
+                get => _itemid; set => _itemid = value;
+            }
+        }
         #endregion
     }
 }

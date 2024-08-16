@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,7 @@ namespace Hiro
         public Hiro_Snow()
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             timer = new DispatcherTimer();
             timer.Tick += (e, args) =>
             {
@@ -77,7 +78,7 @@ namespace Hiro
             BasicCanvas.Children.Add(tri);
             tri.HorizontalAlignment = HorizontalAlignment.Left;
             tri.VerticalAlignment = VerticalAlignment.Top;
-            var sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(ActualWidth, hei, 0, 0), 2000, tri, "Margin", null, new Thickness(0, hei, 0, 0), 0);
+            var sb = HAnimation.AddThicknessAnimaton(new Thickness(ActualWidth, hei, 0, 0), 2000, tri, "Margin", null, new Thickness(0, hei, 0, 0), 0);
             sb.Completed += (e, args) =>
             {
                 Dispatcher.Invoke(new(() =>

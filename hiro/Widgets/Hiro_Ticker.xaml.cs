@@ -34,7 +34,7 @@ namespace Hiro
         public Hiro_Ticker(string tid, string tformat = "%n", int tcurrent = 0, int tnum = int.MaxValue, int tmin = int.MinValue, int tmax = int.MaxValue)
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             id = tid;
             format = tformat;
             current = tcurrent;
@@ -63,20 +63,20 @@ namespace Hiro
 
         internal void Load_Translate()
         {
-            Title = Hiro_Text.Get_Translate("httitle").Replace("%h", App.appTitle);
-            maxbtn.ToolTip = Hiro_Text.Get_Translate("htup");
-            resbtn.ToolTip = Hiro_Text.Get_Translate("htdown");
-            minbtn.ToolTip = Hiro_Text.Get_Translate("min");
-            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
+            Title = HText.Get_Translate("httitle").Replace("%h", App.appTitle);
+            maxbtn.ToolTip = HText.Get_Translate("htup");
+            resbtn.ToolTip = HText.Get_Translate("htdown");
+            minbtn.ToolTip = HText.Get_Translate("min");
+            closebtn.ToolTip = HText.Get_Translate("close");
         }
 
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(HSet.Read_DCIni("Blur", "0")));
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
                 System.Windows.Media.Animation.Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(2, Ctrl_Btns, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, Ctrl_Btns, sb, -50, null);
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
@@ -84,10 +84,10 @@ namespace Hiro
 
         public void Loadbgi(int direction)
         {
-            if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
+            if (HSet.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 return;
             }
             if (compositor != null)
@@ -97,9 +97,9 @@ namespace Hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
-            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
+            HAnimation.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 

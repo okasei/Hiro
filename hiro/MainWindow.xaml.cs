@@ -2,10 +2,11 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
-using static Hiro.Helpers.Hiro_Class;
-using static Hiro.Helpers.Hiro_Text;
-using static Hiro.Helpers.Hiro_Logger;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HClass;
+using static Hiro.Helpers.HText;
+using static Hiro.Helpers.HLogger;
+using static Hiro.Helpers.HSet;
+using Hiro.Helpers;
 
 namespace Hiro
 {
@@ -45,7 +46,7 @@ namespace Hiro
             {
                 LogError(ex, "Hiro.Exception.Power");
             }
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             var iconP = Read_PPDCIni("CustomTrayIcon", "");
             if (File.Exists(iconP))
             {
@@ -314,22 +315,19 @@ namespace Hiro
                             var indexid = wParam.ToInt32();
                             if (App.dflag)
                                 LogtoFile($"[DEBUG]Hotkey Triggered as Number {indexid}");
-                            for (int vsi = 0; vsi < App.vs.Count - 1; vsi += 2)
+                            var itemID = HHotKeys.FindHotkeyByKeyId(indexid);
+                            if(itemID >= 0)
                             {
-                                if (App.vs[vsi] == indexid)
+                                var name = "***NOT INITIALIZED***";
+                                var cmd = "<nop>";
+                                Dispatcher.Invoke(delegate
                                 {
-                                    var name = "***NOT INITIALIZED***";
-                                    var cmd = "<nop>";
-                                    Dispatcher.Invoke(delegate
-                                    {
-                                        name = App.cmditems[App.vs[vsi + 1]].Name;
-                                        cmd = App.cmditems[App.vs[vsi + 1]].Command;
-                                    });
-                                    if (App.dflag)
-                                        LogtoFile($"[DEBUG]Hotkey Corresponded Item {{ Name: {name} , Command: {cmd} }}");
-                                    Hiro_Utils.RunExe(cmd, name);
-                                    break;
-                                }
+                                    name = App.cmditems[itemID].Name;
+                                    cmd = App.cmditems[itemID].Command;
+                                });
+                                if (App.dflag)
+                                    LogtoFile($"[DEBUG]Hotkey Corresponded Item {{ Name: {name} , Command: {cmd} }}");
+                                Hiro_Utils.RunExe(cmd, name);
                             }
                         }
                         catch (Exception ex)

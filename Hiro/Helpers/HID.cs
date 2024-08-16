@@ -4,11 +4,11 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Windows;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HSet;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_ID
+    internal class HID
     {
         internal static string version = "v1";
         #region 个人资料操作
@@ -18,7 +18,7 @@ namespace Hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
+                    throw new Exception(HText.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 string t = token ? "token" : "pwd";
@@ -53,7 +53,7 @@ namespace Hiro.Helpers
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Logger.LogError(ex, "Hiro.Exception.Login.Save");
+                            HLogger.LogError(ex, "Hiro.Exception.Login.Save");
                             throw new Exception(ex.Message);
                         }
                     }
@@ -75,7 +75,7 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Login");
+                HLogger.LogError(ex, "Hiro.Exception.Login");
                 return "error";
             }
         }
@@ -100,7 +100,7 @@ namespace Hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
+                    throw new Exception(HText.Get_Translate("webnotinitial"));
                 FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
                 byte[] bytebuffer;
                 bytebuffer = new byte[fs.Length];
@@ -118,7 +118,7 @@ namespace Hiro.Helpers
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"type\"" + Enter + Enter + "" + type + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"md5\"" + Enter + Enter + "" + Hiro_Utils.GetMD5(file).Replace("-", "") + "" + Enter + "--" + boundary + "--"
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"md5\"" + Enter + Enter + "" + HFile.GetMD5(file).Replace("-", "") + "" + Enter + "--" + boundary + "--"
                     );
                 byte[] ndata = new byte[send.Length + bytebuffer.Length + eof.Length];
                 send.CopyTo(ndata, 0);
@@ -139,7 +139,7 @@ namespace Hiro.Helpers
                         {
                             result = sr.ReadToEnd();
                             if (App.dflag)
-                                Hiro_Logger.LogtoFile($"Web result: {result}");
+                                HLogger.LogtoFile($"Web result: {result}");
                             return result;
                         }
                     }
@@ -149,7 +149,7 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile");
+                HLogger.LogError(ex, "Hiro.Exception.Update.Profile");
                 return "error";
             }
         }
@@ -160,7 +160,7 @@ namespace Hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
+                    throw new Exception(HText.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
@@ -201,7 +201,7 @@ namespace Hiro.Helpers
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Settings.Save");
+                            HLogger.LogError(ex, "Hiro.Exception.Update.Profile.Settings.Save");
                             throw new Exception(ex.Message);
                         }
                     }
@@ -223,7 +223,7 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Settings");
+                HLogger.LogError(ex, "Hiro.Exception.Update.Profile.Settings");
                 return "error";
             }
         }
@@ -234,7 +234,7 @@ namespace Hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
+                    throw new Exception(HText.Get_Translate("webnotinitial"));
                 var usrAvatar = "<hiapp>\\images\\avatar\\" + user + ".hap";
                 var usrBack = "<hiapp>\\images\\background\\" + user + ".hpp";
                 string boundary = DateTime.Now.Ticks.ToString("X");
@@ -243,8 +243,8 @@ namespace Hiro.Helpers
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(usrAvatar)).Replace("-", string.Empty) + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(usrBack)).Replace("-", string.Empty) + "" + Enter + "--" + boundary + "--" + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + HFile.GetMD5(HText.Path_PPX(usrAvatar)).Replace("-", string.Empty) + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + HFile.GetMD5(HText.Path_PPX(usrBack)).Replace("-", string.Empty) + "" + Enter + "--" + boundary + "--" + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"name\"" + Enter + Enter + "" + Read_DCIni("CustomName", string.Empty) + "" + Enter + "--" + boundary + "--" + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"sign\"" + Enter + Enter + "" + Read_DCIni("CustomSign", string.Empty) + "" + Enter + "--" + boundary + "--" + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + Read_DCIni("UserAvatarStyle", string.Empty) + "" + Enter + "--" + boundary + "--"
@@ -268,7 +268,7 @@ namespace Hiro.Helpers
                             }
                         }
                         if (App.dflag)
-                            Hiro_Logger.LogtoFile(File.ReadAllText(saveto));
+                            HLogger.LogtoFile(File.ReadAllText(saveto));
                         Write_Ini(App.dConfig, "Config", "CustomUser", "2");
                         UpdateUserInfo(saveto, "Name", "CustomName");
                         UpdateUserInfo(saveto, "Sign", "CustomSign");
@@ -277,10 +277,10 @@ namespace Hiro.Helpers
                         App.CustomUsernameFlag = 1;
                         Write_Ini(App.dConfig, "Config", "UserAvatar", usrAvatar);
                         Write_Ini(App.dConfig, "Config", "UserBackground", usrBack);
-                        usrAvatar = Hiro_Text.Path_Prepare(usrAvatar);
-                        usrBack = Hiro_Text.Path_Prepare(usrBack);
-                        Hiro_File.CreateFolder(usrAvatar);
-                        Hiro_File.CreateFolder(usrBack);
+                        usrAvatar = HText.Path_Prepare(usrAvatar);
+                        usrBack = HText.Path_Prepare(usrBack);
+                        HFile.CreateFolder(usrAvatar);
+                        HFile.CreateFolder(usrBack);
                         var _link = Read_Ini(saveto, "Profile", "Iavatar", string.Empty);
                         var _bak = usrAvatar + ".bak";
                         if (!_link.Equals(string.Empty))
@@ -289,7 +289,7 @@ namespace Hiro.Helpers
                                 File.Delete(_bak);
                             if (File.Exists(usrAvatar))
                                 File.Move(usrAvatar, _bak);
-                            if (Hiro_Net.GetWebContent(_link, true, usrAvatar).Equals("saved"))
+                            if (HNet.GetWebContent(_link, true, usrAvatar).Equals("saved"))
                                 File.Delete(_bak);
                             else if (File.Exists(_bak))
                                 File.Move(_bak, usrAvatar);
@@ -302,7 +302,7 @@ namespace Hiro.Helpers
                                 File.Delete(_bak);
                             if (File.Exists(usrBack))
                                 File.Move(usrBack, _bak);
-                            if (Hiro_Net.GetWebContent(_link, true, usrBack).Equals("saved"))
+                            if (HNet.GetWebContent(_link, true, usrBack).Equals("saved"))
                                 File.Delete(_bak);
                             else if (File.Exists(_bak))
                                 File.Move(_bak, usrBack);
@@ -313,7 +313,7 @@ namespace Hiro.Helpers
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Sync.Save");
+                        HLogger.LogError(ex, "Hiro.Exception.Update.Profile.Sync.Save");
                         if (File.Exists(saveto))
                             File.Delete(saveto);
                         throw new Exception(ex.Message);
@@ -324,7 +324,7 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Update.Profile.Sync");
+                HLogger.LogError(ex, "Hiro.Exception.Update.Profile.Sync");
                 return "error";
             }
         }
@@ -344,7 +344,7 @@ namespace Hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
+                    throw new Exception(HText.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] eof = Encoding.UTF8.GetBytes(
@@ -378,7 +378,7 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Send");
+                HLogger.LogError(ex, "Hiro.Exception.Chat.Send");
                 return "error";
             }
         }
@@ -390,7 +390,7 @@ namespace Hiro.Helpers
             try
             {
                 if (App.hc == null)
-                    throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
+                    throw new Exception(HText.Get_Translate("webnotinitial"));
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] eof = Encoding.UTF8.GetBytes(
@@ -421,7 +421,7 @@ namespace Hiro.Helpers
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Get.Save");
+                        HLogger.LogError(ex, "Hiro.Exception.Chat.Get.Save");
                         throw new Exception(ex.Message);
                     }
                 }
@@ -430,7 +430,7 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Chat.Get");
+                HLogger.LogError(ex, "Hiro.Exception.Chat.Get");
                 return "error";
             }
         }

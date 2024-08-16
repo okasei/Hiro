@@ -25,15 +25,15 @@ namespace Hiro
             Height = SystemParameters.PrimaryScreenHeight / 10;
             Title = App.appTitle;
             Hiro_Initialize();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
             ContentRendered += delegate
              {
                  Size msize = new();
-                 Hiro_Utils.Get_Text_Visual_Width(PlaceHolder, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+                 HUI.Get_Text_Visual_Width(PlaceHolder, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
                  while (msize.Height <= PlaceHolder.ActualHeight)
                  {
-                     Hiro_Utils.Get_Text_Visual_Width(PlaceHolder, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
+                     HUI.Get_Text_Visual_Width(PlaceHolder, VisualTreeHelper.GetDpi(this).PixelsPerDip, out msize);
                      PlaceHolder.FontSize++;
                      if (PlaceHolder.FontSize > 36)
                          break;
@@ -74,7 +74,7 @@ namespace Hiro
             Load_Color();
             Load_Translate();
             Load_Position();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(HSet.Read_DCIni("Blur", "0")));
         }
 
         public void Load_Color()
@@ -85,23 +85,23 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            PlaceHolder.Content = Helpers.Hiro_Text.Path_PPX(Helpers.Hiro_Text.Get_Translate("hirogo"));
+            PlaceHolder.Content = Helpers.HText.Path_PPX(Helpers.HText.Get_Translate("hirogo"));
         }
 
         public void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(PlaceHolder, "hirogo", location: false);
-            Hiro_Utils.Set_Control_Location(Hiro_Text, "hirogotb", location: false);
+            HUI.Set_Control_Location(PlaceHolder, "hirogo", location: false);
+            HUI.Set_Control_Location(Hiro_Text, "hirogotb", location: false);
         }
 
         public void HiHiro()
         {
             if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
                 PlaceHolder.Visibility = Visibility.Visible;
-            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
-            Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
+            HAnimation.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
             sb.Completed += delegate
             {
                 if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
@@ -114,10 +114,10 @@ namespace Hiro
 
         public void Loadbgi(int direction)
         {
-            if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
+            if (HSet.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 return;
             }
             if (compositor != null)
@@ -127,9 +127,9 @@ namespace Hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
-            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
+            HAnimation.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
@@ -138,10 +138,10 @@ namespace Hiro
             if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
             {
                 PlaceHolder.Visibility = Visibility.Visible;
-                if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+                if (!HSet.Read_DCIni("Ani", "2").Equals("1"))
                     return;
                 Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
+                HAnimation.AddPowerAnimation(0, PlaceHolder, sb, 50, null);
                 sb.Completed += delegate
                 {
                     if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))
@@ -154,14 +154,14 @@ namespace Hiro
             else
             {
 
-                if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+                if (!HSet.Read_DCIni("Ani", "2").Equals("1"))
                 {
                     PlaceHolder.Visibility = Visibility.Hidden;
                 }
                 else
                 {
                     Storyboard sb = new();
-                    Hiro_Utils.AddDoubleAnimaton(0, 250, PlaceHolder, "Opacity", sb);
+                    HAnimation.AddDoubleAnimaton(0, 250, PlaceHolder, "Opacity", sb);
                     sb.Completed += delegate
                     {
                         if (Hiro_Text.Text.Equals("") || Hiro_Text.Text.Equals(string.Empty))

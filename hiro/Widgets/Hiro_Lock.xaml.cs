@@ -31,7 +31,7 @@ namespace Hiro
         public Hiro_Lock(BackgroundWorker Finished)
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
             Loaded += delegate
             {
@@ -47,26 +47,26 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            titlelabel.Content = Hiro_Text.Get_Translate("locked").Replace("%h", App.appTitle);
-            InfoLabel.Content = Hiro_Text.Get_Translate("lockedinfo").Replace("%h", App.appTitle);
-            InfoLabel2.Content = Hiro_Text.Get_Translate("lockedwait").Replace("%h", App.appTitle);
-            Pwd_BtnB.Content = Hiro_Text.Get_Translate("lockback").Replace("%h", App.appTitle);
-            Pwd_BtnE.Content = Hiro_Text.Get_Translate("lockenter").Replace("%h", App.appTitle);
+            titlelabel.Content = HText.Get_Translate("locked").Replace("%h", App.appTitle);
+            InfoLabel.Content = HText.Get_Translate("lockedinfo").Replace("%h", App.appTitle);
+            InfoLabel2.Content = HText.Get_Translate("lockedwait").Replace("%h", App.appTitle);
+            Pwd_BtnB.Content = HText.Get_Translate("lockback").Replace("%h", App.appTitle);
+            Pwd_BtnE.Content = HText.Get_Translate("lockenter").Replace("%h", App.appTitle);
         }
 
         public void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(titlelabel, "locked");
-            Hiro_Utils.Set_Control_Location(InfoLabel, "lockedinfo");
-            Hiro_Utils.Set_Control_Location(InfoLabel2, "lockedwait");
-            Hiro_Utils.Set_FrameworkElement_Location(Pwd, "lockedpwd");
-            Hiro_Utils.Set_Control_Location(Pwd_Btn1, "lockedpwdbtn", location: false);
-            Hiro_Utils.Set_Control_Location(PwdInput, "lockedpwdinput");
+            HUI.Set_Control_Location(titlelabel, "locked");
+            HUI.Set_Control_Location(InfoLabel, "lockedinfo");
+            HUI.Set_Control_Location(InfoLabel2, "lockedwait");
+            HUI.Set_FrameworkElement_Location(Pwd, "lockedpwd");
+            HUI.Set_Control_Location(Pwd_Btn1, "lockedpwdbtn", location: false);
+            HUI.Set_Control_Location(PwdInput, "lockedpwdinput");
         }
 
         public void Load_Colors()
         {
-            Hiro_Utils.Set_Bgimage(bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
             #region 颜色
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
@@ -78,7 +78,7 @@ namespace Hiro
 
         public void OpacityBgi()
         {
-            Hiro_Utils.Set_Opacity(bgimage, this);
+            HUI.Set_Opacity(bgimage, this);
         }
 
         public void SetLockState(int state = 0)
@@ -91,10 +91,10 @@ namespace Hiro
             Info.Visibility = Visibility.Hidden;
             InputPwd.Visibility = Visibility.Hidden;
             tosee.Visibility = Visibility.Visible;
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, tosee, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, tosee, sb, -50, null);
                 sb.Begin();
             }
         }
@@ -128,7 +128,7 @@ namespace Hiro
 
         private void Get_Password()
         {
-            /*var pw = Hiro_Text.Read_DCIni("Password");
+            /*var pw = HText.Read_DCIni("Password");
             System.Security.Cryptography.HMACSHA512 hmac = new System.Security.Cryptography.HMACSHA512();
             hmac.
                 StringBuilder sBuilder = new(131);
@@ -169,10 +169,10 @@ namespace Hiro
         public void HiHiro()
         {
             titlelabel.Visibility = Visibility.Visible;
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, titlelabel, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, titlelabel, sb, -50, null);
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);

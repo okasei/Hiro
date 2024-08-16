@@ -22,13 +22,13 @@ namespace Hiro
         public Hiro_Editor()
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
-            editpage = int.Parse(Hiro_Settings.Read_DCIni("EditPage", "0"));
+            Helpers.HUI.SetCustomWindowIcon(this);
+            editpage = int.Parse(HSet.Read_DCIni("EditPage", "0"));
             Load_Position();
-            Title = Hiro_Text.Get_Translate("editorTitle").Replace("%t", Hiro_Text.Get_Translate("edititle")).Replace("%a", App.appTitle);
+            Title = HText.Get_Translate("editorTitle").Replace("%t", HText.Get_Translate("edititle")).Replace("%a", App.appTitle);
             Load();
             con.Focus();
-            slider.Value = double.Parse(Hiro_Settings.Read_DCIni("EditOpacity", "1"));
+            slider.Value = double.Parse(HSet.Read_DCIni("EditOpacity", "1"));
             allow = 1;
             slider.IsEnabled = true;
             Opacity = (float)slider.Value;
@@ -48,7 +48,7 @@ namespace Hiro
                     }
                     if (savetime < 5 && savetime > 1)
                     {
-                        var FinalText = Hiro_Text.Get_Translate("eready").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                        var FinalText = HText.Get_Translate("eready").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
                         if (!status.Content.Equals(FinalText))
                         {
                             status.Content = FinalText;
@@ -60,7 +60,7 @@ namespace Hiro
                         saveflag = 0;
                     }
                 }
-                var StatusText = Hiro_Text.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+                var StatusText = HText.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
                 if (saveflag != 0 || status.Content.Equals(StatusText))
                     return;
                 status.Content = StatusText;
@@ -71,10 +71,10 @@ namespace Hiro
 
         private void Update_Animation()
         {
-            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("1"))
                 return;
             Storyboard sb = new();
-            Hiro_Utils.AddPowerAnimation(3, status, sb, -50, null);
+            HAnimation.AddPowerAnimation(3, status, sb, -50, null);
             sb.Begin();
         }
 
@@ -92,13 +92,13 @@ namespace Hiro
                 catch (Exception ex)
                 {
                     con.Text = "";
-                    Hiro_Logger.LogError(ex, "Hiro.Exception.Editor.Write");
+                    HLogger.LogError(ex, "Hiro.Exception.Editor.Write");
                 }
 
             }
             if (show)
             {
-                status.Content = Hiro_Text.Get_Translate("esaved").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()).Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
+                status.Content = HText.Get_Translate("esaved").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString()).Replace("%t", DateTime.Now.ToString("HH:mm:ss"));
                 saveflag = 1;
                 savetime = 9;
                 Update_Animation();
@@ -116,11 +116,11 @@ namespace Hiro
             catch (Exception ex)
             {
                 con.Text = "";
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Editor.Read");
+                HLogger.LogError(ex, "Hiro.Exception.Editor.Read");
             }
-            status.Content = Hiro_Text.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = HText.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Update_Animation();
-            Hiro_Settings.Write_Ini(App.dConfig, "Config", "EditPage", editpage.ToString());
+            HSet.Write_Ini(App.dConfig, "Config", "EditPage", editpage.ToString());
         }
         public void Load_Color()
         {
@@ -131,9 +131,9 @@ namespace Hiro
         }
         public void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(previous, "edipre", bottom: true);
-            Hiro_Utils.Set_Control_Location(next, "edinext", bottom: true);
-            Hiro_Utils.Set_Control_Location(status, "estatus", bottom: true);
+            HUI.Set_Control_Location(previous, "edipre", bottom: true);
+            HUI.Set_Control_Location(next, "edinext", bottom: true);
+            HUI.Set_Control_Location(status, "estatus", bottom: true);
             slider.Style = new Style();
             //main
             SetValue(LeftProperty, 0.0);
@@ -141,18 +141,18 @@ namespace Hiro
             Width = SystemParameters.PrimaryScreenWidth;
             Height = SystemParameters.PrimaryScreenHeight * 6 / 10;
             //status
-            Hiro_Utils.Set_Control_Location(con, "etext");
+            HUI.Set_Control_Location(con, "etext");
             //textbox
             con.SetValue(LeftProperty, 0.0);
             con.SetValue(TopProperty, 0.0);
             con.Width = SystemParameters.PrimaryScreenWidth;
             con.Height = SystemParameters.PrimaryScreenHeight * 6 / 10 - previous.Margin.Bottom - previous.Height - 10;
-            status.Content = Hiro_Text.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = HText.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
             Loadbgi();
         }
         private void Run_In()
         {
-            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 DoubleAnimation dou = new(-ActualHeight, 0, TimeSpan.FromMilliseconds(600))
                 {
@@ -186,7 +186,7 @@ namespace Hiro
             runoutflag = 1;
             Save();
             con.IsEnabled = false;
-            if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 DoubleAnimation dou = new(-ActualHeight, TimeSpan.FromMilliseconds(450))
                 {
@@ -286,7 +286,7 @@ namespace Hiro
         {
             saveflag = 1;
             savetime = 15;
-            status.Content = Hiro_Text.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
+            status.Content = HText.Get_Translate("estatus").Replace("%p", editpage.ToString()).Replace("%w", con.Text.Length.ToString());
         }
 
         private void Edi_Deactivated(object sender, EventArgs e)
@@ -298,7 +298,7 @@ namespace Hiro
         {
             Opacity = (float)slider.Value;
             if (allow == 1)
-                Hiro_Settings.Write_Ini(App.dConfig, "Config", "EditOpacity", slider.Value.ToString());
+                HSet.Write_Ini(App.dConfig, "Config", "EditOpacity", slider.Value.ToString());
         }
 
         private void Edi_KeyDown(object sender, KeyEventArgs e)
@@ -346,10 +346,10 @@ namespace Hiro
         }
         public void Loadbgi()
         {
-            if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
+            if (HSet.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 return;
             }
             if (compositor != null)
@@ -359,9 +359,9 @@ namespace Hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
-            Hiro_Utils.Blur_Animation(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")), animation, bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
+            HAnimation.Blur_Animation(Hiro_Utils.ConvertInt(HSet.Read_DCIni("Blur", "0")), animation, bgimage, this);
             bflag = 0;
         }
 

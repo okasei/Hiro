@@ -39,9 +39,9 @@ namespace Hiro
         public Hiro_Island()
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
-            var icon = Hiro_Settings.Read_PPDCIni("CustomizeIcon", "");
-            icon = Hiro_Text.Path_PPX(icon);
+            Helpers.HUI.SetCustomWindowIcon(this);
+            var icon = HSet.Read_PPDCIni("CustomizeIcon", "");
+            icon = HText.Path_PPX(icon);
             try
             {
                 if (System.IO.File.Exists(icon))
@@ -51,7 +51,7 @@ namespace Hiro
                 }
                 else
                 {
-                    icon = Hiro_Settings.Read_PPDCIni("UserAvatar", "");
+                    icon = HSet.Read_PPDCIni("UserAvatar", "");
                     if (System.IO.File.Exists(icon) && App.Logined == true)
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -61,10 +61,10 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
+                HLogger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
             }
             ContentLabel.MaxWidth = SystemParameters.FullPrimaryScreenWidth * 4 / 5;
-            Title = $"{Hiro_Text.Get_Translate("notitle")} - {App.appTitle}";
+            Title = $"{HText.Get_Translate("notitle")} - {App.appTitle}";
             Load_One();
             Loaded += delegate
             {
@@ -85,17 +85,17 @@ namespace Hiro
         {
             TitleLabel.Foreground = new SolidColorBrush(App.AppForeColor);
             ContentLabel.Foreground = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 160));
-            if (Hiro_Settings.Read_DCIni("Toast", "0").Equals("3"))
+            if (HSet.Read_DCIni("Toast", "0").Equals("3"))
             {
                 BaseBorderBak.Visibility = Visibility.Visible;
-                BaseBorder.Background = Hiro_Utils.Set_Bgimage(BaseBorder.Background, this);
-                Hiro_Utils.Set_Foreground_Opacity(BaseBorderBak);
+                BaseBorder.Background = HUI.Set_Bgimage(BaseBorder.Background, this);
+                HUI.Set_Foreground_Opacity(BaseBorderBak);
             }
-            else if (!Hiro_Settings.Read_DCIni("Ani", "2").Equals("0"))
+            else if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 BaseBorderBak.Visibility = Visibility.Hidden;
                 Storyboard? sc = new();
-                Hiro_Utils.AddColorAnimaton(App.AppAccentColor, 150, BaseBorder, "Background.Color", sc);
+                HAnimation.AddColorAnimaton(App.AppAccentColor, 150, BaseBorder, "Background.Color", sc);
                 sc.Completed += delegate
                 {
                     BaseBorder.Background = new SolidColorBrush(App.AppAccentColor);
@@ -108,8 +108,8 @@ namespace Hiro
                 BaseBorderBak.Visibility = Visibility.Hidden;
                 BaseBorder.Background = new SolidColorBrush(App.AppAccentColor);
             }
-            Hiro_Utils.Set_Control_Location(TitleLabel, "noticetitle", location: false);
-            Hiro_Utils.Set_Control_Location(content, "noticecontent", location: false);
+            HUI.Set_Control_Location(TitleLabel, "noticetitle", location: false);
+            HUI.Set_Control_Location(content, "noticecontent", location: false);
         }
 
         private void TimerTick()
@@ -181,7 +181,7 @@ namespace Hiro
                 ContentGrid.Cursor = null;
             }
             if (TitleLabel.Content == null || TitleLabel.Content.Equals(string.Empty))
-                TitleLabel.Content = Hiro_Text.Get_Translate("notitle");
+                TitleLabel.Content = HText.Get_Translate("notitle");
             if (TitleLabel.Content != null)
                 former_title = TitleLabel.Content.ToString() ?? string.Empty;
             if (former_count > 1)
@@ -194,7 +194,7 @@ namespace Hiro
 
         private void Load_Icon()
         {
-            Helpers.Hiro_Class.Hiro_Icon? icon = App.noticeitems[0].icon;
+            Helpers.HClass.Hiro_Icon? icon = App.noticeitems[0].icon;
             bool set = false;
             if (icon != null)
             {
@@ -205,7 +205,7 @@ namespace Hiro
                 }
                 else
                 {
-                    var iconLocation = Hiro_Text.Path_PPX(icon.Location);
+                    var iconLocation = HText.Path_PPX(icon.Location);
                     if (File.Exists(iconLocation))
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(iconLocation);
@@ -226,13 +226,13 @@ namespace Hiro
             former_width = BaseGrid.ActualWidth;
             former_height = BaseGrid.ActualHeight;
             former_left = SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2;
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
-                sb = Hiro_Utils.AddDoubleAnimaton(50, 850, this, TopProperty.Name, sb, -former_height, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(former_left, 850, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(former_width, 850, BaseGrid, "Width", sb, 1, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(former_height, 850, BaseGrid, "Height", sb, 1, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(50, 850, this, TopProperty.Name, sb, -former_height, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(former_left, 850, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(former_width, 850, BaseGrid, "Width", sb, 1, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(former_height, 850, BaseGrid, "Height", sb, 1, 0.7);
                 sb.Completed += delegate
                 {
                     Canvas.SetTop(this, 50);
@@ -256,13 +256,13 @@ namespace Hiro
         {
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
-                sb = Hiro_Utils.AddDoubleAnimaton(-h, 700, this, TopProperty.Name, sb, 50, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(SystemParameters.FullPrimaryScreenWidth / 2, 700, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Width", sb, former_width, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(1, 700, BaseGrid, "Height", sb, former_height, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(-h, 700, this, TopProperty.Name, sb, 50, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(SystemParameters.FullPrimaryScreenWidth / 2, 700, this, LeftProperty.Name, sb, SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(1, 700, BaseGrid, "Width", sb, former_width, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(1, 700, BaseGrid, "Height", sb, former_height, 0.7);
                 sb.Completed += delegate
                 {
                     Visibility = Visibility.Hidden;
@@ -301,18 +301,18 @@ namespace Hiro
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
             var offset = Math.Min(w * 0.1, 50);
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
                 var sb = new Storyboard();
-                sb = Hiro_Utils.AddDoubleAnimaton(former_left + offset, 300, this, LeftProperty.Name, sb, former_left);
-                sb = Hiro_Utils.AddDoubleAnimaton(former_width - offset * 2, 180, BaseGrid, "Width", sb, former_width);
+                sb = HAnimation.AddDoubleAnimaton(former_left + offset, 300, this, LeftProperty.Name, sb, former_left);
+                sb = HAnimation.AddDoubleAnimaton(former_width - offset * 2, 180, BaseGrid, "Width", sb, former_width);
                 sb.Completed += delegate
                 {
                     former_left = SystemParameters.FullPrimaryScreenWidth / 2 - w / 2;
                     var sb = new Storyboard();
-                    sb = Hiro_Utils.AddDoubleAnimaton(former_left, 300, this, LeftProperty.Name, sb, null);
-                    sb = Hiro_Utils.AddDoubleAnimaton(w + ContentGrid.Margin.Left * 2, 300, BaseGrid, "Width", sb, null);
-                    sb = Hiro_Utils.AddDoubleAnimaton(h + ContentGrid.Margin.Top * 2, 300, BaseGrid, "Height", sb, null);
+                    sb = HAnimation.AddDoubleAnimaton(former_left, 300, this, LeftProperty.Name, sb, null);
+                    sb = HAnimation.AddDoubleAnimaton(w + ContentGrid.Margin.Left * 2, 300, BaseGrid, "Width", sb, null);
+                    sb = HAnimation.AddDoubleAnimaton(h + ContentGrid.Margin.Top * 2, 300, BaseGrid, "Height", sb, null);
                     sb.Completed += delegate
                     {
                         SetAutoSize(BaseGrid);

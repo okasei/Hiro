@@ -33,9 +33,9 @@ namespace Hiro
             Load_Picture(filePath);
             Load_Color();
             Load_Translate();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
-            Title = Hiro_Text.Get_Translate("crop").Replace("%h", App.appTitle);
+            Title = HText.Get_Translate("crop").Replace("%h", App.appTitle);
         }
 
 
@@ -71,8 +71,8 @@ namespace Hiro
 
         internal void Load_Translate()
         {
-            OKBtn.ToolTip = Hiro_Text.Get_Translate("ok");
-            CloseBtn.ToolTip = Hiro_Text.Get_Translate("close");
+            OKBtn.ToolTip = HText.Get_Translate("ok");
+            CloseBtn.ToolTip = HText.Get_Translate("close");
         }
 
         private void SetOriginalX()
@@ -270,7 +270,7 @@ namespace Hiro
                 {
                     PBE.Frames.Add(BitmapFrame.Create(bitmapSource));
                 }
-                using (Stream stream = File.Create(Hiro_Text.Path_Prepare(savePath)))
+                using (Stream stream = File.Create(HText.Path_Prepare(savePath)))
                 {
                     PBE.Save(stream);
                 }
@@ -278,7 +278,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Crop.Save");
+                HLogger.LogError(ex, "Hiro.Exception.Crop.Save");
                 return false;
             }
         }

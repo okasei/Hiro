@@ -28,7 +28,7 @@ namespace Hiro
         public Hiro_Badge()
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             Loaded += (e, args) =>
             {
                 AdjustSize();
@@ -43,15 +43,15 @@ namespace Hiro
             var h = Height;
             if (EllipseBorder.Visibility == Visibility.Visible)
             {
-                sb = Hiro_Utils.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Ellipse, "Height", sb, h * 1.2, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Ellipse, "Width", sb, h * 1.2, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(1, Math.Min(h * 10, 700), Badge_Ellipse, "Opacity", sb, 0, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Ellipse, "Height", sb, h * 1.2, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Ellipse, "Width", sb, h * 1.2, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(1, Math.Min(h * 10, 700), Badge_Ellipse, "Opacity", sb, 0, 0.7);
             }
             else
             {
-                sb = Hiro_Utils.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Rectangle, "Height", sb, h * 1.2, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Rectangle, "Width", sb, h * 1.2, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(1, Math.Min(h * 10, 700), Badge_Rectangle, "Opacity", sb, 0, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Rectangle, "Height", sb, h * 1.2, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h, Math.Min(h * 10, 700), Badge_Rectangle, "Width", sb, h * 1.2, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(1, Math.Min(h * 10, 700), Badge_Rectangle, "Opacity", sb, 0, 0.7);
             }
             sb.Begin();
         }
@@ -65,7 +65,7 @@ namespace Hiro
                 FadeIn();
                 LoadColor();
             };
-            var icon = Hiro_Text.Path_PPX(pic);
+            var icon = HText.Path_PPX(pic);
             if (System.IO.File.Exists(icon))
             {
                 BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
@@ -107,7 +107,7 @@ namespace Hiro
                 AdjustSize();
                 var h = Height;
                 var targetThickness = new Thickness(h * 2, h * 2, 0, 0);
-                var sb = obj == 0 ? Hiro_Utils.AddThicknessAnimaton(targetThickness, Math.Min(h * 50, 3000), EllipseLight, "Margin", null) : Hiro_Utils.AddThicknessAnimaton(targetThickness, Math.Min(h * 50, 3000), RectagleLight, "Margin", null);
+                var sb = obj == 0 ? HAnimation.AddThicknessAnimaton(targetThickness, Math.Min(h * 50, 3000), EllipseLight, "Margin", null) : HAnimation.AddThicknessAnimaton(targetThickness, Math.Min(h * 50, 3000), RectagleLight, "Margin", null);
                 sb.Completed += (e, args) =>
                 {
                     Dispatcher.Invoke(() =>
@@ -142,15 +142,15 @@ namespace Hiro
             var h = Height;
             if (EllipseBorder.Visibility == Visibility.Visible)
             {
-                sb = Hiro_Utils.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Ellipse, "Height", sb, h, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Ellipse, "Width", sb, h, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(0, Math.Min(h * 10, 700), Badge_Ellipse, "Opacity", sb, 1, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Ellipse, "Height", sb, h, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Ellipse, "Width", sb, h, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(0, Math.Min(h * 10, 700), Badge_Ellipse, "Opacity", sb, 1, 0.7);
             }
             else
             {
-                sb = Hiro_Utils.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Rectangle, "Height", sb, h, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Rectangle, "Width", sb, h, 0.7);
-                sb = Hiro_Utils.AddDoubleAnimaton(0, Math.Min(h * 10, 700), Badge_Rectangle, "Opacity", sb, 1, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Rectangle, "Height", sb, h, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(h * 1.2, Math.Min(h * 10, 700), Badge_Rectangle, "Width", sb, h, 0.7);
+                sb = HAnimation.AddDoubleAnimaton(0, Math.Min(h * 10, 700), Badge_Rectangle, "Opacity", sb, 1, 0.7);
             }
             sb.Completed += (e, args) =>
             {

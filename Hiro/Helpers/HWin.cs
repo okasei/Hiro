@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using static Hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.HClass;
+using static Hiro.APIs.AWin;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_Win
+    internal class HWin
     {
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetProcessEfficiencyMode(int mode);
 
         internal static void SetProcessPriority(string para, string? source = null, bool mute = false)
         {
@@ -85,7 +79,7 @@ namespace Hiro.Helpers
                     }
             }
             if (!mute)
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate(infoKey), 2, source));
+                App.Notify(new Hiro_Notice(HText.Get_Translate(infoKey), 2, source));
         }
 
         internal static void SetEffiencyMode(string para, string? source = null, bool mute = false)
@@ -100,7 +94,7 @@ namespace Hiro.Helpers
                 if (int.Parse(versions[0]) < 10 || int.Parse(versions[2]) < 22000)
                 {
                     if (!mute)
-                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("effiencywin"), 2, source));
+                        App.Notify(new Hiro_Notice(HText.Get_Translate("effiencywin"), 2, source));
                     return;
                 }
             }
@@ -137,31 +131,7 @@ namespace Hiro.Helpers
                     }
             }
             if (!mute)
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate(infoKey), 2, source));
-        }
-
-        // 声明导入函数
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool SetProcessInformation([In] IntPtr hProcess, [In] PROCESS_INFORMATION_CLASS ProcessInformationClass, IntPtr ProcessInformation, uint ProcessInformationSize);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool SetPriorityClass(IntPtr handle, uint priorityClass);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, uint processId);
-
-        private enum PROCESS_INFORMATION_CLASS
-        {
-            ProcessMemoryPriority,
-            ProcessMemoryExhaustionInfo,
-            ProcessAppMemoryInfo,
-            ProcessInPrivateInfo,
-            ProcessPowerThrottling,
-            ProcessReservedValue1,
-            ProcessTelemetryCoverageInfo,
-            ProcessProtectionLevelInfo,
-            ProcessLeapSecondInfo,
-            ProcessInformationClassMax,
+                App.Notify(new Hiro_Notice(HText.Get_Translate(infoKey), 2, source));
         }
 
         //实现

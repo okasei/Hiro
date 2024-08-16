@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_Text
+    internal class HText
     {
         internal static bool StartsWith(string text, string start)
         {
@@ -196,7 +196,7 @@ namespace Hiro.Helpers
         #region 翻译文件
         public static string Get_Translate(string val)
         {
-            return Hiro_Settings.Read_Ini($"{App.currentDir}\\system\\lang\\{App.lang}.hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine).Replace("%b", " ");
+            return HSet.Read_Ini($"{App.currentDir}\\system\\lang\\{App.lang}.hlp", "translate", val, "<???>").Replace("\\n", Environment.NewLine).Replace("%b", " ");
         }
         #endregion
 

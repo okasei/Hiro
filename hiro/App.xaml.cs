@@ -16,10 +16,10 @@ using Windows.Storage.Streams;
 using Windows.UI.Notifications;
 using Windows.UI.Notifications.Management;
 using Hiro.Helpers;
-using static Hiro.Helpers.Hiro_Class;
-using static Hiro.Helpers.Hiro_Text;
-using static Hiro.Helpers.Hiro_Settings;
-using static Hiro.Helpers.Hiro_Logger;
+using static Hiro.Helpers.HClass;
+using static Hiro.Helpers.HText;
+using static Hiro.Helpers.HSet;
+using static Hiro.Helpers.HLogger;
 
 namespace Hiro
 {
@@ -57,7 +57,6 @@ namespace Hiro
         internal static byte trval = 160;
         internal static System.Windows.Threading.DispatcherTimer? timer;
         internal static System.Collections.ObjectModel.ObservableCollection<Cmditem> cmditems = new();
-        internal static System.Collections.ObjectModel.ObservableCollection<int> vs = new();
         internal static int page = 0;
         internal static bool dflag = false;
         internal static System.Net.Http.HttpClient? hc = null;
@@ -370,7 +369,7 @@ namespace Hiro
                                 {
                                     Logined = null;
                                     var tmp = System.IO.Path.GetTempFileName();
-                                    var r = Helpers.Hiro_ID.Login(loginedUser, loginedToken, true, tmp);
+                                    var r = Helpers.HID.Login(loginedUser, loginedToken, true, tmp);
                                     if (r.Equals("success") && Read_Ini(tmp, "Login", "res", "-1").Equals("0"))
                                     {
                                         Logined = true;
@@ -385,7 +384,7 @@ namespace Hiro
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
                                     if (Logined == true)
-                                        Hiro_ID.SyncProfile(loginedUser, loginedToken);
+                                        HID.SyncProfile(loginedUser, loginedToken);
 
                                 }).Start();
                             }
@@ -565,12 +564,12 @@ namespace Hiro
         private static void InitializeInnerParameters()
         {
             currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\editor\\");
-            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\log\\");
-            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\config\\");
-            Hiro_File.CreateFolder(currentDir + "\\users\\" + eUserName + "\\app\\");
-            Hiro_File.CreateFolder(currentDir + "\\system\\lang\\");
-            Hiro_File.CreateFolder(currentDir + "\\system\\wallpaper\\");
+            HFile.CreateFolder(currentDir + "\\users\\" + eUserName + "\\editor\\");
+            HFile.CreateFolder(currentDir + "\\users\\" + eUserName + "\\log\\");
+            HFile.CreateFolder(currentDir + "\\users\\" + eUserName + "\\config\\");
+            HFile.CreateFolder(currentDir + "\\users\\" + eUserName + "\\app\\");
+            HFile.CreateFolder(currentDir + "\\system\\lang\\");
+            HFile.CreateFolder(currentDir + "\\system\\wallpaper\\");
             logFilePath = currentDir + "\\users\\" + eUserName + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
             System.IO.File.Delete(logFilePath);
             LogtoFile("[HIROWEGO]InitializeInnerParameters");
@@ -637,7 +636,7 @@ namespace Hiro
                     username = eUserName;
                     break;
             }
-            Hiro_ID.version = "v" + Read_DCIni("AppVer", "1");
+            HID.version = "v" + Read_DCIni("AppVer", "1");
             if (Read_DCIni("CustomNick", "1").Equals("2"))
                 appTitle = Read_DCIni("CustomHIRO", "Hiro");
             if (Read_DCIni("TRBtn", "0").Equals("1"))
@@ -697,13 +696,13 @@ namespace Hiro
             {
                 case "1":
                     {
-                        Hiro_Win.SetProcessPriority("idle", null, true);
+                        HWin.SetProcessPriority("idle", null, true);
                         break;
                     }
                 case "2":
                     {
-                        Hiro_Win.SetProcessPriority("idle", null, true);
-                        Hiro_Win.SetEffiencyMode("on", null, true);
+                        HWin.SetProcessPriority("idle", null, true);
+                        HWin.SetEffiencyMode("on", null, true);
                         break;
                     }
             }
@@ -746,7 +745,7 @@ namespace Hiro
                 {
                     if (mn.hiro_chat == null)
                     {
-                        Hiro_Logger.LogtoFile("[INFO]AutoChat enabled");
+                        HLogger.LogtoFile("[INFO]AutoChat enabled");
                         mn.hiro_chat ??= new(mn);
                         mn.hiro_chat.Load_Friend_Info_First();
                     }
@@ -924,7 +923,7 @@ namespace Hiro
                     var iconFile = Path_PPX("<current>\\system\\icons\\clsids\\") + notif.AppInfo.AppUserModelId + ".hsic";
                     if (!System.IO.File.Exists(iconFile))
                     {
-                        Hiro_File.CreateFolder(iconFile);
+                        HFile.CreateFolder(iconFile);
                         RandomAccessStreamReference stream = notif.AppInfo.DisplayInfo.GetLogo(new Windows.Foundation.Size(128, 128));
                         if (stream is not null)
                         {
@@ -965,14 +964,14 @@ namespace Hiro
             else if (qtitle != musicTitles[0] && qtitle != null && !qtitle.Equals("QQ音乐"))
             {
                 musicTitles[0] = qtitle;
-                Notify(new(Hiro_Text.Get_Translate("qqmusic").Replace("%m", qtitle), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\qqmusic.png" }));
+                Notify(new(HText.Get_Translate("qqmusic").Replace("%m", qtitle), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\qqmusic.png" }));
             }
             if (Initialize_Title(Ptrs[1], out string? ntitle) == 0)
                 Initialize_Ptr("cloudmusic", 1);
             else if (ntitle != musicTitles[1] && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐"))
             {
                 musicTitles[1] = ntitle;
-                Notify(new(Hiro_Text.Get_Translate("netmusic").Replace("%m", ntitle), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\neteasemusic.png" }));
+                Notify(new(HText.Get_Translate("netmusic").Replace("%m", ntitle), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\neteasemusic.png" }));
             }
             if (Initialize_Title(Ptrs[2], out string? kwtitle) == 0)
                 Initialize_Ptr("kwmusic", 2);
@@ -987,21 +986,21 @@ namespace Hiro
                     }
                 }
                 musicTitles[2] = kwtitle;
-                Notify(new(Hiro_Text.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kuwomusic.png" }));
+                Notify(new(HText.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kuwomusic.png" }));
             }
             if (Initialize_Title(Ptrs[3], out string? kgtitle) == 0)
                 Initialize_Ptr("KuGou", 3);
             else if (kgtitle != musicTitles[3] && kgtitle != null && !kgtitle.Equals(string.Empty) && !kgtitle.Equals("酷狗音乐"))
             {
                 musicTitles[3] = kgtitle;
-                Notify(new(Hiro_Text.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kgmusic.png" }));
+                Notify(new(HText.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kgmusic.png" }));
             }
             if (Initialize_Title(Ptrs[4], out string? sptitle) == 0)
                 Ptrs[4] = Initialize_Ptr("Spotify");
             else if (sptitle != musicTitles[4] && sptitle != null && !sptitle.Equals("Spotify") && !sptitle.Equals("Spotify Premium"))
             {
                 musicTitles[4] = sptitle;
-                Notify(new(Hiro_Text.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, Hiro_Text.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\spotify.png" }));
+                Notify(new(HText.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\spotify.png" }));
             }
         }
 
@@ -1054,7 +1053,7 @@ namespace Hiro
                         {
                             string? str = mu.Tag.ToString();
                             if (str != null)
-                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, Hiro_Text.Get_Translate("menusource").Replace("%t", cmditems[int.Parse(str) - 1].Name));
+                                Hiro_Utils.RunExe(cmditems[int.Parse(str) - 1].Command, HText.Get_Translate("menusource").Replace("%t", cmditems[int.Parse(str) - 1].Name));
 
                         }
                         catch (Exception ex)
@@ -1073,7 +1072,7 @@ namespace Hiro
                     };
                     if (page <= 0)
                         pre.IsEnabled = false;
-                    pre.Header = Hiro_Text.Get_Translate("menupre");
+                    pre.Header = HText.Get_Translate("menupre");
                     pre.Click += delegate
                     {
                         page--;
@@ -1094,7 +1093,7 @@ namespace Hiro
                     };
                     if (page >= total - 1)
                         next.IsEnabled = false;
-                    next.Header = Hiro_Text.Get_Translate("menunext");
+                    next.Header = HText.Get_Translate("menunext");
                     next.Click += delegate
                     {
                         page++;
@@ -1107,7 +1106,7 @@ namespace Hiro
                 {
                     MenuItem pageid = new();
                     pageid.IsEnabled = false;
-                    pageid.Header = Hiro_Text.Get_Translate("menunull");
+                    pageid.Header = HText.Get_Translate("menunull");
                     wnd.cm.Items.Add(pageid);
                 }
                 wnd.cm.Items.Add(new Separator());
@@ -1115,26 +1114,26 @@ namespace Hiro
                 {
                     Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                 };
-                show.Header = Hiro_Text.Get_Translate("menushow");
+                show.Header = HText.Get_Translate("menushow");
                 show.Click += delegate
                 {
-                    Hiro_Utils.RunExe("show()", Hiro_Text.Get_Translate("menu"));
+                    Hiro_Utils.RunExe("show()", HText.Get_Translate("menu"));
                 };
                 wnd.cm.Items.Add(show);
                 MenuItem exit = new()
                 {
                     Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
                 };
-                exit.Header = Hiro_Text.Get_Translate("menuexit");
+                exit.Header = HText.Get_Translate("menuexit");
                 exit.Click += delegate
                 {
-                    Hiro_Utils.RunExe("exit()", Hiro_Text.Get_Translate("menu"));
+                    Hiro_Utils.RunExe("exit()", HText.Get_Translate("menu"));
                 };
                 wnd.cm.Items.Add(exit);
                 foreach (var obj in wnd.cm.Items)
                 {
                     if (obj is MenuItem mi)
-                        Hiro_Utils.Set_Control_Location(mi, "context", location: false);
+                        HUI.Set_Control_Location(mi, "context", location: false);
                 }
             }
             GC.Collect();

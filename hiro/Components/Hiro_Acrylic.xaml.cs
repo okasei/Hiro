@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static Hiro.Helpers.Hiro_Settings;
-using static Hiro.Helpers.Hiro_Text;
+using static Hiro.Helpers.HSet;
+using static Hiro.Helpers.HText;
 
 namespace Hiro
 {
@@ -81,16 +82,16 @@ namespace Hiro
             Storyboard sb = new();
             if (Read_DCIni("Ani", "2").Equals("1"))
             {
-                Hiro_Utils.AddPowerAnimation(1, AcrylicTitle, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, AcrylicColorGrid, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, AcrylicTransparentGrid, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(1, AcrylicColorGrid, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, AcrylicCancel, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, AcrylicOK, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, AcrylicTitle, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, AcrylicColorGrid, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, AcrylicTransparentGrid, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, AcrylicColorGrid, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, AcrylicCancel, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, AcrylicOK, sb, -50, null);
             }
             if (!animation)
                 return;
-            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            HAnimation.AddPowerAnimation(0, this, sb, 50, null);
             sb.Begin();
         }
         private void Hiro_Initialize()
@@ -129,23 +130,23 @@ namespace Hiro
 
         public void Load_Position()
         {
-            Hiro_Utils.Set_FrameworkElement_Location(AcrylicColorGrid, "AcrylicColorGrid");
-            Hiro_Utils.Set_FrameworkElement_Location(AcrylicHalfGrid, "AcrylicHalfGrid");
-            Hiro_Utils.Set_FrameworkElement_Location(AcrylicTransparentGrid, "AcrylicTransparentGrid");
-            Hiro_Utils.Set_Control_Location(AcrylicTitle, "AcrylicTitle");
-            Hiro_Utils.Set_Control_Location(ColorTitle, "AcrylicColor");
-            Hiro_Utils.Set_Control_Location(ColorWhite, "AcrylicWhite");
-            Hiro_Utils.Set_Control_Location(ColorBlack, "AcrylicBlack");
-            Hiro_Utils.Set_Control_Location(ColorCustomize, "AcrylicCustomize");
-            Hiro_Utils.Set_Control_Location(ColorBtn, "AcrylicColorBtn");
-            Hiro_Utils.Set_Control_Location(TransparentTitle, "AcrylicTransparent");
-            Hiro_Utils.Set_Control_Location(TransparentSlider, "AcrylicSlider");
-            Hiro_Utils.Set_Control_Location(HalfTitle, "AcrylicHalf");
-            Hiro_Utils.Set_Control_Location(HalfPure, "AcrylicPure");
-            Hiro_Utils.Set_Control_Location(HalfImage, "AcrylicImage");
-            Hiro_Utils.Set_Control_Location(NoHalf, "AcrylicNoHalf");
-            Hiro_Utils.Set_Control_Location(AcrylicCancel, "AcrylicCancel", bottom: true, right: true);
-            Hiro_Utils.Set_Control_Location(AcrylicOK, "AcrylicOK", bottom: true, right: true);
+            HUI.Set_FrameworkElement_Location(AcrylicColorGrid, "AcrylicColorGrid");
+            HUI.Set_FrameworkElement_Location(AcrylicHalfGrid, "AcrylicHalfGrid");
+            HUI.Set_FrameworkElement_Location(AcrylicTransparentGrid, "AcrylicTransparentGrid");
+            HUI.Set_Control_Location(AcrylicTitle, "AcrylicTitle");
+            HUI.Set_Control_Location(ColorTitle, "AcrylicColor");
+            HUI.Set_Control_Location(ColorWhite, "AcrylicWhite");
+            HUI.Set_Control_Location(ColorBlack, "AcrylicBlack");
+            HUI.Set_Control_Location(ColorCustomize, "AcrylicCustomize");
+            HUI.Set_Control_Location(ColorBtn, "AcrylicColorBtn");
+            HUI.Set_Control_Location(TransparentTitle, "AcrylicTransparent");
+            HUI.Set_Control_Location(TransparentSlider, "AcrylicSlider");
+            HUI.Set_Control_Location(HalfTitle, "AcrylicHalf");
+            HUI.Set_Control_Location(HalfPure, "AcrylicPure");
+            HUI.Set_Control_Location(HalfImage, "AcrylicImage");
+            HUI.Set_Control_Location(NoHalf, "AcrylicNoHalf");
+            HUI.Set_Control_Location(AcrylicCancel, "AcrylicCancel", bottom: true, right: true);
+            HUI.Set_Control_Location(AcrylicOK, "AcrylicOK", bottom: true, right: true);
         }
 
         private void ColorWhite_Checked(object sender, RoutedEventArgs e)

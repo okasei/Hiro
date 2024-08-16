@@ -7,12 +7,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HSet;
 
 namespace Hiro
 {
     /// <summary>
-    /// Hiro_Text.xaml 的交互逻辑
+    /// HText.xaml 的交互逻辑
     /// </summary>
     public partial class Hiro_TextEditor : Window
     {
@@ -25,7 +25,7 @@ namespace Hiro
         public Hiro_TextEditor(string? filePath)
         {
             InitializeComponent(); SourceInitialized += OnSourceInitialized;
-            Hiro_UI.SetCustomWindowIcon(this);
+            HUI.SetCustomWindowIcon(this);
             Load_Color();
             Loaded += delegate
             {
@@ -42,19 +42,19 @@ namespace Hiro
             if (path == null || !File.Exists(path))
                 return;
             MainText.Text = File.ReadAllText(path);
-            Title = Hiro_Text.Get_Translate("textEditorTitle").Replace("%t", new FileInfo(path).Name).Replace("%a", App.appTitle);
+            Title = HText.Get_Translate("textEditorTitle").Replace("%t", new FileInfo(path).Name).Replace("%a", App.appTitle);
             TitleLabel.Text = Title;
         }
 
         public void Load_Translate()
         {
-            minbtn.ToolTip = Hiro_Text.Get_Translate("Min");
-            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
-            maxbtn.ToolTip = Hiro_Text.Get_Translate("max");
-            resbtn.ToolTip = Hiro_Text.Get_Translate("restore");
-            Hiro_Utils.Set_Control_Location(MainText, "textWidget", location: false);
-            Hiro_Utils.Set_Control_Location(FakeTitle, "textWidgetTitle", location: false);
-            Hiro_UI.CopyFontFromLabel(FakeTitle, TitleLabel);
+            minbtn.ToolTip = HText.Get_Translate("Min");
+            closebtn.ToolTip = HText.Get_Translate("close");
+            maxbtn.ToolTip = HText.Get_Translate("max");
+            resbtn.ToolTip = HText.Get_Translate("restore");
+            HUI.Set_Control_Location(MainText, "textWidget", location: false);
+            HUI.Set_Control_Location(FakeTitle, "textWidgetTitle", location: false);
+            HUI.CopyFontFromLabel(FakeTitle, TitleLabel);
         }
         public void Refreash_Layout()
         {
@@ -88,7 +88,7 @@ namespace Hiro
             if (Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 return;
             }
             if (compositor != null)
@@ -98,8 +98,8 @@ namespace Hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
-            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
+            HAnimation.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 

@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static Hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.HClass;
 using System.Threading;
 using System.Windows.Threading;
 
@@ -44,7 +44,7 @@ namespace Hiro
             Load_Colors();
             Load_Position();
             Load_Translate();
-            Hiro_UI.SetCustomWindowIcon(this);
+            HUI.SetCustomWindowIcon(this);
             Loaded += delegate
             {
                 HiHiro();
@@ -53,15 +53,15 @@ namespace Hiro
 
         public void HiHiro()
         {
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
-            if (Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"))
+            Loadbgi(Hiro_Utils.ConvertInt(HSet.Read_DCIni("Blur", "0")));
+            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(1, ala_title, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(2, closebtn, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(0, Autorun, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(3, albtn_1, sb, -50, null);
+                HAnimation.AddPowerAnimation(1, ala_title, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, minbtn, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, closebtn, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, Autorun, sb, -50, null);
+                HAnimation.AddPowerAnimation(3, albtn_1, sb, -50, null);
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
@@ -92,35 +92,35 @@ namespace Hiro
         }
         void Load_Translate()
         {
-            Title = Hiro_Text.Get_Translate("dlTitle").Replace("%t", Hiro_Text.Get_Translate("dltitle")).Replace("%a", App.appTitle);
-            ala_title.Content = Hiro_Text.Get_Translate("dltitle");
-            albtn_1.Content = Hiro_Text.Get_Translate("dlstart");
-            urllabel.Content = mode == 1 ? Hiro_Text.Get_Translate("dlupdate").Replace("%u", product) : Hiro_Text.Get_Translate("dllink");
-            pathlabel.Content = Hiro_Text.Get_Translate("dlpath");
-            Autorun.Content = Hiro_Text.Get_Translate("dlrun");
-            minbtn.ToolTip = Hiro_Text.Get_Translate("min");
-            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
+            Title = HText.Get_Translate("dlTitle").Replace("%t", HText.Get_Translate("dltitle")).Replace("%a", App.appTitle);
+            ala_title.Content = HText.Get_Translate("dltitle");
+            albtn_1.Content = HText.Get_Translate("dlstart");
+            urllabel.Content = mode == 1 ? HText.Get_Translate("dlupdate").Replace("%u", product) : HText.Get_Translate("dllink");
+            pathlabel.Content = HText.Get_Translate("dlpath");
+            Autorun.Content = HText.Get_Translate("dlrun");
+            minbtn.ToolTip = HText.Get_Translate("min");
+            closebtn.ToolTip = HText.Get_Translate("close");
         }
         void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(this, "dlwin");
-            Hiro_Utils.Set_Control_Location(albtn_1, "dlstart", bottom: true, right: true);
-            Hiro_Utils.Set_Control_Location(pb, "dlprogress");
-            Hiro_Utils.Set_Control_Location(ala_title, "dltitle");
+            HUI.Set_Control_Location(this, "dlwin");
+            HUI.Set_Control_Location(albtn_1, "dlstart", bottom: true, right: true);
+            HUI.Set_Control_Location(pb, "dlprogress");
+            HUI.Set_Control_Location(ala_title, "dltitle");
             if (mode == 1)
             {
-                Hiro_Utils.Set_Control_Location(urllabel, "dlupdate");
+                HUI.Set_Control_Location(urllabel, "dlupdate");
                 pathlabel.Visibility = Visibility.Hidden;
                 textBoxHttpUrl.Visibility = Visibility.Hidden;
                 SavePath.Visibility = Visibility.Hidden;
                 Autorun.Visibility = Visibility.Hidden;
                 return;
             }
-            Hiro_Utils.Set_Control_Location(urllabel, "dllink");
-            Hiro_Utils.Set_Control_Location(pathlabel, "dlpath");
-            Hiro_Utils.Set_Control_Location(textBoxHttpUrl, "dlurl");
-            Hiro_Utils.Set_Control_Location(SavePath, "dlsave");
-            Hiro_Utils.Set_Control_Location(Autorun, "dlrun", bottom: true);
+            HUI.Set_Control_Location(urllabel, "dllink");
+            HUI.Set_Control_Location(pathlabel, "dlpath");
+            HUI.Set_Control_Location(textBoxHttpUrl, "dlurl");
+            HUI.Set_Control_Location(SavePath, "dlsave");
+            HUI.Set_Control_Location(Autorun, "dlrun", bottom: true);
             System.Windows.Controls.Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - this.Width / 2);
             System.Windows.Controls.Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2);
 
@@ -137,7 +137,7 @@ namespace Hiro
             //获取http下载路径
             stopflag = 0;
             pb.Value = 0;
-            albtn_1.Content = Hiro_Text.Get_Translate("dlend");
+            albtn_1.Content = HText.Get_Translate("dlend");
             textBoxHttpUrl.IsEnabled = false;
             SavePath.IsEnabled = false;
             if (!rurl.StartsWith("http://") && !rurl.StartsWith("https://"))
@@ -150,7 +150,7 @@ namespace Hiro
                 }
                 else
                 {
-                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("syntax"), 2, Hiro_Text.Get_Translate("download")));
+                    App.Notify(new Hiro_Notice(HText.Get_Translate("syntax"), 2, HText.Get_Translate("download")));
                     textBoxHttpUrl.Focus();//url地址栏获取焦点
                     Stop_Download(false);
                     return false;
@@ -168,17 +168,17 @@ namespace Hiro
             }
             if (current < 0)
                 rpath = SavePath.Text;
-            mSaveFileName = Hiro_Text.Path_Prepare(rpath);
-            mSaveFileName = Hiro_Text.Path_Prepare_EX(mSaveFileName);
-            mSaveFileName = Hiro_Text.Path_Replace(mSaveFileName, "<filename>", strFileName);
+            mSaveFileName = HText.Path_Prepare(rpath);
+            mSaveFileName = HText.Path_Prepare_EX(mSaveFileName);
+            mSaveFileName = HText.Path_Replace(mSaveFileName, "<filename>", strFileName);
             if (mSaveFileName.IndexOf("<index>") != -1)
             {
-                while (System.IO.File.Exists(Hiro_Text.Path_Replace(mSaveFileName, "<index>", index.ToString())))
+                while (System.IO.File.Exists(HText.Path_Replace(mSaveFileName, "<index>", index.ToString())))
                     index++;
-                mSaveFileName = Hiro_Text.Path_Replace(mSaveFileName, "<index>", index.ToString());
+                mSaveFileName = HText.Path_Replace(mSaveFileName, "<index>", index.ToString());
                 index++;
             }
-            Hiro_File.CreateFolder(mSaveFileName);
+            HFile.CreateFolder(mSaveFileName);
             if (mSaveFileName.EndsWith("\\"))
                 mSaveFileName += strFileName;
             if (System.IO.File.Exists(mSaveFileName) || App.hc == null)
@@ -195,7 +195,7 @@ namespace Hiro
                 return;
             _timer = new DispatcherTimer()
             {
-                Interval = Hiro_Settings.Read_DCIni("Performance", "0") switch
+                Interval = HSet.Read_DCIni("Performance", "0") switch
                 {
                     "1" => TimeSpan.FromMilliseconds(150),
                     "2" => TimeSpan.FromMilliseconds(500),
@@ -218,10 +218,10 @@ namespace Hiro
                 }
                 catch (Exception ex)
                 {
-                    Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Continue");
+                    HLogger.LogError(ex, "Hiro.Exception.Download.Continue");
                     Dispatcher.Invoke(() =>
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("dlerror"), 2, Hiro_Text.Get_Translate("download")));
+                        App.Notify(new Hiro_Notice(HText.Get_Translate("dlerror"), 2, HText.Get_Translate("download")));
                         Stop_Download(false);
                     });
                     return;
@@ -247,7 +247,7 @@ namespace Hiro
                         }
                         catch (Exception ex)
                         {
-                            Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Stream");
+                            HLogger.LogError(ex, "Hiro.Exception.Download.Stream");
                             startpos = 0;
                         }
                     }
@@ -286,10 +286,10 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Write");
+                        HLogger.LogError(ex, "Hiro.Exception.Download.Write");
                         Dispatcher.Invoke(() =>
                         {
-                            App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("dlerror"), 2, Hiro_Text.Get_Translate("download")));
+                            App.Notify(new Hiro_Notice(HText.Get_Translate("dlerror"), 2, HText.Get_Translate("download")));
                         });
                         successflag = false;
                         break;
@@ -306,7 +306,7 @@ namespace Hiro
                     }
                     else
                     {
-                        nextTitle = progress + FormateSize(readLength + startpos) + "/" + Hiro_Text.Get_Translate("dlunknown");
+                        nextTitle = progress + FormateSize(readLength + startpos) + "/" + HText.Get_Translate("dlunknown");
                         nextProgess = -1;
                     }
                     if (stopflag != 0)
@@ -326,7 +326,7 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Download.Save");
+                        HLogger.LogError(ex, "Hiro.Exception.Download.Save");
                     }
                 }
                 Dispatcher.Invoke(() =>
@@ -339,7 +339,7 @@ namespace Hiro
         private void UpdateTitle()
         {
             ala_title.Content = nextTitle;
-            Title = Hiro_Text.Get_Translate("dlTitle").Replace("%t", nextTitle).Replace("%a", App.appTitle);
+            Title = HText.Get_Translate("dlTitle").Replace("%t", nextTitle).Replace("%a", App.appTitle);
             if (nextProgess >= 0 && nextProgess <= 100)
             {
                 pb.Value = nextProgess;
@@ -377,7 +377,7 @@ namespace Hiro
                             var str = filec[current];
                             if (!str.ToLower().StartsWith("http://") && !str.ToLower().StartsWith("https://"))
                             {
-                                Hiro_Utils.RunExe(str, Hiro_Text.Get_Translate("dltitle"), false);
+                                Hiro_Utils.RunExe(str, HText.Get_Translate("dltitle"), false);
                                 Autorun.IsChecked = false;
                             }
                             else
@@ -401,7 +401,7 @@ namespace Hiro
                     }
                     catch (Exception ex)
                     {
-                        Hiro_Logger.LogError(ex, "Hiro.Exception.Download.ListFile");
+                        HLogger.LogError(ex, "Hiro.Exception.Download.ListFile");
                     }
                 }
             }
@@ -409,25 +409,25 @@ namespace Hiro
             Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             pb.IsIndeterminate = false;
             pb.Value = 0;
-            albtn_1.Content = Hiro_Text.Get_Translate("dlstart");
+            albtn_1.Content = HText.Get_Translate("dlstart");
             textBoxHttpUrl.IsEnabled = true;
             SavePath.IsEnabled = true;
-            ala_title.Content = progress + (success ? Hiro_Text.Get_Translate("dlsuccess") : Hiro_Text.Get_Translate("dltitle"));
-            Title = Hiro_Text.Get_Translate("dlTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
+            ala_title.Content = progress + (success ? HText.Get_Translate("dlsuccess") : HText.Get_Translate("dltitle"));
+            Title = HText.Get_Translate("dlTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
             stopflag = 1;
             if (success)
             {
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("dlsuccess"), 2, Hiro_Text.Get_Translate("download")));
+                App.Notify(new Hiro_Notice(HText.Get_Translate("dlsuccess"), 2, HText.Get_Translate("download")));
                 current = -1;
                 listfile = "";
             }
             if (success && Autorun.IsChecked == true)
             {
-                Hiro_Utils.RunExe("explorer \"" + mSaveFileName + "\"", Hiro_Text.Get_Translate("dltitle"), false);
+                Hiro_Utils.RunExe("explorer \"" + mSaveFileName + "\"", HText.Get_Translate("dltitle"), false);
             }
             if (success && Autorun.IsChecked == null)
             {
-                Hiro_Utils.RunExe(mSaveFileName[..mSaveFileName.LastIndexOf("\\")], Hiro_Text.Get_Translate("dltitle"), false);
+                Hiro_Utils.RunExe(mSaveFileName[..mSaveFileName.LastIndexOf("\\")], HText.Get_Translate("dltitle"), false);
             }
             if (Autorun.IsEnabled == false)
             {
@@ -448,7 +448,7 @@ namespace Hiro
         }
         private void Albtn_1_Click(object sender, RoutedEventArgs e)
         {
-            if (albtn_1.Content.Equals(Hiro_Text.Get_Translate("dlstart")))
+            if (albtn_1.Content.Equals(HText.Get_Translate("dlstart")))
             {
                 if (current > 1)
                     progress = "[" + current.ToString() + "/?]";
@@ -495,10 +495,10 @@ namespace Hiro
 
         public void Loadbgi(int direction)
         {
-            if (Hiro_Settings.Read_DCIni("Background", "1").Equals("3"))
+            if (HSet.Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 return;
             }
             if (compositor != null)
@@ -508,22 +508,22 @@ namespace Hiro
             if (bflag == 1)
                 return;
             bflag = 1;
-            Hiro_Utils.Set_Bgimage(bgimage, this);
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
-            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
+            HUI.Set_Bgimage(bgimage, this);
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
+            HAnimation.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
 
         private void Autorun_Indeterminate(object sender, RoutedEventArgs e)
         {
-            Autorun.Content = Hiro_Text.Get_Translate("dlopen");
-            Hiro_Utils.Set_Control_Location(Autorun, "dlopen", bottom: true, animation: Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
+            Autorun.Content = HText.Get_Translate("dlopen");
+            HUI.Set_Control_Location(Autorun, "dlopen", bottom: true, animation: HSet.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Autorun_Unchecked(object sender, RoutedEventArgs e)
         {
-            Autorun.Content = Hiro_Text.Get_Translate("dlrun");
-            Hiro_Utils.Set_Control_Location(Autorun, "dlrun", bottom: true, animation: Hiro_Settings.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
+            Autorun.Content = HText.Get_Translate("dlrun");
+            HUI.Set_Control_Location(Autorun, "dlrun", bottom: true, animation: HSet.Read_DCIni("Ani", "2").Equals("1"), animationTime: 250);
         }
 
         private void Minbtn_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

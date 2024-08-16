@@ -4,8 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static Hiro.Helpers.Hiro_Text;
-using static Hiro.Helpers.Hiro_Settings;
+using static Hiro.Helpers.HText;
+using static Hiro.Helpers.HSet;
 using Hiro.Helpers;
 
 namespace Hiro
@@ -33,17 +33,17 @@ namespace Hiro
             Storyboard sb = new();
             if (Read_DCIni("Ani", "2").Equals("1"))
             {
-                Hiro_Utils.AddPowerAnimation(1, btn1, sb, 50, null);
-                Hiro_Utils.AddPowerAnimation(1, btn2, sb, 50, null);
-                Hiro_Utils.AddPowerAnimation(1, btn3, sb, 50, null);
-                Hiro_Utils.AddPowerAnimation(1, btn4, sb, 50, null);
-                Hiro_Utils.AddPowerAnimation(1, btn5, sb, 50, null);
-                Hiro_Utils.AddPowerAnimation(1, btn6, sb, 50, null);
+                HAnimation.AddPowerAnimation(1, btn1, sb, 50, null);
+                HAnimation.AddPowerAnimation(1, btn2, sb, 50, null);
+                HAnimation.AddPowerAnimation(1, btn3, sb, 50, null);
+                HAnimation.AddPowerAnimation(1, btn4, sb, 50, null);
+                HAnimation.AddPowerAnimation(1, btn5, sb, 50, null);
+                HAnimation.AddPowerAnimation(1, btn6, sb, 50, null);
             }
 
             if (!animation) 
                 return;
-            Hiro_Utils.AddPowerAnimation(0, this, sb, 50, null);
+            HAnimation.AddPowerAnimation(0, this, sb, 50, null);
             sb.Begin();
         }
 
@@ -78,14 +78,14 @@ namespace Hiro
 
         public void Load_Position()
         {
-            Hiro_Utils.Set_Control_Location(ExCellLabel, "icell", location: false);
-            Hiro_Utils.Set_Control_Location(btn1, "inew");
-            Hiro_Utils.Set_Control_Location(btn2, "iup");
-            Hiro_Utils.Set_Control_Location(btn3, "idown");
-            Hiro_Utils.Set_Control_Location(btn4, "ilaunch");
-            Hiro_Utils.Set_Control_Location(btn5, "idelete");
-            Hiro_Utils.Set_Control_Location(btn6, "imodify");
-            Hiro_Utils.Set_Control_Location(dgi, "data");
+            HUI.Set_Control_Location(ExCellLabel, "icell", location: false);
+            HUI.Set_Control_Location(btn1, "inew");
+            HUI.Set_Control_Location(btn2, "iup");
+            HUI.Set_Control_Location(btn3, "idown");
+            HUI.Set_Control_Location(btn4, "ilaunch");
+            HUI.Set_Control_Location(btn5, "idelete");
+            HUI.Set_Control_Location(btn6, "imodify");
+            HUI.Set_Control_Location(dgi, "data");
         }
 
         private void Dgi_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -118,7 +118,7 @@ namespace Hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > 0 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
-                Helpers.Hiro_Class.Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
+                HClass.Cmditem nec = new(App.cmditems[i - 1].Page, App.cmditems[i - 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i - 1].Name, App.cmditems[i - 1].Command, App.cmditems[i - 1].HotKey);
                 App.cmditems[i - 1] = nec;
                 var inipath = App.dConfig;
@@ -130,12 +130,7 @@ namespace Hiro
                 Write_Ini(inipath, (i + 1).ToString(), "HotKey", App.cmditems[i].HotKey);
                 dgi.SelectedIndex = i - 1;
                 App.Load_Menu();
-                var vsi = Hiro_Utils.FindHotkeyById(i - 1);
-                var vsx = Hiro_Utils.FindHotkeyById(i);
-                if (vsi > -1)
-                    App.vs[vsi + 1] = i;
-                if (vsx > -1)
-                    App.vs[vsx + 1] = i - 1;
+                HHotKeys.SwitchIfExist(i, i - 1);
             }
             GC.Collect();
         }
@@ -148,7 +143,7 @@ namespace Hiro
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count - 1)
             {
                 var i = dgi.SelectedIndex;
-                Helpers.Hiro_Class.Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
+                Helpers.HClass.Cmditem nec = new(App.cmditems[i + 1].Page, App.cmditems[i + 1].Id, App.cmditems[i].Name, App.cmditems[i].Command, App.cmditems[i].HotKey);
                 App.cmditems[i] = new(App.cmditems[i].Page, App.cmditems[i].Id, App.cmditems[i + 1].Name, App.cmditems[i + 1].Command, App.cmditems[i + 1].HotKey);
                 App.cmditems[i + 1] = nec;
                 var inipath = App.dConfig;
@@ -160,12 +155,7 @@ namespace Hiro
                 Write_Ini(inipath, (i + 2).ToString(), "HotKey", App.cmditems[i + 1].HotKey);
                 dgi.SelectedIndex = i + 1;
                 App.Load_Menu();
-                var vsi = Hiro_Utils.FindHotkeyById(i + 1);
-                var vsx = Hiro_Utils.FindHotkeyById(i);
-                if (vsi > -1)
-                    App.vs[vsi + 1] = i;
-                if (vsx > -1)
-                    App.vs[vsx + 1] = i + 1;
+                HHotKeys.SwitchIfExist(i, i + 1);
             }
             GC.Collect();
         }
@@ -174,11 +164,7 @@ namespace Hiro
         {
             btn5.IsEnabled = false;
             Hiro_Utils.Delay(200);
-            var vsi = Hiro_Utils.FindHotkeyById(dgi.SelectedIndex);
-            if (vsi > -1)
-            {
-                Hiro_Utils.UnregisterKey(vsi);
-            }
+            HHotKeys.UnregisterIfExist(dgi.SelectedIndex);
             if (App.cmditems.Count != 0 && dgi.SelectedIndex > -1 && dgi.SelectedIndex < App.cmditems.Count)
             {
                 var i = dgi.SelectedIndex;
@@ -193,11 +179,6 @@ namespace Hiro
                     Write_Ini(inipath, (i + 1).ToString(), "HotKey", Read_Ini(inipath, (i + 2).ToString(), "HotKey", " "));
                     i++;
                     System.Windows.Forms.Application.DoEvents();
-                    var vst = Hiro_Utils.FindHotkeyById(i);
-                    if (vst > -1)
-                    {
-                        App.vs[vst + 1]--;
-                    }
                 }
                 Write_Ini(inipath, (i + 1).ToString(), "Title", " ");
                 Write_Ini(inipath, (i + 1).ToString(), "Command", " ");
@@ -230,8 +211,8 @@ namespace Hiro
                 {
                     var mo = int.Parse(key[..key.IndexOf(",")]);
                     var vkey = int.Parse(key.Substring(key.IndexOf(",") + 1, key.Length - key.IndexOf(",") - 1));
-                    Hiro_Main.hiro_newitem.modibox.SelectedIndex = Hiro_Utils.Index_Modifier(false, mo);
-                    Hiro_Main.hiro_newitem.keybox.SelectedIndex = Hiro_Utils.Index_vKey(false, vkey);
+                    Hiro_Main.hiro_newitem.modibox.SelectedIndex = HHotKeys.Index_Modifier(false, mo);
+                    Hiro_Main.hiro_newitem.keybox.SelectedIndex = HHotKeys.Index_vKey(false, vkey);
                 }
                 else
                 {
@@ -241,7 +222,7 @@ namespace Hiro
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, "Hiro.Exception.Items.Bind");
+                HLogger.LogError(ex, "Hiro.Exception.Items.Bind");
                 Hiro_Main.hiro_newitem.modibox.SelectedIndex = 0;
                 Hiro_Main.hiro_newitem.keybox.SelectedIndex = 0;
             }

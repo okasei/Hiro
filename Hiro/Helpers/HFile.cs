@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using static Hiro.Helpers.Hiro_Class;
+using static Hiro.Helpers.HClass;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_File
+    internal class HFile
     {
         internal static void MoveFile(string? path, List<string> parameter)
         {
@@ -19,8 +19,8 @@ namespace Hiro.Helpers
                 }
                 catch (Exception ex)
                 {
-                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
-                    Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
+                    App.Notify(new Hiro_Notice(HText.Get_Translate("failed"), 2, HText.Get_Translate("file")));
+                    HLogger.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
                 }
                 return;
             }
@@ -31,8 +31,8 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
-                Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
+                App.Notify(new Hiro_Notice(HText.Get_Translate("failed"), 2, HText.Get_Translate("file")));
+                HLogger.LogError(ex, $"Hiro.Exception.IO.Move{Environment.NewLine}Path: {path}");
             }
         }
 
@@ -47,13 +47,13 @@ namespace Hiro.Helpers
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
-                        Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
+                        App.Notify(new Hiro_Notice(HText.Get_Translate("failed"), 2, HText.Get_Translate("file")));
+                        HLogger.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                     }
                 else
                 {
-                    App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("syntax"), 2, Hiro_Text.Get_Translate("file")));
-                    Hiro_Logger.LogError(new FileNotFoundException(), $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
+                    App.Notify(new Hiro_Notice(HText.Get_Translate("syntax"), 2, HText.Get_Translate("file")));
+                    HLogger.LogError(new FileNotFoundException(), $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
                 }
                 return;
             }
@@ -64,8 +64,8 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
-                Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
+                App.Notify(new Hiro_Notice(HText.Get_Translate("failed"), 2, HText.Get_Translate("file")));
+                HLogger.LogError(ex, $"Hiro.Exception.IO.Copy{Environment.NewLine}Path: {path}");
             }
         }
 
@@ -80,11 +80,11 @@ namespace Hiro.Helpers
                     }
                     catch (Exception ex)
                     {
-                        App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
-                        Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
+                        App.Notify(new Hiro_Notice(HText.Get_Translate("failed"), 2, HText.Get_Translate("file")));
+                        HLogger.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
                     }
                 else
-                    Hiro_Logger.LogtoFile($"[WARNING]Hiro.Warning.IO.Delete: Warning at {path} | Details: {Hiro_Text.Get_Translate("filenotexist")}");
+                    HLogger.LogtoFile($"[WARNING]Hiro.Warning.IO.Delete: Warning at {path} | Details: {HText.Get_Translate("filenotexist")}");
                 return;
             }
             try
@@ -93,8 +93,8 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("failed"), 2, Hiro_Text.Get_Translate("file")));
-                Hiro_Logger.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
+                App.Notify(new Hiro_Notice(HText.Get_Translate("failed"), 2, HText.Get_Translate("file")));
+                HLogger.LogError(ex, $"Hiro.Exception.IO.Delete{Environment.NewLine}Path: {path}");
             }
         }
         private static void CopyDirectory(string srcdir, string desdir)
@@ -103,7 +103,7 @@ namespace Hiro.Helpers
                 srcdir = srcdir[0..^1];
             if (desdir.ToLower().StartsWith(srcdir.ToLower()))
             {
-                App.Notify(new Hiro_Notice(Hiro_Text.Get_Translate("syntax"), 2, Hiro_Text.Get_Translate("file")));
+                App.Notify(new Hiro_Notice(HText.Get_Translate("syntax"), 2, HText.Get_Translate("file")));
                 return;
             }
             string desfolderdir = desdir;
@@ -156,9 +156,9 @@ namespace Hiro.Helpers
             {
                 var para = parameter[2].ToLower();
                 if (para.IndexOf("s") != -1)
-                    Hiro_Utils.RunExe(parameter[1], Hiro_Text.Get_Translate("file"));
+                    Hiro_Utils.RunExe(parameter[1], HText.Get_Translate("file"));
                 if (para.IndexOf("d") != -1)
-                    Hiro_Utils.RunExe($"Delete({parameter[0]})", Hiro_Text.Get_Translate("file"));
+                    Hiro_Utils.RunExe($"Delete({parameter[0]})", HText.Get_Translate("file"));
             }
             if (parameter.Count > 3)
             {
@@ -201,12 +201,86 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                Hiro_Logger.LogError(ex, $"Hiro.Exception.Directory.Create");
+                HLogger.LogError(ex, $"Hiro.Exception.Directory.Create");
                 return false;
             }
             return true;
 
         }
         #endregion
+
+        #region 获取文件名
+        public static string GetFileName(string file, bool ext = false)
+        {
+            return ext ? System.IO.Path.GetFileName(file) : System.IO.Path.GetFileNameWithoutExtension(file);
+        }
+        #endregion
+
+        #region 计算MD5
+        public static string GetMD5(string file)
+        {
+            if (!System.IO.File.Exists(file))
+                return string.Empty;
+            using (FileStream fs = File.OpenRead(file))
+            {
+                using (var crypto = System.Security.Cryptography.MD5.Create())
+                {
+                    var md5Hash = crypto.ComputeHash(fs);
+                    return HText.DeleteUnVisibleChar(BitConverter.ToString(md5Hash));
+                }
+            }
+        }
+        #endregion
+
+        #region 获取拓展名
+        public static string GetExtensionName(string file)
+        {
+            var d = file.IndexOf(".");
+            var s = file.IndexOf("\\");
+            if (d <= s)
+                return string.Empty;
+            else
+            {
+                if (d >= file.Length - 1)
+                    return string.Empty;
+                else
+                    return file.Substring(d + 1);
+            }
+        }
+        #endregion
+
+        internal static bool isMediaFile(string file)
+        {
+            var ext = TrimFileExt(file);
+            var aext = ",.3g2,.3gp,.3gp2,.3gpp,.amv,.asf,.avi,.bik,.crf,.dav,.divx,.drc,.dv,.dvr-ms,.evo,.f4v,.flv,.gvi,.gxf,.m1v,.m2v,.m2t,.m2ts,.m4v,.mkv,.mov,.mp2,.mp2v,.mp4,.mp4v,.mpe,.mpeg,.mpeg1,.mpeg2,.mpeg4,.mpg,.mpv2,.mts,.mtv,.mxf,.mxg,.nsv,.nuv,.ogm,.ogv,.ogx,.ps,.rec,.rm,.rmvb,.rpl,.thp,.tod,.tp,.ts,.tts,.txd,.vob,.vro,.webm,.wm,.wmv,.wtv,.xesc,.3ga,.669,.a52,.aac,.ac3,.adt,.adts,.aif,.aifc,.aiff,.amb,.amr,.aob,.ape,.au,.awb,.caf,.dts,.flac,.it,.kar,.m4a,.m4b,.m4p,.m5p,.mid,.mka,.mlp,.mod,.mpa,.mp1,.mp2,.mp3,.mpc,.mpga,.mus,.oga,.ogg,.oma,.opus,.qcp,.ra,.rmi,.s3m,.sid,.spx,.tak,.thd,.tta,.voc,.vqf,.w64,.wav,.wma,.wv,.xa,.xm,";
+            return aext.IndexOf(ext) != -1;
+        }
+
+        internal static bool isImageFile(string file)
+        {
+            var ext = TrimFileExt(file);
+            var aext = ",.png,.jpg,.jpeg,.bmp,.ico,.tiff,.apng,.jpe,.jfif,.dib,.heic,.heif,.hvp,.hpp,.hap,.hfp,";
+            return aext.IndexOf(ext) != -1;
+        }
+        internal static bool isTextFile(string file)
+        {
+            var ext = TrimFileExt(file);
+            var aext = ",.txt,.ini,.log,.inf,.c,.h,.cpp,.cc,.cxx,.c++,.cs,.sln,.xml,.xaml,.htm,.html,.yaml,.json,.csproj,.py,.r,.php,.lock,.cfg,.hlp,.hus,.hsf,.csv,.java,.asp,.project,.classpath,.jsp,.js,.conf,.svn,.gitignore,.css,";
+            return aext.IndexOf(ext) != -1;
+        }
+
+        internal static string TrimFileExt(string file)
+        {
+            var f = TryTrimFilePath(file);
+            return $",{Path.GetExtension(f).ToLower()},";
+        }
+
+        internal static string TryTrimFilePath(string file)
+        {
+            var f = file.Trim();
+            if (f.StartsWith("\"") && f.EndsWith("\""))
+                f = f.Substring(1, file.Length - 2);
+            return f;
+        }
     }
 }

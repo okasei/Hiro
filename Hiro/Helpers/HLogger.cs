@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hiro.Helpers
 {
-    internal class Hiro_Logger
+    internal class HLogger
     {
         #region 写日志相关
 
@@ -44,9 +44,9 @@ namespace Hiro.Helpers
         {
             try
             {
-                var logDirectory = Hiro_Text.Path_PPX(@$"<current>\users\{App.eUserName}\log\");
+                var logDirectory = HText.Path_PPX(@$"<current>\users\{App.eUserName}\log\");
                 if (!Directory.Exists(logDirectory))
-                    Hiro_File.CreateFolder(App.logFilePath);
+                    HFile.CreateFolder(App.logFilePath);
                 if (!File.Exists(App.logFilePath))
                     File.Create(App.logFilePath).Close();
                 FileStream fs = new(App.logFilePath, FileMode.Open, FileAccess.ReadWrite);

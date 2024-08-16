@@ -7,8 +7,8 @@ using System.Windows.Media.Animation;
 using Hiro.Helpers;
 using Hiro.ModelViews;
 using Hiro.Resources;
-using static Hiro.Helpers.Hiro_Settings;
-using static Hiro.Helpers.Hiro_Logger;
+using static Hiro.Helpers.HSet;
+using static Hiro.Helpers.HLogger;
 
 namespace Hiro
 {
@@ -42,7 +42,7 @@ namespace Hiro
         public Hiro_MainUI()
         {
             InitializeComponent();
-            Hiro_UI.SetCustomWindowIcon(this);
+            HUI.SetCustomWindowIcon(this);
             LogtoFile("[HIROWEGO]Main UI: Initializing");
             SourceInitialized += OnSourceInitialized;
             MainUI_Initialize();
@@ -141,7 +141,7 @@ namespace Hiro
                                 h *= 2;
                                 if (r > 1)
                                 {
-                                    img = Hiro_Utils.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
+                                    img = HMedia.ZoomImage(img, Convert.ToInt32(h), Convert.ToInt32(w));
                                     m = true;
                                 }
 
@@ -149,12 +149,12 @@ namespace Hiro
                             long len = 0;
                             using (var stream = new System.IO.MemoryStream())
                             {
-                                img.Save(stream, Hiro_Utils.GetImageFormat(img));
+                                img.Save(stream, HMedia.GetImageFormat(img));
                                 len = stream.Length;
                             }
                             if (len > 2048 * 1024)
                             {
-                                img = Hiro_Utils.ZipImage(img, Hiro_Utils.GetImageFormat(img), 2048);
+                                img = HMedia.ZipImage(img, HMedia.GetImageFormat(img), 2048);
                                 m = true;
                             }
                         }
@@ -163,20 +163,20 @@ namespace Hiro
                             System.Drawing.Bitmap b = new(img);
                             img.Dispose();
                             strFileName = @"<hiapp>\images\background\" + strFileName.Substring(strFileName.LastIndexOf("\\"));
-                            strFileName = Hiro_Text.Path_PPX(strFileName);
-                            Hiro_File.CreateFolder(strFileName);
+                            strFileName = HText.Path_PPX(strFileName);
+                            HFile.CreateFolder(strFileName);
                             if (System.IO.File.Exists(strFileName))
                                 System.IO.File.Delete(strFileName);
                             b.Save(strFileName);
                             b.Dispose();
-                            strFileName = Hiro_Text.Anti_Path_Prepare(strFileName);
+                            strFileName = HText.Anti_Path_Prepare(strFileName);
                             Write_Ini(App.dConfig, "Config", "BackImage", strFileName);
                         }
                         else
                             img.Dispose();
                         Dispatcher.Invoke(async () =>
                         {
-                            Hiro_Utils.Set_Bgimage(bgimage, this);
+                            HUI.Set_Bgimage(bgimage, this);
                             currentBack = Read_PPDCIni("BackImage", "");
                         });
                     }
@@ -205,13 +205,13 @@ namespace Hiro
             if (Read_DCIni("Ani", "2").Equals("1"))
             {
                 Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, titlelabel, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(0, versionlabel, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(2, closebtn, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(0, stack, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, titlelabel, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, versionlabel, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, minbtn, sb, -50, null);
+                HAnimation.AddPowerAnimation(2, closebtn, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, stack, sb, -50, null);
                 if (infoPoly.Visibility == Visibility.Visible)
-                    Hiro_Utils.AddPowerAnimation(0, infoPoly, sb, -50, null, 150, 100);
+                    HAnimation.AddPowerAnimation(0, infoPoly, sb, -50, null, 150, 100);
                 sb.Begin();
             }
             Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
@@ -230,18 +230,18 @@ namespace Hiro
                     if (Read_DCIni("Ani", "2").Equals("1"))
                     {
                         Storyboard sb = new();
-                        Hiro_Utils.AddPowerAnimation(0, infoPoly, sb, -50, null);
+                        HAnimation.AddPowerAnimation(0, infoPoly, sb, -50, null);
                         sb.Begin();
                     }
-                    Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, "tigridp", Read_DCIni("Ani", "2").Equals("1"));
+                    HUI.Set_FrameworkElement_Location(TitleGrid, "tigridp", Read_DCIni("Ani", "2").Equals("1"));
                 }
                 else
                 {
                     if (Read_DCIni("Ani", "2").Equals("1"))
                     {
-                        var s = Hiro_Utils.Get_FrameworkElement_Location("tgridt");
-                        var s2 = Hiro_Utils.Get_FrameworkElement_Location("tgridct");
-                        var sb = Hiro_Utils.AddColorAnimaton(App.AppAccentColor, s2.Left, infoPoly, "(Shape.Stroke).(SolidColorBrush.Color)", null);
+                        var s = HUI.Get_FrameworkElement_Location("tgridt");
+                        var s2 = HUI.Get_FrameworkElement_Location("tgridct");
+                        var sb = HAnimation.AddColorAnimaton(App.AppAccentColor, s2.Left, infoPoly, "(Shape.Stroke).(SolidColorBrush.Color)", null);
                         sb.Completed += delegate
                         {
                             infoPoly.Stroke = new SolidColorBrush(App.AppAccentColor);
@@ -250,7 +250,7 @@ namespace Hiro
                                 System.Threading.Thread.Sleep((int)s2.Top);
                                 Dispatcher.Invoke(() =>
                                 {
-                                    var sb2 = Hiro_Utils.AddColorAnimaton(App.AppForeColor, s2.Right, infoPoly, "(Shape.Stroke).(SolidColorBrush.Color)", null);
+                                    var sb2 = HAnimation.AddColorAnimaton(App.AppForeColor, s2.Right, infoPoly, "(Shape.Stroke).(SolidColorBrush.Color)", null);
                                     sb2.Completed += delegate
                                     {
                                         infoPoly.Stroke = new SolidColorBrush(App.AppForeColor);
@@ -260,13 +260,13 @@ namespace Hiro
                             }).Start();
                         };
                         sb.Begin();
-                        Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, "tigridpp", true, s.Left, 0, 0.6);
+                        HUI.Set_FrameworkElement_Location(TitleGrid, "tigridpp", true, s.Left, 0, 0.6);
                         new System.Threading.Thread(() =>
                         {
                             System.Threading.Thread.Sleep((int)s.Top);
                             Dispatcher.Invoke(() =>
                             {
-                                Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, infoPoly.Visibility == Visibility.Visible ? "tigridp" : "tigrid", true, s.Right, 0.9);
+                                HUI.Set_FrameworkElement_Location(TitleGrid, infoPoly.Visibility == Visibility.Visible ? "tigridp" : "tigrid", true, s.Right, 0.9);
                             });
                         }).Start();
                     }
@@ -314,7 +314,7 @@ namespace Hiro
             {
                 if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
-                    var sb = Hiro_Utils.AddPowerOutAnimation(0, MainGrid, null, null, 100);
+                    var sb = HAnimation.AddPowerOutAnimation(0, MainGrid, null, null, 100);
                     sb.Completed += delegate
                     {
                         MainGrid.Visibility = Visibility.Collapsed;
@@ -331,7 +331,7 @@ namespace Hiro
                 MainGrid.Visibility = Visibility.Visible;
                 if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
-                    var sb = Hiro_Utils.AddPowerAnimation(0, MainGrid, null, 100);
+                    var sb = HAnimation.AddPowerAnimation(0, MainGrid, null, 100);
                     sb.Begin();
                 }
             }
@@ -340,26 +340,26 @@ namespace Hiro
         #region UI相关
         public void Load_Position()
         {
-            Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, infoPoly.Visibility == Visibility.Visible ? "tigridp" : "tigrid");
-            Hiro_Utils.Set_FrameworkElement_Location(infoPoly, "infopoly");
-            Hiro_Utils.Set_FrameworkElement_Location(DropInfo, "dropg");
-            Hiro_Utils.Set_Control_Location(titlelabel, "title");
-            Hiro_Utils.Set_Control_Location(versionlabel, "version");
-            Hiro_Utils.Set_Control_Location(infotitle, "infotitle");
-            Hiro_Utils.Set_Control_Location(infotext, "infotext");
-            Hiro_Utils.Set_Control_Location(homex, "home", location: false);
-            Hiro_Utils.Set_Control_Location(itemx, "item", location: false);
-            Hiro_Utils.Set_Control_Location(schedulex, "schedule", location: false);
-            Hiro_Utils.Set_Control_Location(configx, "config", location: false);
-            Hiro_Utils.Set_Control_Location(profilex, "profile", location: false);
-            Hiro_Utils.Set_Control_Location(aboutx, "about", location: false);
-            Hiro_Utils.Set_Control_Location(newx, "new", location: false);
-            Hiro_Utils.Set_Control_Location(colorx, "color", location: false);
-            Hiro_Utils.Set_Control_Location(timex, "time", location: false);
-            Hiro_Utils.Set_Control_Location(proxyx, "proxy", location: false);
-            Hiro_Utils.Set_Control_Location(chatx, "chat", location: false);
-            Hiro_Utils.Set_Control_Location(loginx, "login", location: false);
-            Hiro_Utils.Set_Control_Location(dropIci, "dropInfo", location: false);
+            HUI.Set_FrameworkElement_Location(TitleGrid, infoPoly.Visibility == Visibility.Visible ? "tigridp" : "tigrid");
+            HUI.Set_FrameworkElement_Location(infoPoly, "infopoly");
+            HUI.Set_FrameworkElement_Location(DropInfo, "dropg");
+            HUI.Set_Control_Location(titlelabel, "title");
+            HUI.Set_Control_Location(versionlabel, "version");
+            HUI.Set_Control_Location(infotitle, "infotitle");
+            HUI.Set_Control_Location(infotext, "infotext");
+            HUI.Set_Control_Location(homex, "home", location: false);
+            HUI.Set_Control_Location(itemx, "item", location: false);
+            HUI.Set_Control_Location(schedulex, "schedule", location: false);
+            HUI.Set_Control_Location(configx, "config", location: false);
+            HUI.Set_Control_Location(profilex, "profile", location: false);
+            HUI.Set_Control_Location(aboutx, "about", location: false);
+            HUI.Set_Control_Location(newx, "new", location: false);
+            HUI.Set_Control_Location(colorx, "color", location: false);
+            HUI.Set_Control_Location(timex, "time", location: false);
+            HUI.Set_Control_Location(proxyx, "proxy", location: false);
+            HUI.Set_Control_Location(chatx, "chat", location: false);
+            HUI.Set_Control_Location(loginx, "login", location: false);
+            HUI.Set_Control_Location(dropIci, "dropInfo", location: false);
         }
 
         internal void Set_AcrylicStyle(bool preview = false, int type = 0)
@@ -403,14 +403,14 @@ namespace Hiro
                         {
                             case "2":
                                 {
-                                    var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
+                                    var sb = HAnimation.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
                                     sb.Completed += (e, args) =>
                                     {
                                         bgimage.Opacity = 1;
                                     };
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
-                                        var sb2 = Hiro_Utils.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
+                                        var sb2 = HAnimation.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
                                         sb2.Completed += (e, args) =>
                                         {
                                             bgimage.Background = new SolidColorBrush(App.AppAccentColor);
@@ -432,8 +432,8 @@ namespace Hiro
                                 }
                             case "1":
                                 {
-                                    var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
-                                    sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(130, 0, 0, 0), 250, bgimage, "Margin", sb);
+                                    var sb = HAnimation.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
+                                    sb = HAnimation.AddThicknessAnimaton(new Thickness(130, 0, 0, 0), 250, bgimage, "Margin", sb);
                                     sb.Completed += (e, args) =>
                                     {
                                         bgimage.Opacity = 1;
@@ -441,8 +441,8 @@ namespace Hiro
                                     };
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
-                                        var sb2 = Hiro_Utils.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
-                                        sb2 = Hiro_Utils.AddThicknessAnimaton(new Thickness(240, 0, 0, 0), 250, bgimage, "Margin", sb2);
+                                        var sb2 = HAnimation.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
+                                        sb2 = HAnimation.AddThicknessAnimaton(new Thickness(240, 0, 0, 0), 250, bgimage, "Margin", sb2);
                                         sb2.Completed += (e, args) =>
                                         {
                                             bgimage.Background = new SolidColorBrush(App.AppAccentColor);
@@ -477,17 +477,17 @@ namespace Hiro
                         {
                             case "2":
                                 {
-                                    var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
+                                    var sb = HAnimation.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
                                     sb.Completed += (e, args) =>
                                     {
                                         bgimage.Opacity = 1;
                                     };
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
-                                        var sb2 = Hiro_Utils.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
+                                        var sb2 = HAnimation.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
                                         sb2.Completed += (e, args) =>
                                         {
-                                            bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this);
+                                            bgimage.Background = HUI.Set_Bgimage(bgimage.Background, this);
                                             bgimage.Opacity = 0;
                                             bgimage.Margin = new Thickness(130, 0, 0, 0);
                                             sb.Begin();
@@ -496,7 +496,7 @@ namespace Hiro
                                     }
                                     else
                                     {
-                                        bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this);
+                                        bgimage.Background = HUI.Set_Bgimage(bgimage.Background, this);
                                         bgimage.Margin = new Thickness(130, 0, 0, 0);
                                         bgimage.Opacity = 0;
                                         bgimage.Visibility = Visibility.Visible;
@@ -506,8 +506,8 @@ namespace Hiro
                                 }
                             case "1":
                                 {
-                                    var sb = Hiro_Utils.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
-                                    sb = Hiro_Utils.AddThicknessAnimaton(new Thickness(130, 0, 0, 0), 250, bgimage, "Margin", sb);
+                                    var sb = HAnimation.AddDoubleAnimaton(1, 250, bgimage, "Opacity", null, 0);
+                                    sb = HAnimation.AddThicknessAnimaton(new Thickness(130, 0, 0, 0), 250, bgimage, "Margin", sb);
                                     sb.Completed += (e, args) =>
                                     {
                                         bgimage.Opacity = 1;
@@ -515,11 +515,11 @@ namespace Hiro
                                     };
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
-                                        var sb2 = Hiro_Utils.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
-                                        sb2 = Hiro_Utils.AddThicknessAnimaton(new Thickness(240, 0, 0, 0), 250, bgimage, "Margin", sb2);
+                                        var sb2 = HAnimation.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
+                                        sb2 = HAnimation.AddThicknessAnimaton(new Thickness(240, 0, 0, 0), 250, bgimage, "Margin", sb2);
                                         sb2.Completed += (e, args) =>
                                         {
-                                            bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this);
+                                            bgimage.Background = HUI.Set_Bgimage(bgimage.Background, this);
                                             bgimage.Opacity = 0;
                                             bgimage.Margin = new Thickness(360, 0, 0, 0);
                                             sb.Begin();
@@ -528,7 +528,7 @@ namespace Hiro
                                     }
                                     else
                                     {
-                                        bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this);
+                                        bgimage.Background = HUI.Set_Bgimage(bgimage.Background, this);
                                         bgimage.Opacity = 0;
                                         bgimage.Visibility = Visibility.Visible;
                                         sb.Begin();
@@ -539,7 +539,7 @@ namespace Hiro
                                 {
                                     bgimage.Visibility = Visibility.Visible;
                                     bgimage.Margin = new Thickness(130, 0, 0, 0);
-                                    bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this);
+                                    bgimage.Background = HUI.Set_Bgimage(bgimage.Background, this);
                                     break;
                                 }
                         }
@@ -553,7 +553,7 @@ namespace Hiro
                                 {
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
-                                        var sb2 = Hiro_Utils.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
+                                        var sb2 = HAnimation.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
                                         sb2.Completed += (e, args) =>
                                         {
                                             bgimage.Opacity = 1;
@@ -570,8 +570,8 @@ namespace Hiro
                                 {
                                     if (bgimage.Visibility != Visibility.Collapsed)
                                     {
-                                        var sb2 = Hiro_Utils.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
-                                        sb2 = Hiro_Utils.AddThicknessAnimaton(new Thickness(240, 0, 0, 0), 250, bgimage, "Margin", sb2);
+                                        var sb2 = HAnimation.AddDoubleAnimaton(0, 250, bgimage, "Opacity", null);
+                                        sb2 = HAnimation.AddThicknessAnimaton(new Thickness(240, 0, 0, 0), 250, bgimage, "Margin", sb2);
                                         sb2.Completed += (e, args) =>
                                         {
                                             bgimage.Opacity = 1;
@@ -611,7 +611,7 @@ namespace Hiro
                 case "3":
                     {
                         compositor ??= new(this);
-                        Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                        HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                         Set_AcrylicStyle();
                         break;
                     }
@@ -662,7 +662,7 @@ namespace Hiro
             var inipath = App.dConfig;
             var ti = Read_Ini(inipath, i.ToString(), "Title", "");
             var co = Read_Ini(inipath, i.ToString(), "Command", "");
-            bool reged = App.vs.Count > 0;
+            bool reged = HHotKeys.hotkeys.Count > 0;
             while (!ti.Trim().Equals("") && co.StartsWith("(") && co.EndsWith(")"))
             {
                 var key = Read_Ini(App.dConfig, i.ToString(), "HotKey", "").Trim();
@@ -676,7 +676,7 @@ namespace Hiro
                         {
                             if (mo != 0 && vkey != 0)
                             {
-                                Hiro_Utils.RegisterKey(mo, (Key)vkey, i - 1);
+                                HHotKeys.RegisterKey(mo, (Key)vkey, i - 1);
                             }
                         }
                         catch (Exception ex)
@@ -692,7 +692,7 @@ namespace Hiro
                     LogError(ex, "Hiro.Exception.Hotkey.Register.Format");
                 }
                 co = co[1..^1];
-                App.cmditems.Add(new Hiro_Class.Cmditem(p, i, ti, co, key));
+                App.cmditems.Add(new HClass.Cmditem(p, i, ti, co, key));
                 i++;
                 p = (i % 10 == 0) ? i / 10 : i / 10 + 1;
                 ti = Read_Ini(inipath, i.ToString(), "Title", "");
@@ -761,7 +761,7 @@ namespace Hiro
                             break;
                         }
                 }
-                App.scheduleitems.Add(new Hiro_Class.Scheduleitem(i, na, ti, co, double.Parse(re)));
+                App.scheduleitems.Add(new HClass.Scheduleitem(i, na, ti, co, double.Parse(re)));
                 i++;
                 ti = Read_Ini(inipath, i.ToString(), "Time", "");
                 co = Read_Ini(inipath, i.ToString(), "Command", "");
@@ -775,26 +775,26 @@ namespace Hiro
 
         public void Load_Translate()
         {
-            Title = Hiro_Text.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", Hiro_Text.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion));
+            Title = HText.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", HText.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion));
             titlelabel.Content = App.appTitle;
-            infotitle.Content = Hiro_Text.Get_Translate("infotitle");
-            minbtn.ToolTip = Hiro_Text.Get_Translate("min");
-            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
-            infoPoly.ToolTip = Hiro_Text.Get_Translate("info");
-            homex.Content = Hiro_Text.Get_Translate("home");
-            itemx.Content = Hiro_Text.Get_Translate("item");
-            schedulex.Content = Hiro_Text.Get_Translate("schedule");
-            configx.Content = Hiro_Text.Get_Translate("config");
-            profilex.Content = Hiro_Text.Get_Translate("profile");
-            aboutx.Content = Hiro_Text.Get_Translate("about");
-            newx.Content = Hiro_Text.Get_Translate("new");
-            colorx.Content = Hiro_Text.Get_Translate("color");
-            timex.Content = Hiro_Text.Get_Translate("time");
-            proxyx.Content = Hiro_Text.Get_Translate("proxy");
-            chatx.Content = Hiro_Text.Get_Translate("chat");
-            loginx.Content = Hiro_Text.Get_Translate("login");
-            acrylicx.Content = Hiro_Text.Get_Translate("acrylic");
-            dropIci.Content = Hiro_Text.Get_Translate("dropInfo");
+            infotitle.Content = HText.Get_Translate("infotitle");
+            minbtn.ToolTip = HText.Get_Translate("min");
+            closebtn.ToolTip = HText.Get_Translate("close");
+            infoPoly.ToolTip = HText.Get_Translate("info");
+            homex.Content = HText.Get_Translate("home");
+            itemx.Content = HText.Get_Translate("item");
+            schedulex.Content = HText.Get_Translate("schedule");
+            configx.Content = HText.Get_Translate("config");
+            profilex.Content = HText.Get_Translate("profile");
+            aboutx.Content = HText.Get_Translate("about");
+            newx.Content = HText.Get_Translate("new");
+            colorx.Content = HText.Get_Translate("color");
+            timex.Content = HText.Get_Translate("time");
+            proxyx.Content = HText.Get_Translate("proxy");
+            chatx.Content = HText.Get_Translate("chat");
+            loginx.Content = HText.Get_Translate("login");
+            acrylicx.Content = HText.Get_Translate("acrylic");
+            dropIci.Content = HText.Get_Translate("dropInfo");
             hiro_home?.Update_Labels();
             hiro_home?.Load_Position();
             hiro_items?.Load_Translate();
@@ -889,7 +889,7 @@ namespace Hiro
             {
                 if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
-                    var sb = Hiro_Utils.AddPowerOutAnimation(0, infocenter, null, null, -100, 300, 200);
+                    var sb = HAnimation.AddPowerOutAnimation(0, infocenter, null, null, -100, 300, 200);
                     sb.Completed += delegate
                     {
                         if (BackVideo.Visibility == Visibility.Visible && BackVideo.Visibility == Visibility.Visible)
@@ -899,7 +899,7 @@ namespace Hiro
                         {
                             infocenter.IsEnabled = false;
                             Storyboard? sbe = new();
-                            Hiro_Utils.AddPowerOutAnimation(0, infoPoly, sbe, null, -50, 150, 100);
+                            HAnimation.AddPowerOutAnimation(0, infoPoly, sbe, null, -50, 150, 100);
                             sbe.Completed += delegate
                             {
                                 infoPoly.Visibility = Visibility.Collapsed;
@@ -910,7 +910,7 @@ namespace Hiro
                         {
                             infoPoly.Visibility = Visibility.Hidden;
                         }
-                        Hiro_Utils.Set_FrameworkElement_Location(TitleGrid, "tigrid", Read_DCIni("Ani", "2").Equals("1"));
+                        HUI.Set_FrameworkElement_Location(TitleGrid, "tigrid", Read_DCIni("Ani", "2").Equals("1"));
                         sb = null;
                     };
                     sb.Begin();
@@ -936,7 +936,7 @@ namespace Hiro
 
         public void Set_Home_Labels(string val)
         {
-            val = (App.CustomUsernameFlag == 0) ? Hiro_Text.Get_Translate(val).Replace("%u", App.eUserName) : Hiro_Text.Get_Translate(val + "cus").Replace("%u", App.username);
+            val = (App.CustomUsernameFlag == 0) ? HText.Get_Translate(val).Replace("%u", App.eUserName) : HText.Get_Translate(val + "cus").Replace("%u", App.username);
             if (current is not Hiro_Home hh)
                 return;
             if (!hh.Hello.Text.Equals(val))
@@ -945,11 +945,11 @@ namespace Hiro
                 if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
                     var sb = new Storyboard();
-                    Hiro_Utils.AddPowerAnimation(0, hh.Hello, sb);
+                    HAnimation.AddPowerAnimation(0, hh.Hello, sb);
                     sb.Begin();
                 }
             }
-            val = Hiro_Text.Path_PPX(Hiro_Text.Get_Translate("copyright"));
+            val = HText.Path_PPX(HText.Get_Translate("copyright"));
             if (!hh.Copyright.Text.Equals(val))
                 hh.Copyright.Text = val;
         }
@@ -992,7 +992,7 @@ namespace Hiro
             {
                 duration = duration > label.Height * 2 ? 2 * duration : 6 * duration;
                 Storyboard? sb = new();
-                sb = Hiro_Utils.AddThicknessAnimaton(label.Margin, duration, bgx, "Margin", sb);
+                sb = HAnimation.AddThicknessAnimaton(label.Margin, duration, bgx, "Margin", sb);
                 sb.Completed += delegate
                 {
                     bgx.Margin = new Thickness(label.Margin.Left, label.Margin.Top, 0, 0);
@@ -1008,7 +1008,7 @@ namespace Hiro
                 if (animation && current != null)
                 {
                     Storyboard sb = new();
-                    Hiro_Utils.AddPowerAnimation(0, current, sb, 50, null);
+                    HAnimation.AddPowerAnimation(0, current, sb, 50, null);
                     switch (current)
                     {
                         case Hiro_Items his:
@@ -1056,14 +1056,14 @@ namespace Hiro
             }
             else
             {
-                var backg = Hiro_Text.Path_PPX(Read_Ini(App.dConfig, "Background", label.Name, ""));
+                var backg = HText.Path_PPX(Read_Ini(App.dConfig, "Background", label.Name, ""));
                 if (!System.IO.File.Exists(backg))
                 {
                     backg = Read_PPDCIni("BackImage", "");
                 }
                 if (backg != currentBack && !Read_DCIni("Background", "1").Equals("3"))
                 {
-                    Hiro_Utils.Set_Bgimage(bgimage, this, backg);
+                    HUI.Set_Bgimage(bgimage, this, backg);
                     currentBack = backg;
                     if (Read_DCIni("Background", "1").Equals("2"))
                         Blurbgi(Hiro_Utils.ConvertInt(Read_DCIni("Blur", "0")), false);
@@ -1319,7 +1319,7 @@ namespace Hiro
             if (Read_DCIni("Background", "1").Equals("3"))
             {
                 compositor ??= new(this);
-                Hiro_Utils.Set_Acrylic(bgimage, this, windowChrome, compositor);
+                HUI.Set_Acrylic(bgimage, this, windowChrome, compositor);
                 Set_AcrylicStyle();
                 SetHCStatus();
                 StopVideo();
@@ -1328,7 +1328,7 @@ namespace Hiro
             {
                 bgimage.Margin = new Thickness(0);
                 bgimage.Visibility = Visibility.Visible;
-                Hiro_Utils.Set_Bgimage(bgimage, this);
+                HUI.Set_Bgimage(bgimage, this);
                 currentBack = Read_PPDCIni("BackImage", "");
                 if (compositor != null)
                 {
@@ -1337,7 +1337,7 @@ namespace Hiro
                 if (Read_DCIni("Background", "1").Equals("2"))
                 {
 
-                    Hiro_Utils.Blur_Animation(direction, animation, bgimage, this, bw);
+                    HAnimation.Blur_Animation(direction, animation, bgimage, this, bw);
                     StopVideo();
                 }
                 else if (Read_DCIni("Background", "1").Equals("4"))
@@ -1386,49 +1386,49 @@ namespace Hiro
                 Background = null;
                 return;
             }
-            Hiro_Utils.Set_Opacity(bgimage, this);
+            HUI.Set_Opacity(bgimage, this);
             foreach (Window win in Application.Current.Windows)
             {
                 switch (win)
                 {
                     case Hiro_Alarm a:
-                        Hiro_Utils.Set_Opacity(a.bgimage, a);
+                        HUI.Set_Opacity(a.bgimage, a);
                         break;
                     case Hiro_Msg e:
-                        Hiro_Utils.Set_Opacity(e.bgimage, e);
+                        HUI.Set_Opacity(e.bgimage, e);
                         break;
                     case Hiro_Sequence c:
-                        Hiro_Utils.Set_Opacity(c.bgimage, c);
+                        HUI.Set_Opacity(c.bgimage, c);
                         break;
                     case Hiro_Download d:
-                        Hiro_Utils.Set_Opacity(d.bgimage, d);
+                        HUI.Set_Opacity(d.bgimage, d);
                         break;
                     case Hiro_Web f:
-                        Hiro_Utils.Set_Opacity(f.bgimage, f);
+                        HUI.Set_Opacity(f.bgimage, f);
                         break;
                     case Hiro_Finder g:
-                        Hiro_Utils.Set_Opacity(g.bgimage, g);
+                        HUI.Set_Opacity(g.bgimage, g);
                         break;
                     case Hiro_Player h:
-                        Hiro_Utils.Set_Opacity(h.bgimage, h);
+                        HUI.Set_Opacity(h.bgimage, h);
                         break;
                     case Hiro_Ticker i:
-                        Hiro_Utils.Set_Opacity(i.bgimage, i);
+                        HUI.Set_Opacity(i.bgimage, i);
                         break;
                     case Hiro_Encrypter k:
-                        Hiro_Utils.Set_Opacity(k.bgimage, k);
+                        HUI.Set_Opacity(k.bgimage, k);
                         break;
                     case Hiro_ImageViewer l:
-                        Hiro_Utils.Set_Opacity(l.bgimage, l);
+                        HUI.Set_Opacity(l.bgimage, l);
                         break;
                     case Hiro_TextEditor m:
-                        Hiro_Utils.Set_Opacity(m.bgimage, m);
+                        HUI.Set_Opacity(m.bgimage, m);
                         break;
                 }
                 if (hiro_profile != null)
-                    Hiro_Utils.Set_Opacity(hiro_profile.Profile_Background, hiro_profile.BackControl);
+                    HUI.Set_Opacity(hiro_profile.Profile_Background, hiro_profile.BackControl);
                 if (hiro_chat != null)
-                    Hiro_Utils.Set_Opacity(hiro_chat.Profile_Background, hiro_chat.BackControl);
+                    HUI.Set_Opacity(hiro_chat.Profile_Background, hiro_chat.BackControl);
                 System.Windows.Forms.Application.DoEvents();
             }
         }
@@ -1441,7 +1441,7 @@ namespace Hiro
             for (int i = 0; i < 1; i++)
             {
                 dt = dt.AddSeconds(2);
-                App.scheduleitems.Add(new Hiro_Class.Scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
+                App.scheduleitems.Add(new HClass.Scheduleitem(App.scheduleitems.Count + 1, "Test" + i.ToString(), dt.ToString("yyyy/MM/dd HH:mm:ss"), "alarm", -1.0));
 
             }
 
@@ -1456,7 +1456,7 @@ namespace Hiro
             infocenter.IsEnabled = true;
             if (!Read_DCIni("Ani", "2").Equals("0"))
             {
-                Storyboard? sb = Hiro_Utils.AddPowerAnimation(0, infocenter, null, -100, null, 300, 200);
+                Storyboard? sb = HAnimation.AddPowerAnimation(0, infocenter, null, -100, null, 300, 200);
                 sb.Completed += delegate
                 {
                     sb = null;
@@ -1587,14 +1587,14 @@ namespace Hiro
                 string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (filePaths.Length > 0)
                 {
-                    Hiro_Utils.RunExe(filePaths[0], "Windows");
+                    Hiro_Utils.RunExe($"\"{filePaths[0]}\"", "Windows");
                     e.Handled = true;
                 }
             }
             if (e.Data.GetDataPresent(DataFormats.Text))
             {
                 var f = (string)e.Data.GetData(DataFormats.Text);
-                Hiro_Utils.RunExe(f, "Windows");
+                Hiro_Utils.RunExe($"\"{f}\"", "Windows");
                 e.Handled = true;
             }
         }
@@ -1607,7 +1607,7 @@ namespace Hiro
                 if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
                     DropInfo.Visibility = Visibility.Visible;
-                    var s = Hiro_Utils.AddPowerAnimation(0, DropInfo, null, -50, null, 250, 150);
+                    var s = HAnimation.AddPowerAnimation(0, DropInfo, null, -50, null, 250, 150);
                     s.Begin();
                 }
                 else
@@ -1624,7 +1624,7 @@ namespace Hiro
             {
                 if (!Read_DCIni("Ani", "2").Equals("0"))
                 {
-                    var s = Hiro_Utils.AddPowerOutAnimation(0, DropInfo, null, null, -50, 250, 150);
+                    var s = HAnimation.AddPowerOutAnimation(0, DropInfo, null, null, -50, 250, 150);
                     s.Completed += delegate
                     {
                         DropInfo.Visibility = Visibility.Collapsed;

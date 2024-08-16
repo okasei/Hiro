@@ -30,7 +30,7 @@ namespace Hiro
         public Hiro_Splash()
         {
             InitializeComponent();
-            Helpers.Hiro_UI.SetCustomWindowIcon(this);
+            Helpers.HUI.SetCustomWindowIcon(this);
             LoadTimer();
             HiHiro();
         }
@@ -42,42 +42,42 @@ namespace Hiro
         public Hiro_Splash(string filePath)
         {
             InitializeComponent();
-            ala_title.Content = Hiro_Text.Path_PPX(Hiro_Settings.Read_Ini(filePath, "Config", "Title", "<???>"));
-            sv.Content = Hiro_Text.Path_PPX(Hiro_Settings.Read_Ini(filePath, "Config", "Content", "<???>"));
-            loading.Content = Hiro_Text.Path_PPX(Hiro_Settings.Read_Ini(filePath, "Config", "Loading", "<???>"));
-            backgroundFIle = Hiro_Text.Path_PPX(Hiro_Settings.Read_Ini(filePath, "Config", "Background", "<???>"));
-            int.TryParse(Hiro_Settings.Read_Ini(filePath, "Config", "Tick", "-1"), out tick);
-            Topmost = Hiro_Settings.Read_Ini(filePath, "Config", "Topmost", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
-            Movable = Hiro_Settings.Read_Ini(filePath, "Config", "Movable", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
-            Hiro_Utils.Set_Control_Location(ala_title, "Title", extra: true, path: filePath);
-            Hiro_Utils.Set_Control_Location(sv, "Content", extra: true, path: filePath);
-            Hiro_Utils.Set_Control_Location(loading, "Loading", extra: true, path: filePath);
+            ala_title.Content = HText.Path_PPX(HSet.Read_Ini(filePath, "Config", "Title", "<???>"));
+            sv.Content = HText.Path_PPX(HSet.Read_Ini(filePath, "Config", "Content", "<???>"));
+            loading.Content = HText.Path_PPX(HSet.Read_Ini(filePath, "Config", "Loading", "<???>"));
+            backgroundFIle = HText.Path_PPX(HSet.Read_Ini(filePath, "Config", "Background", "<???>"));
+            int.TryParse(HSet.Read_Ini(filePath, "Config", "Tick", "-1"), out tick);
+            Topmost = HSet.Read_Ini(filePath, "Config", "Topmost", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            Movable = HSet.Read_Ini(filePath, "Config", "Movable", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            HUI.Set_Control_Location(ala_title, "Title", extra: true, path: filePath);
+            HUI.Set_Control_Location(sv, "Content", extra: true, path: filePath);
+            HUI.Set_Control_Location(loading, "Loading", extra: true, path: filePath);
             var w = 800;
-            int.TryParse(Hiro_Settings.Read_Ini(filePath, "Config", "Width", "800"), out w);
+            int.TryParse(HSet.Read_Ini(filePath, "Config", "Width", "800"), out w);
             w = w < 100 ? 100 : w;
             var h = 450;
-            int.TryParse(Hiro_Settings.Read_Ini(filePath, "Config", "Height", "450"), out h);
+            int.TryParse(HSet.Read_Ini(filePath, "Config", "Height", "450"), out h);
             h = h < 100 ? 100 : h;
             Width = w;
             Height = h;
             LoadTimer();
             if (tick > 0)
             {
-                if (Hiro_Settings.Read_Ini(filePath, "Config", "Closable", "true").Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                if (HSet.Read_Ini(filePath, "Config", "Closable", "true").Equals("false", StringComparison.CurrentCultureIgnoreCase))
                     closebtn.Visibility = Visibility.Collapsed;
             }
-            next = Hiro_Settings.Read_Ini(filePath, "Config", "Next", "");
+            next = HSet.Read_Ini(filePath, "Config", "Next", "");
             HiHiro();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(HSet.Read_DCIni("Blur", "0")));
         }
 
         public Hiro_Splash(string title, string content, string loading, string background, int tick, bool topmost, bool movable, bool closable, string nextCMD)
         {
             InitializeComponent();
-            ala_title.Content = Hiro_Text.Path_PPX(title);
-            sv.Content = Hiro_Text.Path_PPX(content);
-            this.loading.Content = Hiro_Text.Path_PPX(loading);
-            backgroundFIle = Hiro_Text.Path_PPX(background);
+            ala_title.Content = HText.Path_PPX(title);
+            sv.Content = HText.Path_PPX(content);
+            this.loading.Content = HText.Path_PPX(loading);
+            backgroundFIle = HText.Path_PPX(background);
             this.tick = tick;
             Topmost = topmost;
             Movable = movable;
@@ -89,7 +89,7 @@ namespace Hiro
                     closebtn.Visibility = Visibility.Collapsed;
             }
             HiHiro();
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(HSet.Read_DCIni("Blur", "0")));
         }
 
         public void Load_Color()
@@ -101,24 +101,24 @@ namespace Hiro
 
         public void HiHiro()
         {
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
             if (animation)
             {
                 Storyboard sb = new();
-                Hiro_Utils.AddPowerAnimation(0, ala_title, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(0, content, sb, -50, null);
-                Hiro_Utils.AddPowerAnimation(0, loading, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, ala_title, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, content, sb, -50, null);
+                HAnimation.AddPowerAnimation(0, loading, sb, -50, null);
                 if (closebtn.Visibility == Visibility.Visible)
                 {
-                    Hiro_Utils.AddPowerAnimation(2, closebtn, sb, -50, null);
+                    HAnimation.AddPowerAnimation(2, closebtn, sb, -50, null);
                 }
                 if (minbtn.Visibility == Visibility.Visible)
                 {
-                    Hiro_Utils.AddPowerAnimation(2, minbtn, sb, -50, null);
+                    HAnimation.AddPowerAnimation(2, minbtn, sb, -50, null);
                 }
                 sb.Begin();
             }
-            Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
+            Loadbgi(Hiro_Utils.ConvertInt(HSet.Read_DCIni("Blur", "0")));
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -147,13 +147,13 @@ namespace Hiro
         private void LoadTimer()
         {
             SourceInitialized += OnSourceInitialized;
-            Title = Hiro_Text.Get_Translate("splashTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
+            Title = HText.Get_Translate("splashTitle").Replace("%t", ala_title.Content.ToString()).Replace("%a", App.appTitle);
             Load_Color();
             ContentRendered += (e, args) =>
             {
                 ProgressLabel.Width = ActualWidth;
             };
-            closebtn.ToolTip = Hiro_Text.Get_Translate("close");
+            closebtn.ToolTip = HText.Get_Translate("close");
             var timer = new DispatcherTimer();
             ProgressLabel.Tag = tick;
             ProgressLabel.Margin = new Thickness();
@@ -169,11 +169,11 @@ namespace Hiro
                 {
                     tick--;
                     minbtn.Content = tick.ToString();
-                    bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
+                    bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
                     var t = new Thickness(ActualWidth - tick * ActualWidth / (int)ProgressLabel.Tag, 0, 0, 0);
                     if (animation)
                     {
-                        var sb = Hiro_Utils.AddThicknessAnimaton(t, 1000, ProgressLabel, "Margin", null, null, 1);
+                        var sb = HAnimation.AddThicknessAnimaton(t, 1000, ProgressLabel, "Margin", null, null, 1);
                         sb.Completed += delegate
                         {
                             ProgressLabel.Margin = t;
@@ -223,11 +223,11 @@ namespace Hiro
                 return;
             bflag = 1;
             if (System.IO.File.Exists(backgroundFIle))
-                bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this, backgroundFIle);
+                bgimage.Background = HUI.Set_Bgimage(bgimage.Background, this, backgroundFIle);
             else
-                bgimage.Background = Hiro_Utils.Set_Bgimage(bgimage.Background, this);
-            bool animation = !Hiro_Settings.Read_DCIni("Ani", "2").Equals("0");
-            Hiro_Utils.Blur_Animation(direction, animation, bgimage, this);
+                bgimage.Background = HUI.Set_Bgimage(bgimage.Background, this);
+            bool animation = !HSet.Read_DCIni("Ani", "2").Equals("0");
+            HAnimation.Blur_Animation(direction, animation, bgimage, this);
             bflag = 0;
         }
     }
