@@ -44,16 +44,8 @@ namespace Hiro
             InitializeComponent();
             Hiro_Utils.Set_Control_Location(TestTitle, "boxtitle");
             Hiro_Utils.Set_Control_Location(TestLabel, "boxcontent");
-            ContentLabel.FontFamily = TestLabel.FontFamily;
-            ContentLabel.FontSize = TestLabel.FontSize;
-            ContentLabel.FontStretch = TestLabel.FontStretch;
-            ContentLabel.FontWeight = TestLabel.FontWeight;
-            ContentLabel.FontStyle = TestLabel.FontStyle;
-            TitleLabel.FontFamily = TestTitle.FontFamily;
-            TitleLabel.FontSize = TestTitle.FontSize;
-            TitleLabel.FontStretch = TestTitle.FontStretch;
-            TitleLabel.FontWeight = TestTitle.FontWeight;
-            TitleLabel.FontStyle = TestTitle.FontStyle;
+            Hiro_UI.CopyFontFromLabel(TestLabel, ContentLabel);
+            Hiro_UI.CopyFontFromLabel(TestTitle, TitleLabel);
             Load_PrimaryIcon();
             Load_Color();
             Helpers.Hiro_UI.SetCustomWindowIcon(this);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Hiro.Helpers
 {
@@ -22,6 +23,16 @@ namespace Hiro.Helpers
                     Hiro_Logger.LogError(e, "Hiro.Window.CustomIcon");
                 }
             }
+        }
+
+        internal static void CopyFontFromLabel(Label from, TextBlock to)
+        {
+
+            to.FontFamily = from.FontFamily;
+            to.FontSize = from.FontSize;
+            to.FontStretch = from.FontStretch;
+            to.FontWeight = from.FontWeight;
+            to.FontStyle = from.FontStyle;
         }
     }
 }

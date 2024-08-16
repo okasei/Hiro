@@ -61,9 +61,9 @@ namespace Hiro
         public void Load_Translate()
         {
             if (ischecking)
-                chk_btn.Content = Hiro_Text.Get_Translate("checkcancel");
+                chk_btn.Content = Helpers.Hiro_Text.Get_Translate("checkcancel");
             else
-                chk_btn.Content = Hiro_Text.Get_Translate("checkup");
+                chk_btn.Content = Helpers.Hiro_Text.Get_Translate("checkup");
         }
 
         public void Load_Position()
@@ -92,7 +92,7 @@ namespace Hiro
                 upbw.WorkerSupportsCancellation = true;
                 upbw.DoWork += delegate
                 {
-                    ups = Hiro_Net.GetWebContent("https://hiro.rexio.cn/Update/hiro.php?r=update&v=" + Hiro_Resources.ApplicationUpdateVersion + "&lang=" + App.lang);
+                    ups = Hiro_Net.GetWebContent("https://hi.rex.as/update/hiro.php?r=update&v=" + Hiro_Resources.ApplicationUpdateVersion + "&lang=" + App.lang);
                 };
                 upbw.RunWorkerCompleted += delegate
                 {

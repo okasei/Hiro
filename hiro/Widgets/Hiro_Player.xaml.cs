@@ -294,7 +294,7 @@ namespace Hiro
                         index = playlist.Count - 1;
                         await Media.Open(new Uri(vidPath));
                         Ctrl_Text.Text = vidPath;
-                        Title = Hiro_Utils.GetFileName(vidPath) + " - " + App.appTitle;
+                        Title = Hiro_Text.Get_Translate("playerTitle").Replace("%t", Hiro_Utils.GetFileName(vidPath)).Replace("%a", App.appTitle);
                         Player_Container.Visibility = Visibility.Visible;
                         Update_Progress();
                     });
@@ -632,7 +632,7 @@ namespace Hiro
                 CheckFileExists = true, //验证路径的有效性
                 CheckPathExists = true,//验证路径的有效性
                 Multiselect = true,
-                Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
+                Title = Hiro_Text.Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle)
             };
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
@@ -1224,7 +1224,7 @@ namespace Hiro
                         }
                         await Media.Open(new Uri(vidPath));
                         Ctrl_Text.Text = vidPath;
-                        Title = Hiro_Utils.GetFileName(vidPath) + " - " + App.appTitle;
+                        Title = Hiro_Text.Get_Translate("playerTitle").Replace("%t", Hiro_Utils.GetFileName(vidPath)).Replace("%a", App.appTitle);
                         Player_Container.Visibility = Visibility.Visible;
 
                     }

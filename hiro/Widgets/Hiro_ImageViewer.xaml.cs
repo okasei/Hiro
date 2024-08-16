@@ -8,9 +8,12 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using static Hiro.Helpers.Hiro_Settings;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
-namespace hiro.Widgets
+namespace Hiro
 {
     /// <summary>
     /// Hiro_ImageViewer.xaml 的交互逻辑
@@ -59,7 +62,7 @@ namespace hiro.Widgets
             try
             {
                 var list = new FileInfo(filePath).Directory.GetFiles("*", SearchOption.TopDirectoryOnly);
-                var exts = "*.jpg;*.jpeg;*.jpe;*.jfif;*.bmp;*.dib;*.gif;*.png;*.apng;*.tiff;*.heic;*.heif;";
+                var exts = "*.jpg;*.jpeg;*.jpe;*.jfif;*.bmp;*.dib;*.gif;*.png;*.apng;*.tiff;*.heic;*.heif;*.hvp;*.hpp;*.hap;*.hfp;";
                 files?.Clear();
                 files = list.Where(x => exts.Contains($"*{x.Extension};", StringComparison.CurrentCultureIgnoreCase)).Select(x => x.FullName).ToList();
                 for (int i = 0; i < files.Count; i++)
@@ -95,7 +98,7 @@ namespace hiro.Widgets
             var t2 = Math.Max(200 + ActualWidth / SystemParameters.PrimaryScreenWidth * 600, 800);
             if (File.Exists(filePath))
             {
-                Title = new FileInfo(filePath).Name + " - " + App.appTitle;
+                Title = Hiro_Text.Get_Translate("imageTitle").Replace("%t", new FileInfo(filePath).Name).Replace("%a", App.appTitle);
                 if (imageContiner.Visibility == Visibility.Visible)
                 {
                     if (animation)
@@ -271,6 +274,10 @@ namespace hiro.Widgets
                     fileIndex++;
                     SetImage(files[fileIndex]);
                 }
+                else
+                {
+                    Bounce(true);
+                }
                 e.Handled = true;
             }
             if (dealed && e.Key == Key.Left)
@@ -280,13 +287,54 @@ namespace hiro.Widgets
                     fileIndex--;
                     SetImage(files[fileIndex], false);
                 }
+                else
+                {
+                    Bounce(false);
+                }
                 e.Handled = true;
             }
+        }
+
+        private void Bounce(bool fromLeft)
+        {
+            dealed = false;
+            var sb = Hiro_Utils.AddThicknessAnimaton(fromLeft ? new Thickness(250, 0, 0, 0) : new Thickness(-250, 0, 0, 0), 350, imageContiner.Visibility == Visibility.Visible ? imageContiner : imageContiner2, "Margin", null);
+            sb.Completed += delegate
+            {
+                var s = Hiro_Utils.AddThicknessAnimaton(new Thickness(0), 350, imageContiner.Visibility == Visibility.Visible ? imageContiner : imageContiner2, "Margin", null, fromLeft ? new Thickness(250, 0, 0, 0) : new Thickness(-250, 0, 0, 0));
+                s.Completed += delegate
+                {
+                    dealed = true;
+                };
+                s.Begin();
+            };
+            sb.Begin();
         }
 
         private void VirtualTitle_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void Grid_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if(filePaths.Length > 0)
+                {
+                    SetImage(filePaths[0]); 
+                    LoadPicIndex(filePaths[0]);
+                    e.Handled = true;
+                }
+            }
+            if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                var f = (string)e.Data.GetData(DataFormats.Text);
+                SetImage(f);
+                LoadPicIndex(f);
+                e.Handled = true;
+            }
         }
     }
 }

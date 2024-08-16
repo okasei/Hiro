@@ -26,7 +26,7 @@ namespace Hiro
             Loadbgi(Hiro_Utils.ConvertInt(Hiro_Settings.Read_DCIni("Blur", "0")));
             Load_Position();
             Load_Translate();
-            Title = Hiro_Text.Get_Translate("seqtitle") + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("sequenceTitle").Replace("%t", Hiro_Text.Get_Translate("seqtitle")).Replace("%a", App.appTitle);
             var maxwidth = SystemParameters.PrimaryScreenWidth / 5;
             var btnwidth = skipbtn.Width + skipbtn.Margin.Right + 5;
             maxwidth = (maxwidth > btnwidth) ? maxwidth : btnwidth;
@@ -60,7 +60,7 @@ namespace Hiro
             if (pausebtn.Content.Equals(Hiro_Text.Get_Translate("seqconti")))
                 return;
             tick--;
-            Resizel(ci + 1, cmds.Count);                
+            Resizel(ci + 1, cmds.Count);
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -118,8 +118,7 @@ namespace Hiro
             Hiro_Utils.Set_Control_Location(pausebtn, "seqpause", bottom: true, right: true);
             Hiro_Utils.Set_Control_Location(cancelbtn, "seqcancel", bottom: true, right: true);
             Hiro_Utils.Set_Control_Location(con, "seqcontent");
-            textblock.FontFamily = con.FontFamily;
-            textblock.FontSize = con.FontSize;
+            Hiro_UI.CopyFontFromLabel(con, textblock);
         }
 
         public void SeqExe(String path)
@@ -153,7 +152,7 @@ namespace Hiro
                 {
                     tick = scp.Count == 0 ? 5 : int.Parse(scp[0]);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Hiro_Logger.LogError(ex, "Hiro.Exception.Sequence.Pause");
                     tick = 5;
@@ -206,7 +205,7 @@ namespace Hiro
         }
         public void ThreadSeq(String path)
         {
-            if(!System.IO.File.Exists(path))
+            if (!System.IO.File.Exists(path))
             {
                 Close();
                 return;
@@ -252,7 +251,7 @@ namespace Hiro
                 //左上右下0123
                 case 3:
                     var t = pdat.rc.top - Height;
-                    t = Math.Max(t,0);
+                    t = Math.Max(t, 0);
                     t = Math.Min(t, SystemParameters.PrimaryScreenHeight - Height);
                     Canvas.SetTop(this, t);
                     Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth - Width);

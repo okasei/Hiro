@@ -16,11 +16,11 @@
         <SolidColorBrush x:Key="AppForeReverse" Color="Black"></SolidColorBrush> 
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
     </Page.Resources>
-    <Grid>
+    <Grid AllowDrop="True" Drop="Grid_Drop">
         <Label x:Name="glabel" Style="{DynamicResource HiroLabel}" Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
-        <TextBox x:Name="tb7" HorizontalAlignment="Left" Margin="0,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" Drop="Tb7_Drop" DragEnter="Tb7_DragEnter" AllowDrop="True" DragOver="Tb7_DragOver"/>
+        <TextBox x:Name="tb7" HorizontalAlignment="Left" Margin="0,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380"/>
         <Label x:Name="glabel2" Content="Command" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
-        <TextBox x:Name="tb8" HorizontalAlignment="Left" Margin="0,106,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" Drop="Tb8_Drop" DragOver="Tb8_DragOver" AllowDrop="True" TextChanged="Tb8_TextChanged" KeyDown="Tb8_KeyDown"/>
+        <TextBox x:Name="tb8" HorizontalAlignment="Left" Margin="0,106,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" TextChanged="Tb8_TextChanged" KeyDown="Tb8_KeyDown"/>
         <TextBox x:Name="tb9" HorizontalAlignment="Left" Margin="0,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="380" Height="230" IsReadOnly="True" Visibility="Hidden"/>
         <Button x:Name="ntn1" BorderThickness="1" Content="Filename" HorizontalAlignment="Left" Margin="95,10,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn1_Click"/>
         <Button x:Name="ntn2" BorderThickness="1" Content="Hidden" HorizontalAlignment="Left" Margin="160,10,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn2_Click"/>

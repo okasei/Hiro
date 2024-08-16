@@ -117,28 +117,12 @@ namespace Hiro
         internal void Load_Position()
         {
             Hiro_Utils.Set_Control_Location(Test_Text_Display, "BoxText", location: false);
-            Text_Display_0.FontFamily = Test_Text_Display.FontFamily;
-            Text_Display_0.FontSize = Test_Text_Display.FontSize;
-            Text_Display_0.FontStretch = Test_Text_Display.FontStretch;
-            Text_Display_0.FontWeight = Test_Text_Display.FontWeight;
-            Text_Display_0.FontStyle = Test_Text_Display.FontStyle;
-            Text_Display_1.FontFamily = Test_Text_Display.FontFamily;
-            Text_Display_1.FontSize = Test_Text_Display.FontSize;
-            Text_Display_1.FontStretch = Test_Text_Display.FontStretch;
-            Text_Display_1.FontWeight = Test_Text_Display.FontWeight;
-            Text_Display_1.FontStyle = Test_Text_Display.FontStyle;
+            Hiro_UI.CopyFontFromLabel(Test_Text_Display, Text_Display_0);
+            Hiro_UI.CopyFontFromLabel(Test_Text_Display, Text_Display_1);
             Hiro_Utils.Set_Control_Location(Hiro_Title_Label, "BoxFinal", location: false);
             Hiro_Utils.Set_Control_Location(Hiro_Extension_Title_Label, "BoxFinal", location: false);
-            Hiro_Title.FontFamily = Hiro_Title_Label.FontFamily;
-            Hiro_Title.FontSize = Hiro_Title_Label.FontSize;
-            Hiro_Title.FontStretch = Hiro_Title_Label.FontStretch;
-            Hiro_Title.FontWeight = Hiro_Title_Label.FontWeight;
-            Hiro_Title.FontStyle = Hiro_Title_Label.FontStyle;
-            Hiro_Extension_Title.FontFamily = Hiro_Extension_Title_Label.FontFamily;
-            Hiro_Extension_Title.FontSize = Hiro_Extension_Title_Label.FontSize;
-            Hiro_Extension_Title.FontStretch = Hiro_Extension_Title_Label.FontStretch;
-            Hiro_Extension_Title.FontWeight = Hiro_Extension_Title_Label.FontWeight;
-            Hiro_Extension_Title.FontStyle = Hiro_Extension_Title_Label.FontStyle;
+            Hiro_UI.CopyFontFromLabel(Hiro_Title_Label, Hiro_Title);
+            Hiro_UI.CopyFontFromLabel(Hiro_Extension_Title_Label, Hiro_Extension_Title);
         }
         internal void Load_Translate()
         {
@@ -313,7 +297,7 @@ namespace Hiro
             var tt = App.noticeitems[0].title?.Trim();
             if (tt == null || tt.Equals(string.Empty))
                 tt = Hiro_Text.Get_Translate("notitle");
-            Title = tt + " - " + Hiro_Resources.ApplicationName;
+            Title = Hiro_Text.Get_Translate("boixeTitle").Replace("%t", tt).Replace("%a", App.appTitle);
             act = App.noticeitems[0].act;
             BaseGrid.Cursor = act != null ? BaseGrid.Cursor = Cursors.Hand : null;
             temps = App.noticeitems[0].time;

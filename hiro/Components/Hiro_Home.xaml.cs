@@ -35,16 +35,8 @@ namespace Hiro
         {
             Hiro_Utils.Set_Control_Location(FakeCopyright, "copyright", location: false);
             Hiro_Utils.Set_Control_Location(FakeHello, "chello", location: false);
-            Copyright.FontFamily = FakeCopyright.FontFamily;
-            Copyright.FontSize = FakeCopyright.FontSize;
-            Copyright.FontStretch = FakeCopyright.FontStretch;
-            Copyright.FontWeight = FakeCopyright.FontWeight;
-            Copyright.FontStyle = FakeCopyright.FontStyle;
-            Hello.FontFamily = FakeHello.FontFamily;
-            Hello.FontSize = FakeHello.FontSize;
-            Hello.FontStretch = FakeHello.FontStretch;
-            Hello.FontWeight = FakeHello.FontWeight;
-            Hello.FontStyle = FakeHello.FontStyle;
+            Hiro_UI.CopyFontFromLabel(FakeCopyright, Copyright);
+            Hiro_UI.CopyFontFromLabel(FakeHello, Hello);
         }
 
         private void Hiro_Initialize()

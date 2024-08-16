@@ -385,7 +385,7 @@ namespace Hiro
                                     if (System.IO.File.Exists(tmp))
                                         System.IO.File.Delete(tmp);
                                     if (Logined == true)
-                                        Helpers.Hiro_ID.SyncProfile(loginedUser, loginedToken);
+                                        Hiro_ID.SyncProfile(loginedUser, loginedToken);
 
                                 }).Start();
                             }
@@ -476,7 +476,7 @@ namespace Hiro
                             if (noti.flag[0] == 2)
                             {
                                 noti.flag[0] = 0;
-                                noti.timer.Interval = new TimeSpan(10000000);
+                                noti.timer.Interval = TimeSpan.FromSeconds(1);
                                 noti.timer.Start();
                             }
                         }
@@ -693,7 +693,7 @@ namespace Hiro
                     _ => TimeSpan.FromSeconds(1)
                 }
             };
-            switch(Read_DCIni("Performance", "0"))
+            switch (Read_DCIni("Performance", "0"))
             {
                 case "1":
                     {
@@ -756,7 +756,12 @@ namespace Hiro
                         if (ChatCD == 0)
                         {
                             mn.hiro_chat?.Hiro_Get_Chat();
-                            ChatCD = 5;
+                            ChatCD = Read_DCIni("Performance", "0") switch
+                            {
+                                "1" => 10,
+                                "2" => 20,
+                                _ => 5
+                            };
                         }
                     }
 
@@ -867,6 +872,15 @@ namespace Hiro
             {
                 Notification_Tick();
             }
+            if (mn != null && mn.DropInfo.Visibility == System.Windows.Visibility.Visible)
+            {
+                if (!mn._dragFlag)
+                    mn.HideDropInfo();
+                else
+                {
+                    mn._dragFlag = false;
+                }
+            }
         }
 
         async private static void Notification_Tick()
@@ -936,7 +950,7 @@ namespace Hiro
                     }
                     Hiro_Icon icon = new();
                     icon.Location = iconFile;
-                    Notify(new Hiro_Notice(bodyText, 1, appName + " - " + titleText, null, icon));
+                    Notify(new Hiro_Notice(bodyText, 1, Get_Translate("winNotice").Replace("%a", appName).Replace("%t", titleText), null, icon));
                 }
             }
         }

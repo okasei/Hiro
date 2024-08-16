@@ -20,7 +20,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome x:Name="windowChrome" GlassFrameThickness="0 0 1 0" UseAeroCaptionButtons="False" CaptionHeight="0" NonClientFrameEdges="None" CornerRadius="0" />
     </WindowChrome.WindowChrome>
-    <Grid x:Name="BaseGrid">
+    <Grid x:Name="BaseGrid" AllowDrop="True" Drop="BaseGrid_Drop" PreviewDragEnter="BaseGrid_PreviewDragEnter">
         <Label x:Name="bgimage" HorizontalAlignment="Stretch" Background="Coral" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
         <Image x:Name="bgicon" HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="Uniform" Source="/Resources/hiro.png" Width="29" Height="50" Margin="0,0,110,0" Visibility="Collapsed"></Image>
         <ffme:MediaElement x:Name="BackVideo" HorizontalAlignment="Center" VerticalAlignment="Center" LoadedBehavior="Play" LoopingBehavior="Play" Visibility="Collapsed" UnloadedBehavior="Manual" IsMuted="True" MediaOpened="BackVideo_MediaOpened"/>
@@ -64,6 +64,9 @@ Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"/>
                 <Label x:Name="colorx" Style="{DynamicResource HiroLabel}" Content="Color" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" MouseLeftButtonDown="Colorx_MouseLeftButtonDown" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,224,0,0"/>
                 <Label x:Name="acrylicx" Style="{DynamicResource HiroLabel}" Content="Acrylic" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,224,0,0" MouseLeftButtonDown="Acrylicx_MouseLeftButtonDown"/>
                 <Label x:Name="timex" Style="{DynamicResource HiroLabel}" Content="Time" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Visibility="Collapsed" Height="32" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,256,0,0" MouseLeftButtonDown="Timex_MouseLeftButtonDown"/>
+                <Grid x:Name="DropInfo" Visibility="Collapsed">
+                    <Label x:Name="dropIci" Style="{DynamicResource HiroLabel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontFamily="Segoe UI" FontSize="16" Content="Drop here to open" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground ="{DynamicResource AppFore}"/>
+                </Grid>
             </Grid>
             <Grid x:Name="TitleGrid" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Label x:Name="titlelabel" Style="{DynamicResource HiroLabel}" Content="Hiro" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontWeight="Bold" MouseDown="Titlelabel_MouseDown" FontSize="14" Height="27" SizeChanged="Titlelabel_SizeChanged" Visibility="Hidden" Cursor="Hand"/>

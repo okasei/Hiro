@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Windows;
 using static Hiro.Helpers.Hiro_Settings;
 
 namespace Hiro.Helpers
@@ -95,7 +96,7 @@ namespace Hiro.Helpers
 
         public static string UploadProfileImage(string file, string user, string token, string type)
         {
-            var url = "https://hiro.rexio.cn/Chat/upload.php";
+            var url = "https://hi.rex.as/chat/upload.php";
             try
             {
                 if (App.hc == null)
@@ -137,6 +138,8 @@ namespace Hiro.Helpers
                         using (StreamReader sr = new(stream))
                         {
                             result = sr.ReadToEnd();
+                            if (App.dflag)
+                                Hiro_Logger.LogtoFile($"Web result: {result}");
                             return result;
                         }
                     }
@@ -153,7 +156,7 @@ namespace Hiro.Helpers
 
         public static string UploadProfileSettings(string user, string token, string name, string signature, string avatar, string iavatar, string back, string verifiedID, string verifiedPic, string affID, string affPic, string method = "update", string? saveto = null)
         {
-            var url = "https://hiro.rexio.cn/Chat/update.php";
+            var url = "https://hi.rex.as/chat/update.php";
             try
             {
                 if (App.hc == null)
@@ -227,17 +230,24 @@ namespace Hiro.Helpers
 
         public static string SyncProfile(string user, string token)
         {
-            var url = "https://hiro.rexio.cn/Chat/sync.php";
+            var url = "https://hi.rex.as/chat/sync.php";
             try
             {
                 if (App.hc == null)
                     throw new Exception(Hiro_Text.Get_Translate("webnotinitial"));
+                var usrAvatar = "<hiapp>\\images\\avatar\\" + user + ".hap";
+                var usrBack = "<hiapp>\\images\\background\\" + user + ".hpp";
                 string boundary = DateTime.Now.Ticks.ToString("X");
                 string Enter = "\r\n";
                 byte[] send = Encoding.UTF8.GetBytes(
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"user\"" + Enter + Enter + "" + user + "" + Enter + "--" + boundary + "--" +
                     Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"token\"" + Enter + Enter + "" + token + "" + Enter + "--" + boundary + "--" +
-                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--"
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"version\"" + Enter + Enter + "" + version + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"iavatar\"" + Enter + Enter + "" + Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(usrAvatar)).Replace("-", string.Empty) + "" + Enter + "--" + boundary + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"back\"" + Enter + Enter + "" + Hiro_Utils.GetMD5(Hiro_Text.Path_PPX(usrBack)).Replace("-", string.Empty) + "" + Enter + "--" + boundary + "--" + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"name\"" + Enter + Enter + "" + Read_DCIni("CustomName", string.Empty) + "" + Enter + "--" + boundary + "--" + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"sign\"" + Enter + Enter + "" + Read_DCIni("CustomSign", string.Empty) + "" + Enter + "--" + boundary + "--" + "--" +
+                    Enter + "--" + boundary + Enter + "Content-Type: text/plain" + Enter + "Content-Disposition: form-data; name=\"avatar\"" + Enter + Enter + "" + Read_DCIni("UserAvatarStyle", string.Empty) + "" + Enter + "--" + boundary + "--"
                     );
                 HttpRequestMessage request = new(HttpMethod.Post, url);
                 request.Headers.Add("UserAgent", Hiro_Resources.AppUserAgent);
@@ -257,26 +267,46 @@ namespace Hiro.Helpers
                                 stream.CopyTo(fileStream);
                             }
                         }
+                        if (App.dflag)
+                            Hiro_Logger.LogtoFile(File.ReadAllText(saveto));
                         Write_Ini(App.dConfig, "Config", "CustomUser", "2");
-                        Write_Ini(App.dConfig, "Config", "CustomName", Read_Ini(saveto, "Profile", "Name", string.Empty));
-                        Write_Ini(App.dConfig, "Config", "CustomSign", Read_Ini(saveto, "Profile", "Sign", string.Empty));
-                        Write_Ini(App.dConfig, "Config", "UserAvatarStyle", Read_Ini(saveto, "Profile", "Avatar", "1"));
-                        App.username = Read_Ini(saveto, "Profile", "Name", string.Empty);
+                        UpdateUserInfo(saveto, "Name", "CustomName");
+                        UpdateUserInfo(saveto, "Sign", "CustomSign");
+                        UpdateUserInfo(saveto, "Avatar", "UserAvatarStyle");
+                        App.username = Read_DCIni("CustomName", string.Empty);
                         App.CustomUsernameFlag = 1;
-                        var usrAvatar = "<hiapp>\\images\\avatar\\" + user + ".hap";
-                        var usrBack = "<hiapp>\\images\\background\\" + user + ".hpp";
                         Write_Ini(App.dConfig, "Config", "UserAvatar", usrAvatar);
                         Write_Ini(App.dConfig, "Config", "UserBackground", usrBack);
                         usrAvatar = Hiro_Text.Path_Prepare(usrAvatar);
                         usrBack = Hiro_Text.Path_Prepare(usrBack);
                         Hiro_File.CreateFolder(usrAvatar);
                         Hiro_File.CreateFolder(usrBack);
-                        if (File.Exists(usrAvatar))
-                            File.Delete(usrAvatar);
-                        if (File.Exists(usrBack))
-                            File.Delete(usrBack);
-                        Hiro_Net.GetWebContent(Read_Ini(saveto, "Profile", "Iavavtar", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hap"), true, usrAvatar);
-                        Hiro_Net.GetWebContent(Read_Ini(saveto, "Profile", "Back", "https://hiro.rexio.cn/Chat/Profile/" + user + "/" + user + "." + version + ".hpp"), true, usrBack);
+                        var _link = Read_Ini(saveto, "Profile", "Iavatar", string.Empty);
+                        var _bak = usrAvatar + ".bak";
+                        if (!_link.Equals(string.Empty))
+                        {
+                            if (File.Exists(_bak))
+                                File.Delete(_bak);
+                            if (File.Exists(usrAvatar))
+                                File.Move(usrAvatar, _bak);
+                            if (Hiro_Net.GetWebContent(_link, true, usrAvatar).Equals("saved"))
+                                File.Delete(_bak);
+                            else if (File.Exists(_bak))
+                                File.Move(_bak, usrAvatar);
+                        }
+                        _link = Read_Ini(saveto, "Profile", "Back", string.Empty);
+                        _bak = usrBack + ".bak";
+                        if (!_link.Equals(string.Empty))
+                        {
+                            if (File.Exists(_bak))
+                                File.Delete(_bak);
+                            if (File.Exists(usrBack))
+                                File.Move(usrBack, _bak);
+                            if (Hiro_Net.GetWebContent(_link, true, usrBack).Equals("saved"))
+                                File.Delete(_bak);
+                            else if (File.Exists(_bak))
+                                File.Move(_bak, usrBack);
+                        }
                         if (File.Exists(saveto))
                             File.Delete(saveto);
                         return "success";
@@ -299,9 +329,18 @@ namespace Hiro.Helpers
             }
         }
 
+        private static void UpdateUserInfo(string saveto, string saveSection, string userSection)
+        {
+            var a = Read_Ini(saveto, "Profile", saveSection, string.Empty);
+            if (!a.Equals(string.Empty))
+            {
+                Write_Ini(App.dConfig, "Config", userSection, a);
+            }
+        }
+
         public static string SendMsg(string user, string token, string to, string content)
         {
-            var url = "https://hiro.rexio.cn/Chat/send.php";
+            var url = "https://hi.rex.as/chat/send.php";
             try
             {
                 if (App.hc == null)
@@ -347,7 +386,7 @@ namespace Hiro.Helpers
 
         public static string GetChat(string user, string token, string to, string saveto)
         {
-            var url = "https://hiro.rexio.cn/Chat/log.php";
+            var url = "https://hi.rex.as/chat/log.php";
             try
             {
                 if (App.hc == null)

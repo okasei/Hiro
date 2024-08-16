@@ -96,7 +96,7 @@ namespace Hiro
         }
         void Load_Translate()
         {
-            Title = mode == 0 ? Hiro_Text.Get_Translate("enentitle") + " - " + App.appTitle : Hiro_Text.Get_Translate("endetitle") + " - " + App.appTitle;
+            Title = Hiro_Text.Get_Translate("encryptTitle").Replace("%t", mode == 0 ? Hiro_Text.Get_Translate("enentitle") : Hiro_Text.Get_Translate("endetitle")).Replace("%a", App.appTitle);
             EncryptTitle.Content = Hiro_Text.Get_Translate("enentitle");
             DecryptTitle.Content = Hiro_Text.Get_Translate("endetitle");
             albtn_1.Content = mode == 0 ? Hiro_Text.Get_Translate("enencrypt") : Hiro_Text.Get_Translate("endecrypt");

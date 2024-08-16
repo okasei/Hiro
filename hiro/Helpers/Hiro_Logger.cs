@@ -20,7 +20,11 @@ namespace Hiro.Helpers
                 str.Append($"Object: {ex.Source}{Environment.NewLine}");
                 str.Append($"Exception: {ex.GetType().Name}{Environment.NewLine}");
                 str.Append($"Details: {ex.Message}");
-                //str.Append($"StackTrace: {ex.StackTrace}");
+                if (App.dflag)
+                {
+                    str.Append($"{Environment.NewLine}StackTrace: {ex.StackTrace}");
+                }
+                
             }
             else
             {
@@ -28,7 +32,10 @@ namespace Hiro.Helpers
                 str.Append($"Object: {ex.InnerException.Source}{Environment.NewLine}");
                 str.Append($"Exception: {ex.InnerException.GetType().Name}{Environment.NewLine}");
                 str.Append($"Details: {ex.InnerException.Message}");
-                //str.Append($"StackTrace: {ex.InnerException.StackTrace}");
+                if (App.dflag)
+                {
+                    str.Append($"{Environment.NewLine}StackTrace: {ex.InnerException.StackTrace}");
+                }
             }
             LogtoFile(str.ToString());
         }

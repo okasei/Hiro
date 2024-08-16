@@ -727,7 +727,7 @@ namespace Hiro
                     ValidateNames = true, // 验证用户输入是否是一个有效的Windows文件名
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
-                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle)
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
@@ -819,7 +819,7 @@ namespace Hiro
                     CheckFileExists = true, //验证路径的有效性
                     CheckPathExists = true,//验证路径的有效性
                     Multiselect = false,
-                    Title = Hiro_Text.Get_Translate("openfile") + " - " + App.appTitle
+                    Title = Hiro_Text.Get_Translate("ofdTitle").Replace("%t", Hiro_Text.Get_Translate("openfile")).Replace("%a", App.appTitle)
                 };
                 if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
                 {
