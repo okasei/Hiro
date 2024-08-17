@@ -72,6 +72,68 @@ namespace Hiro
         }
 
 
+        private static List<string> LoadPaths(string runPath, out string path, bool replaceBrackets = true)
+        {
+            if (runPath.StartsWith('\"') && runPath.EndsWith('\"'))
+            {
+                var _path = runPath[1..^1];
+                if (_path.IndexOf('\"') == -1)
+                {
+                    _path = SearchAny(_path);
+                    if (File.Exists(_path) || Directory.Exists(_path))
+                    {
+                        path = _path;
+                        return new List<string>() { _path };
+                    }
+                    else
+                    {
+                        path = _path;
+                        return HiroCmdParse(path, replaceBrackets);
+                    }
+                }
+            }
+            else
+            {
+                var _path = SearchAny(runPath);
+                if (File.Exists(_path))
+                {
+                    path = _path;
+                    return new List<string>() { _path };
+                }
+            }
+            path = runPath;
+            return HiroCmdParse(path, replaceBrackets);
+        }
+
+        private static string SearchAny(string pi)
+        {
+            if (pi.ToLower().EndsWith("<any>"))
+            {
+                pi = pi[..^5];
+                if (Directory.Exists(pi))
+                {
+                    DirectoryInfo directory = new DirectoryInfo(pi);
+                    var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                    var ImgList = files.Select(s => s.FullName).ToList();
+                    if (ImgList.Count > 1)
+                        return ImgList[new Random().Next(0, ImgList.Count - 1)];
+                }
+            }
+            if (pi.ToLower().EndsWith("<xany>"))
+            {
+                pi = pi[..^6];
+                if (Directory.Exists(pi))
+                {
+                    DirectoryInfo directory = new DirectoryInfo(pi);
+                    var files = directory.GetFiles("*", SearchOption.AllDirectories);
+                    var ImgList = files.Select(s => s.FullName).ToList();
+                    if (ImgList.Count > 1)
+                        return ImgList[new Random().Next(0, ImgList.Count - 1)];
+                }
+            }
+            return pi;
+        }
+
         public static void RunExe(string RunPath, string? source = null, bool autoClose = true, bool urlCheck = true)
         {
             new System.Threading.Thread(() =>
@@ -86,60 +148,36 @@ namespace Hiro
                         path = path.Substring(5, path.Length - 6);
                         path = Encoding.Default.GetString(Convert.FromBase64String(path));
                     }
-                    var parameter = HiroCmdParse(path);
+                    var parameter = LoadPaths(path, out path);
                     #region 预处理参数
                     for (var i = 0; i < parameter.Count; i++)
                     {
-                        var pi = parameter[i];
-                        if (pi.ToLower().EndsWith("<any>"))
-                        {
-                            pi = pi[..^5];
-                            if (Directory.Exists(pi))
-                            {
-                                DirectoryInfo directory = new DirectoryInfo(pi);
-                                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
-                                var ImgList = files.Select(s => s.FullName).ToList();
-                                if (ImgList.Count > 1)
-                                    parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
-                            }
-                        }
-                        if (pi.ToLower().EndsWith("<xany>"))
-                        {
-                            pi = pi[..^6];
-                            if (Directory.Exists(pi))
-                            {
-                                DirectoryInfo directory = new DirectoryInfo(pi);
-                                var files = directory.GetFiles("*", SearchOption.AllDirectories);
-                                var ImgList = files.Select(s => s.FullName).ToList();
-                                if (ImgList.Count > 1)
-                                    parameter[i] = ImgList[new Random().Next(0, ImgList.Count - 1)];
-                            }
-                        }
+                        parameter[i] = SearchAny(parameter[i]);
                     }
                     #endregion
                     int disturb = int.Parse(Read_Ini(App.dConfig, "Config", "Disturb", "2"));
                     #region 识别文件类型
-                    if (File.Exists(HFile.TryTrimFilePath(path)))
+                    if (File.Exists(path))
                     {
                         if (HFile.isMediaFile(path))
                         {
                             if (App.dflag)
                                 LogtoFile("[RUN]Media file detected");
-                            path = $"play(\"{HFile.TryTrimFilePath(path)}\")";
+                            path = $"play(\"{path}\")";
                             parameter = HiroCmdParse(path);
                         }
                         else if (HFile.isImageFile(path))
                         {
                             if (App.dflag)
                                 LogtoFile("[RUN]Image file detected");
-                            path = $"image(\"{HFile.TryTrimFilePath(path)}\")";
+                            path = $"image(\"{path}\")";
                             parameter = HiroCmdParse(path);
                         }
                         else if (HFile.isTextFile(path))
                         {
                             if (App.dflag)
                                 LogtoFile("[RUN]Text file detected");
-                            path = $"text(\"{HFile.TryTrimFilePath(path)}\")";
+                            path = $"text(\"{path}\")";
                             parameter = HiroCmdParse(path);
                         }
                         else
@@ -459,7 +497,7 @@ namespace Hiro
                         afternoon = $",{afternoon.Replace("[", "").Replace("]", "").Replace(" ", "")},";
                         evening = $",{evening.Replace("[", "").Replace("]", "").Replace(" ", "")},";
                         night = $",{night.Replace("[", "").Replace("]", "").Replace(" ", "")},";
-                        var trstrs = new string[] { "morning", "morningcus", "noon", "nooncus", "afternoon", "afternooncus", "evening", "eveningcus", "night", "nights" };
+                        var trstrs = new string[] { "morning", "morningcus", "noon", "nooncus", "afternoon", "afternooncus", "evening", "eveningcus", "night", "nightcus" };
                         int trindex;
                         if (morning.IndexOf("," + hr + ",") != -1)
                             trindex = 0;
@@ -1441,7 +1479,7 @@ namespace Hiro
                         autoClose = false;
                         goto RunOK;
                     }
-                    var parameter_ = HiroCmdParse(path, false);
+                    var parameter_ = LoadPaths(path, out path, false);
                     string? FileName_ = parameter_.Count >= 1 ? parameter_[0] : null;
                     if (FileName_ == null)
                     {
@@ -1495,6 +1533,13 @@ namespace Hiro
 
         private static void Run_Process(ProcessStartInfo pinfo, string path, string RunPath)
         {
+            if (File.Exists(path))
+            {
+                pinfo.FileName = "explorer";
+                pinfo.Arguments = "\"" + path + "\"";
+                _ = Process.Start(pinfo);
+                return;
+            }
             pinfo.WorkingDirectory = Path_Prepare("<current>");
             try
             {
@@ -1510,12 +1555,26 @@ namespace Hiro
                 }
                 catch
                 {
-                    foreach (var cmd in App.cmditems)
+                    if (IsRegexPattern(RunPath))
                     {
-                        if (Regex.IsMatch(cmd.Name, RunPath) || Regex.IsMatch(cmd.Name, path))
+                        foreach (var cmd in App.cmditems)
                         {
-                            RunExe(cmd.Command);
-                            return;
+                            if (Regex.IsMatch(cmd.Name, RunPath))
+                            {
+                                RunExe(cmd.Command);
+                                return;
+                            }
+                        }
+                    }
+                    if (IsRegexPattern(path))
+                    {
+                        foreach (var cmd in App.cmditems)
+                        {
+                            if (Regex.IsMatch(cmd.Name, path))
+                            {
+                                RunExe(cmd.Command);
+                                return;
+                            }
                         }
                     }
                     string? runstart = FindItemByName(RunPath.Replace("\"", ""), Path_Prepare("<cstart>"));
@@ -1527,7 +1586,6 @@ namespace Hiro
                         try
                         {
                             _ = Process.Start(pinfo);
-                            return;
                         }
                         catch
                         {
@@ -1538,7 +1596,7 @@ namespace Hiro
                     if (runstart != null)
                     {
                         pinfo.FileName = runstart;
-                        pinfo.WorkingDirectory = Path_Prepare("<cstart>");
+                        pinfo.WorkingDirectory = Path_Prepare("<istart>");
                         pinfo.Arguments = "";
                         try
                         {
@@ -1553,6 +1611,20 @@ namespace Hiro
                     LogError(ex, $"Hiro.Exception.Run.Process{Environment.NewLine}");
                 }
             }
+        }
+
+        private static bool IsRegexPattern(string str)
+        {
+            bool result = true;
+            try
+            {
+                Regex regex = new Regex(str);
+            }
+            catch
+            {
+                result = false;
+            }
+            return result;
         }
 
         public static string? FindItemByName(string Name, string Location)
@@ -1577,7 +1649,7 @@ namespace Hiro
                         if (Path.GetFileName(file).Equals("desktop.ini"))
                             continue;
                         var filename = Path.GetFileNameWithoutExtension(file);
-                        if (filename != null && Regex.IsMatch(file, Name))
+                        if (filename != null && IsRegexPattern(Name) && Regex.IsMatch(file, Name))
                             return file;
                     }
                 }
