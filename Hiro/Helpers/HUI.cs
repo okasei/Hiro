@@ -39,6 +39,16 @@ namespace Hiro.Helpers
             to.FontStyle = from.FontStyle;
         }
 
+        internal static void CopyPostionFromLabel(Label from, TextBlock to)
+        {
+            to.Margin = from.Margin;
+            to.HorizontalAlignment = from.HorizontalAlignment;
+            to.VerticalAlignment = from.VerticalAlignment;
+            to.Width = from.Width;
+            to.Height = from.Height;
+            to.Padding = from.Padding;
+        }
+
         #region UI 相关
         public static void Get_Text_Visual_Width(ContentControl sender, double pixelPerDip, out Size size)
         {
@@ -512,9 +522,19 @@ namespace Hiro.Helpers
                     mSize.Width = width.Equals("-1") ? double.NaN : double.Parse(width);
                     mSize.Height = height.Equals("-1") ? double.NaN : double.Parse(height);
                     if (!left.Equals("-1"))
-                        thickness.Left = double.Parse(left);
+                    {
+                        if (sender.HorizontalAlignment == HorizontalAlignment.Right)
+                            thickness.Right = double.Parse(left);
+                        else
+                            thickness.Left = double.Parse(left);
+                    }
                     if (!top.Equals("-1"))
-                        thickness.Top = double.Parse(top);
+                    {
+                        if (sender.VerticalAlignment == VerticalAlignment.Bottom)
+                            thickness.Bottom = double.Parse(top);
+                        else
+                            thickness.Top = double.Parse(top);
+                    }
                     if (!animation)
                     {
                         sender.Width = mSize.Width;

@@ -95,7 +95,7 @@ namespace Hiro
         {
             InitializeInnerParameters();
             InitializeStartParameters(e);
-            await System.Threading.Tasks.Task.Run(() =>
+            await Task.Run(() =>
             {
                 Initialize_Notify_Recall();
                 Initialize_NotificationListener();

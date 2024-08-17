@@ -16,6 +16,7 @@
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
         <SolidColorBrush x:Key="AppAccentDim" Color="Coral"></SolidColorBrush>
         <Color x:Key="AppForeDimColor" A="1" B="1" G="1" ></Color>
+        <Color x:Key="AppForeReverseColor" A="1" B="1" G="1" ></Color>
     </Window.Resources>
     <WindowChrome.WindowChrome>
         <WindowChrome x:Name="Chrome"  GlassFrameThickness="0 1 0 0" NonClientFrameEdges="Left,Right,Bottom" CaptionHeight="0" UseAeroCaptionButtons="False"></WindowChrome>
@@ -25,14 +26,36 @@
         <Grid  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <Label x:Name="bgimage" Width="{Binding ActualWidth,ElementName=window}" Height="{Binding ActualHeight,ElementName=window}" Margin="0,0,0,0" AllowDrop="True" Drop="Bgimage_Drop" MouseLeftButtonDown="Bgimage_MouseLeftButtonDown" MouseDoubleClick="Bgimage_MouseDoubleClick"/>
             <Grid x:Name="Player_Container" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
-                <ffme:MediaElement x:Name="Media" Background="Black" LoadedBehavior="Play" UnloadedBehavior="Manual" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LoopingBehavior="Close"/>
+                <ffme:MediaElement x:Name="Media" Background="{DynamicResource AppAccent}" LoadedBehavior="Play" UnloadedBehavior="Manual" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LoopingBehavior="Close"/>
+            </Grid>
+            <Grid x:Name="MusicGrid" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                <TextBlock x:Name="MusicTitle" Foreground="{DynamicResource AppFore}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="2" ShadowDepth="0" Opacity="1" />
+                    </TextBlock.Effect>
+                </TextBlock>
+                <TextBlock x:Name="MusicArtist" Foreground="{DynamicResource AppFore}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="2" ShadowDepth="0" Opacity="1" />
+                    </TextBlock.Effect>
+                </TextBlock>
+                <TextBlock x:Name="MusicAlbum" Foreground="{DynamicResource AppFore}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="2" ShadowDepth="0" Opacity="1" />
+                    </TextBlock.Effect>
+                </TextBlock>
+                <Label x:Name="FakeMusic" Visibility="Collapsed"/>
             </Grid>
             <Label x:Name="Player_Cover" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseDoubleClick="Player_Cover_MouseDoubleClick" AllowDrop="True" Drop="Player_Cover_Drop" KeyDown="Player_Cover_KeyDown" MouseDown="Player_Cover_MouseDown"></Label>
             <Grid x:Name="Controller" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,5" Height="20" Visibility="Visible">
                 <Label x:Name="Ctrl_Bg" Background="{DynamicResource AppAccentDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>
                 <Label x:Name="Ctrl_Progress_Bg" Background="{DynamicResource AppForeDim}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="730" Height="10" Margin="10,5,0,0" MouseDown="Ctrl_Progress_Bg_MouseDown"></Label>
                 <Label x:Name="Ctrl_Progress" Background="{DynamicResource AppAccent}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="0" Height="10"  Margin="{Binding Margin, ElementName=Ctrl_Progress_Bg}" MouseDown="Ctrl_Progress_MouseDown"></Label>
-                <Label x:Name="Ctrl_Time" Content="00:00" Style="{DynamicResource HiroLabel}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="22" Width="Auto" SizeChanged="Ctrl_Time_SizeChanged" Foreground="{DynamicResource AppForeReverse}"/>
+                <Label x:Name="Ctrl_Time" Content="00:00" Style="{DynamicResource HiroLabel}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="22" Width="Auto" SizeChanged="Ctrl_Time_SizeChanged" Foreground="{DynamicResource AppFore}">
+                    <Label.Effect>
+                        <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="1" ShadowDepth="0" Opacity=".75" />
+                    </Label.Effect>
+                </Label>
             </Grid>
             <Label x:Name="UI_Label" Width="Auto" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="{Binding Margin, ElementName=Ctrl_Btns}" MouseDown="Move_Label_MouseDown" Height="{Binding Height, ElementName=Ctrl_Btns}" MouseDoubleClick="Move_Label_MouseDoubleClick"></Label>
             <Label x:Name="Move_Label" Background="{DynamicResource AppAccent}" Width="Auto" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="{Binding Margin, ElementName=Ctrl_Btns}" MouseDown="Move_Label_MouseDown" Height="{Binding Height, ElementName=Ctrl_Btns}" MouseDoubleClick="Move_Label_MouseDoubleClick"></Label>
