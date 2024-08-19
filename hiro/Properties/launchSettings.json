@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Hiro": {
-      "commandName": "Project",
-      "commandLineArgs": "play() utils"
+      "commandName": "Project"
     }
   }
 }

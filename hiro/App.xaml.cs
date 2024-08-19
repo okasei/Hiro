@@ -102,9 +102,9 @@ namespace Hiro
             });
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Read_DCIni("FPS", "60"))));
             Unosquare.FFME.Library.FFmpegDirectory = @Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            /*TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;*/
         }
 
         internal static string AddCustomFont(string path)
@@ -1012,11 +1012,7 @@ namespace Hiro
                 wnd.cm ??= new()
                 {
                     CacheMode = null,
-                    Foreground = new System.Windows.Media.SolidColorBrush(AppForeColor),
-                    Background = new System.Windows.Media.SolidColorBrush(AppAccentColor),
-                    BorderBrush = null,
-                    Style = (System.Windows.Style)Current.Resources["HiroContextMenu"],
-                    Padding = new(1, 10, 1, 10)
+                    BorderBrush = null
                 };
                 var total = (cmditems.Count % 10 == 0) ? cmditems.Count / 10 : cmditems.Count / 10 + 1;
                 for (var c = 1; c <= 10; c++)
@@ -1029,10 +1025,7 @@ namespace Hiro
                         wnd.cm.Items.Add(new Separator());
                         continue;
                     }
-                    MenuItem mu = new()
-                    {
-                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
-                    };
+                    MenuItem mu = new();
                     if (name.ToLower().IndexOf("[s]") != -1)
                     {
                         mu.IsChecked = true;
@@ -1066,10 +1059,7 @@ namespace Hiro
                 if (cmditems.Count > 0)
                 {
                     wnd.cm.Items.Add(new Separator());
-                    MenuItem pre = new()
-                    {
-                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
-                    };
+                    MenuItem pre = new();
                     if (page <= 0)
                         pre.IsEnabled = false;
                     pre.Header = HText.Get_Translate("menupre");
@@ -1080,17 +1070,11 @@ namespace Hiro
                         wnd.cm.IsOpen = true;
                     };
                     wnd.cm.Items.Add(pre);
-                    MenuItem pageid = new()
-                    {
-                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
-                    };
+                    MenuItem pageid = new();
                     pageid.Header = (page + 1).ToString() + "/" + total.ToString();
                     pageid.IsEnabled = false;
                     wnd.cm.Items.Add(pageid);
-                    MenuItem next = new()
-                    {
-                        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
-                    };
+                    MenuItem next = new();
                     if (page >= total - 1)
                         next.IsEnabled = false;
                     next.Header = HText.Get_Translate("menunext");
@@ -1110,20 +1094,14 @@ namespace Hiro
                     wnd.cm.Items.Add(pageid);
                 }
                 wnd.cm.Items.Add(new Separator());
-                MenuItem show = new()
-                {
-                    Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
-                };
+                MenuItem show = new();
                 show.Header = HText.Get_Translate("menushow");
                 show.Click += delegate
                 {
                     Hiro_Utils.RunExe("show()", HText.Get_Translate("menu"));
                 };
                 wnd.cm.Items.Add(show);
-                MenuItem exit = new()
-                {
-                    Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent)
-                };
+                MenuItem exit = new();
                 exit.Header = HText.Get_Translate("menuexit");
                 exit.Click += delegate
                 {

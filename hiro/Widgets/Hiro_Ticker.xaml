@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Hiro_Ticker" Height="150" Width="430" Background="{DynamicResource AppAccent}" WindowStyle="SingleBorderWindow" Icon="/Resources/hiro_circle.ico">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>

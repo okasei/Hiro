@@ -4,8 +4,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:Hiro"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    materialDesign:ShadowAssist.CacheMode="{x:Null}"
     mc:Ignorable="d" 
     d:DesignHeight="420" d:DesignWidth="420" KeepAlive="False"
     Title="Hiro_Items">
@@ -15,7 +13,7 @@
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
     </Page.Resources>
     <Grid>
-        <DataGrid x:Name="dgi" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Background="Transparent" HeadersVisibility="Column" 
+        <DataGrid GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource AppForeDim}" x:Name="dgi" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Background="Transparent" HeadersVisibility="Column" 
                   FontFamily="{Binding FontFamily, ElementName=ExCellLabel, Mode=OneWay}" FontSize="{Binding FontSize, ElementName=ExCellLabel, Mode=OneWay}"
                   FontStretch="{Binding FontStretch, ElementName=ExCellLabel, Mode=OneWay}" FontWeight="{Binding FontWeight, ElementName=ExCellLabel, Mode=OneWay}"
                   FontStyle="{Binding FontStyle, ElementName=ExCellLabel, Mode=OneWay}" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" 
@@ -27,6 +25,21 @@
                 <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Name" FontFamily="Segoe UI" CanUserResize="True" Width="160"/>
                 <DataGridTextColumn Binding="{Binding Command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Command" FontFamily="Segoe UI" CanUserResize="True" Width="160"/>
             </DataGrid.Columns>
+            <DataGrid.CellStyle>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="FontFamily" Value="{Binding FontFamily, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontSize" Value="{Binding FontSize, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontWeight" Value="{Binding FontWeight, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontStretch" Value="{Binding FontStretch, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Setter Property="FontStyle" Value="{Binding FontStyle, ElementName=ExCellLabel, Mode=OneWay}"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderBrush" Value="{x:Null}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background" Value="Transparent"/>
@@ -37,6 +50,7 @@
                 <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="Foreground" Value= "{DynamicResource AppFore}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource AppForeDim}"/>
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value= "{DynamicResource AppForeDim}"/>
@@ -49,16 +63,6 @@
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
-            <DataGrid.CellStyle>
-                <Style TargetType="{x:Type DataGridCell}">
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderBrush" Value="{x:Null}"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.CellStyle>
         </DataGrid>
         <Label x:Name="ExCellLabel" Visibility="Collapsed"/>
         <Button x:Name="btn1" BorderThickness="1" Content="New" HorizontalAlignment="Left" Margin="0,386,0,5" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Btn1_Click"/>

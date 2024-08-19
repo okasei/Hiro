@@ -53,62 +53,50 @@ namespace Hiro
             fr_box.Items.Clear();
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "1"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "2"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "3"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "15"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "30"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "45"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "60"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "75"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "90"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "120"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "144"
             });
             fr_box.Items.Add(new ComboBoxItem()
             {
-                Foreground = new SolidColorBrush(Colors.Black),
                 Content = "240"
             });
             int frame = Convert.ToInt32(Read_DCIni("FPS", "60"));

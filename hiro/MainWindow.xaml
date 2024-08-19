@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Initalizing - " Height="270" Width="480"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="Manual" 

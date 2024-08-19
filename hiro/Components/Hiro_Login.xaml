@@ -6,8 +6,6 @@
       xmlns:local="clr-namespace:Hiro"
       mc:Ignorable="d" 
       d:DesignHeight="420" d:DesignWidth="420"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      materialDesign:ShadowAssist.CacheMode="{x:Null}"
       Title="Login">
     <Page.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
@@ -16,9 +14,9 @@
     <Grid>
         <Label Style="{DynamicResource HiroLabel}" x:Name="Login_Title" Margin="136,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="32" Content="Login via N+"></Label>
         <Label Style="{DynamicResource HiroLabel}" x:Name="Name_Label" Margin="91,111,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Content="ID/Mail"></Label>
-        <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="Name_Textbox" Visibility="Visible" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="259" Margin="91,105,0,0" Height="30" TextChanged="Name_Textbox_TextChanged" ></TextBox>
+        <TextBox x:Name="Name_Textbox" Visibility="Visible" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="259" Margin="91,105,0,0" Height="30" TextChanged="Name_Textbox_TextChanged" ></TextBox>
         <Label Style="{DynamicResource HiroLabel}" x:Name="Pwd_Label" Margin="91,186,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Content="Password"></Label>
-        <PasswordBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="Pwd_Textbox" Visibility="Visible" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="259" Margin="91,180,0,0" Height="30" PasswordChanged="Pwd_Textbox_PasswordChanged"  InputScope="Password" ></PasswordBox>
+        <PasswordBox x:Name="Pwd_Textbox" Visibility="Visible" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource AppFore}" Width="259" Margin="91,180,0,0" Height="30" PasswordChanged="Pwd_Textbox_PasswordChanged"  InputScope="Password" ></PasswordBox>
         <Label Style="{DynamicResource HiroLabel}" x:Name="Create_Account" Margin="91,246,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" FontSize="12" Content="Create Account" Cursor="Hand" MouseLeftButtonDown="Create_Account_MouseLeftButtonDown"></Label>
         <CheckBox x:Name="Auto_Login" Margin="190,249,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Content="Auto Login"></CheckBox>
         <Button x:Name="Login_Btn" BorderThickness="1" Content="Login" HorizontalAlignment="Left" Margin="290,245,0,0" Width="60" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Click="Login_Btn_Click"/>

@@ -600,6 +600,17 @@ namespace Hiro
         public void Load_Colors()
         {
             Hiro_Utils.IntializeColorParameters();
+            Application.Current.Resources["Hiro.Colors.Accent"] = new SolidColorBrush(App.AppAccentColor);
+            Application.Current.Resources["Hiro.Colors.Accent.Dim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 200));
+            Application.Current.Resources["Hiro.Colors.Accent.Null"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval));
+            Application.Current.Resources["Hiro.Colors.Accent.Disabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor == Colors.White ? Colors.Black : Colors.White, 100));
+            Application.Current.Resources["Hiro.Colors.Accent.Null.MouseOver"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval * 7 / 8));
+            Application.Current.Resources["Hiro.Colors.Accent.Null.Pressed"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, App.trval * 5 / 4));
+            Application.Current.Resources["Hiro.Colors.Accent.Null.Disabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor == Colors.White ? Colors.Black : Colors.White, 100));
+            Application.Current.Resources["Hiro.Colors.Fore"] = new SolidColorBrush(App.AppForeColor);
+            Application.Current.Resources["Hiro.Colors.Fore.Dim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 200));
+            Application.Current.Resources["Hiro.Colors.Fore.ExtraDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 100));
+            Application.Current.Resources["Hiro.Colors.Fore.Disabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 50));
             switch (Read_DCIni("Background", "1"))
             {
                 case "1":
@@ -1159,7 +1170,7 @@ namespace Hiro
             {
                 colorx.Visibility = Visibility.Visible;
                 hiro_color ??= new(this);
-                hiro_color.color_picker.Color = App.AppAccentColor;
+                //hiro_color.color_picker.Color = App.AppAccentColor;
                 hiro_color.Unify_Color(true);
                 current = hiro_color;
                 frame.Content = hiro_color;

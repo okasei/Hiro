@@ -1,4 +1,5 @@
 ﻿using Hiro.Helpers;
+using Hiro.ModelViews;
 using Hiro.Resources;
 using System;
 using System.Windows;

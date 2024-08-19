@@ -144,15 +144,10 @@ namespace Hiro
             favMenu ??= new()
             {
                 CacheMode = null,
-                Foreground = new SolidColorBrush(App.AppForeColor),
-                Background = new SolidColorBrush(App.AppAccentColor),
-                BorderBrush = null,
-                Style = (Style)App.Current.Resources["HiroContextMenu"],
-                Padding = new(1, 10, 1, 10)
+                BorderBrush = null
             };
             MenuItem addToFav = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = "AddToFav"
             };
             addToFav.Click += delegate
@@ -173,7 +168,6 @@ namespace Hiro
                             ti = ti[..10] + "...";
                         MenuItem fav = new()
                         {
-                            Background = new SolidColorBrush(Colors.Transparent),
                             Header = ti
                         };
                         fav.Click += delegate
@@ -205,7 +199,6 @@ namespace Hiro
                     ti = ti[..10] + "...";
                 MenuItem fav = new()
                 {
-                    Background = new SolidColorBrush(Colors.Transparent),
                     Header = ti
                 };
                 fav.ToolTip = Read_Ini(configPath, "Fav" + i.ToString(), "URL", string.Empty);

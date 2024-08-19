@@ -197,9 +197,9 @@ namespace Hiro
             {
                 Interval = HSet.Read_DCIni("Performance", "0") switch
                 {
-                    "1" => TimeSpan.FromMilliseconds(150),
-                    "2" => TimeSpan.FromMilliseconds(500),
-                    _ => TimeSpan.FromMilliseconds(15)
+                    "1" => TimeSpan.FromMilliseconds(375),
+                    "2" => TimeSpan.FromMilliseconds(750),
+                    _ => TimeSpan.FromMilliseconds(75)
                 }
             };
             _timer.Tick += delegate
