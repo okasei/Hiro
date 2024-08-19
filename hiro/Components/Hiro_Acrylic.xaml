@@ -4,9 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Hiro"
-      mc:Ignorable="d" 
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      materialDesign:ShadowAssist.CacheMode="{x:Null}"
+      mc:Ignorable="d"
       d:DesignHeight="420" d:DesignWidth="420" KeepAlive="False"
       Title="Hiro_Acrylic">
     <Page.Resources>
@@ -24,7 +22,7 @@
         </Grid>
         <Grid x:Name="AcrylicTransparentGrid" Margin="0,100,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
             <Label  Style="{DynamicResource HiroLabel}" x:Name="TransparentTitle" Content="Select your favorable background style" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Margin="10,15,0,0"/>
-            <Slider x:Name="TransparentSlider" Style="{x:Null}" Margin="10,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="380" Height="15" Maximum="255" Minimum="1" SmallChange="5" Value="255" LargeChange="25" AutoToolTipPlacement="None" MouseLeftButtonUp="TransparentSlider_MouseLeftButtonUp"/>
+            <Slider Template="{DynamicResource USliderStyle}" x:Name="TransparentSlider" Style="{x:Null}" Margin="10,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="380" Height="15" Maximum="255" Minimum="1" SmallChange="5" Value="255" LargeChange="25" AutoToolTipPlacement="None" MouseLeftButtonUp="TransparentSlider_MouseLeftButtonUp"/>
         </Grid>
         <Grid x:Name="AcrylicHalfGrid"  Margin="0,150,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="420">
             <Label Margin="10,15,0,0" x:Name="HalfTitle" Style="{DynamicResource HiroLabel}" Content="Half On MainUI" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground ="{DynamicResource AppFore}" Width="120" Height="25"/>

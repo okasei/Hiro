@@ -4,18 +4,35 @@
              xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
              xmlns:local="clr-namespace:Hiro"
              Startup="Hiro_We_Go"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
-    xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
-    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
+             xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Application.Resources>
         <ResourceDictionary>
+            <SolidColorBrush x:Key="Hiro.Colors.Accent" Color="Coral"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Accent.Dim" Color="Coral"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Accent.Null" Color="Transparent"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Accent.Disabled" Color="White"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Accent.Null.MouseOver" Color="Transparent"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Accent.Null.Pressed" Color="Transparent"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Accent.Null.Disabled" Color="Transparent"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Fore" Color="Black"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Fore.Dim" Color="Gray"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Fore.ExtraDim" Color="Gray"/>
+            <SolidColorBrush x:Key="Hiro.Colors.Fore.Disabled" Color="Gray"/>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="LightBlue" SecondaryColor="Orange" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
-                <ResourceDictionary Source="/ModelViews/Hiro_Styles.xaml"/>
+            <ResourceDictionary Source="/ModelViews/Hiro_Styles.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UButton.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UCheckBox.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UComboBox.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UTextBox.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UPasswordBox.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/URichTextBox.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/URadioButon.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UDataGrid.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UDataGridItems.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/UScrollBar.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/USliderBar.xaml"/>
+                <ResourceDictionary Source="/ModelViews/Interfaces/ISliderBar.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
-        </ResourceDictionary>
+    </ResourceDictionary>
     </Application.Resources>
 </Application>

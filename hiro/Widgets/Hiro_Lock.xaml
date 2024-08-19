@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Name="Lock" Title="Lock" Height="350" Width="450" ResizeMode="NoResize" WindowStyle="None" Background="Black" WindowStartupLocation="Manual" Closing="Lock_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/Resources/hiro_circle.ico" StateChanged="Lock_StateChanged">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>

@@ -72,7 +72,7 @@ namespace Hiro.Helpers
             }
         }
 
-        public static void Blur_Out(Control ct, BackgroundWorker? bw = null)
+        public static void Blur_Out(FrameworkElement ct, BackgroundWorker? bw = null)
         {
             if (!HSet.Read_Ini(App.dConfig, "Config", "Ani", "2").Equals("0"))
             {

@@ -4,9 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Name="ui"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
-        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
         Title="mainui" Height="450" Width="550" ResizeMode="CanMinimize" WindowStyle="None" WindowStartupLocation="Manual" Closing="Ui_Closing" HorizontalAlignment="Left" VerticalAlignment="Top" Icon="/Resources/hiro_circle.ico" StateChanged="Ui_StateChanged" Activated="ui_Activated" Deactivated="ui_Deactivated">
     <Window.Resources>
@@ -128,5 +126,6 @@ Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"/>
             </Label>
             <Label x:Name="foremask" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Background="{Binding Background, ElementName=bgimage}" Visibility="Hidden"/>
         </Grid>
+        <ScrollBar HorizontalAlignment="Left" Margin="-794,143,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

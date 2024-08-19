@@ -45,7 +45,7 @@ namespace Hiro
 
         private void Hiro_Initialize()
         {
-            color_picker.MouseMove += Color_picker_ColorChanged;
+            //color_picker.MouseMove += Color_picker_ColorChanged;
             Load_Color();
             Load_Translate();
             Load_Position();
@@ -69,7 +69,7 @@ namespace Hiro
         public void Load_Position()
         {
             HUI.Set_Control_Location(color_title, "cotitle");
-            HUI.Set_Control_Location(color_picker, "copicker");
+            //HUI.Set_Control_Location(color_picker, "copicker");
             HUI.Set_Control_Location(color_text, "coval");
             HUI.Set_Control_Location(color_ex, "coex");
             HUI.Set_Control_Location(cobtn1, "cook", bottom: true, right: true);
@@ -94,7 +94,7 @@ namespace Hiro
 
         private void Cobtn1_Click(object sender, RoutedEventArgs e)
         {
-            App.AppAccentColor = color_picker.Color;
+            //App.AppAccentColor = color_picker.Color;
             HSet.Write_Ini(App.dConfig, "Config", "Lockcolor", string.Format("#{0:X2}{1:X2}{2:X2}", App.AppAccentColor.R, App.AppAccentColor.G, App.AppAccentColor.B));
             if (App.wnd != null)
                 App.wnd.Load_All_Colors();
@@ -116,11 +116,11 @@ namespace Hiro
 
         internal void Unify_Color(bool force = false)
         {
-            if (color_picker.Color == App.AppAccentColor && !force)
+            /*if (color_picker.Color == App.AppAccentColor && !force)
                 return;
             color_text.Text = $"#{color_picker.Color.R:X2}{color_picker.Color.G:X2}{color_picker.Color.B:X2}";
             color_ex.Background = new SolidColorBrush(color_picker.Color);
-            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, HSet.Read_DCIni("Reverse", "0").Equals("1")));
+            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(color_picker.Color, HSet.Read_DCIni("Reverse", "0").Equals("1")));*/
         }
         private void Color_text_KeyUp(object sender, KeyEventArgs e)
         {
@@ -132,7 +132,7 @@ namespace Hiro
             {
                 try
                 {
-                    color_picker.Color = (Color)ColorConverter.ConvertFromString(color_text.Text);
+                    //color_picker.Color = (Color)ColorConverter.ConvertFromString(color_text.Text);
                 }
                 catch (Exception ex)
                 {

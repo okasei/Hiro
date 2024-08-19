@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Hiro_Croper" Height="540" Width="960" ResizeMode="CanResize" WindowStyle="SingleBorderWindow"  Background="#FF000000" MouseLeave="Window_MouseLeave">
     <Window.Resources>
         <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>

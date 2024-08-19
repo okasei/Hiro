@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="alarm" Height="450" Width="800" ResizeMode="NoResize" WindowStyle="None" Topmost="false" MouseLeftButtonDown="Ala_MouseLeftButtonDown" Icon="/Resources/hiro_circle.ico" WindowStartupLocation="Manual" Closing="Window_Closing">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>

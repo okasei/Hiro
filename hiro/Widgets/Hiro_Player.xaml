@@ -6,8 +6,6 @@
         xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    materialDesign:ShadowAssist.CacheMode="{x:Null}"
         Title="Hiro_Player" Height="450" Width="800" SizeChanged="Hiro_Player1_SizeChanged" Closing="Hiro_Player1_Closing" Background="{DynamicResource AppAccent}" WindowStyle="SingleBorderWindow" KeyDown="Hiro_Player1_KeyDown" StateChanged="Hiro_Player1_StateChanged" MouseWheel="Hiro_Player1_MouseWheel" Icon="/Resources/hiro_circle.ico">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
@@ -26,7 +24,19 @@
         <Grid  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <Label x:Name="bgimage" Width="{Binding ActualWidth,ElementName=window}" Height="{Binding ActualHeight,ElementName=window}" Margin="0,0,0,0" AllowDrop="True" Drop="Bgimage_Drop" MouseLeftButtonDown="Bgimage_MouseLeftButtonDown" MouseDoubleClick="Bgimage_MouseDoubleClick"/>
             <Grid x:Name="Player_Container" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed">
-                <ffme:MediaElement x:Name="Media" Background="{DynamicResource AppAccent}" LoadedBehavior="Play" UnloadedBehavior="Manual" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LoopingBehavior="Close"/>
+                <ffme:MediaElement x:Name="Media" Background="{DynamicResource AppAccent}" LoadedBehavior="Play" UnloadedBehavior="Manual" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LoopingBehavior="Manual"/>
+            </Grid>
+            <Grid x:Name="LyricsGrid" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                <TextBlock x:Name="LyricsBlockFirst" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource AppFore}" TextAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="2" ShadowDepth="0" Opacity="1"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+                <TextBlock x:Name="LyricsBlock" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource AppFore}" TextAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="2" ShadowDepth="0" Opacity="1" />
+                    </TextBlock.Effect>
+                </TextBlock>
             </Grid>
             <Grid x:Name="MusicGrid" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <TextBlock x:Name="MusicTitle" Foreground="{DynamicResource AppFore}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
@@ -44,7 +54,7 @@
                         <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="2" ShadowDepth="0" Opacity="1" />
                     </TextBlock.Effect>
                 </TextBlock>
-                <Label x:Name="FakeMusic" Visibility="Collapsed"/>
+                <Label x:Name="FakeMusic" Visibility="Visible"/>
             </Grid>
             <Label x:Name="Player_Cover" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseDoubleClick="Player_Cover_MouseDoubleClick" AllowDrop="True" Drop="Player_Cover_Drop" KeyDown="Player_Cover_KeyDown" MouseDown="Player_Cover_MouseDown"></Label>
             <Grid x:Name="Controller" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,5" Height="20" Visibility="Visible">
@@ -156,9 +166,9 @@
             </StackPanel>
             <Grid x:Name="Ctrl_Address" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0" Height="{Binding Height, ElementName=Ctrl_Btns}" Visibility="Hidden">
                 <Label x:Name="Ctrl_Text_Bg" Background="{DynamicResource AppForeDim}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0"></Label>
-                <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="Ctrl_Text" Foreground="{DynamicResource AppForeReverse}" KeyDown="Ctrl_Text_KeyDown" BorderThickness="0,0,0,0" Padding="6,5,6,5" FontSize="16" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Grid.IsSharedSizeScope="True"></TextBox>
+                <TextBox x:Name="Ctrl_Text" Foreground="{DynamicResource AppForeReverse}" KeyDown="Ctrl_Text_KeyDown" BorderThickness="0,0,0,0" Padding="6,5,6,5" FontSize="16" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Grid.IsSharedSizeScope="True"></TextBox>
             </Grid>
-            <DataGrid x:Name="Dgi" Visibility="Hidden" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" HeadersVisibility="None"  FontFamily="{Binding FontFamily, ElementName=Ctrl_Text}" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="{DynamicResource AppFore}" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="200" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick" FontSize="16" Drop="Dgi_Drop" AllowDrop="True" MouseLeave="Dgi_MouseLeave" MouseDown="Dgi_MouseDown">
+            <DataGrid x:Name="Dgi" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource AppForeDim}" Visibility="Hidden" d:ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" HeadersVisibility="None"  FontFamily="{Binding FontFamily, ElementName=Ctrl_Text}" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Foreground="{DynamicResource AppFore}" CanUserResizeRows="False" EnableRowVirtualization="False" AreRowDetailsFrozen="True" Width="200" Height="380" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" MouseDoubleClick="Dgi_MouseDoubleClick" FontSize="16" Drop="Dgi_Drop" AllowDrop="True" MouseLeave="Dgi_MouseLeave" MouseDown="Dgi_MouseDown">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Name" FontFamily="Segoe UI" CanUserResize="True" Width="*"/>
                 </DataGrid.Columns>

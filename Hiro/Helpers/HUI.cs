@@ -39,11 +39,14 @@ namespace Hiro.Helpers
             to.FontStyle = from.FontStyle;
         }
 
-        internal static void CopyPostionFromLabel(Label from, TextBlock to)
+        internal static void CopyPostionFromLabel(Label from, TextBlock to, bool copyAlignment = true)
         {
             to.Margin = from.Margin;
-            to.HorizontalAlignment = from.HorizontalAlignment;
-            to.VerticalAlignment = from.VerticalAlignment;
+            if (copyAlignment)
+            {
+                to.HorizontalAlignment = from.HorizontalAlignment;
+                to.VerticalAlignment = from.VerticalAlignment;
+            }
             to.Width = from.Width;
             to.Height = from.Height;
             to.Padding = from.Padding;

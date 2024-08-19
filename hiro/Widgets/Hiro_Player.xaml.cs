@@ -10,10 +10,8 @@ using System.IO;
 using Hiro.Helpers;
 using Hiro.ModelViews;
 using static Hiro.Helpers.HSet;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 using System.Windows.Threading;
-using System.Windows.Media.Imaging;
-using Hiro.Resources;
+using System.Runtime;
 
 namespace Hiro
 {
@@ -33,7 +31,10 @@ namespace Hiro
         internal int pcd = -1;
         internal WindowAccentCompositor? compositor = null;
         bool isMaxed = false;
-        DispatcherTimer? _timer = null;
+        DispatcherTimer _dst = new DispatcherTimer();
+        HLrycis? _lrc = null;
+        double _nextTime = -1;
+        bool _lrcFlag = false;
         /// <summary>
         /// 0 - 未在播放, 1 - 暂停, 2 - 正在播放
         /// </summary>
@@ -60,24 +61,24 @@ namespace Hiro
                 Update_Progress();
                 Focus();
                 Update_Layout();
+                _dst.Interval = Read_DCIni("Performance", "0") switch
+                {
+                    "1" => TimeSpan.FromMilliseconds(500),
+                    "2" => TimeSpan.FromMilliseconds(1000),
+                    _ => TimeSpan.FromMilliseconds(150)
+                };
+                _dst.Tick += delegate
+                {
+                    Update_Progress();
+                };
             };
             SourceInitialized += OnSourceInitialized;
-            _timer = new DispatcherTimer();
-            _timer.Interval = Read_DCIni("Performance", "0") switch
-            {
-                "1" => TimeSpan.FromMilliseconds(450),
-                "2" => TimeSpan.FromMilliseconds(750),
-                _ => TimeSpan.FromMilliseconds(100)
-            };
-            _timer.Tick += delegate
-            {
-                Update_Progress();
-            };
         }
 
         private void Load_Position()
         {
             HUI.Set_FrameworkElement_Location(MusicGrid, "musicg");
+            HUI.Set_FrameworkElement_Location(LyricsGrid, "lyricg");
             HUI.Set_Control_Location(FakeMusic, "musicTitle");
             HUI.CopyFontFromLabel(FakeMusic, MusicTitle);
             HUI.CopyPostionFromLabel(FakeMusic, MusicTitle);
@@ -87,6 +88,14 @@ namespace Hiro
             HUI.Set_Control_Location(FakeMusic, "musicAlbum");
             HUI.CopyFontFromLabel(FakeMusic, MusicAlbum);
             HUI.CopyPostionFromLabel(FakeMusic, MusicAlbum);
+            HUI.Set_Control_Location(FakeMusic, "musicLyric");
+            HUI.CopyFontFromLabel(FakeMusic, LyricsBlockFirst);
+            HUI.CopyPostionFromLabel(FakeMusic, LyricsBlockFirst, false);
+            HUI.Set_Control_Location(FakeMusic, "musicLyricx");
+            HUI.CopyFontFromLabel(FakeMusic, LyricsBlock);
+            HUI.CopyPostionFromLabel(FakeMusic, LyricsBlock, false);
+            LyricsBlockFirst.LineHeight = LyricsBlockFirst.Height;
+            LyricsBlock.LineHeight = LyricsBlockFirst.Height;
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -153,100 +162,128 @@ namespace Hiro
 
         private void Initialize_Player()
         {
-            new Thread(() =>
+            try
             {
-                try
+                Dgi.ItemsSource = playlist;
+                Media.MediaEnded += Media_MediaEnded;
+                Media.IsMuted = false;
+                if (toplay != null)
                 {
-                    Dispatcher.Invoke(() =>
+                    var audio = "*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm;*.dsf;";
+                    var ext = System.IO.Path.GetExtension(toplay).ToLower();
+                    if (audio.IndexOf("*" + ext + ";") != -1)
                     {
-                        Dgi.ItemsSource = playlist;
-                        Media.MediaEnded += Media_MediaEnded;
-                        Media.IsMuted = false;
-                    });
-                    if (toplay != null)
-                    {
-                        var audio = "*.3ga;*.669;*.a52;*.aac;*.ac3;*.adt;*.adts;*.aif;*.aifc;*.aiff;*.amb;*.amr;*.aob;*.ape;*.au;*.awb;*.caf;*.dts;*.flac;*.it;*.kar;*.m4a;*.m4b;*.m4p;*.m5p;*.mid;*.mka;*.mlp;*.mod;*.mpa;*.mp1;*.mp2;*.mp3;*.mpc;*.mpga;*.mus;*.oga;*.ogg;*.oma;*.opus;*.qcp;*.ra;*.rmi;*.s3m;*.sid;*.spx;*.tak;*.thd;*.tta;*.voc;*.vqf;*.w64;*.wav;*.wma;*.wv;*.xa;*.xm;*.dsf;";
-                        var ext = System.IO.Path.GetExtension(toplay).ToLower();
-                        if (audio.IndexOf("*" + ext + ";") != -1)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                Width = 500;
-                                Height = 500;
-                            });
-                        }
-                        Dispatcher.Invoke(() =>
-                        {
-                            Play(toplay);
-                        });
+                        Width = 300;
+                        Height = 300;
                     }
+                    Play(toplay);
                 }
-                catch (Exception ex)
-                {
-                    HLogger.LogError(ex, "Hiro.Exception.MediaPlayer.Initialize");
-                }
-            }).Start();
+            }
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, "Hiro.Exception.MediaPlayer.Initialize");
+            }
         }
 
         private void Media_MediaEnded(object? sender, EventArgs e)
         {
-            Dispatcher.Invoke(async () =>
+            if (!Media.IsAtEndOfStream)
+                return;
+            Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            _dst.Stop();
+            _currentCondition = 0;
+            Media.Stop();
+            Media.Close();
+            HideContainer(Player_Container, 100, 200);
+            HideContainer(MusicGrid, 100, 200);
+            HideContainer(LyricsGrid, 100, 200);
+            LyricsBlockFirst.Text = string.Empty;
+            LyricsBlock.Text = string.Empty;
+            Ctrl_Progress.Width = 0;
+            Title = App.appTitle;
+            Ctrl_Time.Content = "00:00";
+            if (App.dflag)
+                HLogger.LogtoFile($"[Player] MediaEnded");
+            System.Threading.Tasks.Task.Delay(Read_DCIni("Performance", "0") switch
             {
-                await Media.Stop();
-                _currentCondition = 0;
-                Player_Container.Visibility = Visibility.Collapsed;
-                MusicGrid.Visibility = Visibility.Collapsed;
-                Ctrl_Progress.Width = 0;
-                Title = App.appTitle;
-                Ctrl_Time.Content = "00:00";
-                new Thread(() =>
+                "1" => TimeSpan.FromMilliseconds(500),
+                "2" => TimeSpan.FromMilliseconds(1000),
+                _ => TimeSpan.FromMilliseconds(150)
+            }).ContinueWith(t =>
+            {
+                if (index < playlist.Count - 1 && index > -1)
+                    PlayIndex(index + 1);
+                else
                 {
-                    Thread.Sleep(150);
-                    if (index < playlist.Count - 1)
-                        PlayIndex(index + 1);
-                }).Start();
+                    index = -1;
+                }
             });
 
         }
 
         private void Update_Progress()
         {
-            Dispatcher.Invoke(() =>
+            try
             {
-                try
+                bool zero = _currentCondition == 0;
+                if (zero)
+                    return;
+                var _ts = Media.Position.TotalSeconds;
+                if (_nextTime >= 0 && _ts > _nextTime && _lrc != null && !_lrcFlag)
                 {
-                    bool zero = _currentCondition == 0;
-                    Ctrl_Time.Content = zero ? "00:00" : ParseDuration(Media.Position.TotalSeconds) + "/" + ParseDuration(Media.MediaInfo.Duration.TotalSeconds);
-                    var wid = zero ? 0 : Ctrl_Progress_Bg.Width * Media.Position.TotalSeconds / Media.MediaInfo.Duration.TotalSeconds;
-                    wid = wid >= 0 ? wid : 0;
-                    Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
+                    _lrcFlag = true;
+                    var ls = _lrc.GetLyrics(_ts, out _nextTime);
                     if (Read_DCIni("Ani", "2").Equals("1"))
                     {
-                        var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
-                        if (len < 150)
-                        {
-                            Ctrl_Progress.Width = wid;
-                            return;
-                        }
-                        Storyboard sb = new();
-                        sb = HAnimation.AddDoubleAnimaton(wid, len, Ctrl_Progress, "Width", sb);
-                        sb.Begin();
+                        var sb = HAnimation.AddThicknessAnimaton(LyricsBlockFirst.Margin, 200, LyricsBlock, "Margin", null);
+                        sb = HAnimation.AddPowerOutAnimation(0, LyricsBlockFirst, sb, null, 150, 200, 200);
                         sb.Completed += delegate
                         {
-                            Ctrl_Progress.Width = wid;
+                            LyricsBlockFirst.Text = ls[0];
+                            LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
+                            _lrcFlag = false;
                         };
+                        sb.Begin();
                     }
                     else
-                        Ctrl_Progress.Width = wid;
-                    return;
+                    {
+                        LyricsBlockFirst.Text = ls[0];
+                        LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
+                        _lrcFlag = false;
+                    }
                 }
-                catch (Exception e)
+                Ctrl_Time.Content = zero ? "00:00" : ParseDuration(_ts) + "/" + ParseDuration(Media.MediaInfo.Duration.TotalSeconds);
+                Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
+                var wid = zero ? 0 : Ctrl_Progress_Bg.Width * _ts / Media.MediaInfo.Duration.TotalSeconds;
+                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)(100 * _ts / Media.MediaInfo.Duration.TotalSeconds), 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                wid = wid >= 0 ? wid : 0;
+                if (Read_DCIni("Ani", "2").Equals("1"))
                 {
-                    HLogger.LogError(e, "Hiro.Player");
-                    Ctrl_Progress.Width = 0;
-                    Ctrl_Time.Content = "00:00";
+                    var len = Math.Abs((wid - Ctrl_Progress.Width) * 2000 / Ctrl_Progress_Bg.Width);
+                    if (len < 150)
+                    {
+                        Ctrl_Progress.Width = wid;
+                        return;
+                    }
+                    Storyboard sb = new();
+                    sb = HAnimation.AddDoubleAnimaton(wid, len, Ctrl_Progress, "Width", sb);
+                    sb.Begin();
+                    sb.Completed += delegate
+                    {
+                        Ctrl_Progress.Width = wid;
+                    };
                 }
-            });
+                else
+                    Ctrl_Progress.Width = wid;
+                return;
+            }
+            catch (Exception e)
+            {
+                HLogger.LogError(e, "Hiro.Player.UpdateProgress");
+                Ctrl_Progress.Width = 0;
+                Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
+                Ctrl_Time.Content = "00:00";
+            }
         }
 
         private static string ParseDuration(double time)
@@ -287,7 +324,7 @@ namespace Hiro
             var txt = Ctrl_Text.Text;
             if (txt.StartsWith("hiro.vol:"))
             {
-                Media.Volume = Convert.ToInt32(txt[9..]) / 100;
+                Media.Volume = Convert.ToInt32(txt[9..]) / 100.0;
             }
             else if (txt.StartsWith("hiro.speed:"))
             {
@@ -305,19 +342,25 @@ namespace Hiro
             {
                 try
                 {
-                    string? directory = Path.GetDirectoryName(uri);
-                    string vidPath = uri;
                     Dispatcher.Invoke(async () =>
                     {
-                        playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(vidPath), vidPath, string.Empty));
+                        if (_currentCondition == 2)
+                            await Media.Pause();
+                        playlist.Add(new(-1, -1, Path.GetFileNameWithoutExtension(uri), uri, string.Empty));
                         index = playlist.Count - 1;
-                        await Media.Open(new Uri(vidPath));
-                        LoadMusicGrid(vidPath);
-                        _currentCondition = 2;
-                        Ctrl_Text.Text = vidPath;
-                        Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(vidPath)).Replace("%a", App.appTitle);
-                        Player_Container.Visibility = Visibility.Visible;
-                        _timer?.Start();
+                        if (App.dflag)
+                            HLogger.LogtoFile($"[Player] Opening file: {uri}");
+                        if (await Media.Open(new Uri(uri)))
+                        {
+                            Ctrl_Text.Text = uri;
+                            Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
+                            Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                            ShowContainer(Player_Container, -100, 250, 350);
+                            LoadMusicGrid();
+                            _currentCondition = 2;
+                            _dst.Start();
+                            Dgi.IsEnabled = true;
+                        }
                     });
 
                 }
@@ -328,14 +371,27 @@ namespace Hiro
             }).Start();
         }
 
-        private void LoadMusicGrid(string filePath)
+        private void LoadMusicGrid()
         {
             try
             {
                 var mt = Media.MediaInfo.Metadata;
-                var _artist = mt.ContainsKey("ARTIST") ? mt["ARTIST"] : HText.Get_Translate("musicArtist");
-                var _title = mt.ContainsKey("TITLE") ? mt["TITLE"] : HText.Get_Translate("musicTitle");
-                var _album = mt.ContainsKey("ALBUM") ? mt["ALBUM"] : HText.Get_Translate("musicAlbum");
+                var _artist = mt.ContainsKey("ARTIST") ? mt["ARTIST"] : null;
+                var _title = mt.ContainsKey("TITLE") ? mt["TITLE"] : null;
+                var _album = mt.ContainsKey("ALBUM") ? mt["ALBUM"] : null;
+                var _lrcs = mt.ContainsKey("LYRICS") ? mt["LYRICS"] : (mt.ContainsKey("lyrics-XXX") ? mt["lyrics-XXX"] : null);
+                if (_lrcs != null && HSet.Read_DCIni("EnableLyrics", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    _lrc = HLrycis.InitLrc(_lrcs);
+                    ShowContainer(LyricsGrid, -100, 150, 200);
+                    _nextTime = 0;
+                }
+                else
+                {
+                    HideContainer(LyricsGrid, 100, 200);
+                    _lrc = null;
+                    _nextTime = -1;
+                }
                 if (App.dflag)
                 {
                     foreach (var k in Media.MediaInfo.Metadata.Keys)
@@ -345,13 +401,13 @@ namespace Hiro
                 }
                 if (!IsEmpty(_artist) || !IsEmpty(_title) || !IsEmpty(_album))
                 {
-                    MusicTitle.Text = _title ?? "";
-                    MusicArtist.Text = _artist ?? "";
-                    MusicAlbum.Text = _album ?? "";
-                    MusicGrid.Visibility = Visibility.Visible;
+                    MusicTitle.Text = _title ?? HText.Get_Translate("musicTitle");
+                    MusicArtist.Text = _artist ?? HText.Get_Translate("musicArtist");
+                    MusicAlbum.Text = _album ?? HText.Get_Translate("musicAlbum");
+                    ShowContainer(MusicGrid, -100, 200, 300);
                     return;
                 }
-                MusicGrid.Visibility = Visibility.Collapsed;
+                HideContainer(MusicGrid, 100, 200);
             }
             catch (Exception ex)
             {
@@ -375,22 +431,6 @@ namespace Hiro
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
             Resources["AppAccent"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 80));
             Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 20));
-            if (cm != null)
-            {
-                cm.Background = new SolidColorBrush(App.AppAccentColor);
-                cm.Foreground = new SolidColorBrush(App.AppForeColor);
-                foreach (var obj in cm.Items)
-                {
-                    if (obj is MenuItem mi)
-                    {
-                        if (mi.Items.Count > 0)
-                        {
-                            mi.Background = new SolidColorBrush(App.AppAccentColor);
-                            mi.Foreground = new SolidColorBrush(App.AppForeColor);
-                        }
-                    }
-                }
-            }
             Dgi.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 200));
         }
 
@@ -422,8 +462,14 @@ namespace Hiro
                 if (_currentCondition != 0)
                 {
                     var a = e.GetPosition(Ctrl_Progress_Bg);
-                    Media.Position = TimeSpan.FromSeconds((float)(a.X / Ctrl_Progress_Bg.Width) * Media.MediaInfo.Duration.TotalSeconds);
+                    var _set = (float)(a.X / Ctrl_Progress_Bg.Width) * Media.MediaInfo.Duration.TotalSeconds;
+                    Media.Position = TimeSpan.FromSeconds(_set);
+                    if (_lrc != null)
+                    {
+                        _nextTime = _set;
+                    }
                 }
+                e.Handled = true;
             }
         }
 
@@ -434,8 +480,14 @@ namespace Hiro
                 if (_currentCondition != 0)
                 {
                     var a = e.GetPosition(Ctrl_Progress_Bg);
-                    Media.Position = TimeSpan.FromSeconds((float)(a.X / Ctrl_Progress_Bg.Width) * Media.MediaInfo.Duration.TotalSeconds);
+                    var _set = (float)(a.X / Ctrl_Progress_Bg.Width) * Media.MediaInfo.Duration.TotalSeconds;
+                    Media.Position = TimeSpan.FromSeconds(_set);
+                    if (_lrc != null)
+                    {
+                        _nextTime = _set;
+                    }
                 }
+                e.Handled = true;
             }
         }
 
@@ -464,10 +516,20 @@ namespace Hiro
                 var info = e.Data.GetData(DataFormats.FileDrop) as string[];
                 if (info != null && info.Length > 0)
                 {
+                    var _i = playlist.Count;
+                    if (_currentCondition == 2)
+                        Media.Pause();
                     foreach (var inf in info)
                     {
                         var li = inf as string;
-                        Play(li);
+                        playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(li), li, string.Empty));
+                    }
+                    if (index < playlist.Count - 1 && index > -1)
+                        PlayIndex(index + 1);
+                    else
+                    {
+                        if (playlist.Count > 0)
+                            PlayIndex(_i);
                     }
                 }
             }
@@ -536,12 +598,14 @@ namespace Hiro
             {
                 if (_currentCondition == 2)
                 {
+                    Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Paused, new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     Media.Pause();
                     _currentCondition = 1;
                     Player_Notify(HText.Get_Translate("playerpause"));
                 }
                 else
                 {
+                    Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     Media.Play();
                     _currentCondition = 2;
                     Player_Notify(HText.Get_Translate("playerplay"));
@@ -564,6 +628,7 @@ namespace Hiro
                 Ctrl_Btns.Visibility = Controller.Visibility;
                 Move_Label.Visibility = Controller.Visibility;
                 HUI.Set_FrameworkElement_Location(MusicGrid, Controller.Visibility == Visibility.Hidden ? "musicgx" : "musicg", false);
+                HUI.Set_FrameworkElement_Location(LyricsGrid, "lyricgx", false);
                 rflag = 1;
             }
             else
@@ -579,6 +644,7 @@ namespace Hiro
                 Ctrl_Btns.Visibility = Visibility.Hidden;
                 Move_Label.Visibility = Visibility.Hidden;
                 HUI.Set_FrameworkElement_Location(MusicGrid, Controller.Visibility == Visibility.Hidden ? "musicgx" : "musicg", false);
+                HUI.Set_FrameworkElement_Location(LyricsGrid, Controller.Visibility == Visibility.Hidden ? "lyricgx" : "lyricg", false);
             }
             Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
             Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
@@ -612,6 +678,7 @@ namespace Hiro
                 {
                     Media.Position = TimeSpan.FromSeconds(Math.Max(Media.Position.TotalSeconds - 0.01 * Media.MediaInfo.Duration.TotalSeconds, 0));
                 }
+                e.Handled = true;
             }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.Space))
             {
@@ -698,12 +765,22 @@ namespace Hiro
             };
             if (ofd.ShowDialog() == true) //用户点击确认按钮，发送确认消息
             {
+                var _i = playlist.Count;
+                if (_currentCondition == 2)
+                    Media.Pause();
                 foreach (var strFileName in ofd.FileNames)
                 {
                     if (System.IO.File.Exists(strFileName))
                     {
-                        Play(strFileName);
+                        playlist.Add(new(-1, -1, System.IO.Path.GetFileNameWithoutExtension(strFileName), strFileName, string.Empty));
                     }
+                }
+                if (index < playlist.Count - 1 & index > -1)
+                    PlayIndex(index + 1);
+                else
+                {
+                    if (playlist.Count > 0)
+                        PlayIndex(_i);
                 }
             }
         }
@@ -829,6 +906,7 @@ namespace Hiro
                     }
                     HAnimation.AddPowerAnimation(3, Controller, sb, -30, null);
                     HUI.Set_FrameworkElement_Location(MusicGrid, "musicg", true);
+                    HUI.Set_FrameworkElement_Location(LyricsGrid, "lyricg", true);
                     sb.Begin();
                 }
                 else
@@ -840,6 +918,7 @@ namespace Hiro
                         Move_Label.Visibility = Visibility.Visible;
                     }
                     HUI.Set_FrameworkElement_Location(MusicGrid, "musicg", false);
+                    HUI.Set_FrameworkElement_Location(LyricsGrid, "lyricg", false);
                 }
             }
             else
@@ -864,6 +943,7 @@ namespace Hiro
                     };
                     sb.Begin();
                     HUI.Set_FrameworkElement_Location(MusicGrid, "musicgx", true);
+                    HUI.Set_FrameworkElement_Location(LyricsGrid, "lyricgx", true);
                 }
                 else
                 {
@@ -871,6 +951,7 @@ namespace Hiro
                     Ctrl_Btns.Visibility = Visibility.Hidden;
                     Move_Label.Visibility = Visibility.Hidden;
                     HUI.Set_FrameworkElement_Location(MusicGrid, "musicgx", false);
+                    HUI.Set_FrameworkElement_Location(LyricsGrid, "lyricgx", false);
                 }
             }
         }
@@ -881,15 +962,10 @@ namespace Hiro
             cm ??= new()
             {
                 CacheMode = null,
-                Foreground = new SolidColorBrush(App.AppForeColor),
-                Background = new SolidColorBrush(App.AppAccentColor),
-                BorderBrush = null,
-                Style = (Style)App.Current.Resources["HiroContextMenu"],
-                Padding = new(1, 10, 1, 10)
+                BorderBrush = null
             };
             MenuItem open = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermopen")
             };
             open.Click += delegate
@@ -900,14 +976,11 @@ namespace Hiro
             MenuItem speed = new()
             {
                 CacheMode = null,
-                Foreground = new SolidColorBrush(App.AppForeColor),
-                Background = new SolidColorBrush(App.AppAccentColor),
                 BorderBrush = null,
                 Header = HText.Get_Translate("playermspeed")
             };
             MenuItem uu = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermspeeduu")
             };
             uu.Click += delegate
@@ -917,7 +990,6 @@ namespace Hiro
             };
             MenuItem u = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermspeedu")
             };
             u.Click += delegate
@@ -927,7 +999,6 @@ namespace Hiro
             };
             MenuItem n = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermspeedn")
             };
             n.Click += delegate
@@ -937,7 +1008,6 @@ namespace Hiro
             };
             MenuItem s = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermspeeds")
             };
             s.Click += delegate
@@ -947,7 +1017,6 @@ namespace Hiro
             };
             MenuItem ss = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermspeedss")
             };
             ss.Click += delegate
@@ -963,7 +1032,6 @@ namespace Hiro
             cm.Items.Add(speed);
             MenuItem to = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermpin")
             };
             to.Click += delegate
@@ -975,7 +1043,6 @@ namespace Hiro
             cm.Items.Add(to);
             MenuItem list = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermlist")
             };
             list.Click += delegate
@@ -985,7 +1052,6 @@ namespace Hiro
             cm.Items.Add(list);
             MenuItem ui = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermui")
             };
             ui.Click += delegate
@@ -995,7 +1061,6 @@ namespace Hiro
             cm.Items.Add(ui);
             MenuItem exi = new()
             {
-                Background = new SolidColorBrush(Colors.Transparent),
                 Header = HText.Get_Translate("playermexit")
             };
             exi.Click += delegate
@@ -1218,13 +1283,13 @@ namespace Hiro
             else
             {
                 var vol = Media.Volume;
-                var del = e.Delta / 10000;
+                var del = e.Delta / 10000.0;
                 if (vol + del < 0)
                     vol = 0;
                 else
                     vol = vol + del;
                 Media.Volume = vol;
-                Player_Notify(HText.Get_Translate("playervol").Replace("%v", ((int)(vol * 100)).ToString()));
+                Player_Notify(HText.Get_Translate("playervol").Replace("%v", (Math.Min((int)(vol * 100), 100)).ToString()));
                 e.Handled = true;
             }
         }
@@ -1241,30 +1306,71 @@ namespace Hiro
 
         private void PlayIndex(int i)
         {
-            Dispatcher.Invoke(async () =>
+            new Thread(() =>
             {
-                if (i < playlist.Count)
+                Dispatcher.Invoke(async () =>
                 {
-                    try
+                    if (i < playlist.Count)
                     {
-                        index = i;
-                        var uri = playlist[i].Command;
-                        string? directory = Path.GetDirectoryName(uri);
-                        string vidPath = uri;
-                        await Media.Open(new Uri(vidPath));
-                        LoadMusicGrid(vidPath);
-                        _currentCondition = 2;
-                        Ctrl_Text.Text = vidPath;
-                        Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(vidPath)).Replace("%a", App.appTitle);
-                        Player_Container.Visibility = Visibility.Visible;
-                        Dgi.IsEnabled = true;
+                        try
+                        {
+                            index = i;
+                            var uri = playlist[i].Command;
+                            if (App.dflag)
+                                HLogger.LogtoFile($"[Player] Opening file: {uri}");
+                            if (await Media.Open(new Uri(uri)))
+                            {
+                                Ctrl_Text.Text = uri;
+                                Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
+                                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                                ShowContainer(Player_Container, -100, 250, 350);
+                                LoadMusicGrid();
+                                _currentCondition = 2;
+                                _dst.Start();
+                                Dgi.IsEnabled = true;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            HLogger.LogError(ex, "Hiro.Player.List.PlayIndex");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        HLogger.LogError(ex, "Hiro.Player.List.PlayIndex");
-                    }
-                }
-            });
+                });
+            }).Start();
+        }
+
+        private void ShowContainer(Grid container, int distance, int time, int otime)
+        {
+            container.Visibility = Visibility.Visible;
+            if (Read_DCIni("Ani", "2").Equals("1"))
+            {
+                var s = HAnimation.AddPowerAnimation(0, container, null, distance, null, time, otime);
+                s.Completed += delegate
+                {
+                    container.Visibility = Visibility.Visible;
+                };
+                s.Begin();
+            }
+        }
+
+        private void HideContainer(Grid container, int distance, int time)
+        {
+            if (container.Visibility != Visibility.Visible)
+                return;
+            if (Read_DCIni("Ani", "2").Equals("1"))
+            {
+                container.Visibility = Visibility.Visible;
+                var s = HAnimation.AddPowerOutAnimation(0, container, null, null, distance, time, time);
+                s.Completed += delegate
+                {
+                    container.Visibility = Visibility.Collapsed;
+                };
+                s.Begin();
+            }
+            else
+            {
+                container.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Dgi_Drop(object sender, DragEventArgs e)

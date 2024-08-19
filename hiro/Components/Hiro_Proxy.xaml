@@ -4,8 +4,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:Hiro"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    materialDesign:ShadowAssist.CacheMode="{x:Null}"
     mc:Ignorable="d" 
     d:DesignHeight="420" d:DesignWidth="420"
     Title="Hiro_Internet">
@@ -20,10 +18,10 @@
         <Label x:Name="ProxyPort" Style="{StaticResource HiroLabel}" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Port" Margin="274,117,0,0"/>
         <Label x:Name="ProxyUsername" Style="{StaticResource HiroLabel}" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Username" Margin="10,186,0,0"/>
         <Label x:Name="ProxyPwd" Style="{StaticResource HiroLabel}" Foreground="{DynamicResource AppFore}" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Password" Margin="274,186,0,0"/>
-        <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="AddressBox" HorizontalAlignment="Left" Text="127.0.0.1" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="142,117,0,0" IsEnabled="False"></TextBox>
-        <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="PortBox" HorizontalAlignment="Left" Text="7890" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="364,116,0,0" IsEnabled="False"></TextBox>
-        <TextBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="UsernameBox" HorizontalAlignment="Left" Text="hiro" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="156,185,0,0" IsEnabled="False"></TextBox>
-        <PasswordBox materialDesign:TextFieldAssist.HasClearButton="True" x:Name="PwdBox" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" PasswordChar="&#xF137;" Password="111" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="364,185,0,0" Width="46" IsEnabled="False"/>
+        <TextBox x:Name="AddressBox" HorizontalAlignment="Left" Text="127.0.0.1" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="142,117,0,0" IsEnabled="False"></TextBox>
+        <TextBox x:Name="PortBox" HorizontalAlignment="Left" Text="7890" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="364,116,0,0" IsEnabled="False"></TextBox>
+        <TextBox x:Name="UsernameBox" HorizontalAlignment="Left" Text="hiro" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="156,185,0,0" IsEnabled="False"></TextBox>
+        <PasswordBox x:Name="PwdBox" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" PasswordChar="&#xF137;" Password="111" Foreground="{DynamicResource AppFore}" VerticalAlignment="Top" Margin="364,185,0,0" Width="46" IsEnabled="False"/>
         <Button x:Name="IBtn_1" BorderThickness="1" BorderBrush="{DynamicResource AppFore}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="50" Content="OK" Margin="0,0,133,25" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="IBtn_1_Click"></Button>
         <Button x:Name="IBtn_2" BorderThickness="1" BorderBrush="{DynamicResource AppFore}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="95" Content="Cancel" Margin="0,0,33,25" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Click="IBtn_2_Click"></Button>
     </Grid>

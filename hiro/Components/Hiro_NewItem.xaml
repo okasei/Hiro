@@ -4,10 +4,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:Hiro"
-    xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
-    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    materialDesign:ShadowAssist.CacheMode="{x:Null}"
     mc:Ignorable="d" 
     d:DesignHeight="420" d:DesignWidth="420" KeepAlive="False"
     Title="Hiro_NewItem">
@@ -35,7 +31,7 @@
         <Button x:Name="ntn7" BorderThickness="1" Content="explorer" HorizontalAlignment="Left" Margin="275,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn7_Click"/>
         <Button x:Name="ntn8" BorderThickness="1" Content="Open…" HorizontalAlignment="Left" Margin="335,80,0,0" Width="55" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" FontStretch="Condensed" Padding="2,2,2,2" BorderBrush="{DynamicResource AppFore}" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppAccent}" Height="25" VerticalAlignment="Top" Cursor="Hand" Click="Ntn8_Click"/>
         <Label x:Name="klabel" Content="HotKey" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI"/>
-        <ComboBox x:Name="modibox" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="61,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Modibox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" materialDesign:ColorZoneAssist.Background="{DynamicResource AppFore}" materialDesign:ColorZoneAssist.Foreground="{DynamicResource AppForeReverse}" Height="33"/>
-        <ComboBox x:Name="keybox" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="200,140,0,0" VerticalAlignment="Top" Width="99" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Keybox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" materialDesign:ColorZoneAssist.Background="{DynamicResource AppFore}" materialDesign:ColorZoneAssist.Foreground="{DynamicResource AppForeReverse}" Height="33"/>
+        <ComboBox x:Name="modibox" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="61,140,0,0" VerticalAlignment="Top" Width="99" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppForeReverse}" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Modibox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" Height="33"/>
+        <ComboBox x:Name="keybox" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="200,140,0,0" VerticalAlignment="Top" Width="99" Foreground="{DynamicResource AppFore}" Background="{DynamicResource AppForeReverse}" BorderBrush ="{DynamicResource AppFore}" SelectionChanged="Keybox_SelectionChanged"  d:ItemsSource="{x:Null}" IsReadOnly="True" Height="33"/>
     </Grid>
 </Page>

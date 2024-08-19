@@ -1,7 +1,6 @@
 ﻿using FFmpeg.AutoGen;
 using Hiro.Helpers;
 using Hiro.Resources;
-using MaterialDesignColors;
 using System;
 using System.IO;
 using System.Linq;

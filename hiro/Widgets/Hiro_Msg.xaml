@@ -4,8 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         mc:Ignorable="d"
         Title="message" Height="450" Width="800" WindowStyle="None" ResizeMode="NoResize" Topmost="True" IsTabStop="False" Closing="Msg_Closing" Icon="/Resources/hiro_circle.ico" MouseLeftButtonDown="Msg_MouseLeftButtonDown">
     <Window.Resources>

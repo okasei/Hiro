@@ -7,6 +7,7 @@ using static Hiro.Helpers.HText;
 using static Hiro.Helpers.HLogger;
 using static Hiro.Helpers.HSet;
 using Hiro.Helpers;
+using System.Windows.Media;
 
 namespace Hiro
 {
