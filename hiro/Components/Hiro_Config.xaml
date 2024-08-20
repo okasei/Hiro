@@ -18,11 +18,11 @@
                 <Grid x:Name="lc_grid" Margin="0,0,0,339" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="lc_label" Content="When tray is clicked" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Width="377"/>
                     <RadioButton x:Name="rbtn1" Content="Show Main Window" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Checked="Rbtn1_Checked"/>
-                    <RadioButton x:Name="rbtn2" Content="Show Menu" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Margin="190,25,0,0" Checked="Rbtn2_Checked" Cursor="IBeam"/>
+                    <RadioButton x:Name="rbtn2" Content="Show Menu" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Margin="190,25,0,0" Checked="Rbtn2_Checked" />
                     <RadioButton x:Name="rbtn3" Content="Run…" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="10,54,0,0"  Foreground ="{DynamicResource AppFore}" Unchecked="Rbtn3_Unchecked" Checked="Rbtn3_Checked"/>
-                    <TextBox x:Name="tb1" HorizontalAlignment="Left" Margin="78,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" Width="309" FontFamily="Segoe UI" IsEnabled="False" Cursor="IBeam" TextChanged="Tb1_TextChanged"/>
+                    <TextBox x:Name="tb1" HorizontalAlignment="Left" Margin="78,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" Width="309" FontFamily="Segoe UI" IsEnabled="False"  TextChanged="Tb1_TextChanged"/>
                 </Grid>
-                <Grid x:Name="mc_grid" Margin="0,86,0,253" HorizontalAlignment="Left" VerticalAlignment="Top" Cursor="IBeam">
+                <Grid x:Name="mc_grid" Margin="0,86,0,253" HorizontalAlignment="Left" VerticalAlignment="Top" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="20*"/>
                         <ColumnDefinition Width="23*"/>
@@ -31,11 +31,11 @@
                     <RadioButton x:Name="rbtn4" Content="Show Main Window" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Checked="Rbtn4_Checked"/>
                     <RadioButton x:Name="rbtn5" Content="Show Menu" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Margin="155,25,0,0" Grid.ColumnSpan="2" Checked="Rbtn5_Checked"/>
                     <RadioButton x:Name="rbtn6" Content="Run…" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="10,54,0,0"  Foreground ="{DynamicResource AppFore}" Unchecked="Rbtn6_Unchecked" Checked="Rbtn6_Checked"/>
-                    <TextBox x:Name="tb2" HorizontalAlignment="Left" Margin="78,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" Width="309" FontFamily="Segoe UI" Grid.ColumnSpan="2" Cursor="IBeam" IsEnabled="False" TextChanged="Tb2_TextChanged"/>
+                    <TextBox x:Name="tb2" HorizontalAlignment="Left" Margin="78,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" Width="309" FontFamily="Segoe UI" Grid.ColumnSpan="2"  IsEnabled="False" TextChanged="Tb2_TextChanged"/>
                 </Grid>
                 <Grid x:Name="rc_grid" Margin="0,172,0,167" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <RadioButton x:Name="rbtn7" Content="Show Main Window" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Cursor="IBeam" Checked="Rbtn7_Checked"/>
-                    <RadioButton x:Name="rbtn8" Content="Show Menu" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Margin="162,22,0,0" Cursor="IBeam" Checked="Rbtn8_Checked"/>
+                    <RadioButton x:Name="rbtn7" Content="Show Main Window" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}"  Checked="Rbtn7_Checked"/>
+                    <RadioButton x:Name="rbtn8" Content="Show Menu" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI"  Foreground ="{DynamicResource AppFore}" Margin="162,22,0,0"  Checked="Rbtn8_Checked"/>
                     <RadioButton x:Name="rbtn9" Content="Run…" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" Margin="10,54,0,0"  Foreground ="{DynamicResource AppFore}" Checked="Rbtn9_Checked" Unchecked="Rbtn9_Unchecked"/>
                     <TextBox x:Name="tb3" HorizontalAlignment="Left" Margin="78,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" Width="309" FontFamily="Segoe UI" IsEnabled="False" TextChanged="Tb3_TextChanged"/>
                     <Label  Style="{DynamicResource HiroLabel}" x:Name="rc_label" Content="When tray is right-clicked" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground ="{DynamicResource AppFore}" FontFamily="Segoe UI" Width="377"/>

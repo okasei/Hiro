@@ -85,9 +85,6 @@ namespace Hiro
         #endregion
 
         #region 私有参数
-        //QQ,Netease,Kuwo,Spotify,Kugou
-        private static IntPtr?[] Ptrs = { null, null, null, null, null, null };
-        private static string[] musicTitles = { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         private static bool AutoChat = false;
         #endregion
 
@@ -102,9 +99,9 @@ namespace Hiro
             });
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Read_DCIni("FPS", "60"))));
             Unosquare.FFME.Library.FFmpegDirectory = @Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
-            /*TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;*/
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
         internal static string AddCustomFont(string path)
@@ -862,11 +859,6 @@ namespace Hiro
                 default:
                     break;
             }
-            //Music
-            if (Read_DCIni("Verbose", "0").Equals("1"))
-            {
-                Music_Tick();
-            }
             if (listener != null)
             {
                 Notification_Tick();
@@ -951,56 +943,6 @@ namespace Hiro
                     icon.Location = iconFile;
                     Notify(new Hiro_Notice(bodyText, 1, Get_Translate("winNotice").Replace("%a", appName).Replace("%t", titleText), null, icon));
                 }
-            }
-        }
-
-        private static void Music_Tick()
-        {
-            //QQ,Netease,Kuwo,Spotify,Kugou
-            if (Initialize_Title(Ptrs[0], out string? qtitle) == 0)
-            {
-                Initialize_Ptr("QQMusic", 0);
-            }
-            else if (qtitle != musicTitles[0] && qtitle != null && !qtitle.Equals("QQ音乐"))
-            {
-                musicTitles[0] = qtitle;
-                Notify(new(HText.Get_Translate("qqmusic").Replace("%m", qtitle), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\qqmusic.png" }));
-            }
-            if (Initialize_Title(Ptrs[1], out string? ntitle) == 0)
-                Initialize_Ptr("cloudmusic", 1);
-            else if (ntitle != musicTitles[1] && ntitle != null && !ntitle.Equals(string.Empty) && !ntitle.Equals("网易云音乐"))
-            {
-                musicTitles[1] = ntitle;
-                Notify(new(HText.Get_Translate("netmusic").Replace("%m", ntitle), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\neteasemusic.png" }));
-            }
-            if (Initialize_Title(Ptrs[2], out string? kwtitle) == 0)
-                Initialize_Ptr("kwmusic", 2);
-            else if (kwtitle != musicTitles[2] && kwtitle != null && !kwtitle.Equals("KwStartPageDlg") && !kwtitle.Equals("酷我音乐"))
-            {
-                if (musicTitles[2].Length > 2)
-                {
-                    if (kwtitle.IndexOf(musicTitles[2].Substring(2)) != -1)
-                    {
-                        musicTitles[2] = kwtitle;
-                        return;
-                    }
-                }
-                musicTitles[2] = kwtitle;
-                Notify(new(HText.Get_Translate("kwmusic").Replace("%m", kwtitle.Replace("-酷我音乐", "")), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kuwomusic.png" }));
-            }
-            if (Initialize_Title(Ptrs[3], out string? kgtitle) == 0)
-                Initialize_Ptr("KuGou", 3);
-            else if (kgtitle != musicTitles[3] && kgtitle != null && !kgtitle.Equals(string.Empty) && !kgtitle.Equals("酷狗音乐"))
-            {
-                musicTitles[3] = kgtitle;
-                Notify(new(HText.Get_Translate("kgmusic").Replace("%m", kgtitle.Replace("- 酷狗音乐", "").Trim()), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\kgmusic.png" }));
-            }
-            if (Initialize_Title(Ptrs[4], out string? sptitle) == 0)
-                Ptrs[4] = Initialize_Ptr("Spotify");
-            else if (sptitle != musicTitles[4] && sptitle != null && !sptitle.Equals("Spotify") && !sptitle.Equals("Spotify Premium"))
-            {
-                musicTitles[4] = sptitle;
-                Notify(new(HText.Get_Translate("spotifymusic").Replace("%m", sptitle), 2, HText.Get_Translate("music"), null, new Hiro_Icon() { Location = "<current>\\system\\icons\\spotify.png" }));
             }
         }
 
@@ -1116,87 +1058,5 @@ namespace Hiro
             }
             GC.Collect();
         }
-
-        private static IntPtr Initialize_Ptr(string ProcessName)
-        {
-            var pns = Process.GetProcessesByName(ProcessName);
-            foreach (var pn in pns)
-            {
-                if (pn.MainWindowTitle.IndexOf("桌面歌词") == -1)
-                {
-                    return pn.MainWindowHandle;
-                }
-            }
-            return IntPtr.Zero;
-        }
-
-        private static int Initialize_Title(IntPtr? intPtr, out string? Title)
-        {
-            if (intPtr == IntPtr.Zero || intPtr == null)
-            {
-                Title = string.Empty;
-                return 0;
-            }
-            StringBuilder windowName = new(512);
-            GetWindowText((IntPtr)intPtr, windowName, windowName.Capacity);
-            Title = windowName.ToString().Trim();
-            return Title.Length;
-        }
-
-        [DllImport("user32.dll")] static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
-        [DllImport("user32.dll")] private static extern bool IsWindowVisible(int hWnd);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)] private static extern int GetWindowText(int hWnd, StringBuilder title, int size);
-
-
-        delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
-
-
-        public static void Initialize_Ptr(string ProcessName, int category)
-        {
-            var pns = Process.GetProcessesByName(ProcessName);
-            foreach (var pn in pns)
-                foreach (ProcessThread processThread in pn.Threads)
-                {
-                    EnumThreadWindows(processThread.Id,
-                     (hWnd, lParam) =>
-                     {
-                         //Check if Window is Visible or not.
-                         if (!IsWindowVisible((int)hWnd))
-                             return true;
-
-                         //Get the Window's Title.
-                         StringBuilder title = new StringBuilder(256);
-                         _ = GetWindowText((int)hWnd, title, 256);
-
-                         //Check if Window has Title.
-                         if (title.Length == 0)
-                             return true;
-                         var t = title.ToString();
-                         if (!t.Equals(string.Empty) && !t.Contains("桌面歌词", StringComparison.CurrentCulture))
-                         {
-                             switch (category)
-                             {
-                                 case 0:
-                                 case 1:
-                                 case 2:
-                                 case 3:
-                                 case 4:
-                                     Ptrs[category] = hWnd;
-                                     break;
-                                 default:
-                                     break;
-                             }
-                         }
-
-                         return true;
-                     }, IntPtr.Zero);
-                }
-        }
-
-
-        #region 获取窗口标题
-        [DllImport("user32")]
-        static extern int GetWindowText(IntPtr hWnd, StringBuilder lptrString, int nMaxCount);
-        #endregion
     }
 }
