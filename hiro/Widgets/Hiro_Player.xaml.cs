@@ -12,6 +12,8 @@ using Hiro.ModelViews;
 using static Hiro.Helpers.HSet;
 using System.Windows.Threading;
 using System.Runtime;
+using Windows.Media;
+using Hiro.Helpers.SMTC;
 
 namespace Hiro
 {
@@ -35,6 +37,8 @@ namespace Hiro
         HLrycis? _lrc = null;
         double _nextTime = -1;
         bool _lrcFlag = false;
+        HSMTCCreator? _smtcCreator = null;
+
         /// <summary>
         /// 0 - 未在播放, 1 - 暂停, 2 - 正在播放
         /// </summary>
@@ -71,8 +75,40 @@ namespace Hiro
                 {
                     Update_Progress();
                 };
+                _smtcCreator ??= new HSMTCCreator("Hiro.exe");
+                _smtcCreator.SetMediaStatus(SMTCMediaStatus.Stopped);
+                _smtcCreator.PlayOrPause += _smtcCreator_PlayOrPause;
+                _smtcCreator.Previous += _smtcCreator_Previous;
+                _smtcCreator.Next += _smtcCreator_Next;
             };
             SourceInitialized += OnSourceInitialized;
+        }
+
+
+        private void _smtcCreator_PlayOrPause(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() => PlayPause());
+        }
+        private void _smtcCreator_Previous(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (index > 0)
+                {
+                    PlayIndex(index - 1);
+                }
+            });
+        }
+        private void _smtcCreator_Next(object? sender, EventArgs e)
+        {
+
+            Dispatcher.Invoke(() =>
+            {
+                if (index < playlist.Count - 1)
+                {
+                    PlayIndex(index + 1);
+                }
+            });
         }
 
         private void Load_Position()
@@ -175,6 +211,7 @@ namespace Hiro
                     {
                         Width = 300;
                         Height = 300;
+                        Switch_UI();
                     }
                     Play(toplay);
                 }
@@ -204,6 +241,7 @@ namespace Hiro
             Ctrl_Time.Content = "00:00";
             if (App.dflag)
                 HLogger.LogtoFile($"[Player] MediaEnded");
+            _smtcCreator?.SetMediaStatus(SMTCMediaStatus.Stopped);
             System.Threading.Tasks.Task.Delay(Read_DCIni("Performance", "0") switch
             {
                 "1" => TimeSpan.FromMilliseconds(500),
@@ -356,7 +394,16 @@ namespace Hiro
                             Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
                             Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
                             ShowContainer(Player_Container, -100, 250, 350);
-                            LoadMusicGrid();
+                            if (!LoadMusicGrid())
+                            {
+                                if (_smtcCreator != null)
+                                {
+                                    _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
+                                    _smtcCreator.Info.SetArtist(uri)
+                                        .SetTitle(HFile.GetFileName(uri))
+                                        .Update();
+                                }
+                            }
                             _currentCondition = 2;
                             _dst.Start();
                             Dgi.IsEnabled = true;
@@ -371,7 +418,7 @@ namespace Hiro
             }).Start();
         }
 
-        private void LoadMusicGrid()
+        private bool LoadMusicGrid()
         {
             try
             {
@@ -380,6 +427,27 @@ namespace Hiro
                 var _title = mt.ContainsKey("TITLE") ? mt["TITLE"] : null;
                 var _album = mt.ContainsKey("ALBUM") ? mt["ALBUM"] : null;
                 var _lrcs = mt.ContainsKey("LYRICS") ? mt["LYRICS"] : (mt.ContainsKey("lyrics-XXX") ? mt["lyrics-XXX"] : null);
+                if (_lrcs == null)
+                {
+                    var _filename = Media.MediaInfo.MediaSource;
+                    var _dpos = _filename.LastIndexOf(".");
+                    var _spos = _filename.LastIndexOf("\\");
+                    if (_spos <= _dpos)
+                    {
+                        _filename = _filename[.._dpos];
+                    }
+                    if (File.Exists(_filename + ".lrc"))
+                    {
+                        try
+                        {
+                            _lrcs = File.ReadAllText(_filename + ".lrc");
+                        }
+                        catch (Exception ex)
+                        {
+                            HLogger.LogError(ex, "Hiro.Exception.Player.LoadLrcFile");
+                        }
+                    }
+                }
                 if (_lrcs != null && HSet.Read_DCIni("EnableLyrics", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 {
                     _lrc = HLrycis.InitLrc(_lrcs);
@@ -405,13 +473,23 @@ namespace Hiro
                     MusicArtist.Text = _artist ?? HText.Get_Translate("musicArtist");
                     MusicAlbum.Text = _album ?? HText.Get_Translate("musicAlbum");
                     ShowContainer(MusicGrid, -100, 200, 300);
-                    return;
+                    if (_smtcCreator != null)
+                    {
+                        _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
+                        _smtcCreator.Info.SetAlbumTitle(MusicAlbum.Text)
+                            .SetArtist(MusicArtist.Text)
+                            .SetTitle(MusicTitle.Text)
+                            .Update();
+                    }
+                    return true;
                 }
                 HideContainer(MusicGrid, 100, 200);
+                return false;
             }
             catch (Exception ex)
             {
                 HLogger.LogError(ex, "Hiro.Play.Music.LoadTags");
+                return false;
             }
         }
 
@@ -1324,7 +1402,16 @@ namespace Hiro
                                 Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
                                 Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
                                 ShowContainer(Player_Container, -100, 250, 350);
-                                LoadMusicGrid();
+                                if (!LoadMusicGrid())
+                                {
+                                    if (_smtcCreator != null)
+                                    {
+                                        _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
+                                        _smtcCreator.Info.SetArtist(uri)
+                                            .SetTitle(HFile.GetFileName(uri))
+                                            .Update();
+                                    }
+                                }
                                 _currentCondition = 2;
                                 _dst.Start();
                                 Dgi.IsEnabled = true;

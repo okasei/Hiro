@@ -39,7 +39,7 @@ namespace Hiro.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("hiro.Resources.Hiro_Resources", typeof(Hiro_Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hiro.Resources.Hiro_Resources", typeof(Hiro_Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -79,7 +79,7 @@ namespace Hiro.Resources {
         }
         
         /// <summary>
-        ///   查找类似 2040300 的本地化字符串。
+        ///   查找类似 2040500 的本地化字符串。
         /// </summary>
         internal static string ApplicationUpdateVersion {
             get {
@@ -88,7 +88,7 @@ namespace Hiro.Resources {
         }
         
         /// <summary>
-        ///   查找类似 2.4.3 的本地化字符串。
+        ///   查找类似 2.4.5 的本地化字符串。
         /// </summary>
         internal static string ApplicationVersion {
             get {
@@ -97,7 +97,7 @@ namespace Hiro.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0 Rex /2.4.3 Hiro/1.0.0 的本地化字符串。
+        ///   查找类似 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0 Rex /2.4.5 Hiro/1.0.0 的本地化字符串。
         /// </summary>
         internal static string AppUserAgent {
             get {

@@ -297,7 +297,7 @@ namespace Hiro
             var tt = App.noticeitems[0].title?.Trim();
             if (tt == null || tt.Equals(string.Empty))
                 tt = HText.Get_Translate("notitle");
-            Title = HText.Get_Translate("boixeTitle").Replace("%t", tt).Replace("%a", App.appTitle);
+            Title = HText.Get_Translate("boxieTitle").Replace("%t", tt).Replace("%a", App.appTitle);
             act = App.noticeitems[0].act;
             BaseGrid.Cursor = act != null ? BaseGrid.Cursor = Cursors.Hand : null;
             temps = App.noticeitems[0].time;

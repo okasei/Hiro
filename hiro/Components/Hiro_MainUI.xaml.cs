@@ -51,6 +51,7 @@ namespace Hiro
             {
                 HiHiro();
                 Load_Video();
+                HMediaInfoManager.Initialize();
             };
         }
 
@@ -638,11 +639,6 @@ namespace Hiro
             infoPoly.Stroke = new SolidColorBrush(App.AppForeColor);
             #endregion
             minbtn.Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 0));
-            if (App.wnd != null && App.wnd.cm != null)
-            {
-                App.wnd.cm.Foreground = new SolidColorBrush(App.AppForeColor);
-                App.wnd.cm.Background = new SolidColorBrush(App.AppAccentColor);
-            }
             if (App.wnd != null)
             {
                 App.wnd.trayBorder.BorderBrush = new SolidColorBrush(App.AppAccentColor);

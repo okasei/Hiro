@@ -10,9 +10,9 @@
     <Copyright>Copyright ©2024 Hiro</Copyright>
     <Authors>Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.4.3</FileVersion>
-    <AssemblyVersion>2.4.3</AssemblyVersion>
-    <Version>2.4.3</Version>
+    <FileVersion>2.4.5</FileVersion>
+    <AssemblyVersion>2.4.5</AssemblyVersion>
+    <Version>2.4.5</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>
@@ -33,8 +33,8 @@
     <!-- dlls that you don't want to be moved or can not be moved -->
     <!-- <BeautyExcludes>dll1.dll;lib*;...</BeautyExcludes> -->
     <!-- dlls that end users never needed, so hide them -->
-    <BeautyHiddens>hostfxr;hostpolicy;*.deps.json</BeautyHiddens>
-    <!-- ;*.runtimeconfig*.json well, this can not be hidden...-->
+    <BeautyHiddens>hostfxr;hostpolicy</BeautyHiddens>
+    <!-- ;*.deps.json;*.runtimeconfig*.json well, this can not be hidden...-->
     <!-- set to True if you want to disable -->
     <DisableBeauty>False</DisableBeauty>
     <!-- set to False if you want to beauty on build -->
@@ -46,7 +46,7 @@
     <!-- the patch can reduce the file count -->
     <!-- set to False if you want to disable -->
     <!-- SCD Mode Feature Only -->
-    <BeautyUsePatch>False</BeautyUsePatch>
+    <BeautyUsePatch>True</BeautyUsePatch>
     <!-- App Entry Dll = BeautyDir + BeautyAppHostDir + BeautyAppHostEntry -->
     <!-- see https://github.com/nulastudio/NetBeauty2#customize-apphost for more details -->
     <!-- relative path based on AppHostDir -->
