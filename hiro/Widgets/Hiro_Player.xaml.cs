@@ -38,6 +38,7 @@ namespace Hiro
         double _nextTime = -1;
         bool _lrcFlag = false;
         HSMTCCreator? _smtcCreator = null;
+        Thickness _set = new(0);
 
         /// <summary>
         /// 0 - 未在播放, 1 - 暂停, 2 - 正在播放
@@ -275,24 +276,25 @@ namespace Hiro
                         _nextTime = _ts + 3;
                     if (Read_DCIni("Ani", "2").Equals("1"))
                     {
+                        _set = new(0);
                         var sb = HAnimation.AddThicknessAnimaton(new(0), 200, LyricsBlock, "Margin", null);
                         sb = HAnimation.AddPowerOutAnimation(0, LyricsBlockFirst, sb, null, 150, 200, 200);
                         sb.Completed += delegate
                         {
-                            LyricsBlockFirst.Margin = new(0);
+                            SetDefaultLyrics();
                             LyricsBlockFirst.Text = ls[0];
                             LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
                             _lrcFlag = false;
                             HUI.Get_Text_Visual_Width(LyricsBlockFirst, VisualTreeHelper.GetDpi(this).PixelsPerDip, out var msize);
                             var _ac = ActualWidth;
                             var _maw = msize.Width - _ac;
-                            var _t = Math.Max(1000 * (_nextTime - _ts), 450);
+                            var _t = Math.Max(1000 * (_nextTime - _ts) / Media.SpeedRatio, 450);
                             _t = _t > 750 ? _t - 450 : _t - 150;
                             _t = Math.Min(_t, _maw * 30);
-                            ; if (_maw > 0 && Read_DCIni("Ani", "2").Equals("1"))
+                            if (_maw > 0 && Read_DCIni("Ani", "2").Equals("1"))
                             {
                                 LyricsBlockFirst.Width = msize.Width;
-                                var _set = new Thickness(-_maw, 0, 0, 0);
+                                _set = new Thickness(-_maw, 0, 0, 0);
                                 var sb = HAnimation.AddThicknessAnimaton(_set, _t, LyricsBlockFirst, "Margin", null, null, 0, 0);
                                 sb.Completed += (e, args) =>
                                 {
@@ -302,14 +304,14 @@ namespace Hiro
                             }
                             else
                             {
-                                LyricsBlockFirst.Margin = new(0);
-                                LyricsBlockFirst.Width = _ac;
+                                SetDefaultLyrics();
                             }
                         };
                         sb.Begin();
                     }
                     else
                     {
+                        SetDefaultLyrics();
                         LyricsBlockFirst.Text = ls[0];
                         LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
                         _lrcFlag = false;
@@ -347,6 +349,13 @@ namespace Hiro
                 Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
                 Ctrl_Time.Content = "00:00";
             }
+        }
+
+        private void SetDefaultLyrics()
+        {
+            LyricsBlockFirst.Margin = new(0);
+            _set = new(0);
+            LyricsBlockFirst.Width = ActualWidth;
         }
 
         private static string ParseDuration(double time)
