@@ -173,23 +173,26 @@ namespace Hiro.Helpers
         {
             var ret = new string[5] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
             nextTime = -1;
+            var _ks = LrcWord.Keys;
+            var _ksc = _ks.Count;
             bool _inted = false;
-            for (int i = 0; i < LrcWord.Keys.Count; i++)
+            for (int i = 0; i < _ks.Count; i++)
             {
                 if (App.dflag)
-                    HLogger.LogtoFile($"LrcWord.Key.Count = {LrcWord.Keys.Count}, i = {i}, Key = {LrcWord.Keys.ElementAt(i)}");
-                var _key = LrcWord.Keys.ElementAt(i);
+                    HLogger.LogtoFile($"LrcWord.Key.Count = {_ksc}, i = {i}, Key = {_ks.ElementAt(i)}");
+                var _key = _ks.ElementAt(i);
                 if (_key > baseTime && !_inted)
                 {
-                    ret[0] = i > 0 ? LrcWord[LrcWord.Keys.ElementAt(i - 1)] : string.Empty;
-                    ret[1] = LrcWord[LrcWord.Keys.ElementAt(i)];
-                    ret[2] = i < LrcWord.Keys.Count - 1 ? LrcWord[LrcWord.Keys.ElementAt(i + 1)] : string.Empty;
-                    ret[3] = i < LrcWord.Keys.Count - 2 ? LrcWord[LrcWord.Keys.ElementAt(i + 2)] : string.Empty;
-                    ret[4] = i < LrcWord.Keys.Count - 3 ? LrcWord[LrcWord.Keys.ElementAt(i + 3)] : string.Empty;
-                    nextTime = LrcWord.Keys.ElementAt(i);
+                    ret[0] = i > 0 ? LrcWord[_ks.ElementAt(i - 1)] : string.Empty;
+                    ret[1] = LrcWord[_ks.ElementAt(i)];
+                    ret[2] = i < _ksc - 1 ? LrcWord[_ks.ElementAt(i + 1)] : string.Empty;
+                    ret[3] = i < _ksc - 2 ? LrcWord[_ks.ElementAt(i + 2)] : string.Empty;
+                    ret[4] = i < _ksc - 3 ? LrcWord[_ks.ElementAt(i + 3)] : string.Empty;
+                    nextTime = _ks.ElementAt(i);
                     return ret;
                 }
             }
+            ret[0] = _ksc > 0 ? LrcWord[_ks.ElementAt(_ksc - 1)] : string.Empty;
             return ret;
         }
 

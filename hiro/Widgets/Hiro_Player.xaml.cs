@@ -74,7 +74,14 @@ namespace Hiro
                 };
                 _dst.Tick += delegate
                 {
-                    Update_Progress();
+                    try
+                    {
+                        Update_Progress();
+                    }
+                    catch (Exception ex)
+                    {
+                        HLogger.LogError(ex, "Hiro.Exception.Player.Tick");
+                    }
                 };
                 _smtcCreator ??= new HSMTCCreator("Hiro.exe");
                 _smtcCreator.SetMediaStatus(SMTCMediaStatus.Stopped);
@@ -272,8 +279,6 @@ namespace Hiro
                 {
                     _lrcFlag = true;
                     var ls = _lrc.GetLyrics(_ts, out _nextTime);
-                    if (_nextTime < 0)
-                        _nextTime = _ts + 3;
                     if (Read_DCIni("Ani", "2").Equals("1"))
                     {
                         _set = new(0);
@@ -420,6 +425,8 @@ namespace Hiro
                             await Media.Pause();
                         playlist.Add(new(-1, -1, Path.GetFileNameWithoutExtension(uri), uri, string.Empty));
                         index = playlist.Count - 1;
+                        LyricsBlockFirst.Text = string.Empty;
+                        LyricsBlock.Text = string.Empty;
                         if (App.dflag)
                             HLogger.LogtoFile($"[Player] Opening file: {uri}");
                         if (await Media.Open(new Uri(uri)))
@@ -1431,6 +1438,8 @@ namespace Hiro
                             var uri = playlist[i].Command;
                             if (App.dflag)
                                 HLogger.LogtoFile($"[Player] Opening file: {uri}");
+                            LyricsBlockFirst.Text = string.Empty;
+                            LyricsBlock.Text = string.Empty;
                             if (await Media.Open(new Uri(uri)))
                             {
                                 Ctrl_Text.Text = uri;
