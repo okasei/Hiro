@@ -347,10 +347,11 @@ namespace Hiro
         public void Load_All_Colors()
         {
             Hiro_Utils.IntializeColorParameters();
+            App.LoadDictionaryColors();
+            App.mn?.Load_Colors();
             App.ed?.Load_Color();
             App.noti?.Load_Color();
             App.hisland?.Load_Color();
-            App.mn?.Load_Colors();
             foreach (Window win in Application.Current.Windows)
             {
                 switch (win)

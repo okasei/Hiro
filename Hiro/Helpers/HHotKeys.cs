@@ -136,14 +136,14 @@ namespace Hiro.Helpers
         public static bool UnregisterIfExist(int itemID)
         {
             var key = hotkeys.Where(x => x.ItemID == itemID).FirstOrDefault();
-            if (key == null)
-                return true;
             ///如果存在, 需要将其它的大于它的项目向前移动一位
             for (int i = 0; i < hotkeys.Count; i++)
             {
                 if (hotkeys[i].ItemID > itemID)
                     hotkeys[i].ItemID--;
             }
+            if (key == null)
+                return true;
             return UnregisterKey(key.KeyID);
         }
 

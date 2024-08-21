@@ -116,7 +116,7 @@ namespace Hiro.Helpers
             catch (Exception ex)
             {
                 HLogger.LogError(ex, $"Hiro.Exception.Web.HttpClient");
-                throw new Exception(ex.Message);
+                return HText.Get_Translate("error");
             }
         }
         #endregion

@@ -20,8 +20,15 @@ namespace Hiro.Helpers
 
         public static async void Initialize()
         {
-            _smtcManager = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
-            _smtcManager.CurrentSessionChanged += OnCurrentSessionChanged;
+
+            try
+            {
+                _smtcManager = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
+                _smtcManager.CurrentSessionChanged += OnCurrentSessionChanged;
+            }
+            catch (Exception ex) { 
+                HLogger.LogError(ex, "Hiro.Exception.SMTC.Listener"); 
+            }
             UpdateMediaInfo();
         }
 
@@ -33,27 +40,41 @@ namespace Hiro.Helpers
 
         private static void UpdateMediaInfo()
         {
-            var session = _smtcManager?.GetCurrentSession();
-            if (session == null) return;
-            if (_session != null)
+            try
             {
-                _session.MediaPropertiesChanged -= _session_MediaPropertiesChanged;
-                _session = null;
-                _title = string.Empty;
-                _artist = string.Empty;
+                var session = _smtcManager?.GetCurrentSession();
+                if (session == null) return;
+                if (_session != null)
+                {
+                    _session.MediaPropertiesChanged -= _session_MediaPropertiesChanged;
+                    _session = null;
+                    _title = string.Empty;
+                    _artist = string.Empty;
+                }
+                _session = session;
+                if (App.dflag)
+                    HLogger.LogtoFile("New session found.[" + (_session?.SourceAppUserModelId ?? "Unknown") + "]");
+                _session.MediaPropertiesChanged += _session_MediaPropertiesChanged;
+                ShowNotification();
             }
-            _session = session;
-            if (App.dflag)
-                HLogger.LogtoFile("New session found.[" + (_session?.SourceAppUserModelId ?? "Unknown") + "]");
-            _session.MediaPropertiesChanged += _session_MediaPropertiesChanged;
-            ShowNotification();
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, "Hiro.Exception.SMTC.Session.Update");
+            }
         }
 
         private static void _session_MediaPropertiesChanged(GlobalSystemMediaTransportControlsSession sender, MediaPropertiesChangedEventArgs args)
         {
             if (App.dflag)
                 HLogger.LogtoFile("New meida found.");
-            ShowNotification();
+            try
+            {
+                ShowNotification();
+            }
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, "Hiro.Exception.SMTC.Media.Update");
+            }
         }
 
         private static void ShowNotification()
@@ -77,7 +98,7 @@ namespace Hiro.Helpers
                         var _ico = string.Empty;
                         var _tra = "music";
                         var _app = _session?.SourceAppUserModelId ?? "Unknown".Replace(".exe", string.Empty);
-                        var _exe = new string[] { "qqmusic.exe", "neteasemusic.exe", "kuwo.exe", "kugou.exe", "spotify.exe", "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App", "Hiro.exe" };
+                        var _exe = new string[] { "qqmusic.exe", "neteasemusic.exe", "kuwo.exe", "kugou.exe", "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify", "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App", "Hiro.exe" };
                         var _tran = new string[] { "qqmusic", "cloudmusic", "kwmusic", "kgmusic", "spotify", "applemusic", "player" };
                         var _icon = new string[] { "<current>\\system\\icons\\qqmusic.png", "<current>\\system\\icons\\neteasemusic.png", "<current>\\system\\icons\\kuwomusic.png", "<current>\\system\\icons\\kgmusic.png", "<current>\\system\\icons\\spotify.png", "<current>\\system\\icons\\applemusic.png", "<current>\\system\\icons\\hiro.png" };
                         for (int i = 0; i < _exe.Length; i++)

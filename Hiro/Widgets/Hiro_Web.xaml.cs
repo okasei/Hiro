@@ -68,7 +68,6 @@ namespace Hiro
                 options.AdditionalBrowserArguments = "--enable-features=MediaCaptureAPI";
                 var env = CoreWebView2Environment.CreateAsync(userDataFolder: Path_PPX($"<hiapp>\\web\\{startUri}\\"), options: options);
                 wv2.EnsureCoreWebView2Async(env.Result);
-                CrashedGrid.Visibility = Visibility.Visible;
                 try
                 {
                     string edgever = CoreWebView2Environment.GetAvailableBrowserVersionString();
@@ -118,6 +117,7 @@ namespace Hiro
                         }
                     }
                     LogtoFile($"Edge Webview2 Version: {edgever}");
+                    CrashedGrid.Visibility = Visibility.Visible;
                 }
                 catch (Exception ex)
                 {
@@ -125,6 +125,7 @@ namespace Hiro
                     Close();
                 }
             }
+            Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
 
         public void HiHiro()
@@ -590,6 +591,39 @@ namespace Hiro
             Loading(false);
         }
 
+        private void ShowBanDialog()
+        {
+            if (!Read_DCIni("Ani", "2").Equals("0"))
+            {
+                BrowserGrid.Visibility = Visibility.Collapsed;
+                BanGrid.Visibility = Visibility.Visible;
+                var s = HAnimation.AddPowerAnimation(1, BanGrid, null, -150);
+                s.Begin();
+            }
+            else
+            {
+                BanGrid.Visibility = Visibility.Visible;
+                BrowserGrid.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void CloseBanDialog()
+        {
+
+            if (!Read_DCIni("Ani", "2").Equals("0"))
+            {
+                BanGrid.Visibility = Visibility.Collapsed;
+                BrowserGrid.Visibility = Visibility.Visible;
+                var s = HAnimation.AddPowerAnimation(1, BrowserGrid, null, -150);
+                s.Begin();
+            }
+            else
+            {
+                BanGrid.Visibility = Visibility.Collapsed;
+                BrowserGrid.Visibility = Visibility.Visible;
+            }
+        }
+
         private void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
             var blockSite = Read_Ini(configPath, "Settings", "BlockSite", string.Empty);
@@ -599,6 +633,7 @@ namespace Hiro
                 {
                     LogtoFile($"Pattern {block} Blocked Site: {e.Uri}");
                     e.Cancel = true;
+                    ShowBanDialog();
                     return;
                 }
             }
@@ -745,6 +780,10 @@ namespace Hiro
             HUI.Set_Control_Location(uribtn, "webspace", location: false);
             HUI.Set_Control_Location(CrashedLabel, "webcrashtip");
             HUI.Set_Control_Location(CrashedButton, "webcrashbtn");
+            HUI.Set_Control_Location(BanLabel, "webbantip");
+            HUI.CopyFontFromLabel(BanLabel, BanBlock);
+            HUI.CopyPostionFromLabel(BanLabel, BanBlock, false);
+            HUI.Set_Control_Location(BanButton, "webbanbtn");
             Loadbgi(Hiro_Utils.ConvertInt(Read_DCIni("Blur", "0")), false);
         }
 
@@ -761,6 +800,8 @@ namespace Hiro
             URLBtn.Content = HText.Get_Translate("webinsecure");
             CrashedLabel.Content = HText.Get_Translate("webcrashtip");
             CrashedButton.Content = HText.Get_Translate("webcrashbtn");
+            BanBlock.Text = HText.Get_Translate("webbantip");
+            BanButton.Content = HText.Get_Translate("webbanbtn");
             URLSign.Content = "\uF618";
             URLBtn.ToolTip = HText.Get_Translate("webinsecuretip");
             topbtn.ToolTip = Topmost ? HText.Get_Translate("webbottom") : HText.Get_Translate("webtop");
@@ -1027,6 +1068,11 @@ namespace Hiro
             newLeft = UniversalLeft + newLeft - FavGridG.ActualWidth > FavGridG.ActualWidth ? newLeft - FavGridG.ActualWidth : FavGridG.ActualWidth - UniversalLeft;
             FavGridBase.Margin = new Thickness(newLeft, 0, 0, 0);
             UpdateUniversalLeft();
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            CloseBanDialog();
         }
     }
 }

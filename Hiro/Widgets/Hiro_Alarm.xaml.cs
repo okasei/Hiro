@@ -199,11 +199,9 @@ namespace Hiro
 
         private void OnSourceInitialized(object? sender, EventArgs e)
         {
-            var windowInteropHelper = new System.Windows.Interop.WindowInteropHelper(this);
-            var hwnd = windowInteropHelper.Handle;
-            var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(new System.Windows.Interop.WindowInteropHelper(this).Handle);
             source?.AddHook(WndProc);
-            WindowStyle = WindowStyle.None;
+            WindowStyle = WindowStyle.SingleBorderWindow;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

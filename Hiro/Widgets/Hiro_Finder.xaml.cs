@@ -43,6 +43,7 @@ namespace Hiro
              };
             Loaded += delegate
             {
+                Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                 Hiro_Utils.SetCaptureImpl(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                 Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
                 Keyboard.Focus(Hiro_Text);

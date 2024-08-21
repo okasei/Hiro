@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hiro.Widgets;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace Hiro.Helpers
 {
@@ -25,14 +27,14 @@ namespace Hiro.Helpers
                 Hiro_Msg msg = new(confrimWin)
                 {
                     bg = bg,
-                    Title =  HText.Get_Translate("msgTitle").Replace("%t", HText.Path_PPX(HSet.Read_Ini(confrimWin, "Message", "Title", HText.Get_Translate("syntax")))).Replace("%a",App.appTitle)
+                    Title = HText.Get_Translate("msgTitle").Replace("%t", HText.Path_PPX(HSet.Read_Ini(confrimWin, "Message", "Title", HText.Get_Translate("syntax")))).Replace("%a", App.appTitle)
                 };
                 msg.backtitle.Content = HSet.Read_PPIni(confrimWin, "Message", "Title", HText.Get_Translate("syntax"));
                 msg.acceptbtn.Content = HSet.Read_Ini(confrimWin, "Message", "accept", HText.Get_Translate("msgaccept"));
                 msg.rejectbtn.Content = HSet.Read_Ini(confrimWin, "Message", "reject", HText.Get_Translate("msgreject"));
                 msg.cancelbtn.Content = HSet.Read_Ini(confrimWin, "Message", "cancel", HText.Get_Translate("msgcancel"));
                 confrimWin = HSet.Read_PPIni(confrimWin, "Message", "content", HText.Get_Translate("syntax"));
-                if (HText.StartsWith(confrimWin,"http://") || HText.StartsWith(confrimWin, "https://"))
+                if (HText.StartsWith(confrimWin, "http://") || HText.StartsWith(confrimWin, "https://"))
                 {
                     msg.sv.Content = HText.Get_Translate("msgload");
                     BackgroundWorker bw = new();
@@ -160,6 +162,54 @@ namespace Hiro.Helpers
                         }
                         hib.Show();
                     });
+                }
+            }
+        }
+
+        internal static void TakeScreenShot(List<string> parameter)
+        {
+            if (parameter.Count == 0)
+            {
+                new Hiro_Screenshot().Show();
+                return;
+            }
+            else
+            {
+                var _fs = false;
+                var _oc = false;
+                if (parameter.Count > 0)
+                {
+                    var _p0 = $",{parameter[0]},";
+                    if (_p0.Contains("f", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //直接截取全屏
+                        _fs = true;
+                    }
+                    if (_p0.Contains("o", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //直接截取全屏
+                        _oc = true;
+                    }
+                    if (parameter.Count > 1)
+                    {
+                        //倒计时截屏
+                        var cd = 5.0;
+                        double.TryParse(parameter[1], out cd);
+                        DispatcherTimer _dt = new DispatcherTimer()
+                        {
+                            Interval = TimeSpan.FromSeconds(cd)
+                        };
+                        _dt.Tick += (e, args) =>
+                        {
+                            new Hiro_Screenshot(_fs, _oc).Show();
+                            _dt.Stop();
+                        };
+                        _dt.Start();
+                    }
+                    else
+                    {
+                        new Hiro_Screenshot(_fs, _oc).Show();
+                    }
                 }
             }
         }

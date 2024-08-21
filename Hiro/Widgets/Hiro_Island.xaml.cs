@@ -68,8 +68,6 @@ namespace Hiro
             Load_One();
             Loaded += delegate
             {
-                Load_Color();
-                Island_In();
                 timer = new()
                 {
                     Interval = new TimeSpan(10000000)
@@ -78,6 +76,8 @@ namespace Hiro
                 {
                     TimerTick();
                 };
+                Load_Color();
+                Island_In();
             };
         }
 
@@ -226,7 +226,7 @@ namespace Hiro
             former_width = BaseGrid.ActualWidth;
             former_height = BaseGrid.ActualHeight;
             former_left = SystemParameters.FullPrimaryScreenWidth / 2 - former_width / 2;
-            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Storyboard sb = new();
                 sb = HAnimation.AddDoubleAnimaton(50, 850, this, TopProperty.Name, sb, -former_height, 0.7);
@@ -256,7 +256,7 @@ namespace Hiro
         {
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
-            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 Storyboard sb = new();
                 sb = HAnimation.AddDoubleAnimaton(-h, 700, this, TopProperty.Name, sb, 50, 0.7);
@@ -301,7 +301,7 @@ namespace Hiro
             var w = ContentGrid.ActualWidth;
             var h = ContentGrid.ActualHeight;
             var offset = Math.Min(w * 0.1, 50);
-            if (HSet.Read_DCIni("Ani", "2").Equals("1"))
+            if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
             {
                 var sb = new Storyboard();
                 sb = HAnimation.AddDoubleAnimaton(former_left + offset, 300, this, LeftProperty.Name, sb, former_left);

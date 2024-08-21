@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Hiro": {
-      "commandName": "Project",
-      "commandLineArgs": "play(\"D:\\Music\\daoko&米津玄師 - 打上花火.flac\")"
-    }
-  }
-}

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Hiro": {
+      "commandName": "Project",
+      "commandLineArgs": "web()"
+    }
+  }
+}

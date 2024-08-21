@@ -33,6 +33,7 @@ namespace Hiro
             Helpers.HUI.SetCustomWindowIcon(this);
             LoadTimer();
             HiHiro();
+            Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
         private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
         {

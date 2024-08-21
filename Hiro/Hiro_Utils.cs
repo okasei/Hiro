@@ -32,6 +32,7 @@ using Hiro.ModelViews;
 using Hiro.Resources;
 using System.Windows.Media.Media3D;
 using System.Buffers.Text;
+using Hiro.Widgets;
 
 namespace Hiro
 {
@@ -667,7 +668,15 @@ namespace Hiro
                     {
                         HiroInvoke(() =>
                         {
-                            new Hiro_Timer().Show();
+                            new Hiro_Screenshot().Show();
+                        });
+                        goto RunOK;
+                    }
+                    if (HText.StartsWith(path, "shot("))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            HSystem.TakeScreenShot(parameter);
                         });
                         goto RunOK;
                     }
@@ -813,7 +822,7 @@ namespace Hiro
                             {
                                 p = parameter[0];
                                 k = parameter[1];
-                                var he = new Hiro_Encrypter(1, p, k, true);
+                                var he = new Hiro_Encrypter(0, p, k, true);
                                 if (parameter.Count > 2)
                                 {
                                     var pa = parameter[2].Trim().ToLower();

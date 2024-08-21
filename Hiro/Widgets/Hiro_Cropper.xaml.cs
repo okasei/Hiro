@@ -36,6 +36,7 @@ namespace Hiro
             Helpers.HUI.SetCustomWindowIcon(this);
             SourceInitialized += OnSourceInitialized;
             Title = HText.Get_Translate("crop").Replace("%h", App.appTitle);
+            Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
         }
 
 

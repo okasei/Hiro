@@ -80,6 +80,8 @@ namespace Hiro.Helpers
                                 Regex regexword = new Regex(@".*\](.*)");
                                 Match mcw = regexword.Match(line);
                                 string word = mcw.Groups[1].Value;
+                                if (HSet.Read_DCIni("LyricsBlank", "false").Equals("false") && word.Trim().Equals(string.Empty))
+                                    continue;
                                 Regex regextime = new Regex(@"\[([0-9.:]*)\]", RegexOptions.Compiled);
                                 MatchCollection mct = regextime.Matches(line);
                                 foreach (Match item in mct)
@@ -143,6 +145,8 @@ namespace Hiro.Helpers
                         Regex regexword = new Regex(@".*\](.*)");
                         Match mcw = regexword.Match(line);
                         string word = mcw.Groups[1].Value;
+                        if (HSet.Read_DCIni("LyricsBlank", "false").Equals("false") && word.Trim().Equals(string.Empty))
+                            continue;
                         Regex regextime = new Regex(@"\[([0-9.:]*)\]", RegexOptions.Compiled);
                         MatchCollection mct = regextime.Matches(line);
                         foreach (Match item in mct)
@@ -165,28 +169,48 @@ namespace Hiro.Helpers
         /// </summary>
         /// <param name="baseTime">基准时间</param>
         /// <returns></returns>
-        public string[] GetLyrics(double baseTime, out double nextTime)
+        public string[] GetLyrics(double baseTime, out double nextTime, bool saveOne = true)
         {
-            var ret = new string[5] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+            var _repeatTimes = 0;
+            int.TryParse(HSet.Read_DCIni("LyricsLines", "4"), out _repeatTimes);
+            var ret = new string[2] { string.Empty, string.Empty };
             nextTime = -1;
+            var _ks = LrcWord.Keys;
+            var _ksc = _ks.Count;
             bool _inted = false;
-            for (int i = 0; i < LrcWord.Keys.Count; i++)
+            for (int i = 0; i < _ksc; i++)
             {
                 if (App.dflag)
-                    HLogger.LogtoFile($"LrcWord.Key.Count = {LrcWord.Keys.Count}, i = {i}, Key = {LrcWord.Keys.ElementAt(i)}");
-                var _key = LrcWord.Keys.ElementAt(i);
+                    HLogger.LogtoFile($"LrcWord.Key.Count = {_ksc}, i = {i}, Key = {_ks.ElementAt(i)}");
+                var _key = _ks.ElementAt(i);
                 if (_key > baseTime && !_inted)
                 {
-                    ret[0] = i > 0 ? LrcWord[LrcWord.Keys.ElementAt(i - 1)] : string.Empty;
-                    ret[1] = LrcWord[LrcWord.Keys.ElementAt(i)];
-                    ret[2] = i < LrcWord.Keys.Count - 1 ? LrcWord[LrcWord.Keys.ElementAt(i + 1)] : string.Empty;
-                    ret[3] = i < LrcWord.Keys.Count - 2 ? LrcWord[LrcWord.Keys.ElementAt(i + 2)] : string.Empty;
-                    ret[4] = i < LrcWord.Keys.Count - 3 ? LrcWord[LrcWord.Keys.ElementAt(i + 3)] : string.Empty;
-                    nextTime = LrcWord.Keys.ElementAt(i);
+                    ret[0] = i > 0 ? LrcWord[_ks.ElementAt(i - 1)] : string.Empty;
+                    var _s = string.Empty;
+                    for (int j = 0; j < _repeatTimes; j++)
+                    {
+                        if (j != 0)
+                            _s += Environment.NewLine;
+                        _s += GetKSIndexValue(_ks, i + j);
+                    }
+                    ret[1] = _s;
+                    nextTime = _ks.ElementAt(i);
                     return ret;
                 }
             }
+            if (saveOne)
+                ret[0] = _ksc > 0 ? LrcWord[_ks.ElementAt(_ksc - 1)] : string.Empty;
             return ret;
+        }
+
+        private string GetKSIndexValue(Dictionary<double, string>.KeyCollection? _ks, int index)
+        {
+            if (_ks == null)
+                return string.Empty;
+            var _ksc = _ks.Count;
+            if (index < 0 || index > _ks.Count - 1)
+                return string.Empty;
+            return LrcWord[_ks.ElementAt(index)];
         }
 
         /// <summary>

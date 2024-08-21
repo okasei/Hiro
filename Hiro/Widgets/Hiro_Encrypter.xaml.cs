@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Hiro.ModelViews;
 using Hiro.Helpers;
+using System.Windows.Controls;
 
 namespace Hiro
 {
@@ -30,9 +31,12 @@ namespace Hiro
         public Hiro_Encrypter(int mode = 0, string? file = null, string? pwd = null, bool flag = false)
         {
             InitializeComponent();
-            Helpers.HUI.SetCustomWindowIcon(this);
+            HUI.SetCustomWindowIcon(this);
+            SourceInitialized += OnSourceInitialized;
             this.mode = mode;
             oflag = flag;
+            Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - Width / 2);
+            Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - Height / 2);
             if (oflag)
             {
                 ShowInTaskbar = false;
@@ -40,18 +44,19 @@ namespace Hiro
             }
             if (file != null)
                 FilePath.Text = file;
-            if (pwd != null && !pwd.Equals(string.Empty))
-            {
-                PwdPath.Password = pwd;
-                HidePwd();
-            }
-            SourceInitialized += OnSourceInitialized;
             Load_Colors();
             Load_Position();
             Load_Translate();
-            Loaded += delegate
+            Loaded += (e, args) =>
             {
                 HiHiro();
+                if (pwd != null && !pwd.Equals(string.Empty))
+                {
+                    PwdPath.Password = pwd;
+                    HidePwd();
+                }
+                Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
             };
         }
 
@@ -68,7 +73,6 @@ namespace Hiro
                 HAnimation.AddPowerAnimation(3, albtn_1, sb, -50, null);
                 sb.Begin();
             }
-            Hiro_Utils.SetWindowToForegroundWithAttachThreadInput(this);
         }
 
         private void OnSourceInitialized(object? sender, EventArgs e)
@@ -77,7 +81,6 @@ namespace Hiro
             var hwnd = windowInteropHelper.Handle;
             var source = System.Windows.Interop.HwndSource.FromHwnd(hwnd);
             source?.AddHook(WndProc);
-            WindowStyle = WindowStyle.SingleBorderWindow;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -92,7 +95,6 @@ namespace Hiro
                     break;
             }
             return IntPtr.Zero;
-
         }
         void Load_Translate()
         {
@@ -111,7 +113,7 @@ namespace Hiro
             minbtn.ToolTip = HText.Get_Translate("min");
             closebtn.ToolTip = HText.Get_Translate("close");
         }
-        void Load_Position(bool relocate = true)
+        void Load_Position()
         {
             HUI.Set_Control_Location(this, "enwin");
             HUI.Set_Control_Location(albtn_1, "enstart", bottom: true, right: true);
@@ -142,18 +144,6 @@ namespace Hiro
                 HUI.Set_Control_Location(Autodelete, "endeleter", bottom: true);
             }
             HUI.Set_Control_Location(Autodelete, "endelete", bottom: true);
-            if (relocate)
-            {
-                System.Windows.Controls.Canvas.SetLeft(this, SystemParameters.PrimaryScreenWidth / 2 - this.Width / 2);
-                System.Windows.Controls.Canvas.SetTop(this, SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2);
-                if (HSet.Read_DCIni("Ani", "2").Equals("1"))
-                {
-                    Storyboard sb = new();
-                    HAnimation.AddPowerAnimation(1, EncryptTitle, sb, -50, null);
-                    HAnimation.AddPowerAnimation(1, DecryptTitle, sb, -50, null);
-                    sb.Begin();
-                }
-            }
         }
         public void Load_Colors()
         {
@@ -542,7 +532,7 @@ namespace Hiro
             {
                 mode = 0;
                 Load_Translate();
-                Load_Position(false);
+                Load_Position();
             }
         }
 
@@ -552,7 +542,7 @@ namespace Hiro
             {
                 mode = 1;
                 Load_Translate();
-                Load_Position(false);
+                Load_Position();
             }
         }
 

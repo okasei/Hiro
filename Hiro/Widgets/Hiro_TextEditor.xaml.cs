@@ -34,6 +34,7 @@ namespace Hiro
                 Loadbgi(Hiro_Utils.ConvertInt(Read_DCIni("Blur", "0")), false);
                 loaded = true;
                 LoadText(filePath);
+                Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
             };
         }
 

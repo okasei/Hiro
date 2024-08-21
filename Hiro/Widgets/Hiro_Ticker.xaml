@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-        Title="Hiro_Ticker" Height="150" Width="430" Background="{DynamicResource AppAccent}" WindowStyle="SingleBorderWindow" Icon="/Resources/hiro_circle.ico">
+        Title="Hiro_Ticker" Height="150" Width="430" Background="{DynamicResource AppAccent}" WindowStyle="None" Icon="/Resources/hiro_circle.ico">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeReverse" Color="Black"></SolidColorBrush>

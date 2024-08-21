@@ -62,6 +62,15 @@ namespace Hiro.Helpers
             size.Height = formattedText.Height + sender.Padding.Top + sender.Padding.Bottom;
         }
 
+        public static void Get_Text_Visual_Width(TextBlock sender, double pixelPerDip, out Size size)
+        {
+            var formattedText = new FormattedText(
+                sender.Text.ToString(), System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, new Typeface(sender.FontFamily, sender.FontStyle, sender.FontWeight, sender.FontStretch),
+                sender.FontSize, Brushes.Black, pixelPerDip);
+            size.Width = formattedText.Width + sender.Padding.Left + sender.Padding.Right;
+            size.Height = formattedText.Height + sender.Padding.Top + sender.Padding.Bottom;
+        }
+
         public static void Set_Acrylic(Label? sender, Window win, WindowChrome? windowChrome = null, WindowAccentCompositor? compositor = null)
         {
             if (win != null && compositor != null)
@@ -321,9 +330,17 @@ namespace Hiro.Helpers
                             Storyboard sb = new();
                             HAnimation.AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb);
                             if (!double.IsNaN(mSize.Height))
+                            {
+                                if (double.IsNaN(sender.Height))
+                                    sender.Height = sender.ActualHeight;
                                 HAnimation.AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb);
-                            if (!double.IsNaN(mSize.Width))
+                            }
+                            if (!double.IsNaN(mSize.Width) && !double.IsNaN(sender.Width))
+                            {
+                                if (double.IsNaN(sender.Width))
+                                    sender.Width = sender.ActualWidth;
                                 HAnimation.AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb);
+                            }
                             sb.Completed += delegate
                             {
                                 sender.Width = mSize.Width;

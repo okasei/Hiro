@@ -20,6 +20,8 @@ using static Hiro.Helpers.HClass;
 using static Hiro.Helpers.HText;
 using static Hiro.Helpers.HSet;
 using static Hiro.Helpers.HLogger;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Hiro
 {
@@ -90,6 +92,16 @@ namespace Hiro
 
         private async void Hiro_We_Go(object sender, System.Windows.StartupEventArgs e)
         {
+            if (Debugger.IsAttached)
+            {
+                dflag = true;
+            }
+            else
+            {
+                TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+                DispatcherUnhandledException += App_DispatcherUnhandledException;
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            }
             InitializeInnerParameters();
             InitializeStartParameters(e);
             await Task.Run(() =>
@@ -99,9 +111,21 @@ namespace Hiro
             });
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Read_DCIni("FPS", "60"))));
             Unosquare.FFME.Library.FFmpegDirectory = @Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-            DispatcherUnhandledException += App_DispatcherUnhandledException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        internal static void LoadDictionaryColors()
+        {
+            Application.Current.Resources["Hiro.Colors.Accent"] = new SolidColorBrush(AppAccentColor);
+            Application.Current.Resources["Hiro.Colors.Accent.Dim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppAccentColor, 200));
+            Application.Current.Resources["Hiro.Colors.Accent.Null"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppAccentColor, trval));
+            Application.Current.Resources["Hiro.Colors.Accent.Disabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppAccentColor == Colors.White ? Colors.Black : Colors.White, 100));
+            Application.Current.Resources["Hiro.Colors.Accent.Null.MouseOver"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppAccentColor, trval * 7 / 8));
+            Application.Current.Resources["Hiro.Colors.Accent.Null.Pressed"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppAccentColor, trval * 5 / 4));
+            Application.Current.Resources["Hiro.Colors.Accent.Null.Disabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppAccentColor == Colors.White ? Colors.Black : Colors.White, 100));
+            Application.Current.Resources["Hiro.Colors.Fore"] = new SolidColorBrush(AppForeColor);
+            Application.Current.Resources["Hiro.Colors.Fore.Dim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppForeColor, 200));
+            Application.Current.Resources["Hiro.Colors.Fore.ExtraDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppForeColor, 100));
+            Application.Current.Resources["Hiro.Colors.Fore.Disabled"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(AppForeColor, 50));
         }
 
         internal static string AddCustomFont(string path)
@@ -337,6 +361,7 @@ namespace Hiro
                                         break;
                                     default:
                                         Hiro_Utils.IntializeColorParameters();
+                                        LoadDictionaryColors();
                                         Hiro_Utils.RunExe(para, "Windows");
                                         return;
                                 }
@@ -344,6 +369,7 @@ namespace Hiro
                         }
                         wnd = new MainWindow();
                         wnd.InitializeInnerParameters();
+                        wnd.Load_All_Colors();
                         wnd.Show();
                         wnd.Hide();
                         if (create)

@@ -1,0 +1,28 @@
+﻿<Window x:Class="Hiro.Widgets.Hiro_Screenshot"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Screenshot Tool" Height="350" Width="525"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowState="Maximized" Topmost="True"
+        MouseDown="Window_MouseDown" MouseMove="Window_MouseMove" MouseUp="Window_MouseUp"
+        KeyDown="Window_KeyDown" Visibility="Hidden" ShowInTaskbar="False">
+    <Grid>
+        <!-- 用于显示整个屏幕截图 -->
+        <Image Name="ScreenshotImage"  Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+        <!-- 用于绘制遮罩和选择区域 -->
+        <Canvas Name="SelectionCanvas">
+            <!-- 上部遮罩 -->
+            <Rectangle Name="TopMask" Fill="Black" Opacity="0.5" IsHitTestVisible="False"/>
+            <!-- 左部遮罩 -->
+            <Rectangle Name="LeftMask" Fill="Black" Opacity="0.5" IsHitTestVisible="False"/>
+            <!-- 右部遮罩 -->
+            <Rectangle Name="RightMask" Fill="Black" Opacity="0.5" IsHitTestVisible="False"/>
+            <!-- 下部遮罩 -->
+            <Rectangle Name="BottomMask" Fill="Black" Opacity="0.5" IsHitTestVisible="False"/>
+
+            <!-- 选择区域 -->
+            <Rectangle Name="SelectionRectangle" Stroke="Red" StrokeThickness="2" Fill="Transparent" Visibility="Collapsed"/>
+        </Canvas>
+    </Grid>
+</Window>

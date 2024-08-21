@@ -6,7 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Hiro"
         mc:Ignorable="d"
-        Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="SingleBorderWindow" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" Closing="Window_Closing"  GotKeyboardFocus="Window_GotKeyboardFocus" Deactivated="Window_Deactivated" Icon="/Resources/hiro_circle.ico">
+        Title="Hiro_Finder" ShowInTaskbar="False" ShowActivated="True" Height="50" Width="800" WindowStyle="None" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" Closing="Window_Closing"  GotKeyboardFocus="Window_GotKeyboardFocus" Deactivated="Window_Deactivated" Icon="/Resources/hiro_circle.ico">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
