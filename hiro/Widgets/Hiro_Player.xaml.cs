@@ -38,6 +38,7 @@ namespace Hiro
         double _nextTime = -1;
         bool _lrcFlag = false;
         HSMTCCreator? _smtcCreator = null;
+        Thickness _set = new(0);
 
         /// <summary>
         /// 0 - 未在播放, 1 - 暂停, 2 - 正在播放
@@ -73,7 +74,14 @@ namespace Hiro
                 };
                 _dst.Tick += delegate
                 {
-                    Update_Progress();
+                    try
+                    {
+                        Update_Progress();
+                    }
+                    catch (Exception ex)
+                    {
+                        HLogger.LogError(ex, "Hiro.Exception.Player.Tick");
+                    }
                 };
                 _smtcCreator ??= new HSMTCCreator("Hiro.exe");
                 _smtcCreator.SetMediaStatus(SMTCMediaStatus.Stopped);
@@ -273,18 +281,42 @@ namespace Hiro
                     var ls = _lrc.GetLyrics(_ts, out _nextTime);
                     if (Read_DCIni("Ani", "2").Equals("1"))
                     {
-                        var sb = HAnimation.AddThicknessAnimaton(LyricsBlockFirst.Margin, 200, LyricsBlock, "Margin", null);
+                        _set = new(0);
+                        var sb = HAnimation.AddThicknessAnimaton(new(0), 200, LyricsBlock, "Margin", null);
                         sb = HAnimation.AddPowerOutAnimation(0, LyricsBlockFirst, sb, null, 150, 200, 200);
                         sb.Completed += delegate
                         {
+                            SetDefaultLyrics();
                             LyricsBlockFirst.Text = ls[0];
                             LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
                             _lrcFlag = false;
+                            HUI.Get_Text_Visual_Width(LyricsBlockFirst, VisualTreeHelper.GetDpi(this).PixelsPerDip, out var msize);
+                            var _ac = ActualWidth;
+                            var _maw = msize.Width - _ac;
+                            var _t = Math.Max(1000 * (_nextTime - _ts) / Media.SpeedRatio, 450);
+                            _t = _t > 750 ? _t - 450 : _t - 150;
+                            _t = Math.Min(_t, _maw * 30);
+                            if (_maw > 0 && Read_DCIni("Ani", "2").Equals("1"))
+                            {
+                                LyricsBlockFirst.Width = msize.Width;
+                                _set = new Thickness(-_maw, 0, 0, 0);
+                                var sb = HAnimation.AddThicknessAnimaton(_set, _t, LyricsBlockFirst, "Margin", null, null, 0, 0);
+                                sb.Completed += (e, args) =>
+                                {
+                                    LyricsBlockFirst.Margin = _set;
+                                };
+                                sb.Begin();
+                            }
+                            else
+                            {
+                                SetDefaultLyrics();
+                            }
                         };
                         sb.Begin();
                     }
                     else
                     {
+                        SetDefaultLyrics();
                         LyricsBlockFirst.Text = ls[0];
                         LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
                         _lrcFlag = false;
@@ -322,6 +354,13 @@ namespace Hiro
                 Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
                 Ctrl_Time.Content = "00:00";
             }
+        }
+
+        private void SetDefaultLyrics()
+        {
+            LyricsBlockFirst.Margin = new(0);
+            _set = new(0);
+            LyricsBlockFirst.Width = ActualWidth;
         }
 
         private static string ParseDuration(double time)
@@ -386,6 +425,8 @@ namespace Hiro
                             await Media.Pause();
                         playlist.Add(new(-1, -1, Path.GetFileNameWithoutExtension(uri), uri, string.Empty));
                         index = playlist.Count - 1;
+                        LyricsBlockFirst.Text = string.Empty;
+                        LyricsBlock.Text = string.Empty;
                         if (App.dflag)
                             HLogger.LogtoFile($"[Player] Opening file: {uri}");
                         if (await Media.Open(new Uri(uri)))
@@ -637,6 +678,7 @@ namespace Hiro
                         await Media.Close();
                         Media.Dispose();
                         cflag = 0;
+                        _smtcCreator?.Dispose();
                         Dispatcher.Invoke(() =>
                         {
                             Close();
@@ -1396,6 +1438,8 @@ namespace Hiro
                             var uri = playlist[i].Command;
                             if (App.dflag)
                                 HLogger.LogtoFile($"[Player] Opening file: {uri}");
+                            LyricsBlockFirst.Text = string.Empty;
+                            LyricsBlock.Text = string.Empty;
                             if (await Media.Open(new Uri(uri)))
                             {
                                 Ctrl_Text.Text = uri;
