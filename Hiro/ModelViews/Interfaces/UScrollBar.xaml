@@ -77,7 +77,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border x:Name="rectangle" CornerRadius="3" Background="{DynamicResource Hiro.Colors.Fore.ExtraDim}" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}" Margin="0,0,3,0"/>
+                    <Border x:Name="rectangle" CornerRadius="3" Background="{DynamicResource Hiro.Colors.Fore.ExtraDim}" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}" Margin="0"/>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource Hiro.Colors.Fore.Dim}"/>
@@ -96,7 +96,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border x:Name="rectangle" CornerRadius="3" Background="{DynamicResource Hiro.Colors.Fore.ExtraDim}" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}" Margin="0,0,0,3"/>
+                    <Border x:Name="rectangle" CornerRadius="3" Background="{DynamicResource Hiro.Colors.Fore.ExtraDim}" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}" Margin="0"/>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource Hiro.Colors.Fore.Dim}"/>

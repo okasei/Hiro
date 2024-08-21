@@ -211,6 +211,7 @@ namespace Hiro
                     {
                         Width = 300;
                         Height = 300;
+                        Switch_UI();
                     }
                     Play(toplay);
                 }
@@ -441,7 +442,7 @@ namespace Hiro
                         {
                             _lrcs = File.ReadAllText(_filename + ".lrc");
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             HLogger.LogError(ex, "Hiro.Exception.Player.LoadLrcFile");
                         }

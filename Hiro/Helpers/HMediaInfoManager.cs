@@ -44,15 +44,15 @@ namespace Hiro.Helpers
             }
             _session = session;
             if (App.dflag)
-            HLogger.LogtoFile("New session found.[" + (_session?.SourceAppUserModelId ?? "Unknown") + "]");
+                HLogger.LogtoFile("New session found.[" + (_session?.SourceAppUserModelId ?? "Unknown") + "]");
             _session.MediaPropertiesChanged += _session_MediaPropertiesChanged;
             ShowNotification();
         }
 
         private static void _session_MediaPropertiesChanged(GlobalSystemMediaTransportControlsSession sender, MediaPropertiesChangedEventArgs args)
         {
-            //if (App.dflag)
-            HLogger.LogtoFile("New meida found.");
+            if (App.dflag)
+                HLogger.LogtoFile("New meida found.");
             ShowNotification();
         }
 
@@ -63,8 +63,8 @@ namespace Hiro.Helpers
             {
                 string title = mediaProperties.Title;
                 string artist = mediaProperties.Artist;
-                //if (App.dflag)
-                HLogger.LogtoFile($"Title: {mediaProperties.Title} Artist:{mediaProperties.Artist} Album:{mediaProperties.AlbumTitle} AlbumArtist:{mediaProperties.AlbumArtist} Subtitle:{mediaProperties.Subtitle}");
+                if (App.dflag)
+                    HLogger.LogtoFile($"Title: {mediaProperties.Title} Artist:{mediaProperties.Artist} Album:{mediaProperties.AlbumTitle} AlbumArtist:{mediaProperties.AlbumArtist} Subtitle:{mediaProperties.Subtitle}");
                 if (!_title.Equals(title) || !_artist.Equals(artist))
                 {
                     _title = title;
