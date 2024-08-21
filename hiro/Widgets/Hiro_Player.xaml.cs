@@ -271,15 +271,40 @@ namespace Hiro
                 {
                     _lrcFlag = true;
                     var ls = _lrc.GetLyrics(_ts, out _nextTime);
+                    if (_nextTime < 0)
+                        _nextTime = _ts + 3;
                     if (Read_DCIni("Ani", "2").Equals("1"))
                     {
-                        var sb = HAnimation.AddThicknessAnimaton(LyricsBlockFirst.Margin, 200, LyricsBlock, "Margin", null);
+                        var sb = HAnimation.AddThicknessAnimaton(new(0), 200, LyricsBlock, "Margin", null);
                         sb = HAnimation.AddPowerOutAnimation(0, LyricsBlockFirst, sb, null, 150, 200, 200);
                         sb.Completed += delegate
                         {
+                            LyricsBlockFirst.Margin = new(0);
                             LyricsBlockFirst.Text = ls[0];
                             LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
                             _lrcFlag = false;
+                            HUI.Get_Text_Visual_Width(LyricsBlockFirst, VisualTreeHelper.GetDpi(this).PixelsPerDip, out var msize);
+                            var _ac = ActualWidth;
+                            var _maw = msize.Width - _ac;
+                            var _t = Math.Max(1000 * (_nextTime - _ts), 450);
+                            _t = _t > 750 ? _t - 450 : _t - 150;
+                            _t = Math.Min(_t, _maw * 30);
+                            ; if (_maw > 0 && Read_DCIni("Ani", "2").Equals("1"))
+                            {
+                                LyricsBlockFirst.Width = msize.Width;
+                                var _set = new Thickness(-_maw, 0, 0, 0);
+                                var sb = HAnimation.AddThicknessAnimaton(_set, _t, LyricsBlockFirst, "Margin", null, null, 0, 0);
+                                sb.Completed += (e, args) =>
+                                {
+                                    LyricsBlockFirst.Margin = _set;
+                                };
+                                sb.Begin();
+                            }
+                            else
+                            {
+                                LyricsBlockFirst.Margin = new(0);
+                                LyricsBlockFirst.Width = _ac;
+                            }
                         };
                         sb.Begin();
                     }
@@ -637,6 +662,7 @@ namespace Hiro
                         await Media.Close();
                         Media.Dispose();
                         cflag = 0;
+                        _smtcCreator?.Dispose();
                         Dispatcher.Invoke(() =>
                         {
                             Close();
