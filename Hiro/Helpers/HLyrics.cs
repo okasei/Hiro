@@ -80,6 +80,8 @@ namespace Hiro.Helpers
                                 Regex regexword = new Regex(@".*\](.*)");
                                 Match mcw = regexword.Match(line);
                                 string word = mcw.Groups[1].Value;
+                                if (HSet.Read_DCIni("LyricsBlank", "fasle").Equals("false") && word.Trim().Equals(string.Empty))
+                                    continue;
                                 Regex regextime = new Regex(@"\[([0-9.:]*)\]", RegexOptions.Compiled);
                                 MatchCollection mct = regextime.Matches(line);
                                 foreach (Match item in mct)
