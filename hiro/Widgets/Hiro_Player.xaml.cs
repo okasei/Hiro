@@ -279,6 +279,7 @@ namespace Hiro
                         sb = HAnimation.AddPowerOutAnimation(0, LyricsBlockFirst, sb, null, 150, 200, 200);
                         sb.Completed += delegate
                         {
+                            LyricsBlockFirst.Margin = new(0);
                             LyricsBlockFirst.Text = ls[0];
                             LyricsBlock.Text = ls[1] + Environment.NewLine + ls[2] + Environment.NewLine + ls[3] + Environment.NewLine + ls[4];
                             _lrcFlag = false;
@@ -291,10 +292,11 @@ namespace Hiro
                             ; if (_maw > 0 && Read_DCIni("Ani", "2").Equals("1"))
                             {
                                 LyricsBlockFirst.Width = msize.Width;
-                                var sb = HAnimation.AddThicknessAnimaton(new Thickness(-_maw, 0, 0, 0), _t, LyricsBlockFirst, "Margin", null, new(0), 0, 0);
+                                var _set = new Thickness(-_maw, 0, 0, 0);
+                                var sb = HAnimation.AddThicknessAnimaton(_set, _t, LyricsBlockFirst, "Margin", null, null, 0, 0);
                                 sb.Completed += (e, args) =>
                                 {
-                                    LyricsBlockFirst.Margin = new Thickness(-_maw, 0, 0, 0);
+                                    LyricsBlockFirst.Margin = _set;
                                 };
                                 sb.Begin();
                             }
