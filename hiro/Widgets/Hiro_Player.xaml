@@ -27,7 +27,7 @@
                 <ffme:MediaElement x:Name="Media" Background="{DynamicResource AppAccent}" LoadedBehavior="Play" UnloadedBehavior="Manual" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LoopingBehavior="Manual"/>
             </Grid>
             <Grid x:Name="LyricsGrid" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                <TextBlock x:Name="LyricsBlockFirst" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource AppFore}" TextAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <TextBlock x:Name="LyricsBlockFirst" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource AppFore}" TextAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                     <TextBlock.Effect>
                         <DropShadowEffect Color="{DynamicResource AppForeReverseColor}" BlurRadius="2" ShadowDepth="0" Opacity="1"/>
                     </TextBlock.Effect>
