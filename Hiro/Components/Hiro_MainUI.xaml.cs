@@ -9,6 +9,7 @@ using Hiro.ModelViews;
 using Hiro.Resources;
 using static Hiro.Helpers.HSet;
 using static Hiro.Helpers.HLogger;
+using System.Text;
 
 namespace Hiro
 {
@@ -130,7 +131,7 @@ namespace Hiro
                             hh = Height * 2;
                         });
                         bool m = false;
-                        if (Read_DCIni("Compression", "1").Equals("1"))
+                        if (Read_DCIni("Compression", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                         {
                             if (ww < w && hh < h)
                             {
@@ -921,7 +922,7 @@ namespace Hiro
             }
             else
             {
-                Hiro_Utils.RunExe(Read_DCIni("Min", "1").Equals("1")
+                Hiro_Utils.RunExe(Read_DCIni("Min", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase)
                     ? "hide()"
                     : "exit()");
             }
@@ -1230,7 +1231,7 @@ namespace Hiro
 
         private void Ui_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Read_DCIni("Min", "1").Equals("1"))
+            if (Read_DCIni("Min", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
             {
                 Visibility = Visibility.Hidden;
                 if (BackVideo.Visibility == Visibility.Visible)
@@ -1585,14 +1586,14 @@ namespace Hiro
                 string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (filePaths.Length > 0)
                 {
-                    Hiro_Utils.RunExe($"\"{filePaths[0]}\"", "Windows");
+                    Hiro_Utils.OpenInNewHiro($"\"base({Convert.ToBase64String(Encoding.Default.GetBytes(filePaths[0]))})\"", false);
                     e.Handled = true;
                 }
             }
             if (e.Data.GetDataPresent(DataFormats.Text))
             {
                 var f = (string)e.Data.GetData(DataFormats.Text);
-                Hiro_Utils.RunExe($"\"{f}\"", "Windows");
+                Hiro_Utils.OpenInNewHiro($"\"base({Convert.ToBase64String(Encoding.Default.GetBytes(f))})\"", false);
                 e.Handled = true;
             }
         }

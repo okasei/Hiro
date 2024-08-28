@@ -201,7 +201,7 @@ namespace Hiro
 
         private void Box_In()
         {
-            if (HSet.Read_DCIni("HiBoxAudio", "1").Equals("1"))
+            if (HSet.Read_DCIni("HiBoxAudio", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 try
                 {
                     var fileP = HSet.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");

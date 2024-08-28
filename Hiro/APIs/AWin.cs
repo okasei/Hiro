@@ -31,5 +31,18 @@ namespace Hiro.APIs
             ProcessLeapSecondInfo,
             ProcessInformationClassMax,
         }
+
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("gdi32.dll")]
+        internal static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+        [DllImport("user32.dll")]
+        internal static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        internal const int LOGPIXELSX = 88;
+        internal const int LOGPIXELSY = 90;
     }
 }

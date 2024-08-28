@@ -93,7 +93,7 @@ namespace Hiro
         {
             msg_level.Value = Convert.ToInt32(double.Parse(Read_DCIni("Message", "3")));
             disturb_level.Value = Convert.ToInt32(double.Parse(Read_DCIni("Disturb", "2")));
-            rbtn17.IsChecked = Read_DCIni("CustomNick", "1").Equals("2");
+            rbtn17.IsChecked = Read_DCIni("CustomNick", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             rbtn16.IsChecked = !rbtn17.IsChecked;
             if (rbtn17.IsChecked == true)
             {
@@ -101,8 +101,8 @@ namespace Hiro
                 if (App.wnd != null)
                     App.wnd.trayText.Text = Read_DCIni("CustomHIRO", "Hiro");
             }
-            msg_audio.IsChecked = Read_DCIni("MessageAudio", "1").Equals("1");
-            msg_auto.IsChecked = Read_DCIni("AutoChat", "1").Equals("1");
+            msg_audio.IsChecked = Read_DCIni("MessageAudio", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            msg_auto.IsChecked = Read_DCIni("AutoChat", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             tb10.Text = Read_DCIni("CustomHIRO", "");
             var str = Read_DCIni("CustomSign", string.Empty);
             if (str.Trim().Equals(string.Empty))
@@ -116,7 +116,7 @@ namespace Hiro
                 Profile_Signature.Foreground = (SolidColorBrush)Resources["AppFore"];
             }
             str = Read_DCIni("CustomName", string.Empty);
-            if (Read_DCIni("CustomUser", "1").Equals("1") || str.Trim().Equals(string.Empty))
+            if (Read_DCIni("CustomUser", "false").Equals("false", StringComparison.CurrentCultureIgnoreCase) || str.Trim().Equals(string.Empty))
             {
                 Profile_Nickname.Content = App.username;
                 Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
@@ -256,7 +256,7 @@ namespace Hiro
 
         private void Rbtn16_Checked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "CustomNick", "1");
+            Write_Ini(App.dConfig, "Config", "CustomNick", "false");
             tb10.IsEnabled = false;
             App.appTitle = Hiro_Resources.ApplicationName;
             Title = HText.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", HText.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion));
@@ -270,7 +270,7 @@ namespace Hiro
         }
         private void Rbtn17_Checked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "CustomNick", "2");
+            Write_Ini(App.dConfig, "Config", "CustomNick", "true");
             tb10.IsEnabled = true;
             App.appTitle = tb10.Text;
             Title = HText.Get_Translate("mainTitle").Replace("%a", App.appTitle).Replace("%v", HText.Get_Translate("version").Replace("%c", Hiro_Resources.ApplicationVersion)); ;
@@ -285,7 +285,7 @@ namespace Hiro
 
         private void Tb10_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Read_DCIni("CustomNick", "1").Equals("2"))
+            if (Read_DCIni("CustomNick", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
             {
                 Write_Ini(App.dConfig, "Config", "CustomHIRO", tb10.Text);
                 App.appTitle = tb10.Text;
@@ -347,7 +347,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "MessageAudio", "1");
+                Write_Ini(App.dConfig, "Config", "MessageAudio", "true");
             }
         }
 
@@ -355,7 +355,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "MessageAudio", "0");
+                Write_Ini(App.dConfig, "Config", "MessageAudio", "false");
             }
         }
 
@@ -363,7 +363,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "AutoChat", "1");
+                Write_Ini(App.dConfig, "Config", "AutoChat", "true");
                 if (Hiro_Main != null)
                     Hiro_Main.hiro_chat ??= new(Hiro_Main);
             }
@@ -373,7 +373,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "AutoChat", "0");
+                Write_Ini(App.dConfig, "Config", "AutoChat", "false");
             }
         }
 
@@ -432,14 +432,14 @@ namespace Hiro
             {
                 if (Profile_Nickname_Textbox.Text.Trim().Equals(string.Empty))
                 {
-                    Write_Ini(App.dConfig, "Config", "CustomUser", "1");
+                    Write_Ini(App.dConfig, "Config", "CustomUser", "true");
                     App.CustomUsernameFlag = 0;
                     App.username = App.eUserName;
                     Profile_Nickname.Foreground = (SolidColorBrush)Resources["AppForeDisabled"];
                 }
                 else
                 {
-                    Write_Ini(App.dConfig, "Config", "CustomUser", "2");
+                    Write_Ini(App.dConfig, "Config", "CustomUser", "true");
                     Write_Ini(App.dConfig, "Config", "CustomName", Profile_Nickname_Textbox.Text);
                     App.CustomUsernameFlag = 1;
                     App.username = Profile_Nickname_Textbox.Text;
@@ -631,7 +631,7 @@ namespace Hiro
                         hh = Profile_Rectangle.Height * 2;
                     });
                     bool m = false;
-                    if (Read_DCIni("Compression", "1").Equals("1"))
+                    if (Read_DCIni("Compression", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
                         if (ww < w && hh < h)
                         {
@@ -745,7 +745,7 @@ namespace Hiro
                         hh = Profile_Background.Height * 1.5;
                     });
                     bool m = false;
-                    if (Read_DCIni("Compression", "1").Equals("1"))
+                    if (Read_DCIni("Compression", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
                         if (ww < w && hh < h)
                         {

@@ -114,9 +114,9 @@ namespace Hiro
                         Dispatcher.Invoke(() =>
                         {
                             if (Auto_Login.IsChecked == true)
-                                Write_Ini(App.dConfig, "Config", "AutoLogin", "1");
+                                Write_Ini(App.dConfig, "Config", "AutoLogin", "true");
                             else
-                                Write_Ini(App.dConfig, "Config", "AutoLogin", "0");
+                                Write_Ini(App.dConfig, "Config", "AutoLogin", "false");
                         });
                         Write_Ini(App.dConfig, "Config", "Token", Read_Ini(tmp, "Login", "msg", string.Empty));
                         Write_Ini(App.dConfig, "Config", "User", Read_Ini(tmp, "Login", "usr", string.Empty));

@@ -41,7 +41,7 @@ namespace Hiro
             HUI.SetCustomWindowIcon(this);
             new System.Threading.Thread(() =>
             {
-                if (HSet.Read_DCIni("HiBoxAudio", "1").Equals("1"))
+                if (HSet.Read_DCIni("HiBoxAudio", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     try
                     {
                         var fileP = HSet.Read_PPDCIni("BoxAudioPath", "<current>\\system\\sounds\\achievement.wav");

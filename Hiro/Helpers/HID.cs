@@ -87,8 +87,8 @@ namespace Hiro.Helpers
             App.username = App.eUserName;
             App.CustomUsernameFlag = 0;
             Write_Ini(App.dConfig, "Config", "Token", string.Empty);
-            Write_Ini(App.dConfig, "Config", "AutoLogin", "0");
-            Write_Ini(App.dConfig, "Config", "CustomUser", "0");
+            Write_Ini(App.dConfig, "Config", "AutoLogin", "false");
+            Write_Ini(App.dConfig, "Config", "CustomUser", "false");
             Write_Ini(App.dConfig, "Config", "CustomName", string.Empty);
             Write_Ini(App.dConfig, "Config", "CustomSign", string.Empty);
             Write_Ini(App.dConfig, "Config", "UserAvatarStyle", string.Empty);
@@ -269,7 +269,7 @@ namespace Hiro.Helpers
                         }
                         if (App.dflag)
                             HLogger.LogtoFile(File.ReadAllText(saveto));
-                        Write_Ini(App.dConfig, "Config", "CustomUser", "2");
+                        Write_Ini(App.dConfig, "Config", "CustomUser", "true");
                         UpdateUserInfo(saveto, "Name", "CustomName");
                         UpdateUserInfo(saveto, "Sign", "CustomSign");
                         UpdateUserInfo(saveto, "Avatar", "UserAvatarStyle");

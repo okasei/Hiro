@@ -890,7 +890,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 {
                     var StrFileName = HText.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
                     StrFileName = HText.Path_PPX(Read_Ini(StrFileName, UserId, "Avatar", string.Empty));
-                    App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); }), new() { Location = StrFileName }));
+                    App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); }), new() { Location = StrFileName, HeroImage = HText.Path_PPX(Read_Ini(StrFileName, UserId, "Background", string.Empty)) }));
                 }
                 if (Read_DCIni("MessageAudio", "1").Equals("1"))
                     try
@@ -1445,7 +1445,7 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
             Clipboard.SetText(Profile_Mac.Content.ToString());
             var StrFileName = HText.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
             StrFileName = HText.Path_PPX(Read_Ini(StrFileName, UserId, "Avatar", string.Empty));
-            App.Notify(new(HText.Get_Translate("chatmcopy").Replace("%u", Aite), 2, HText.Get_Translate("chat"), null, new() { Location = StrFileName }));
+            App.Notify(new(HText.Get_Translate("chatmcopy").Replace("%u", Aite), 2, HText.Get_Translate("chat"), null, new() { Location = StrFileName, HeroImage = HText.Path_PPX(Read_Ini(StrFileName, UserId, "Background", string.Empty)) }));
         }
 
         private void Profile_MouseEnter(object sender, MouseEventArgs e)

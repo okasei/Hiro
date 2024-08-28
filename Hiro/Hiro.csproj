@@ -33,8 +33,8 @@
     <!-- dlls that you don't want to be moved or can not be moved -->
     <!-- <BeautyExcludes>dll1.dll;lib*;...</BeautyExcludes> -->
     <!-- dlls that end users never needed, so hide them -->
-    <BeautyHiddens>hostfxr;hostpolicy</BeautyHiddens>
-    <!-- ;*.deps.json;*.runtimeconfig*.json well, this can not be hidden...-->
+    <BeautyHiddens>hostfxr;hostpolicy;*.deps.json;*.runtimeconfig*.json</BeautyHiddens>
+    <!--  well, this can not be hidden...-->
     <!-- set to True if you want to disable -->
     <DisableBeauty>False</DisableBeauty>
     <!-- set to False if you want to beauty on build -->
@@ -42,7 +42,7 @@
     <!-- DO NOT TOUCH THIS OPTION -->
     <BeautyNoRuntimeInfo>False</BeautyNoRuntimeInfo>
     <!-- set to True if you want to allow 3rd debuggers(like dnSpy) debugs the app -->
-    <BeautyEnableDebugging>False</BeautyEnableDebugging>
+    <BeautyEnableDebugging>True</BeautyEnableDebugging>
     <!-- the patch can reduce the file count -->
     <!-- set to False if you want to disable -->
     <!-- SCD Mode Feature Only -->

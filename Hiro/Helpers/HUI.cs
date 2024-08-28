@@ -8,6 +8,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Hiro.ModelViews;
 using static Hiro.Helpers.HSet;
+using System.Reflection.Metadata;
 
 namespace Hiro.Helpers
 {
@@ -594,5 +595,23 @@ namespace Hiro.Helpers
 
         }
         #endregion
+
+        internal static bool IsInRange(FrameworkElement control, Point p)
+        {
+            if (control.Visibility != Visibility.Visible)
+                return false;
+            var _s = HWin.GetDpiScale();
+            var rect = new Rect(control.PointToScreen(
+                new Point()),
+                new Size(control.Width * _s.Width, control.Height * _s.Height));
+            return rect.Contains(p);
+        }
+
+        internal static bool IsInRange(FrameworkElement control, IntPtr lParam)
+        {
+            int x = lParam.ToInt32() & 0xffff;
+            int y = lParam.ToInt32() >> 16;
+            return IsInRange(control, new Point(x, y));
+        }
     }
 }

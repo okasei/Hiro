@@ -86,11 +86,21 @@ namespace Hiro
                         HLogger.LogError(ex, "Hiro.Exception.Player.Tick");
                     }
                 };
-                _smtcCreator ??= new HSMTCCreator("Hiro.exe");
-                _smtcCreator.SetMediaStatus(SMTCMediaStatus.Stopped);
-                _smtcCreator.PlayOrPause += _smtcCreator_PlayOrPause;
-                _smtcCreator.Previous += _smtcCreator_Previous;
-                _smtcCreator.Next += _smtcCreator_Next;
+                if (Read_DCIni("EnableSMTC", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    try
+                    {
+                        _smtcCreator ??= new HSMTCCreator("Hiro.exe");
+                        _smtcCreator.SetMediaStatus(SMTCMediaStatus.Stopped);
+                        _smtcCreator.PlayOrPause += _smtcCreator_PlayOrPause;
+                        _smtcCreator.Previous += _smtcCreator_Previous;
+                        _smtcCreator.Next += _smtcCreator_Next;
+                    }
+                    catch (Exception ex)
+                    {
+                        HLogger.LogError(ex, "Hiro.Exception.Player.SMTC.Initialize");
+                    }
+                }
             };
             SourceInitialized += OnSourceInitialized;
         }
@@ -253,7 +263,14 @@ namespace Hiro
             Ctrl_Time.Content = "00:00";
             if (App.dflag)
                 HLogger.LogtoFile($"[Player] MediaEnded");
-            _smtcCreator?.SetMediaStatus(SMTCMediaStatus.Stopped);
+            try
+            {
+                _smtcCreator?.SetMediaStatus(SMTCMediaStatus.Stopped);
+            }
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, "Hiro.Exception.Player.SMTC.Stop");
+            }
             System.Threading.Tasks.Task.Delay(Read_DCIni("Performance", "0") switch
             {
                 "1" => TimeSpan.FromMilliseconds(500),
@@ -488,17 +505,24 @@ namespace Hiro
                             _tts = true;
                             if (!LoadMusicGrid())
                             {
-                                if (_smtcCreator != null)
+                                try
                                 {
-                                    _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
-                                    _smtcCreator.Info.SetArtist(uri)
-                                        .SetTitle(HFile.GetFileName(uri))
-                                        .Update();
+                                    if (_smtcCreator != null)
+                                    {
+                                        _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
+                                        _smtcCreator.Info.SetArtist(uri)
+                                            .SetTitle(HFile.GetFileName(uri))
+                                            .Update();
+                                    }
                                 }
+                                catch (Exception ex)
+                                {
+                                    HLogger.LogError(ex, "Hiro.Exception.Player.SMTC.Update");
+                                }
+
                             }
                             _currentCondition = 2;
                             _dst.Start();
-                            Dgi.IsEnabled = true;
                         }
                     });
 
@@ -566,13 +590,20 @@ namespace Hiro
                     MusicArtist.Text = _artist ?? HText.Get_Translate("musicArtist");
                     MusicAlbum.Text = _album ?? HText.Get_Translate("musicAlbum");
                     ShowContainer(MusicGrid, -100, 200, 300);
-                    if (_smtcCreator != null)
+                    try
                     {
-                        _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
-                        _smtcCreator.Info.SetAlbumTitle(MusicAlbum.Text)
-                            .SetArtist(MusicArtist.Text)
-                            .SetTitle(MusicTitle.Text)
-                            .Update();
+                        if (_smtcCreator != null)
+                        {
+                            _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
+                            _smtcCreator.Info.SetAlbumTitle(MusicAlbum.Text)
+                                .SetArtist(MusicArtist.Text)
+                                .SetTitle(MusicTitle.Text)
+                                .Update();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        HLogger.LogError(ex, "Hiro.Exception.Player.SMTC.Update");
                     }
                     return true;
                 }
@@ -783,7 +814,14 @@ namespace Hiro
                     Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Paused, new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     Media.Pause();
                     _currentCondition = 1;
-                    _smtcCreator?.SetMediaStatus(SMTCMediaStatus.Paused);
+                    try
+                    {
+                        _smtcCreator?.SetMediaStatus(SMTCMediaStatus.Paused);
+                    }
+                    catch (Exception ex)
+                    {
+                        HLogger.LogError(ex, "Hiro.Exception.Player.SMTC.Pause");
+                    }
                     Player_Notify(HText.Get_Translate("playerpause"));
                 }
                 else
@@ -791,7 +829,14 @@ namespace Hiro
                     Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     Media.Play();
                     _currentCondition = 2;
-                    _smtcCreator?.SetMediaStatus(SMTCMediaStatus.Playing);
+                    try
+                    {
+                        _smtcCreator?.SetMediaStatus(SMTCMediaStatus.Playing);
+                    }
+                    catch (Exception ex)
+                    {
+                        HLogger.LogError(ex, "Hiro.Exception.Player.SMTC.Play");
+                    }
                     Player_Notify(HText.Get_Translate("playerplay"));
                 }
             }
@@ -1482,7 +1527,6 @@ namespace Hiro
         {
             if (Dgi.SelectedIndex > -1)
             {
-                Dgi.IsEnabled = false;
                 PlayIndex(Dgi.SelectedIndex);
             }
 
@@ -1514,17 +1558,24 @@ namespace Hiro
                                 _tts = true;
                                 if (!LoadMusicGrid())
                                 {
-                                    if (_smtcCreator != null)
+                                    try
                                     {
-                                        _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
-                                        _smtcCreator.Info.SetArtist(uri)
-                                            .SetTitle(HFile.GetFileName(uri))
-                                            .Update();
+                                        if (_smtcCreator != null)
+                                        {
+                                            _smtcCreator.SetMediaStatus(SMTCMediaStatus.Playing);
+                                            _smtcCreator.Info.SetArtist(uri)
+                                                .SetTitle(HFile.GetFileName(uri))
+                                                .Update();
+                                        }
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        HLogger.LogError(ex, "Hiro.Exception.Player.SMTC.Update");
+                                    }
+
                                 }
                                 _currentCondition = 2;
                                 _dst.Start();
-                                Dgi.IsEnabled = true;
                             }
                         }
                         catch (Exception ex)

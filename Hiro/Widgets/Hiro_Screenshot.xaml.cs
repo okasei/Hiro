@@ -19,17 +19,6 @@ public partial class Hiro_Screenshot : Window
     private System.Windows.Point endPoint;
     private bool isSelecting = false;
     private BitmapSource fullScreenshot;
-    [DllImport("user32.dll")]
-    private static extern IntPtr GetDC(IntPtr hWnd);
-
-    [DllImport("gdi32.dll")]
-    private static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
-
-    [DllImport("user32.dll")]
-    private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
-
-    private const int LOGPIXELSX = 88;
-    private const int LOGPIXELSY = 90;
 
     private double dpiFactorX;
     private double dpiFactorY;
@@ -72,10 +61,9 @@ public partial class Hiro_Screenshot : Window
     }
     private void InitializeDpiFactors()
     {
-        IntPtr hdc = GetDC(IntPtr.Zero);
-        dpiFactorX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0;
-        dpiFactorY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0;
-        ReleaseDC(IntPtr.Zero, hdc);
+        var _s = HWin.GetDpiScale();
+        dpiFactorX = _s.Width;
+        dpiFactorY = _s.Height;
     }
 
 

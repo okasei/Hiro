@@ -141,7 +141,7 @@ namespace Hiro
             {
                 if (App.dflag)
                     LogtoFile($"[RUN]Path: {RunPath}, Source: {source ?? "Null"}");
-                var path = Path_Prepare_EX(Path_Prepare(RunPath));
+                var path = Path_PPX(RunPath);
                 try
                 {
                     if (StartsWith(path, "base("))
@@ -185,13 +185,15 @@ namespace Hiro
                         {
                             if (path.ToLower().EndsWith(".hiro"))
                             {
-                                LogtoFile("[RUN]Hiro file detected");
+                                if (App.dflag)
+                                    LogtoFile("[RUN]Hiro file detected");
                                 path = $"seq(\"{path}\")";
                                 parameter = HiroCmdParse(path);
                             }
                             else if (path.ToLower().EndsWith(".hef"))
                             {
-                                LogtoFile("[RUN]Encrypted file detected");
+                                if (App.dflag)
+                                    LogtoFile("[RUN]Encrypted file detected");
                                 path = $"decrypt(\"{path}\")";
                                 parameter = HiroCmdParse(path);
                             }
@@ -660,7 +662,7 @@ namespace Hiro
                     #endregion
                     if ((disturb == 1 && IsForegroundFullScreen()) || disturb == 0)
                     {
-                        App.mn?.AddToInfoCenter($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ")}{Environment.NewLine}\t{Get_Translate("infocmd")}:\t{RunPath}{Environment.NewLine}\t{Get_Translate("infosource")}:\t{source} {Environment.NewLine} ");
+                        App.mn?.AddToInfoCenter($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}\t{Get_Translate("infocmd")}:\t{RunPath}{Environment.NewLine}\t{Get_Translate("infosource")}:\t{source} {Environment.NewLine} ");
                         goto RunOK;
                     }
                     #region 可能造成打扰的命令
@@ -668,7 +670,7 @@ namespace Hiro
                     {
                         HiroInvoke(() =>
                         {
-                            new Hiro_Screenshot().Show();
+                            new Tests.Hiro_Mica().Show();
                         });
                         goto RunOK;
                     }
@@ -967,10 +969,7 @@ namespace Hiro
                     if (HText.StartsWith(path, "alarm("))
                     {
                         var pa = parameter[0];
-                        var os = Get_OSVersion();
-                        if (os.IndexOf(".") != -1)
-                            os = os[..os.IndexOf(".")];
-                        var boo = Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10;
+                        var boo = HWin.IsWindows10() && Read_Ini(App.dConfig, "Config", "Toast", "0").Equals("1");
                         if (boo)
                         {
                             if (HText.StartsWith(pa, "http://") || HText.StartsWith(pa, "https://"))
@@ -1231,6 +1230,11 @@ namespace Hiro
                                         Location = p4
                                     };
                                 }
+                                if (parameter.Count > 5)
+                                {
+                                    var p5 = parameter[5];
+                                    hicon.HeroImage = p5;
+                                }
                                 if (File.Exists(titile))
                                     titile = File.ReadAllText(titile).Replace(Environment.NewLine, "\\n");
                                 if (parameter.Count > 2)
@@ -1250,7 +1254,7 @@ namespace Hiro
                     {
                         if (App.mn != null)
                         {
-                            RunExe($"run(\"{Hiro_Resources.ApplicationPath}\",,\"base({Convert.ToBase64String(Encoding.Default.GetBytes(path))})\" utils)");
+                            OpenInNewHiro($"\"base({Convert.ToBase64String(Encoding.Default.GetBytes(path))})\"", false);
                         }
                         else
                         {
@@ -1266,7 +1270,7 @@ namespace Hiro
                     }
                     if (HText.StartsWith(path, "web("))
                     {
-                        if (Read_Ini(App.dConfig, "Config", "URLConfirm", "0").Equals("1") && urlCheck && App.mn == null)
+                        if (Read_Ini(App.dConfig, "Config", "URLConfirm", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase) && urlCheck && App.mn == null)
                         {
                             var acbak = autoClose;
                             var confrimWin = Path_Prepare_EX(Path_Prepare("<capp>\\<lang>\\url.hms"));
@@ -1326,7 +1330,7 @@ namespace Hiro
                         {
                             if (App.mn != null)
                             {
-                                RunExe($"run(\"{Hiro_Resources.ApplicationPath}\",,\"base({Convert.ToBase64String(Encoding.Default.GetBytes(path))})\" utils)");
+                                OpenInNewHiro($"\"base({Convert.ToBase64String(Encoding.Default.GetBytes(path))})\"", false);
                             }
                             else
                             {
@@ -1475,7 +1479,7 @@ namespace Hiro
                         });
                         goto RunOK;
                     }
-                    if (Read_Ini(App.dConfig, "Config", "URLConfirm", "0").Equals("1") &&
+                    if (Read_Ini(App.dConfig, "Config", "URLConfirm", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase) &&
                     (parameter[0].ToLower().StartsWith("https://") || parameter[0].ToLower().StartsWith("http://")
                     || parameter[0].ToLower().Equals("firefox")
                     || parameter[0].ToLower().Equals("chrome")
@@ -1620,6 +1624,30 @@ namespace Hiro
                     LogError(ex, $"Hiro.Exception.Run.Process{Environment.NewLine}");
                 }
             }
+        }
+
+        internal static bool OpenInNewHiro(string path, bool admin = false)
+        {
+            try
+            {
+                ProcessStartInfo pinfo = new()
+                {
+                    UseShellExecute = true,
+                    FileName = Path_Prepare(Hiro_Resources.ApplicationPath),
+                    Arguments = path,
+                    WorkingDirectory = Path_Prepare("<current>")
+                };
+                if (admin)
+                    pinfo.Verb = "runas";
+                _ = Process.Start(pinfo);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, "Hiro.Exception.OpenInNew");
+                return false;
+            }
+
         }
 
         private static bool IsRegexPattern(string str)
@@ -2017,10 +2045,7 @@ namespace Hiro
         }
         public async static void Register(Action success, Action falied, Action cancel)
         {
-            var os = Get_OSVersion();
-            if (os.IndexOf(".") != -1)
-                os = os[..os.IndexOf(".")];
-            if (int.TryParse(os, out int a) && a >= 10)
+            if (HWin.IsWindows10())
             {
                 var keyCredentialAvailable = await KeyCredentialManager.IsSupportedAsync();
                 if (!keyCredentialAvailable)
@@ -2240,7 +2265,7 @@ namespace Hiro
                     Microsoft.Win32.RegistryKey? registry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);//检索指定的子项
                     registry ??= Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                     registry.SetValue("Hiro_Autostart", strName + " silent");//设置该子项的新的“键值对”
-                    Write_Ini(App.dConfig, "Config", "AutoRun", "1");
+                    Write_Ini(App.dConfig, "Config", "AutoRun", "true");
                     LogtoFile("[HIROWEGO]Enable Autorun");
                 }
                 catch (Exception ex)
@@ -2255,7 +2280,7 @@ namespace Hiro
                     return;
                 registry = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");//则创建指定的子项
                 registry.DeleteValue("Hiro_Autostart", false);//删除指定“键名称”的键/值对
-                Write_Ini(App.dConfig, "Config", "AutoRun", "0");
+                Write_Ini(App.dConfig, "Config", "AutoRun", "false");
                 LogtoFile("[HIROWEGO]Disable Autorun");
             }
         }
@@ -2290,7 +2315,7 @@ namespace Hiro
                 mAppAccentColor = GetThemeColor();
             }
             App.AppAccentColor = mAppAccentColor;
-            App.AppForeColor = Get_ForeColor(mAppAccentColor, Read_Ini(App.dConfig, "Config", "Reverse", "0").Equals("1"));
+            App.AppForeColor = Get_ForeColor(mAppAccentColor, Read_Ini(App.dConfig, "Config", "Reverse", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase));
             LogtoFile("[HIROWEGO]Accent Color: " + App.AppAccentColor.ToString());
             LogtoFile("[HIROWEGO]Fore Color: " + App.AppForeColor.ToString());
         }

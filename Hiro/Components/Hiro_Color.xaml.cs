@@ -132,7 +132,7 @@ namespace Hiro
                 return;
             color_text.Text = $"#{_color.R:X2}{_color.G:X2}{_color.B:X2}";
             color_ex.Background = new SolidColorBrush(_color);
-            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(_color, HSet.Read_DCIni("Reverse", "0").Equals("1")));
+            color_ex.Foreground = new SolidColorBrush(Hiro_Utils.Get_ForeColor(_color, HSet.Read_DCIni("Reverse", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase)));
         }
         private void Color_text_KeyUp(object sender, KeyEventArgs e)
         {

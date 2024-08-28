@@ -155,7 +155,7 @@ namespace Hiro
         {
             if (ApiInformation.IsTypePresent("Windows.UI.Notifications.Management.UserNotificationListener"))
             {
-                if (Read_DCIni("Toast", "0").Equals("1"))
+                if (Read_DCIni("MonitorSys", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase) && Read_DCIni("Toast", "0").Equals("1"))
                     Write_Ini(dConfig, "Config", "Toast", "0");
                 listener = UserNotificationListener.Current;
                 // And request access to the user's notifications (must be called from UI thread)
@@ -385,7 +385,7 @@ namespace Hiro
                                 LogtoFile("[HIROWEGO]Silent Start");
                             else
                                 mn.Show();
-                            if (Read_DCIni("AutoLogin", "0").Equals("1"))
+                            if (Read_DCIni("AutoLogin", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                             {
                                 LogtoFile("[INFO]AutoLogin enabled");
                                 new System.Threading.Thread(() =>
@@ -418,7 +418,7 @@ namespace Hiro
                             }
                             if (autoexe)
                             {
-                                if (Read_DCIni("AutoExe", "1").Equals("2"))
+                                if (Read_DCIni("AutoExe", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                                     Hiro_Utils.RunExe(Read_DCIni("AutoAction", "nop"), Get_Translate("autoexe"));
                             }
                             InitializeMethod();
@@ -441,18 +441,36 @@ namespace Hiro
             int disturb = int.Parse(Read_DCIni("Disturb", "2"));
             if ((disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0))
             {
-                var os = Hiro_Utils.Get_OSVersion();
-                if (os.IndexOf(".") != -1)
-                    os = os[..os.IndexOf(".")];
-                if (Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
+                if (HWin.IsWindows10() && Read_DCIni("Toast", "0").Equals("1"))
                 {
                     Hiro_Utils.HiroInvoke(() =>
                     {
-                        new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                        var _h = Path_PPX(i.icon?.HeroImage ?? "");
+                        if (File.Exists(_h))
+                        {
+                            try
+                            {
+                                new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                                        .AddText(title)
+                                        .AddText(i.msg.Replace("\\n", Environment.NewLine))
+                                        .AddArgument("category", "notification")
+                                        .AddHeroImage(new Uri(_h))
+                                        .Show();
+                            }
+                            catch (Exception ex)
+                            {
+                                HLogger.LogError(ex, "Hiro.Exception.Toast.HeroKind");
+                            }
+
+                        }
+                        else
+                        {
+                            new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                                         .AddText(title)
                                         .AddText(i.msg.Replace("\\n", Environment.NewLine))
                                         .AddArgument("category", "notification")
                                         .Show();
+                        }
                     });
 
                 }
@@ -634,7 +652,7 @@ namespace Hiro
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(lang);
             LogtoFile("[HIROWEGO]Current language: " + lang);
             langFilePath = currentDir + "\\system\\lang\\" + lang + ".hlp";
-            appTitle = Read_DCIni("CustomNick", "1").Equals("2") ? Read_DCIni("CustomHIRO", "Hiro") : Hiro_Resources.ApplicationName;
+            appTitle = Read_DCIni("CustomNick", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase) ? Read_DCIni("CustomHIRO", "Hiro") : Hiro_Resources.ApplicationName;
             System.IO.DirectoryInfo di = new(currentDir + "\\system\\lang\\");
             foreach (System.IO.FileInfo fi in di.GetFiles())
             {
@@ -648,9 +666,9 @@ namespace Hiro
                     }
                 }
             }
-            switch (Read_DCIni("CustomUser", "1"))
+            switch (Read_DCIni("CustomUser", "false"))
             {
-                case "2":
+                case "true":
                     CustomUsernameFlag = 1;
                     username = Read_DCIni("CustomName", "");
                     break;
@@ -660,9 +678,9 @@ namespace Hiro
                     break;
             }
             HID.version = "v" + Read_DCIni("AppVer", "1");
-            if (Read_DCIni("CustomNick", "1").Equals("2"))
+            if (Read_DCIni("CustomNick", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 appTitle = Read_DCIni("CustomHIRO", "Hiro");
-            if (Read_DCIni("TRBtn", "0").Equals("1"))
+            if (Read_DCIni("TRBtn", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 trval = 0;
             if (Read_Ini(dConfig, "Network", "Proxy", "0").Equals("1"))//IE Proxy
             {
@@ -700,7 +718,7 @@ namespace Hiro
             LogtoFile("[DEVICE]Current OS: " + Hiro_Utils.Get_OSVersion());
             loginedUser = Read_DCIni("User", string.Empty);
             loginedToken = Read_DCIni("Token", string.Empty);
-            AutoChat = Read_DCIni("AutoChat", "1").Equals("1");
+            AutoChat = Read_DCIni("AutoChat", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
         }
 
         private static void InitializeMethod()
@@ -806,10 +824,7 @@ namespace Hiro
                     var b = (disturb == 1 && !Hiro_Utils.IsForegroundFullScreen()) || (disturb != 1 && disturb != 0);
                     if (a && b)
                     {
-                        var os = Hiro_Utils.Get_OSVersion();
-                        if (os.Contains(".", StringComparison.CurrentCulture))
-                            os = os[..os.IndexOf(".")];
-                        if (Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int r) && r >= 10)
+                        if (HWin.IsWindows10() && Read_DCIni("Toast", "0").Equals("1"))
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .SetToastScenario(Microsoft.Toolkit.Uwp.Notifications.ToastScenario.Alarm)
@@ -904,7 +919,7 @@ namespace Hiro
         {
             try
             {
-                if (!Read_DCIni("MonitorSys", "1").Equals("1"))
+                if (!Read_DCIni("MonitorSys", "true").Equals("true"))
                     return;
                 if (Read_DCIni("Toast", "0").Equals("1"))
                     Write_Ini(dConfig, "Config", "Toast", "0");
@@ -938,7 +953,7 @@ namespace Hiro
                     // We'll treat all subsequent text elements as body text,
                     // joining them together via newlines.
                     string bodyText = string.Join(Environment.NewLine, textElements.Skip(1).Select(t => t.Text));
-                    var iconFile = Path_PPX("<current>\\system\\icons\\clsids\\") + notif.AppInfo.AppUserModelId + ".hsic";
+                    var iconFile = Path_PPX("<current>\\system\\icons\\") + notif.AppInfo.AppUserModelId + ".hsic";
                     if (!System.IO.File.Exists(iconFile))
                     {
                         HFile.CreateFolder(iconFile);
@@ -967,6 +982,7 @@ namespace Hiro
                     }
                     Hiro_Icon icon = new();
                     icon.Location = iconFile;
+                    icon.HeroImage = iconFile;
                     Notify(new Hiro_Notice(bodyText, 1, Get_Translate("winNotice").Replace("%a", appName).Replace("%t", titleText), null, icon));
                 }
             }

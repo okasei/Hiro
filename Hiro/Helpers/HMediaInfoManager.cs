@@ -93,23 +93,15 @@ namespace Hiro.Helpers
                     title = title.Equals(string.Empty) ? HText.Get_Translate("musicTitle") : title;
                     artist = artist.Equals(string.Empty) ? HText.Get_Translate("musicArtist") : artist;
                     //Music
-                    if (HSet.Read_DCIni("Verbose", "0").Equals("1"))
+                    if (HSet.Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var _ico = string.Empty;
-                        var _tra = "music";
-                        var _app = _session?.SourceAppUserModelId ?? "Unknown".Replace(".exe", string.Empty);
-                        var _exe = new string[] { "qqmusic.exe", "neteasemusic.exe", "kuwo.exe", "kugou.exe", "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify", "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App", "Hiro.exe" };
-                        var _tran = new string[] { "qqmusic", "cloudmusic", "kwmusic", "kgmusic", "spotify", "applemusic", "player" };
-                        var _icon = new string[] { "<current>\\system\\icons\\qqmusic.png", "<current>\\system\\icons\\neteasemusic.png", "<current>\\system\\icons\\kuwomusic.png", "<current>\\system\\icons\\kgmusic.png", "<current>\\system\\icons\\spotify.png", "<current>\\system\\icons\\applemusic.png", "<current>\\system\\icons\\hiro.png" };
-                        for (int i = 0; i < _exe.Length; i++)
-                        {
-                            if (_exe[i].Equals(_app, StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                _tra = _tran[i];
-                                _ico = _icon[i];
-                                break;
-                            }
-                        }
+                        var _app = _session?.SourceAppUserModelId ?? "Unknown";
+                        var _mConfig = HText.Path_PPX("<current>\\system\\music\\music.hus");
+                        if (HSet.Read_Ini(_mConfig, "Config", "BanApp", string.Empty).Contains($";{_app};"))
+                            return;
+                        var _ico = HSet.Read_Ini(_mConfig, "Icon", _app, string.Empty);
+                        var _hero = HSet.Read_Ini(_mConfig, "Hero", _app, string.Empty);
+                        var _tra = HSet.Read_Ini(_mConfig,"Translation",_app, "music");
                         Hiro_Utils.HiroInvoke(async () =>
                         {
                             BitmapImage? _thumbi = null;
@@ -132,11 +124,18 @@ namespace Hiro.Helpers
                             Hiro_Icon? _hicon = null;
                             if (_thumbi != null)
                             {
-                                _hicon = new Hiro_Icon() { Image = _thumbi };
+                                _hicon ??= new();
+                                _hicon.Image = _thumbi;
                             }
-                            else if (!_icon.Equals(string.Empty))
+                            if (!_ico.Equals(string.Empty))
                             {
-                                _hicon = new Hiro_Icon() { Location = _ico };
+                                _hicon ??= new();
+                                _hicon.Location = _ico;
+                            }
+                            if (!_hero.Equals(string.Empty))
+                            {
+                                _hicon ??= new();
+                                _hicon.HeroImage = _hero;
                             }
                             App.Notify(new(HText.Get_Translate("musicInfo").Replace("%a", artist).Replace("%t", title), 2, HText.Get_Translate(_tra), null, _hicon));
                         });

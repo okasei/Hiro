@@ -130,10 +130,7 @@ namespace Hiro
                         info = info[..info.IndexOf("]")].Replace("\\n", Environment.NewLine);
                         string url = ups[(ups.IndexOf("url:[") + "url:[".Length)..];
                         url = url[..url.IndexOf("]")];
-                        var os = Hiro_Utils.Get_OSVersion();
-                        if (os.IndexOf(".") != -1)
-                            os = os[..os.IndexOf(".")];
-                        if (HSet.Read_DCIni("Toast", "0").Equals("1") && int.TryParse(os, out int a) && a >= 10)
+                        if (HWin.IsWindows10() && HSet.Read_DCIni("Toast", "0").Equals("1"))
                         {
                             new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                             .AddText(HText.Get_Translate("updatetitle"))

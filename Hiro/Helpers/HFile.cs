@@ -259,13 +259,13 @@ namespace Hiro.Helpers
         internal static bool isImageFile(string file)
         {
             var ext = TrimFileExt(file);
-            var aext = ",.png,.jpg,.jpeg,.bmp,.ico,.tiff,.apng,.jpe,.jfif,.dib,.heic,.heif,.hvp,.hpp,.hap,.hfp,";
+            var aext = ",.png,.jpg,.jpeg,.bmp,.ico,.tiff,.apng,.jpe,.jfif,.dib,.heic,.heif,.hvp,.hpp,.hap,.hfp,.hsic,";
             return aext.IndexOf(ext) != -1;
         }
         internal static bool isTextFile(string file)
         {
             var ext = TrimFileExt(file);
-            var aext = ",.txt,.ini,.log,.inf,.c,.h,.cpp,.cc,.cxx,.c++,.cs,.sln,.xml,.xaml,.htm,.html,.yaml,.json,.csproj,.py,.r,.php,.lock,.cfg,.hlp,.hus,.hsf,.csv,.java,.asp,.project,.classpath,.jsp,.js,.conf,.svn,.gitignore,.css,";
+            var aext = ",.txt,.ini,.log,.inf,.c,.h,.cpp,.cc,.cxx,.c++,.cs,.sln,.xml,.xaml,.htm,.html,.yaml,.json,.csproj,.py,.r,.php,.lock,.cfg,.hlp,.hus,.hsf,.hms,.hws,.csv,.java,.asp,.project,.classpath,.jsp,.js,.conf,.svn,.gitignore,.css,.config,";
             return aext.IndexOf(ext) != -1;
         }
 

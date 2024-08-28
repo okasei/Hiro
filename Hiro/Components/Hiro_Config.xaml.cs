@@ -177,32 +177,32 @@ namespace Hiro
                     rbtn17.IsChecked = true;
                     break;
             }
-            rbtn13.IsChecked = Read_DCIni("Autoexe", "1").Equals("2");
+            rbtn13.IsChecked = Read_DCIni("Autoexe", "false").Equals("true", StringComparison.InvariantCulture);
             rbtn12.IsChecked = !rbtn13.IsChecked;
-            cb_box.IsChecked = Read_DCIni("Min", "1").Equals("1");
+            cb_box.IsChecked = Read_DCIni("Min", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             rbtn15.IsChecked = Read_DCIni("Background", "1").Equals("2");
             rbtn14.IsChecked = Read_DCIni("Background", "1").Equals("1");
             acrylic_btn.IsChecked = Read_DCIni("Background", "1").Equals("3");
             video_btn.IsChecked = Read_DCIni("Background", "1").Equals("4");
-            Autorun.IsChecked = Read_DCIni("AutoRun", "0").Equals("1");
+            Autorun.IsChecked = Read_DCIni("AutoRun", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             blureff.IsChecked = Read_DCIni("Blur", "0") switch
             {
                 "2" => null,
                 "1" => true,
                 _ => false,
             };
-            Verbose.IsChecked = Read_DCIni("Verbose", "0").Equals("1");
+            Verbose.IsChecked = Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             animation.IsChecked = Read_DCIni("Ani", "2") switch
             {
                 "2" => null,
                 "1" => true,
                 _ => false,
             };
-            reverse_style.IsChecked = Read_DCIni("Reverse", "0").Equals("1");
-            tr_btn.IsChecked = Read_DCIni("TRBtn", "0").Equals("1");
-            image_compress.IsChecked = Read_DCIni("Compression", "1").Equals("1");
-            UrlConfirmBox.IsChecked = Read_DCIni("URLConfirm", "0").Equals("1");
-            MonitorSysBox.IsChecked = Read_DCIni("MonitorSys", "1").Equals("1");
+            reverse_style.IsChecked = Read_DCIni("Reverse", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            tr_btn.IsChecked = Read_DCIni("TRBtn", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            image_compress.IsChecked = Read_DCIni("Compression", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            UrlConfirmBox.IsChecked = Read_DCIni("URLConfirm", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase);
+            MonitorSysBox.IsChecked = Read_DCIni("MonitorSys", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             LowPerfermanceBox.IsChecked = Read_DCIni("Performance", "0") switch
             {
                 "1" => null,
@@ -422,12 +422,12 @@ namespace Hiro
 
         private void Rbtn12_Checked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "AutoExe", "1");
+            Write_Ini(App.dConfig, "Config", "AutoExe", "false");
         }
 
         private void Rbtn13_Checked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "AutoExe", "2");
+            Write_Ini(App.dConfig, "Config", "AutoExe", "true");
             tb5.IsEnabled = true;
         }
 
@@ -443,12 +443,12 @@ namespace Hiro
 
         private void Cb_box_Checked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "Min", "1");
+            Write_Ini(App.dConfig, "Config", "Min", "true");
         }
 
         private void Cb_box_Unchecked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "Min", "0");
+            Write_Ini(App.dConfig, "Config", "Min", "false");
         }
 
         private void Btn7_Click(object sender, RoutedEventArgs e)
@@ -463,12 +463,12 @@ namespace Hiro
 
         private void Verbose_Unchecked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "Verbose", "0");
+            Write_Ini(App.dConfig, "Config", "Verbose", "false");
         }
 
         private void Verbose_Checked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "Verbose", "1");
+            Write_Ini(App.dConfig, "Config", "Verbose", "true");
         }
 
         private void Animation_Checked(object sender, RoutedEventArgs e)
@@ -533,7 +533,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "Reverse", "1");
+                Write_Ini(App.dConfig, "Config", "Reverse", "true");
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
             }
@@ -544,7 +544,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "Reverse", "0");
+                Write_Ini(App.dConfig, "Config", "Reverse", "false");
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
             }
@@ -588,24 +588,9 @@ namespace Hiro
             if (Autorun.Tag != null && Autorun.Tag.Equals("1") && Load)
             {
                 Autorun.Tag = "2";
-                try
-                {
-                    if (Environment.ProcessPath != null)
-                    {
-                        System.Diagnostics.ProcessStartInfo pinfo = new()
-                        {
-                            UseShellExecute = true,
-                            FileName = HText.Path_Prepare(Hiro_Resources.ApplicationPath),
-                            Arguments = "autostart_on",
-                            Verb = "runas"
-                        };
-                        System.Diagnostics.Process.Start(pinfo);
-                    }
-                }
-                catch (Exception ex)
+                if (!Hiro_Utils.OpenInNewHiro("autostart_on", true))
                 {
                     Autorun.IsChecked = false;
-                    HLogger.LogError(ex, "Hiro.Exception.Config.Autorun");
                 }
             }
             Autorun.Tag = "1";
@@ -616,24 +601,10 @@ namespace Hiro
             if (Autorun.Tag != null && Autorun.Tag.Equals("1") && Load)
             {
                 Autorun.Tag = "2";
-                try
-                {
-                    if (Environment.ProcessPath != null)
-                    {
-                        System.Diagnostics.ProcessStartInfo pinfo = new()
-                        {
-                            UseShellExecute = true,
-                            FileName = HText.Path_Prepare(Hiro_Resources.ApplicationPath),
-                            Arguments = "autostart_off",
-                            Verb = "runas"
-                        };
-                        System.Diagnostics.Process.Start(pinfo);
-                    }
-                }
-                catch (Exception ex)
+
+                if (!Hiro_Utils.OpenInNewHiro("autostart_off", true))
                 {
                     Autorun.IsChecked = true;
-                    HLogger.LogError(ex, "Hiro.Exception.Config.Autorun");
                 }
             }
             Autorun.Tag = "1";
@@ -746,7 +717,7 @@ namespace Hiro
                                                 hh = Hiro_Main.Height * 2;
                                             }
                                         });
-                                        if (ww < w && hh < h && Read_DCIni("Compression", "1").Equals("1"))
+                                        if (ww < w && hh < h && Read_DCIni("Compression", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                                         {
                                             while (ww < w && hh < h)
                                             {
@@ -827,7 +798,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "TRBtn", "1");
+                Write_Ini(App.dConfig, "Config", "TRBtn", "true");
                 App.trval = 0;
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
@@ -838,7 +809,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "TRBtn", "0");
+                Write_Ini(App.dConfig, "Config", "TRBtn", "false");
                 App.trval = 160;
                 if (App.wnd != null)
                     App.wnd.Load_All_Colors();
@@ -888,7 +859,7 @@ namespace Hiro
             if (Load)
             {
                 image_compress.IsEnabled = false;
-                Write_Ini(App.dConfig, "Config", "Compression", "1");
+                Write_Ini(App.dConfig, "Config", "Compression", "true");
                 image_compress.IsEnabled = true;
             }
         }
@@ -897,7 +868,7 @@ namespace Hiro
         {
             if (Load)
             {
-                Write_Ini(App.dConfig, "Config", "Compression", "0");
+                Write_Ini(App.dConfig, "Config", "Compression", "false");
             }
         }
 
@@ -927,12 +898,12 @@ namespace Hiro
 
         private void UrlConfirmBox_Checked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "URLConfirm", "1");
+            Write_Ini(App.dConfig, "Config", "URLConfirm", "true");
         }
 
         private void UrlConfirmBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            Write_Ini(App.dConfig, "Config", "URLConfirm", "0");
+            Write_Ini(App.dConfig, "Config", "URLConfirm", "false");
         }
         private void MonitorSysBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -944,13 +915,13 @@ namespace Hiro
             rbtn18.IsEnabled = false;
             if (Read_DCIni("Toast", "0").Equals("1"))
                 Write_Ini(App.dConfig, "Config", "Toast", "0");
-            Write_Ini(App.dConfig, "Config", "MonitorSys", "1");
+            Write_Ini(App.dConfig, "Config", "MonitorSys", "true");
         }
 
         private void MonitorSysBox_Unchecked(object sender, RoutedEventArgs e)
         {
             rbtn18.IsEnabled = true;
-            Write_Ini(App.dConfig, "Config", "MonitorSys", "0");
+            Write_Ini(App.dConfig, "Config", "MonitorSys", "false");
         }
 
         private void LowPerformBox_Checked(object sender, RoutedEventArgs e)

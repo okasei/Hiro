@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using static Hiro.Helpers.HClass;
 using static Hiro.APIs.AWin;
+using System.Windows;
+using System.Threading;
 
 namespace Hiro.Helpers
 {
@@ -84,19 +86,11 @@ namespace Hiro.Helpers
 
         internal static void SetEffiencyMode(string para, string? source = null, bool mute = false)
         {
-            var osDescription = RuntimeInformation.OSDescription;
-            var osDescs = osDescription.Split(' ');
-            foreach (var osDesc in osDescs)
+            if (!IsWindows11())
             {
-                if (!osDesc.Contains(".")) continue;
-                var versions = osDesc.Split('.');
-                if (versions.Length < 2) continue;
-                if (int.Parse(versions[0]) < 10 || int.Parse(versions[2]) < 22000)
-                {
-                    if (!mute)
-                        App.Notify(new Hiro_Notice(HText.Get_Translate("effiencywin"), 2, source));
-                    return;
-                }
+                if (!mute)
+                    App.Notify(new Hiro_Notice(HText.Get_Translate("effiencywin"), 2, source));
+                return;
             }
             string? infoKey = null;
             switch (para.Trim().ToLower())
@@ -164,6 +158,39 @@ namespace Hiro.Helpers
         End:
             Marshal.FreeHGlobal(homo);
             return bRet;
+        }
+
+        internal static Size GetDpiScale()
+        {
+            IntPtr hdc = GetDC(IntPtr.Zero);
+            var dpiFactorX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0;
+            var dpiFactorY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0;
+            ReleaseDC(IntPtr.Zero, hdc);
+            return new Size(dpiFactorX, dpiFactorY);
+        }
+
+        internal static bool IsWindows11()
+        {
+            return !IsBelowWinVer(10, 22000);
+        }
+
+        internal static bool IsWindows10()
+        {
+            return !IsBelowWinVer(10,0);
+        }
+
+        internal static bool IsBelowWinVer(int mainVer, int subVer)
+        {
+            var osDescription = RuntimeInformation.OSDescription;
+            var osDescs = osDescription.Split(' ');
+            foreach (var osDesc in osDescs)
+            {
+                if (!osDesc.Contains(".")) continue;
+                var versions = osDesc.Split('.');
+                if (versions.Length < 2) continue;
+                return int.Parse(versions[0]) < mainVer || int.Parse(versions[2]) < subVer;
+            }
+            return true;
         }
     }
 }

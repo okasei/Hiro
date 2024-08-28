@@ -55,7 +55,7 @@ namespace Hiro
                 {
                     Hiro_Tray.Icon = new System.Drawing.Icon(iconP);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LogError(e, "Hiro.Tray.CustomeIcon");
                 }
@@ -68,7 +68,7 @@ namespace Hiro
             try
             {
                 var p = Windows.System.Power.PowerManager.EnergySaverStatus;
-                if (Read_DCIni("Verbose", "0").Equals("1"))
+                if (Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 {
                     switch (p)
                     {
@@ -100,7 +100,7 @@ namespace Hiro
             try
             {
                 int p = Windows.System.Power.PowerManager.RemainingChargePercent;
-                if (Read_DCIni("Verbose", "0").Equals("1"))
+                if (Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (Windows.System.Power.PowerManager.BatteryStatus ==
                         Windows.System.Power.BatteryStatus.Charging)
@@ -131,7 +131,7 @@ namespace Hiro
                 }
             }
 
-            if (!Read_DCIni("Verbose", "0").Equals("1"))
+            if (!Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 return;
             var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
             string ext = "";
@@ -246,7 +246,7 @@ namespace Hiro
                     handled = true;
                     break;
                 case 0x0218:
-                    if (Read_DCIni("Verbose", "0").Equals("1"))
+                    if (Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
                         try
                         {
@@ -266,7 +266,7 @@ namespace Hiro
                     }
                     break;
                 case 0x0219:
-                    if (Read_DCIni("Verbose", "0").Equals("1"))
+                    if (Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
                         Action? ac = null;
                         var mms = Get_Translate("deinfo") + " - ";
@@ -317,7 +317,7 @@ namespace Hiro
                             if (App.dflag)
                                 LogtoFile($"[DEBUG]Hotkey Triggered as Number {indexid}");
                             var itemID = HHotKeys.FindHotkeyByKeyId(indexid);
-                            if(itemID >= 0)
+                            if (itemID >= 0)
                             {
                                 var name = "***NOT INITIALIZED***";
                                 var cmd = "<nop>";

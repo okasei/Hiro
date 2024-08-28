@@ -188,6 +188,7 @@ namespace Hiro.Helpers
         {
             public string Location = string.Empty;
             public BitmapImage? Image = null;
+            public string HeroImage = string.Empty;
             public Hiro_Icon()
             {
 
