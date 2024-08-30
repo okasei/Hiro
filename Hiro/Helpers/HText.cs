@@ -213,5 +213,12 @@ namespace Hiro.Helpers
             }
             return sBuilder.ToString();
         }
+
+        internal static bool IsOnlyBlank(string? str)
+        {
+            if (str == null)
+                return true;
+            return str.Trim().Length == 0;
+        }
     }
 }

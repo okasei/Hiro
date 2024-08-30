@@ -15,6 +15,7 @@ using System.Runtime;
 using Windows.Media;
 using Hiro.Helpers.SMTC;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using Unosquare.FFME.Common;
 
 namespace Hiro
 {
@@ -55,6 +56,8 @@ namespace Hiro
         {
             InitializeComponent();
             HUI.SetCustomWindowIcon(this);
+            //This helps app not to be crashed
+            Media.RendererOptions.UseLegacyAudioOut = HSet.Read_DCIni("LegencyAudio", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             toplay = play;
             Title = App.appTitle;
             Loaded += delegate
@@ -542,29 +545,34 @@ namespace Hiro
                 var _artist = mt.ContainsKey("ARTIST") ? mt["ARTIST"] : null;
                 var _title = mt.ContainsKey("TITLE") ? mt["TITLE"] : null;
                 var _album = mt.ContainsKey("ALBUM") ? mt["ALBUM"] : null;
-                var _lrcs = mt.ContainsKey("LYRICS") ? mt["LYRICS"] : (mt.ContainsKey("lyrics-XXX") ? mt["lyrics-XXX"] : null);
-                if (_lrcs == null)
+                string? _lrcs = null;
+                if (HSet.Read_DCIni("EnableLyrics", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var _filename = Media.MediaInfo.MediaSource;
-                    var _dpos = _filename.LastIndexOf(".");
-                    var _spos = _filename.LastIndexOf("\\");
-                    if (_spos <= _dpos)
+                    _lrcs = mt.ContainsKey("LYRICS") ? mt["LYRICS"] : (mt.ContainsKey("lyrics-XXX") ? mt["lyrics-XXX"] : null);
+                    if (_lrcs == null)
                     {
-                        _filename = _filename[.._dpos];
-                    }
-                    if (File.Exists(_filename + ".lrc"))
-                    {
-                        try
+                        var _filename = Media.MediaInfo.MediaSource;
+                        var _dpos = _filename.LastIndexOf(".");
+                        var _spos = _filename.LastIndexOf("\\");
+                        if (_spos <= _dpos)
                         {
-                            _lrcs = File.ReadAllText(_filename + ".lrc");
+                            _filename = _filename[.._dpos];
                         }
-                        catch (Exception ex)
+                        if (File.Exists(_filename + ".lrc"))
                         {
-                            HLogger.LogError(ex, "Hiro.Exception.Player.LoadLrcFile");
+                            try
+                            {
+                                _lrcs = File.ReadAllText(_filename + ".lrc");
+                            }
+                            catch (Exception ex)
+                            {
+                                HLogger.LogError(ex, "Hiro.Exception.Player.LoadLrcFile");
+                            }
                         }
                     }
                 }
-                if (_lrcs != null && HSet.Read_DCIni("EnableLyrics", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+
+                if (_lrcs != null)
                 {
                     _lrc = HLrycis.InitLrc(_lrcs);
                     ShowContainer(LyricsGrid, -100, 150, 200);

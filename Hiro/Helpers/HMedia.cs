@@ -170,18 +170,52 @@ namespace Hiro.Helpers
                 }
                 System.Drawing.Bitmap destBitmap = new(destWidth, destHeight);
                 System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(destBitmap);
-                g.Clear(System.Drawing.Color.Transparent);
+                g.Clear((HSet.Read_DCIni("RefillMode", "0")) switch
+                {
+                    "1" => System.Drawing.Color.White,
+                    "2" => System.Drawing.Color.Black,
+                    _ => System.Drawing.Color.Transparent
+                });
                 //设置画布的描绘质量           
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.CompositingQuality = (HSet.Read_DCIni("ComposeQuality", "2")) switch
+                {
+                    "-1" => System.Drawing.Drawing2D.CompositingQuality.Invalid,
+                    "1" => System.Drawing.Drawing2D.CompositingQuality.HighSpeed,
+                    "2" => System.Drawing.Drawing2D.CompositingQuality.HighQuality,
+                    "3" => System.Drawing.Drawing2D.CompositingQuality.GammaCorrected,
+                    "4" => System.Drawing.Drawing2D.CompositingQuality.AssumeLinear,
+                    _ => System.Drawing.Drawing2D.CompositingQuality.Default
+                };
+                g.SmoothingMode = (HSet.Read_DCIni("SmoothQuality", "2")) switch
+                {
+                    "-1" => System.Drawing.Drawing2D.SmoothingMode.Invalid,
+                    "1" => System.Drawing.Drawing2D.SmoothingMode.HighSpeed,
+                    "2" => System.Drawing.Drawing2D.SmoothingMode.HighQuality,
+                    "3" => System.Drawing.Drawing2D.SmoothingMode.None,
+                    "4" => System.Drawing.Drawing2D.SmoothingMode.AntiAlias,
+                    _ => System.Drawing.Drawing2D.SmoothingMode.Default
+                };
+                g.InterpolationMode = (HSet.Read_DCIni("InterpolateQuality", "7")) switch
+                {
+                    "-1" => System.Drawing.Drawing2D.InterpolationMode.Invalid,
+                    "1" => System.Drawing.Drawing2D.InterpolationMode.Low,
+                    "2" => System.Drawing.Drawing2D.InterpolationMode.High,
+                    "3" => System.Drawing.Drawing2D.InterpolationMode.Bilinear,
+                    "4" => System.Drawing.Drawing2D.InterpolationMode.Bicubic,
+                    "5" => System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor,
+                    "6" => System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear,
+                    "7" => System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic,
+                    _ => System.Drawing.Drawing2D.InterpolationMode.Default
+                };
                 g.DrawImage(sourImage, new System.Drawing.Rectangle((destWidth - width) / 2, (destHeight - height) / 2, width, height), 0, 0, sourImage.Width, sourImage.Height, System.Drawing.GraphicsUnit.Pixel);
                 //g.DrawImage(sourImage, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(0, 0, sourImage.Width, sourImage.Height), GraphicsUnit.Pixel);
                 g.Dispose();
                 //设置压缩质量       
                 EncoderParameters encoderParams = new();
                 long[] quality = new long[1];
-                quality[0] = 100;
+                if (long.TryParse(HSet.Read_DCIni("ZipQuality", "100"), out quality[0]))
+                    quality[0] = 100;
+                quality[0] = Math.Clamp(quality[0], 1, 100);
                 EncoderParameter encoderParam = new(System.Drawing.Imaging.Encoder.Quality, quality);
                 encoderParams.Param[0] = encoderParam;
                 sourImage.Dispose();

@@ -889,8 +889,9 @@ var curBlock = richTextBox1.Document.Blocks.Where(x => x.ContentStart.CompareTo(
                 if (i != 0)
                 {
                     var StrFileName = HText.Path_Prepare("<hiapp>\\chat\\friends\\list.hfl");
-                    StrFileName = HText.Path_PPX(Read_Ini(StrFileName, UserId, "Avatar", string.Empty));
-                    App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); }), new() { Location = StrFileName, HeroImage = HText.Path_PPX(Read_Ini(StrFileName, UserId, "Background", string.Empty)) }));
+                    var _s = HText.Path_PPX(Read_Ini(StrFileName, UserId, "Avatar", string.Empty));
+                    var _h = HText.Path_PPX(Read_Ini(StrFileName, UserId, "BackImage", string.Empty));
+                    App.Notify(new(user + ": " + content, 2, user, new(() => { Hiro_Utils.RunExe("chat()", user, false); }), new() { Location = _s, HeroImage = _h }));
                 }
                 if (Read_DCIni("MessageAudio", "1").Equals("1"))
                     try

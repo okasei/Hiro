@@ -629,7 +629,7 @@ namespace Hiro
             var blockSite = Read_Ini(configPath, "Settings", "BlockSite", string.Empty);
             foreach (var block in blockSite.Split(";"))
             {
-                if (block.Trim().Length > 0 && Regex.IsMatch(e.Uri, block))
+                if (!IsOnlyBlank(block) && Regex.IsMatch(e.Uri, block))
                 {
                     LogtoFile($"Pattern {block} Blocked Site: {e.Uri}");
                     e.Cancel = true;
@@ -665,7 +665,7 @@ namespace Hiro
             var blockSite = Read_Ini(configPath, "Settings", "BlockSite", string.Empty);
             foreach (var block in blockSite.Split(";"))
             {
-                if (Regex.IsMatch(e.Uri, block))
+                if (!IsOnlyBlank(block) && Regex.IsMatch(e.Uri, block))
                 {
                     LogtoFile($"Pattern {block} Blocked Frame: {e.Uri}");
                     e.Cancel = true;

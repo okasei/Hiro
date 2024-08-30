@@ -25,6 +25,7 @@ public partial class Hiro_Screenshot : Window
     private bool loaded = false;
     private bool oneClick = false;
     private bool _fs = false;
+    private bool _as = false;
 
     public Hiro_Screenshot(bool isFullScreen = false, bool oneClick = false)
     {
@@ -48,6 +49,7 @@ public partial class Hiro_Screenshot : Window
         }
         else
         {
+            _as = true;
             Loaded += delegate
             {
                 TopMask.Width = SelectionCanvas.ActualWidth;
@@ -126,7 +128,7 @@ public partial class Hiro_Screenshot : Window
 
     private void Window_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.ChangedButton == MouseButton.Left)
+        if (e.ChangedButton == MouseButton.Left && _as)
         {
             startPoint = e.GetPosition(this);
             isSelecting = true;
@@ -153,9 +155,10 @@ public partial class Hiro_Screenshot : Window
 
     private void Window_MouseUp(object sender, MouseButtonEventArgs e)
     {
-        isSelecting = false;
-        if (oneClick)
+        if (isSelecting && oneClick && _as)
         {
+            isSelecting = false;
+            _as = false;
             CaptureSelectedArea();
             ShowCloseAnimation();
         }
@@ -183,8 +186,9 @@ public partial class Hiro_Screenshot : Window
 
     private void Window_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter && loaded)
+        if (e.Key == Key.Enter && loaded &&_as)
         {
+            _as = false;
             CaptureSelectedArea();
             this.Close();
             e.Handled = true;
