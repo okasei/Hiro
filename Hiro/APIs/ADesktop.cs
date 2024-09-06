@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -28,6 +29,11 @@ namespace Hiro.APIs
 
         [DllImport("user32.dll")]
         internal static extern IntPtr SetParent(IntPtr hwnd, IntPtr parentHwnd);
+
+        [DllImport("user32.dll")]
+        internal static extern bool GetWindowRect(IntPtr hWnd, ref Rectangle lpRect);
+        [DllImport("user32.dll")]
+        internal static extern bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, bool BRePaint);
 
         #region 设置壁纸
 

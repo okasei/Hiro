@@ -33,10 +33,8 @@ namespace Hiro
         }
         public void Load_Position()
         {
-            HUI.Set_Control_Location(FakeCopyright, "copyright", location: false);
-            HUI.Set_Control_Location(FakeHello, "chello", location: false);
-            HUI.CopyFontFromLabel(FakeCopyright, Copyright);
-            HUI.CopyFontFromLabel(FakeHello, Hello);
+            HUI.Set_Control_Location(Copyright, "copyright", location: false);
+            HUI.Set_Control_Location(Hello, "chello", location: false);
         }
 
         private void Hiro_Initialize()

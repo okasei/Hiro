@@ -158,6 +158,9 @@ namespace Hiro
             }
             switch (Read_DCIni("Toast", "0"))
             {
+                case "0":
+                    rbtn17.IsChecked = true;
+                    break;
                 case "1":
                     rbtn18.IsChecked = true;
                     break;
@@ -174,7 +177,6 @@ namespace Hiro
                     rbtn22.IsChecked = true;
                     break;
                 default:
-                    rbtn17.IsChecked = true;
                     break;
             }
             rbtn13.IsChecked = Read_DCIni("Autoexe", "false").Equals("true", StringComparison.InvariantCulture);

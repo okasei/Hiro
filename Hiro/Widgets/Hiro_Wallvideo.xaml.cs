@@ -19,6 +19,7 @@ namespace Hiro
                 HDesktop.SetWallpaperVideo(new WindowInteropHelper(this).Handle);
                 Media.IsMuted = HSet.Read_DCIni("WallVideoMute", "true").Equals("true");
                 WindowState = WindowState.Maximized;
+                HSystem.HideInAltTab(new WindowInteropHelper(this).Handle);
             };
         }
 

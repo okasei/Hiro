@@ -8,6 +8,8 @@ using static Hiro.Helpers.HLogger;
 using static Hiro.Helpers.HSet;
 using Hiro.Helpers;
 using System.Windows.Media;
+using System.Diagnostics;
+using System.Windows.Interop;
 
 namespace Hiro
 {
@@ -20,12 +22,17 @@ namespace Hiro
         internal Windows.Networking.Connectivity.NetworkConnectivityLevel ncl = Windows.Networking.Connectivity.NetworkConnectivityLevel.None;
         internal string rec_nc = "";
         internal string disks = ";";
+        private int _taskbarCreateCode = -1;
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int RegisterWindowMessage(string lpString);
         public MainWindow()
         {
             InitializeComponent();
             System.Windows.Controls.Canvas.SetTop(this, -23333);
             System.Windows.Controls.Canvas.SetLeft(this, -23333);
             ScanDiskUnload();
+            _taskbarCreateCode = RegisterWindowMessage("TaskbarCreated");
+            //HHook.SetHook();
         }
 
         public void InitializeInnerParameters()
@@ -245,6 +252,20 @@ namespace Hiro
                 case 0x0083://prevent system from drawing outline
                     handled = true;
                     break;
+                case int a when (a == _taskbarCreateCode):
+                    {
+                        HLogger.LogtoFile("TaskBar ReCreated");
+                        if(App.tb != null)
+                        {
+                            HDesktop.ResetTaskbarWin();
+                            HLogger.LogtoFile("Embed tb");
+                        }
+                        else
+                        {
+                            HLogger.LogtoFile("Null tb");
+                        }
+                        break;
+                    }
                 case 0x0218:
                     if (Read_DCIni("Verbose", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
@@ -338,6 +359,9 @@ namespace Hiro
                     }).Start();
                     break;
                 default:
+                    {
+                        //HLogger.LogtoFile(msg.ToString());
+                    }
                     break;
             }
             return IntPtr.Zero;
@@ -352,6 +376,7 @@ namespace Hiro
             App.ed?.Load_Color();
             App.noti?.Load_Color();
             App.hisland?.Load_Color();
+            App.tb?.UpdateColors();
             foreach (Window win in Application.Current.Windows)
             {
                 switch (win)
@@ -485,6 +510,7 @@ namespace Hiro
             Microsoft.Toolkit.Uwp.Notifications.ToastNotificationManagerCompat.Uninstall();
             LogtoFile("[INFOMATION]Main UI: Closing " + e.GetType().ToString());
             RemoveClipboardFormatListener(App.WND_Handle);
+            //HHook.Unhook();
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)

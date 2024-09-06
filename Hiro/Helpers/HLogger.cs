@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Hiro.Helpers
 {
@@ -15,18 +17,23 @@ namespace Hiro.Helpers
         {
             StringBuilder str = new StringBuilder();
             var _ex = ex;
-            while (_ex != null)
+            str.Append($"{Environment.NewLine}[ERROR]{Module}{Environment.NewLine}");
+            str.Append($"Object: {ex.Source}{Environment.NewLine}");
+            str.Append($"Exception: {ex.GetType().Name}{Environment.NewLine}");
+            str.Append($"Details: {ex.Message}");
+            if (App.dflag)
             {
-                str.Append($"{Environment.NewLine}[ERROR]{Module}{Environment.NewLine}");
-                str.Append($"Object: {ex.Source}{Environment.NewLine}");
-                str.Append($"Exception: {ex.GetType().Name}{Environment.NewLine}");
-                str.Append($"Details: {ex.Message}");
-                if (App.dflag)
-                {
-                    str.Append($"{Environment.NewLine}StackTrace: {ex.StackTrace}");
-                    str.Append($"{Environment.NewLine}Functions: {GetStackTraceModelName()}");
+                str.Append($"{Environment.NewLine}StackTrace: {ex.StackTrace}");
+                str.Append($"{Environment.NewLine}Functions: {GetStackTraceModelName()}");
+                if (_ex.InnerException != null) {
+
+                    _ex = _ex.InnerException;
+                    str.Append($"{Environment.NewLine}InnerException: "); 
+                    str.Append($"Object: {_ex.Source}{Environment.NewLine}");
+                    str.Append($"Exception: {_ex.GetType().Name}{Environment.NewLine}");
+                    str.Append($"Details: {_ex.Message}");
+                    str.Append($"{Environment.NewLine}StackTrace: {_ex.StackTrace}");
                 }
-                _ex = _ex.InnerException;
             }
             LogtoFile(str.ToString());
         }
@@ -53,6 +60,8 @@ namespace Hiro.Helpers
 
         public static void LogtoFile(string val)
         {
+            if (HSet.Read_DCIni("DisableLogger", "false").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                return;
             try
             {
                 var logDirectory = HText.Path_PPX(@$"<current>\users\{App.eUserName}\log\");
@@ -73,14 +82,29 @@ namespace Hiro.Helpers
             }
             catch (Exception ex)
             {
-                try
+                StringBuilder str = new StringBuilder();
+                var _ex = ex;
+                str.Append($"{Environment.NewLine}[ERROR]{"Hiro.Exception.Log"}{Environment.NewLine}");
+                str.Append($"Object: {_ex.Source}{Environment.NewLine}");
+                str.Append($"Exception: {_ex.GetType().Name}{Environment.NewLine}");
+                str.Append($"Details: {_ex.Message}");
+                if (App.dflag)
                 {
-                    LogError(ex, "Hiro.Exception.Log");
-                }
-                catch
-                {
+                    str.Append($"{Environment.NewLine}StackTrace: {_ex.StackTrace}");
+                    str.Append($"{Environment.NewLine}Functions: {GetStackTraceModelName()}");
+                    if (_ex.InnerException != null)
+                    {
 
+                        _ex = _ex.InnerException;
+                        str.Append($"{Environment.NewLine}InnerException: ");
+                        str.Append($"Object: {_ex.Source}{Environment.NewLine}");
+                        str.Append($"Exception: {_ex.GetType().Name}{Environment.NewLine}");
+                        str.Append($"Details: {_ex.Message}");
+                        str.Append($"{Environment.NewLine}StackTrace: {_ex.StackTrace}");
+                    }
                 }
+                MessageBox.Show(str.ToString());
+                
             }
         }
         #endregion

@@ -5,6 +5,8 @@ using static Hiro.Helpers.HClass;
 using static Hiro.APIs.AWin;
 using System.Windows;
 using System.Threading;
+using System.Windows.Forms;
+using System.Text;
 
 namespace Hiro.Helpers
 {
@@ -176,7 +178,7 @@ namespace Hiro.Helpers
 
         internal static bool IsWindows10()
         {
-            return !IsBelowWinVer(10,0);
+            return !IsBelowWinVer(10, 0);
         }
 
         internal static bool IsBelowWinVer(int mainVer, int subVer)
@@ -192,5 +194,90 @@ namespace Hiro.Helpers
             }
             return true;
         }
+
+        [DllImport("winmm.dll")]
+        private static extern int waveOutGetVolume(IntPtr hwo, out uint dwVolume);
+
+        public static int GetSystemVolume()
+        {
+            // 获取音量
+            uint volume;
+            waveOutGetVolume(IntPtr.Zero, out volume);
+
+            // 音量的低位和高位分别表示左右声道
+            ushort calcVol = (ushort)(volume & 0xFFFF);
+
+            // 将音量转换为0-100之间的数值
+            int finalVolume = (int)(calcVol / (ushort.MaxValue / 100));
+            return finalVolume;
+        }
+
+        public static float GetBatteryPercentage()
+        {
+            // 获取系统电源状态
+            PowerStatus powerStatus = SystemInformation.PowerStatus;
+
+            // 返回电池电量百分比 (0.0 - 1.0)，乘以 100 转换为百分比
+            return powerStatus.BatteryLifePercent * 100;
+        }
+
+        public static string GetPowerLineStatus()
+        {
+            // 获取电源线状态
+            PowerStatus powerStatus = SystemInformation.PowerStatus;
+
+            // 返回电源线状态（如充电、已连接或未连接）
+            return powerStatus.PowerLineStatus.ToString();
+        }
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private class MEMORYSTATUSEX
+        {
+            public uint dwLength;
+            public uint dwMemoryLoad;
+            public ulong ullTotalPhys;
+            public ulong ullAvailPhys;
+            public ulong ullTotalPageFile;
+            public ulong ullAvailPageFile;
+            public ulong ullTotalVirtual;
+            public ulong ullAvailVirtual;
+            public ulong ullAvailExtendedVirtual;
+            public MEMORYSTATUSEX()
+            {
+                this.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
+            }
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX lpBuffer); 
+        
+        public static float GetMemoryUsagePercentage()
+        {
+            MEMORYSTATUSEX memStatus = new MEMORYSTATUSEX();
+            if (GlobalMemoryStatusEx(memStatus))
+            {
+                ulong totalMemory = memStatus.ullTotalPhys;
+                ulong availableMemory = memStatus.ullAvailPhys;
+                float usedMemory = totalMemory - availableMemory;
+
+                return (float)(usedMemory * 100.0 / totalMemory);
+            }
+            else
+            {
+                return -1.0f;
+            }
+        }
+
+        internal static void TryCatch(string module, Action callback)
+        {
+            try
+            {
+                callback.Invoke();
+            }
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, module);
+            }
+        }
+
     }
 }

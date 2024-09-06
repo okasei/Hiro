@@ -341,7 +341,7 @@ namespace Hiro
                         System.Windows.Input.Key situation = path.ToLower() switch
                         {
                             "media(0)" or "media(off)" or "media(down)" or "media(↓)" or "media(stop)" or "media(end)" => System.Windows.Input.Key.MediaStop,
-                            "media(1)" or "media(on)" or "media(up)" or "media(↑)" or "media(start)" or "media(begin)" or "media(invoke)" => System.Windows.Input.Key.MediaPlayPause,
+                            "media(1)" or "media(on)" or "media(up)" or "media(↑)" or "media(start)" or "media(begin)" or "media(invoke)" or "media(play)" or "media(pause)" => System.Windows.Input.Key.MediaPlayPause,
                             "media(next)" or "media(2)" or "media(right)" or "media(→)" => System.Windows.Input.Key.MediaNextTrack,
                             "media(previous)" or "media(last)" or "media(3)" or "media(left)" or "media(←)" => System.Windows.Input.Key.MediaPreviousTrack,
                             _ => System.Windows.Input.Key.MediaStop,
@@ -659,6 +659,14 @@ namespace Hiro
                         goto RunOK;
                     }
                     if (path.ToLower() == "nop" || path.ToLower() == "nop()") goto RunOK;
+                    if (path.Equals("Taskbar()", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        HiroInvoke(() =>
+                        {
+                            HDesktop.NewTaskbarWin();
+                        });
+                        goto RunOK;
+                    }
                     #endregion
                     if ((disturb == 1 && IsForegroundFullScreen()) || disturb == 0)
                     {
@@ -670,7 +678,7 @@ namespace Hiro
                     {
                         HiroInvoke(() =>
                         {
-                            new Tests.Hiro_Mica().Show();
+                            HDesktop.NewTaskbarWin();
                         });
                         goto RunOK;
                     }

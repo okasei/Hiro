@@ -39,6 +39,7 @@ namespace Hiro
         internal string currentBack = "";
         internal WindowAccentCompositor? compositor = null;
         internal bool _dragFlag = false;
+        private int _msgCount = 0;
 
         public Hiro_MainUI()
         {
@@ -225,6 +226,7 @@ namespace Hiro
 
         public void AddToInfoCenter(string text)
         {
+            _msgCount++;
             Dispatcher.Invoke(() =>
             {
                 infotext.AppendText(text);
@@ -275,6 +277,11 @@ namespace Hiro
                             });
                         }).Start();
                     }
+                }
+                if (App.tb != null)
+                {
+                    App.tb.MsgLabel.Content = "📧 " + _msgCount.ToString();
+                    App.tb.LoadGrid(App.tb.MsgGrid);
                 }
             });
         }
@@ -1448,7 +1455,15 @@ namespace Hiro
 
         internal void Hiro_We_Info()
         {
-
+            _msgCount = 0;
+            Dispatcher.Invoke(() =>
+            {
+                if (App.tb != null && App.tb.MusicControlGrid.Visibility != Visibility.Visible)
+                {
+                    App.tb.MsgLabel.Content = "📧 0";
+                    App.tb.RemoveGrid(App.tb.MsgGrid);
+                }
+            });
             infocenter.Visibility = Visibility.Visible;
             if (BackVideo.Visibility == Visibility.Visible)
                 BackVideo.Pause();

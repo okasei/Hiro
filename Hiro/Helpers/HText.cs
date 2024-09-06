@@ -60,7 +60,6 @@ namespace Hiro.Helpers
             path = Anti_Path_Replace(path, "<hiapp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\{App.eUserName}\\app").Replace("\\\\", "\\"));
             path = Anti_Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Anti_Path_Replace(path, "<system>", Environment.SystemDirectory);
-            path = Anti_Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86.Path);
             path = Anti_Path_Replace(path, "<idesktop>", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
             path = Anti_Path_Replace(path, "<ideskdir>", Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
             path = Anti_Path_Replace(path, "<cdeskdir>", Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory));
@@ -82,12 +81,22 @@ namespace Hiro.Helpers
             path = Anti_Path_Replace(path, "<cprogx86>", Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86));
             path = Anti_Path_Replace(path, "<iprog>", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             path = Anti_Path_Replace(path, "<cprog>", Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles));
-            path = Anti_Path_Replace(path, "<idownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.Downloads.Path);
-            path = Anti_Path_Replace(path, "<cdownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.PublicDownloads.Path);
             path = Anti_Path_Replace(path, "<win>", Environment.GetFolderPath(Environment.SpecialFolder.Windows));
             path = Anti_Path_Replace(path, "<recent>", Environment.GetFolderPath(Environment.SpecialFolder.Recent));
             path = Anti_Path_Replace(path, "<profile>", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             path = Anti_Path_Replace(path, "<sendto>", Environment.GetFolderPath(Environment.SpecialFolder.SendTo));
+            HWin.TryCatch("Hiro.Exception.AntiPathPrepare", () =>
+            {
+                path = Anti_Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86?.Path ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            });
+            HWin.TryCatch("Hiro.Exception.AntiPathPrepare", () =>
+            {
+                path = Anti_Path_Replace(path, "<idownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.Downloads?.Path ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            });
+            HWin.TryCatch("Hiro.Exception.PathPrepare", () =>
+            {
+                path = Anti_Path_Replace(path, "<cdownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.PublicDownloads?.Path ?? Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments));
+            });
             return path;
         }
 
@@ -97,7 +106,6 @@ namespace Hiro.Helpers
             path = Path_Replace(path, "<capp>", ($"{AppDomain.CurrentDomain.BaseDirectory}\\users\\default\\app").Replace("\\\\", "\\"));
             path = Path_Replace(path, "<current>", AppDomain.CurrentDomain.BaseDirectory);
             path = Path_Replace(path, "<system>", Environment.SystemDirectory);
-            path = Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86.Path);
             path = Path_Replace(path, "<idesktop>", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
             path = Path_Replace(path, "<ideskdir>", Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
             path = Path_Replace(path, "<cdeskdir>", Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory));
@@ -119,14 +127,24 @@ namespace Hiro.Helpers
             path = Path_Replace(path, "<cprogx86>", Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86));
             path = Path_Replace(path, "<iprog>", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             path = Path_Replace(path, "<cprog>", Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles));
-            path = Path_Replace(path, "<idownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.Downloads.Path);
-            path = Path_Replace(path, "<cdownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.PublicDownloads.Path);
             path = Path_Replace(path, "<win>", Environment.GetFolderPath(Environment.SpecialFolder.Windows));
             path = Path_Replace(path, "<recent>", Environment.GetFolderPath(Environment.SpecialFolder.Recent));
             path = Path_Replace(path, "<profile>", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             path = Path_Replace(path, "<sendto>", Environment.GetFolderPath(Environment.SpecialFolder.SendTo));
             path = Path_Replace(path, "<hiuser>", App.eUserName);
             path = Path_Replace(path, "<nop>", "");
+            HWin.TryCatch("Hiro.Exception.PathPrepare", () =>
+            {
+                path = Path_Replace(path, "<systemx86>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.SystemX86?.Path ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            });
+            HWin.TryCatch("Hiro.Exception.PathPrepare", () =>
+            {
+                path = Path_Replace(path, "<idownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.Downloads?.Path ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            });
+            HWin.TryCatch("Hiro.Exception.PathPrepare", () =>
+            {
+                path = Path_Replace(path, "<idownload>", Microsoft.WindowsAPICodePack.Shell.KnownFolders.Downloads?.Path ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            });
             return path;
         }
 
@@ -159,6 +177,18 @@ namespace Hiro.Helpers
             path = Path_Replace(path, "<me>", App.username);
             path = Path_Replace(path, "<hiro>", App.appTitle);
             path = Path_Replace(path, "<product>", Get_Translate("dlproduct"));
+            HWin.TryCatch("Hiro.Exception.PathPrepareX", () =>
+            {
+                path = Path_Replace(path, "<volume>", HWin.GetSystemVolume().ToString());
+            });
+            HWin.TryCatch("Hiro.Exception.PathPrepareX", () =>
+            {
+                path = Path_Replace(path, "<battery>", ((int)HWin.GetBatteryPercentage()).ToString());
+            });
+            HWin.TryCatch("Hiro.Exception.PathPrepareX", () =>
+            {
+                path = Path_Replace(path, "<memory>", ((int)HWin.GetMemoryUsagePercentage()).ToString());
+            });
             var pi = path;
             if (pi.ToLower().EndsWith("<any>"))
             {

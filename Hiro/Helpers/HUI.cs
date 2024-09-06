@@ -359,6 +359,123 @@ namespace Hiro.Helpers
             }
 
         }
+        public static void Set_Control_Location(TextBlock sender, string val, bool extra = false, string? path = null, bool right = false, bool bottom = false, bool location = true, bool animation = false, double animationTime = 150)
+        {
+            if (extra == false || path == null || !File.Exists(path))
+                path = App.langFilePath;
+            try
+            {
+                if (sender != null)
+                {
+                    if (right == true)
+                        sender.HorizontalAlignment = HorizontalAlignment.Right;
+                    if (bottom == true)
+                        sender.VerticalAlignment = VerticalAlignment.Bottom;
+                    var result = Hiro_Utils.HiroParse(Read_Ini(path, "location", val, string.Empty).Trim().Replace("%b", " ").Replace("{", "(").Replace("}", ")"));
+                    if (!result[0].Equals("-1"))
+                    {
+                        var ff = result[0];
+                        if (ff.StartsWith("$cf#", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            ff = ff[4..];
+                            var rf = App.AddCustomFont(ff);
+                            if (rf.Length > 0)
+                            {
+                                sender.FontFamily = new FontFamily(rf);
+                            }
+                        }
+                        else
+                        {
+                            sender.FontFamily = new FontFamily(result[0]);
+                        }
+                    }
+                    if (!result[1].Equals("-1"))
+                        sender.FontSize = double.Parse(result[1]);
+                    sender.FontStretch = result[2] switch
+                    {
+                        "1" => FontStretches.UltraCondensed,
+                        "2" => FontStretches.ExtraCondensed,
+                        "3" => FontStretches.Condensed,
+                        "4" => FontStretches.SemiCondensed,
+                        "5" => FontStretches.Medium,
+                        "6" => FontStretches.SemiExpanded,
+                        "7" => FontStretches.Expanded,
+                        "8" => FontStretches.ExtraExpanded,
+                        "9" => FontStretches.UltraExpanded,
+                        _ => FontStretches.Normal
+                    };
+                    sender.FontWeight = result[3] switch
+                    {
+                        "1" => FontWeights.Thin,
+                        "2" => FontWeights.UltraLight,
+                        "3" => FontWeights.Light,
+                        "4" => FontWeights.Medium,
+                        "5" => FontWeights.SemiBold,
+                        "6" => FontWeights.Bold,
+                        "7" => FontWeights.UltraBold,
+                        "8" => FontWeights.Black,
+                        "9" => FontWeights.UltraBlack,
+                        _ => FontWeights.Normal
+                    };
+                    sender.FontStyle = result[4] switch
+                    {
+                        "1" => FontStyles.Italic,
+                        "2" => FontStyles.Oblique,
+                        _ => FontStyles.Normal
+                    };
+                    if (location)
+                    {
+                        Size mSize = new();
+                        var auto = result[7].ToLower().Equals("auto") || result[7].ToLower().Equals("nan") || result[7].Equals("-2") || result[7].Equals("0");
+                        mSize.Width = auto ? double.NaN : (!result[7].Equals("-1")) ? double.Parse(result[7]) : sender.Width;
+                        auto = result[8].ToLower().Equals("auto") || result[8].ToLower().Equals("nan") || result[8].Equals("-2") || result[8].Equals("0");
+                        mSize.Height = auto ? double.NaN : (!result[8].Equals("-1")) ? double.Parse(result[8]) : sender.Height;
+                        Thickness thickness = new()
+                        {
+                            Left = (!result[5].Equals("-1")) ? right ? 0.0 : double.Parse(result[5]) : sender.Margin.Left,
+                            Right = (!result[5].Equals("-1")) ? !right ? sender.Margin.Right : double.Parse(result[5]) : sender.Margin.Right,
+                            Top = (!result[6].Equals("-1")) ? bottom ? 0.0 : double.Parse(result[6]) : sender.Margin.Top,
+                            Bottom = (!result[6].Equals("-1")) ? !bottom ? sender.Margin.Bottom : double.Parse(result[6]) : sender.Margin.Bottom
+                        };
+                        if (!animation)
+                        {
+                            sender.Width = mSize.Width;
+                            sender.Height = mSize.Height;
+                            sender.Margin = thickness;
+                        }
+                        else
+                        {
+                            Storyboard sb = new();
+                            HAnimation.AddThicknessAnimaton(thickness, animationTime, sender, "Margin", sb);
+                            if (!double.IsNaN(mSize.Height))
+                            {
+                                if (double.IsNaN(sender.Height))
+                                    sender.Height = sender.ActualHeight;
+                                HAnimation.AddDoubleAnimaton(mSize.Height, animationTime, sender, "Height", sb);
+                            }
+                            if (!double.IsNaN(mSize.Width) && !double.IsNaN(sender.Width))
+                            {
+                                if (double.IsNaN(sender.Width))
+                                    sender.Width = sender.ActualWidth;
+                                HAnimation.AddDoubleAnimaton(mSize.Width, animationTime, sender, "Width", sb);
+                            }
+                            sb.Completed += delegate
+                            {
+                                sender.Width = mSize.Width;
+                                sender.Height = mSize.Height;
+                                sender.Margin = thickness;
+                            };
+                            sb.Begin();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, $"Hiro.Exception.Location{Environment.NewLine}Path: {val}");
+            }
+
+        }
 
         public static void Set_Mac_Location(Control mac, string mval, Control name, bool animation = false, double animationTime = 150)
         {

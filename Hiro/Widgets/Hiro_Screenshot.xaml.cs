@@ -60,6 +60,10 @@ public partial class Hiro_Screenshot : Window
                 SelectionRectangle.Stroke = new SolidColorBrush(App.AppAccentColor);
             };
         }
+        Loaded += (e, args) =>
+        {
+            HSystem.HideInAltTab(new WindowInteropHelper(this).Handle);
+        };
     }
     private void InitializeDpiFactors()
     {
@@ -155,12 +159,16 @@ public partial class Hiro_Screenshot : Window
 
     private void Window_MouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (isSelecting && oneClick && _as)
+        if (oneClick && _as)
         {
             isSelecting = false;
             _as = false;
             CaptureSelectedArea();
             ShowCloseAnimation();
+        }
+        else
+        {
+            isSelecting = false;
         }
         e.Handled = true;
     }
@@ -186,7 +194,7 @@ public partial class Hiro_Screenshot : Window
 
     private void Window_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter && loaded &&_as)
+        if (e.Key == Key.Enter && loaded && _as)
         {
             _as = false;
             CaptureSelectedArea();
@@ -237,6 +245,7 @@ public partial class Hiro_Screenshot : Window
     private void CaptureSelectedArea(bool isFullScreen = false)
     {
         string filePath = HText.Path_PPX(@"<ipicture>\Screenshots\Hiro_<date><time>.png");
+        HFile.CreateFolder(filePath);
         string tranKey = "scrshotfull";
         if (isFullScreen)
         {
@@ -278,14 +287,16 @@ public partial class Hiro_Screenshot : Window
             }
             tranKey = "scrshotarea";
         }
-
-        DataObject dataObject = new DataObject();
-        // 将图片数据放入剪贴板（支持直接粘贴为图片）
-        dataObject.SetData(DataFormats.Bitmap, Hiro_Utils.GetBitmapImage(filePath) ?? null);
-        // 将图片文件路径放入剪贴板（支持粘贴为文件）
-        dataObject.SetData(DataFormats.FileDrop, new string[] { filePath });
-        Clipboard.SetDataObject(dataObject, true);
-
+        try
+        {
+            DataObject dataObject = new DataObject();
+            // 将图片数据放入剪贴板（支持直接粘贴为图片）
+            dataObject.SetData(DataFormats.Bitmap, Hiro_Utils.GetBitmapImage(filePath) ?? null);
+            // 将图片文件路径放入剪贴板（支持粘贴为文件）
+            dataObject.SetData(DataFormats.FileDrop, new string[] { filePath });
+            Clipboard.SetDataObject(dataObject, true);
+        }
+        catch (Exception ex) { HLogger.LogError(ex, "Hiro.Exception.Screenshot.Clipboard"); }
         App.Notify(new(HText.Get_Translate(tranKey), 2, HText.Get_Translate("scrshot"), new(() =>
         {
             Hiro_Utils.RunExe($"\"{filePath}\"");

@@ -10,9 +10,9 @@
     <Copyright>Copyright ©2024 Hiro</Copyright>
     <Authors>Hiro</Authors>
     <Product>Hiro</Product>
-    <FileVersion>2.4.5</FileVersion>
-    <AssemblyVersion>2.4.5</AssemblyVersion>
-    <Version>2.4.5</Version>
+    <FileVersion>2.4.6</FileVersion>
+    <AssemblyVersion>2.4.6</AssemblyVersion>
+    <Version>2.4.6</Version>
     <PackageId>Hiro</PackageId>
     <AssemblyName>Hiro</AssemblyName>
     <DebugType>portable</DebugType>

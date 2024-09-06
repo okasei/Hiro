@@ -22,6 +22,7 @@ using static Hiro.Helpers.HSet;
 using static Hiro.Helpers.HLogger;
 using System.Windows;
 using System.Windows.Media;
+using Hiro.Widgets;
 
 namespace Hiro
 {
@@ -53,6 +54,7 @@ namespace Hiro
         internal static Hiro_Boxie? hiBoxie = null;
         internal static Hiro_Editor? ed = null;
         internal static Hiro_LockScreen? ls = null;
+        internal static Hiro_Taskbar? tb = null;
         internal static List<Hiro_Notice> noticeitems = new();
         internal static double blurradius = 50.0;
         internal static double blursec = 500.0;
@@ -501,6 +503,16 @@ namespace Hiro
                         hiBoxie.Show();
                     });
                 }
+                else if (Read_DCIni("Toast", "0").Equals("6"))
+                {
+                    noticeitems.Add(i);
+                    Hiro_Utils.HiroInvoke(() =>
+                    {
+                        tb ??= new();
+                        tb.Show();
+                        tb.Load_Notification();
+                    });
+                }
                 else
                 {
                     noticeitems.Add(i);
@@ -612,7 +624,11 @@ namespace Hiro
             HFile.CreateFolder(currentDir + "\\system\\lang\\");
             HFile.CreateFolder(currentDir + "\\system\\wallpaper\\");
             logFilePath = currentDir + "\\users\\" + eUserName + "\\log\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
-            System.IO.File.Delete(logFilePath);
+            try
+            {
+                File.Delete(logFilePath);
+            }
+            catch { }
             LogtoFile("[HIROWEGO]InitializeInnerParameters");
             dConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hus";
             sConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hsl";
@@ -912,6 +928,10 @@ namespace Hiro
                 {
                     mn._dragFlag = false;
                 }
+            }
+            if (tb != null)
+            {
+                tb.UpdatePosition();
             }
         }
 

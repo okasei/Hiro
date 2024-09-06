@@ -1,7 +1,9 @@
-﻿using Microsoft.Win32;
+﻿using Hiro.Widgets;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using static Hiro.APIs.ADesktop;
 using static Hiro.Helpers.HClass;
@@ -49,7 +51,7 @@ namespace Hiro.Helpers
                     wallPaperPlayer.Media.Pause();
                 }
             });
-            
+
         }
         internal static void PlayVideo()
         {
@@ -90,6 +92,62 @@ namespace Hiro.Helpers
             wallPaperPlayerIntPtr = wallPaperPlayer;
             SendMsgToProgman();
             SetParent(wallPaperPlayer, programHandle);
+        }
+
+        internal static void ResetTaskbarWin()
+        {
+            Hiro_Utils.HiroInvoke(() =>
+            {
+                if(App.tb != null)
+                {
+                    App.tb.Close();
+                    App.tb = null;
+                }
+                NewTaskbarWin();
+            });
+        }
+
+        internal static void NewTaskbarWin()
+        {
+            Hiro_Utils.HiroInvoke(() =>
+            {
+                App.tb ??= new Hiro_Taskbar();
+                App.tb.Show();
+            });
+        }
+
+        internal static Rectangle SetTaskbarWin(IntPtr winHandle)
+        {
+            var hShell = FindWindowEx(IntPtr.Zero, IntPtr.Zero, "Shell_TrayWnd", null);
+            var hBar = FindWindowEx(hShell, IntPtr.Zero, "ReBarWindow32", null);
+            var hMin = FindWindowEx(hBar, IntPtr.Zero, "MSTaskSwWClass", null);
+            var hTray = FindWindowEx(hShell, IntPtr.Zero, "TrayNotifyWnd", null);
+            Rectangle rTray = new(), rWin = new();
+            GetWindowRect(hBar, ref rTray);
+            GetWindowRect(winHandle, ref rWin);
+            SetParent(winHandle, hBar);
+            return rTray;
+        }
+
+        internal static IntPtr GetReBarIntPtr()
+        {
+            var hShell = FindWindowEx(IntPtr.Zero, IntPtr.Zero, "Shell_TrayWnd", null);
+            return FindWindowEx(hShell, IntPtr.Zero, "ReBarWindow32", null);
+        }
+
+        internal static Rectangle GetTaskBarRect()
+        {
+
+            var hShell = FindWindowEx(IntPtr.Zero, IntPtr.Zero, "Shell_TrayWnd", null);
+            var hBar = FindWindowEx(hShell, IntPtr.Zero, "ReBarWindow32", null);
+            Rectangle rTray = new();
+            GetWindowRect(hBar, ref rTray);
+            return rTray;
+        }
+
+        internal static void MoveWin32(IntPtr winHandle, int left, int top, int width, int height)
+        {
+            MoveWindow(winHandle, left, top, width, height, true);
         }
 
         internal static int Set_Wallpaper(List<string> parameter)

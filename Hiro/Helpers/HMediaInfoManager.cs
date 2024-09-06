@@ -8,6 +8,8 @@ using Windows.Media;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
 using static Hiro.Helpers.HClass;
+using System.Windows.Threading;
+using Windows.Foundation;
 
 namespace Hiro.Helpers
 {
@@ -39,16 +41,44 @@ namespace Hiro.Helpers
             UpdateMediaInfo();
         }
 
+        internal static IAsyncOperation<bool>? TryTogglePrevious()
+        {
+            return _session?.TrySkipPreviousAsync();
+        }
+        internal static IAsyncOperation<bool>? TryToggleNext()
+        {
+            return _session?.TrySkipNextAsync();
+        }
+        internal static IAsyncOperation<bool>? TryTogglePlay()
+        {
+            return _session?.TryTogglePlayPauseAsync();
+        }
 
-        private static void UpdateMediaInfo()
+
+        private static bool UpdateMediaInfo()
         {
             try
             {
                 var session = _smtcManager?.GetCurrentSession();
-                if (session == null) return;
+                if (session == null)
+                {
+                    Hiro_Utils.HiroInvoke(() =>
+                    {
+                        if (App.tb != null)
+                        {
+                            if (App.tb.BasicGrid.Visibility != Visibility.Visible)
+                            {
+                                App.tb.RemoveGrid(App.tb.MusicControlGrid);
+                            }
+                        }
+                    });
+                    return false;
+                }
+                UpdatePlayInfo();
                 if (_session != null)
                 {
                     _session.MediaPropertiesChanged -= _session_MediaPropertiesChanged;
+                    _session.PlaybackInfoChanged -= _session_PlaybackInfoChanged;
                     _session = null;
                 }
                 _session = session;
@@ -61,11 +91,62 @@ namespace Hiro.Helpers
                 if (App.dflag)
                     HLogger.LogtoFile("New session found.[" + (_session?.SourceAppUserModelId ?? "Unknown") + "]");
                 _session.MediaPropertiesChanged += _session_MediaPropertiesChanged;
+                _session.PlaybackInfoChanged += _session_PlaybackInfoChanged;
                 ShowNotification();
+                return true;
             }
             catch (Exception ex)
             {
                 HLogger.LogError(ex, "Hiro.Exception.SMTC.Session.Update");
+                return false;
+            }
+        }
+
+        private static void _session_PlaybackInfoChanged(GlobalSystemMediaTransportControlsSession sender, PlaybackInfoChangedEventArgs args)
+        {
+            UpdatePlayInfo();
+        }
+
+        private static void UpdatePlayInfo()
+        {
+            if (_session != null)
+            {
+                if (App.tb != null)
+                {
+                    var _pi = _session.GetPlaybackInfo().PlaybackStatus;
+
+                    switch (_pi)
+                    {
+                        case GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing:
+                            Hiro_Utils.HiroInvoke(() =>
+                            {
+                                if (App.tb.MusicControlGrid.Visibility != Visibility.Visible)
+                                {
+                                    App.tb.LoadGrid(App.tb.MusicControlGrid);
+                                }
+                                App.tb.Pause.Visibility = Visibility.Visible;
+                                App.tb.Play.Visibility = Visibility.Collapsed;
+                            });
+                            break;
+                        case GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused:
+                            Hiro_Utils.HiroInvoke(() =>
+                            {
+                                if (App.tb.MusicControlGrid.Visibility != Visibility.Visible)
+                                {
+                                    App.tb.LoadGrid(App.tb.MusicControlGrid);
+                                }
+                                App.tb.Pause.Visibility = Visibility.Collapsed;
+                                App.tb.Play.Visibility = Visibility.Visible;
+                            });
+                            break;
+                        case GlobalSystemMediaTransportControlsSessionPlaybackStatus.Stopped:
+                            break;
+                        case GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed:
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
 

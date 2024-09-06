@@ -1,0 +1,189 @@
+﻿<Window x:Class="Hiro.Widgets.Hiro_Taskbar"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hiro.Widgets"
+        mc:Ignorable="d"
+        Title="HiroTaskbar" Height="35" Width="100" ResizeMode="NoResize" WindowStyle="None" AllowDrop="True" ShowInTaskbar="False" Background="{DynamicResource AppAccentDim}" DragEnter="Window_DragEnter" DragLeave="Window_DragLeave" Drop="Window_Drop">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccent" Color="Coral"></SolidColorBrush>
+        <SolidColorBrush x:Key="AppAccentDim" Color="Coral"></SolidColorBrush>
+        <Color x:Key="AppForeDimColor" A="1" B="1" G="1" ></Color>
+    </Window.Resources>
+    <Grid>
+        <Grid x:Name="TotalGrid">
+            <Grid x:Name="MainGrid" HorizontalAlignment="Left">
+                <Grid x:Name="MusicControlGrid" Tag="90" Visibility="Collapsed">
+                    <Grid x:Name="MusicControl">
+                        <Label x:Name="Prev" Content="&#xF8AC;" FontFamily="Segoe MDL2 Assets" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Transparent" Width="30" HorizontalAlignment="Left" Margin="0" Background="Transparent" Foreground="{DynamicResource AppFore}" MouseLeftButtonDown="Prev_MouseLeftButtonDown">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                Storyboard.TargetName="Prev"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                Storyboard.TargetName="Prev"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="Pause" Content="&#xF8AE;" FontFamily="Segoe MDL2 Assets" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Transparent" Width="30" HorizontalAlignment="Left" Margin="30,0,0,0" Background="Transparent" Foreground="{DynamicResource AppFore}" MouseLeftButtonDown="Pause_MouseLeftButtonDown">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                Storyboard.TargetName="Pause"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                Storyboard.TargetName="Pause"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="Play" Content="&#xF5B0;" FontFamily="Segoe MDL2 Assets" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Transparent" Width="30" HorizontalAlignment="Left" Margin="30,0,0,0" Background="Transparent" Foreground="{DynamicResource AppFore}" MouseLeftButtonDown="Play_MouseLeftButtonDown" Visibility="Collapsed">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                Storyboard.TargetName="Play"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                Storyboard.TargetName="Play"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label x:Name="Next" Content="&#xF8AD;" FontFamily="Segoe MDL2 Assets" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Transparent" Width="30" HorizontalAlignment="Left" Margin="60,0,0,0" Background="Transparent" Foreground="{DynamicResource AppFore}" MouseLeftButtonDown="Next_MouseLeftButtonDown">
+                            <Label.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+                Storyboard.TargetName="Next"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+                Storyboard.TargetName="Next"                                             
+                Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Grid>
+                </Grid>
+                <Grid x:Name="MsgGrid" Tag="70" Visibility="Collapsed" HorizontalAlignment="Left" MouseLeftButtonDown="MsgLabel_MouseLeftButtonDown">
+                    <Label x:Name="MsgBack" Background="Transparent"/>
+                    <Label Content="📧 1" x:Name="MsgLabel" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="Transparent" Foreground="{DynamicResource AppFore}"/>
+                    <Grid.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+Storyboard.TargetName="MsgBack"                                             
+Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+Storyboard.TargetName="MsgBack"                                             
+Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Grid.Triggers>
+                </Grid>
+                <Grid x:Name="BasicGrid" Tag="70" HorizontalAlignment="Left" MouseDown="InfoLabel_MouseDown">
+                    <Label x:Name="BasicBack" Background="Transparent"/>
+                    <TextBlock x:Name="InfoLabel" TextTrimming="CharacterEllipsis" Text="Hiro" TextAlignment="Center" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource AppFore}"/>
+                    <Grid.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+Storyboard.TargetName="BasicBack"                                             
+Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+Storyboard.TargetName="BasicBack"                                             
+Storyboard.TargetProperty="Background.Color"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Grid.Triggers>
+                </Grid>
+            </Grid>
+            <Grid x:Name="ExtraGrid" HorizontalAlignment="Left" MouseDown="ExtraLabel_MouseDown">
+                <Label x:Name="ExtraBack" Background="Transparent"/>
+                <TextBlock x:Name="ExtraLabel" Background="Transparent" Foreground="{DynamicResource AppFore}" TextTrimming="CharacterEllipsis" Text="Connected With N Plus" TextAlignment="Center" VerticalAlignment="Center"/>
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="{DynamicResource AppForeDimColor}" 
+Storyboard.TargetName="ExtraBack"                                             
+Storyboard.TargetProperty="Background.Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.5" AutoReverse="False" RepeatBehavior="1x" DecelerationRatio=".9" To="#00000000" 
+Storyboard.TargetName="ExtraBack"                                             
+Storyboard.TargetProperty="Background.Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+            </Grid>
+        </Grid>
+        <Grid Margin="0" x:Name="NotiGrid" Width="120" Visibility="Collapsed">
+            <TextBlock x:Name="Notification" Foreground="{DynamicResource AppFore}" TextWrapping="NoWrap" TextTrimming="None" TextAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Center" MouseLeftButtonDown="Notification_MouseLeftButtonDown"/>
+        </Grid>
+    </Grid>
+</Window>
