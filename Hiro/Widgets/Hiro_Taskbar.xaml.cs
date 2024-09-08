@@ -419,7 +419,7 @@ namespace Hiro.Widgets
                     double n => (n * 20)
 
                 };
-                var s = HAnimation.AddThicknessAnimaton(new((-tsize.Width - 10) * _x, 0, 0, 0), _t, Notification, "Margin", null, new((_width + _eWidth) * _x, 0, 0, 0), 0, 0);
+                var s = HAnimation.AddThicknessAnimaton(new(Math.Min(-tsize.Width, -_width - _eWidth) * _x, 0, 0, 0), _t, Notification, "Margin", null, new((_width + _eWidth) * _x, 0, 0, 0), 0, 0);
                 s.Completed += (e, args) =>
                 {
                     _notif = null;

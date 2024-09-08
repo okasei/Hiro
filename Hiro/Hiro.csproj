@@ -94,6 +94,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="HiroPluginShared">
+      <HintPath>Shared\HiroPluginShared.dll</HintPath>
+    </Reference>
     <Reference Include="Interop.IWshRuntimeLibrary">
       <HintPath>Interop.IWshRuntimeLibrary.dll</HintPath>
     </Reference>
@@ -150,6 +153,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Framework\Controllers\" />
+    <Folder Include="Framework\Interfaces\" />
   </ItemGroup>
 
 </Project>

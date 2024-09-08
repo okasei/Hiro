@@ -1,9 +1,12 @@
 ﻿using Hiro.Resources;
 using Microsoft.VisualBasic;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Hiro.Helpers
 {
@@ -54,6 +57,213 @@ namespace Hiro.Helpers
                     return string.Empty;
             }
         }
+        static string ProcessHiroText(string text)
+        {
+            Stack<int> stack = new Stack<int>();
+
+            StringBuilder result = new StringBuilder(text);
+
+            // 遍历字符串，找到所有的'['和']'
+            for (int i = 0; i < result.Length; i++)
+            {
+                if (result[i] == '[')
+                {
+                    stack.Push(i); // 将索引压入栈中
+                }
+                else if (result[i] == ']' && stack.Count > 0)
+                {
+                    int start = stack.Pop(); // 获取匹配的'['索引
+                    string content = result.ToString(start + 1, i - start - 1); // 提取方括号内的内容
+
+                    // 调用 CustomProcess 处理内容
+                    string processedContent = CustomProcess(content);
+
+                    // 替换处理后的内容
+                    result.Remove(start, i - start + 1);
+                    result.Insert(start, processedContent);
+
+                    // 调整索引位置，重新开始查找
+                    i = start + processedContent.Length - 1;
+                }
+            }
+
+            return result.ToString();
+        }
+
+        // 自定义处理函数，对提取的文本进行特定操作
+        static string CustomProcess(string text)
+        {
+            // 检查是否包含需要处理的命令，如 Upper(...) 等
+            if (text.StartsWith("Upper(", StringComparison.CurrentCultureIgnoreCase) && text.EndsWith(")"))
+            {
+                // 提取命令内部的文本
+                string innerText = text.Substring(6, text.Length - 7); // 获取 Upper(...) 内的内容
+                return innerText.ToUpper(); // 将内容转换为大写
+            }
+            else if (text.StartsWith("Lower(", StringComparison.CurrentCultureIgnoreCase) && text.EndsWith(")"))
+            {
+                // 提取命令内部的文本
+                string innerText = text.Substring(6, text.Length - 7); // 获取 Lower(...) 内的内容
+                return innerText.ToLower(); // 将内容转换为小写
+            }
+            else if (text.StartsWith("DateTime(", StringComparison.CurrentCultureIgnoreCase) && text.EndsWith(")"))
+            {
+                string innerText = text.Substring(9, text.Length - 10); // 获取 DateTime(...) 内的内容
+
+                // 分割参数 t1 和 format
+                string[] parts = innerText.Split([','], 2); // 按照第一个逗号进行分割
+                if (parts.Length == 2)
+                {
+                    string t1 = parts[0].Trim(); // 第一个参数 t1
+                    string format = parts[1].Trim(); // 第二个参数 format
+
+                    // 尝试解析 t1 为 DateTime 并按照 format 格式化
+                    if (!DateTime.TryParse(t1, out DateTime parsedDateTime))
+                    {
+                        if (t1.Equals("now", StringComparison.CurrentCultureIgnoreCase))
+                            parsedDateTime = DateTime.Now;
+                        parsedDateTime = new DateTime(2000, 4, 17, 0, 0, 0);
+                    }
+                    try
+                    {
+                        return parsedDateTime.ToString(format, CultureInfo.InvariantCulture);
+                    }
+                    catch (FormatException)
+                    {
+                        return parsedDateTime.ToString("g", CultureInfo.InvariantCulture);
+                    }
+                }
+            }
+            else if (text.StartsWith("DateTimeSub(", StringComparison.CurrentCultureIgnoreCase) && text.EndsWith(")"))
+            {
+                string innerText = text.Substring(12, text.Length - 13); // 获取 DateTimeSub(...) 内的内容
+                string[] parts = innerText.Split(new[] { ',' }, 2); // 按照第一个逗号进行分割
+                if (parts.Length == 2)
+                {
+                    string t1 = parts[0].Trim(); // 第一个参数 t1
+                    string t2 = parts[1].Trim(); // 第二个参数 t2
+                    // 尝试解析 t1 和 t2 为 DateTime
+                    if (DateTime.TryParse(t1, out DateTime dateTime1) && DateTime.TryParse(t2, out DateTime dateTime2))
+                    {
+                        TimeSpan difference = dateTime1.Subtract(dateTime2);
+                        return difference.ToString(); // 返回时间差的字符串表示
+                    }
+                    else
+                    {
+                        return DateTime.Now.ToString();
+                    }
+                }
+            }
+            else if (text.Equals("DateTimeNow()", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return DateTime.Now.ToString();
+            }
+            // 检查是否包含 TimeSpan(t1, format) 命令
+            else if (text.StartsWith("TimeSpan(", StringComparison.CurrentCultureIgnoreCase) && text.EndsWith(")"))
+            {
+                string innerText = text.Substring(9, text.Length - 10);
+                string[] parts = innerText.Split(new[] { ',' }, 2);
+                if (parts.Length == 2)
+                {
+                    string t1 = parts[0].Trim();
+                    string format = parts[1].Trim();
+
+                    if (!TimeSpan.TryParse(t1, out TimeSpan parsedTimeSpan))
+                    {
+                        parsedTimeSpan = TimeSpan.FromSeconds(417);
+                    }
+                    try
+                    {
+                        return parsedTimeSpan.ToString(format, CultureInfo.InvariantCulture);
+                    }
+                    catch (FormatException)
+                    {
+                        return parsedTimeSpan.ToString();
+                    }
+                }
+            }
+            // 检查是否包含 TimeSpan(t1, format) 命令
+            else if (text.StartsWith("Schedule(", StringComparison.CurrentCultureIgnoreCase) && text.EndsWith(")"))
+            {
+                string innerText = text.Substring(9, text.Length - 10);
+                var i = 0;
+                int.TryParse(innerText, out i);
+                if (App.scheduleitems.Count > i)
+                {
+                    return App.scheduleitems[i].Time;
+                }
+                else
+                {
+                    if (App.scheduleitems.Count > 0)
+                    {
+                        return App.scheduleitems[0].Time;
+                    }
+                    else
+                    {
+                        return DateTime.Now.ToString();
+                    }
+                }
+            }
+            else if (text.StartsWith("TimeLeft(", StringComparison.CurrentCultureIgnoreCase) && text.EndsWith(")"))
+            {
+                string innerText = text.Substring(9, text.Length - 10);
+                string[] parts = innerText.Split(new[] { ',' }, 2);
+                if (parts.Length == 2)
+                {
+                    string t1 = parts[0].Trim().ToLower(); // 获取时间单位（year/month/week/day/hour/minute）
+                    if (int.TryParse(parts[1].Trim(), out int decimalPlaces))
+                    {
+                        double percentage = 0;
+                        DateTime now = DateTime.Now;
+
+                        switch (t1.ToLower())
+                        {
+                            case "year":
+                                DateTime startOfYear = new DateTime(now.Year, 1, 1);
+                                DateTime endOfYear = new DateTime(now.Year + 1, 1, 1);
+                                percentage = (now - startOfYear).TotalSeconds / (endOfYear - startOfYear).TotalSeconds * 100;
+                                break;
+                            case "month":
+                                DateTime startOfMonth = new DateTime(now.Year, now.Month, 1);
+                                DateTime endOfMonth = startOfMonth.AddMonths(1);
+                                percentage = (now - startOfMonth).TotalSeconds / (endOfMonth - startOfMonth).TotalSeconds * 100;
+                                break;
+                            case "week":
+                                DateTime startOfWeek = now.AddDays(-(int)now.DayOfWeek); // 默认周从星期天开始
+                                DateTime endOfWeek = startOfWeek.AddDays(7);
+                                percentage = (now - startOfWeek).TotalSeconds / (endOfWeek - startOfWeek).TotalSeconds * 100;
+                                break;
+                            case "day":
+                                DateTime startOfDay = now.Date; // 当天的开始时间（零点）
+                                DateTime endOfDay = startOfDay.AddDays(1);
+                                percentage = (now - startOfDay).TotalSeconds / (endOfDay - startOfDay).TotalSeconds * 100;
+                                break;
+                            case "hour":
+                                DateTime startOfHour = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
+                                DateTime endOfHour = startOfHour.AddHours(1);
+                                percentage = (now - startOfHour).TotalSeconds / (endOfHour - startOfHour).TotalSeconds * 100;
+                                break;
+                            default:
+                                DateTime startOfMinute = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
+                                DateTime endOfMinute = startOfMinute.AddMinutes(1);
+                                percentage = (now - startOfMinute).TotalSeconds / (endOfMinute - startOfMinute).TotalSeconds * 100;
+                                break;
+                        }
+
+                        // 返回格式化的结果，保留小数点指定的位数
+                        return percentage.ToString($"F{decimalPlaces}", CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        return "0";
+                    }
+                }
+            }
+
+            // 其他命令可以继续在这里扩展
+            return text;
+        }
+
 
         public static string Anti_Path_Prepare(string path)
         {
@@ -177,6 +387,7 @@ namespace Hiro.Helpers
             path = Path_Replace(path, "<me>", App.username);
             path = Path_Replace(path, "<hiro>", App.appTitle);
             path = Path_Replace(path, "<product>", Get_Translate("dlproduct"));
+            path = ProcessHiroText(path);
             HWin.TryCatch("Hiro.Exception.PathPrepareX", () =>
             {
                 path = Path_Replace(path, "<volume>", HWin.GetSystemVolume().ToString());

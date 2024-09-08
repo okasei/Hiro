@@ -33,6 +33,7 @@ using Hiro.Resources;
 using System.Windows.Media.Media3D;
 using System.Buffers.Text;
 using Hiro.Widgets;
+using Hiro.Tests;
 
 namespace Hiro
 {
@@ -678,7 +679,7 @@ namespace Hiro
                     {
                         HiroInvoke(() =>
                         {
-                            HDesktop.NewTaskbarWin();
+                            new PluginTest().Show();
                         });
                         goto RunOK;
                     }
