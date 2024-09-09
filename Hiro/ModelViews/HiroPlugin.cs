@@ -14,6 +14,12 @@ namespace Hiro.ModelViews
         private IHiroPlugin? _plugin = null;
         private HiroService? _service = null;
         private Assembly? _assembly = null;
+        public string Name => _plugin?.GetName(App.lang) ?? "Unknown Plugin";
+        public string Version => _plugin?.Version ?? string.Empty;
+
+        public string PackageName => _plugin?.Id ?? "com.hiro.unknown." + DateTime.UtcNow.ToString();
+        public string Author => _plugin?.Author ?? string.Empty;
+        internal string Icon => _plugin?.Icon ?? string.Empty;
 
         public HiroPlugin(string path)
         {

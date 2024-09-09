@@ -23,6 +23,7 @@ using static Hiro.Helpers.HLogger;
 using System.Windows;
 using System.Windows.Media;
 using Hiro.Widgets;
+using Hiro.Helpers.Database;
 
 namespace Hiro
 {
@@ -111,6 +112,7 @@ namespace Hiro
                 Initialize_Notify_Recall();
                 Initialize_NotificationListener();
             });
+            DB_HIRO_PLUGINS.InitializePlugins();
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Read_DCIni("FPS", "60"))));
             Unosquare.FFME.Library.FFmpegDirectory = @Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
         }

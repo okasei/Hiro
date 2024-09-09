@@ -1,6 +1,7 @@
 ﻿using Hiro.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -33,6 +34,7 @@ namespace Hiro.Widgets
         private string _format = "<HH>:<mm>";
         private string _formatx = "<battery>%|<memory>%";
         private string _formatex = "<HH>:<mm>|<memory>%";
+        private bool _isFading = false;
 
         public Hiro_Taskbar()
         {
@@ -56,7 +58,7 @@ namespace Hiro.Widgets
                 _formatx = HSet.Read_Ini(App.dConfig, "Taskbar", "FormatX", _formatx);
                 _formatex = HSet.Read_Ini(App.dConfig, "Taskbar", "FormatEX", _formatex);
                 UpdateColors();
-                BasicGrid.Width = 70;
+                BasicGrid.Width = _width;
                 _grids.Add(BasicGrid);
                 HUI.Set_Control_Location(Notification, "TaskbarNotice");
                 HUI.Set_Control_Location(MsgLabel, "TaskbarMsg");
@@ -75,8 +77,8 @@ namespace Hiro.Widgets
 
         internal void UpdateLabels()
         {
-            InfoLabel.Text = HText.Path_PPX(_format);
-            ExtraLabel.Text = HText.Path_PPX(BasicGrid.Visibility == Visibility.Visible ? _formatx : _formatex);
+            InfoLabel.Text = HText.ProcessHiroText(HText.Path_PPX(_format));
+            ExtraLabel.Text = HText.ProcessHiroText(HText.Path_PPX(BasicGrid.Visibility == Visibility.Visible ? _formatx : _formatex));
         }
 
         internal void Embbed()
@@ -362,7 +364,7 @@ namespace Hiro.Widgets
 
         internal void Load_Notification()
         {
-            if (_notif != null)
+            if (_notif != null || _isFading)
             {
                 return;
             }
@@ -431,6 +433,7 @@ namespace Hiro.Widgets
             {
                 if (NotiGrid.Visibility == Visibility.Visible)
                 {
+                    _isFading = true;
                     Notification.Margin = new(NotiGrid.ActualWidth, 0, 0, 0);
                     TotalGrid.Visibility = Visibility.Visible;
                     var s = HAnimation.AddPowerOutAnimation(0, NotiGrid, null, null, 100);
@@ -440,6 +443,7 @@ namespace Hiro.Widgets
                         NotiGrid.Visibility = Visibility.Collapsed;
                         Notification.Margin = new Thickness(NotiGrid.ActualWidth, 0, 0, 0);
                         _title = string.Empty;
+                        _isFading = false;
                         if (App.noticeitems.Count > 0)
                             Load_Notification();
                     };

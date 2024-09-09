@@ -57,7 +57,7 @@ namespace Hiro.Helpers
                     return string.Empty;
             }
         }
-        static string ProcessHiroText(string text)
+        internal static string ProcessHiroText(string text)
         {
             Stack<int> stack = new Stack<int>();
 
@@ -250,8 +250,11 @@ namespace Hiro.Helpers
                                 break;
                         }
 
-                        // 返回格式化的结果，保留小数点指定的位数
-                        return percentage.ToString($"F{decimalPlaces}", CultureInfo.InvariantCulture);
+                        if (decimalPlaces < 0)
+                            // 返回格式化的结果，保留小数点指定的位数
+                            return (100 - percentage).ToString($"F{-decimalPlaces}", CultureInfo.InvariantCulture);
+                        else
+                            return percentage.ToString($"F{decimalPlaces}", CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -387,7 +390,6 @@ namespace Hiro.Helpers
             path = Path_Replace(path, "<me>", App.username);
             path = Path_Replace(path, "<hiro>", App.appTitle);
             path = Path_Replace(path, "<product>", Get_Translate("dlproduct"));
-            path = ProcessHiroText(path);
             HWin.TryCatch("Hiro.Exception.PathPrepareX", () =>
             {
                 path = Path_Replace(path, "<volume>", HWin.GetSystemVolume().ToString());

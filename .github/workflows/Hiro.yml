@@ -1,0 +1,63 @@
+name: Build Hiro
+
+on:
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: 'Build configuration (Debug/Release)'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+          - Debug
+          - Release
+
+jobs:
+
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: Hiro.sln
+      Test_Project_Path: Hiro\Hiro.csproj
+      Output_Directory: bin\${{ matrix.configuration }}  # 指定 .exe 文件输出目录
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Execute unit tests
+      run: dotnet test
+
+    - name: Restore the application
+      run: dotnet restore $env:Solution_Name /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Build the application
+      run: dotnet build $env:Solution_Name /p:Configuration=$env:Configuration
+
+    - name: Zip the build output
+      run: |
+        $zipFile = "$env:GITHUB_WORKSPACE\Hiro.zip"
+        Compress-Archive -Path "$env:Output_Directory\*" -DestinationPath $zipFile
+
+    - name: Upload ZIP file
+      uses: actions/upload-artifact@v3
+      with:
+        name: BuildOutput
+        path: ${{ env.GITHUB_WORKSPACE }}\Hiro.zip
