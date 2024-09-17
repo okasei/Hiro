@@ -619,6 +619,10 @@ namespace Hiro
         private static void InitializeInnerParameters()
         {
             currentDir = AppDomain.CurrentDomain.BaseDirectory;
+            dConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hus";
+            sConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hsl";
+            dConfig = dConfig.Replace("\\\\", "\\");
+            sConfig = sConfig.Replace("\\\\", "\\");
             HFile.CreateFolder(currentDir + "\\users\\" + eUserName + "\\editor\\");
             HFile.CreateFolder(currentDir + "\\users\\" + eUserName + "\\log\\");
             HFile.CreateFolder(currentDir + "\\users\\" + eUserName + "\\config\\");
@@ -632,10 +636,6 @@ namespace Hiro
             }
             catch { }
             LogtoFile("[HIROWEGO]InitializeInnerParameters");
-            dConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hus";
-            sConfig = currentDir + "\\users\\" + eUserName + "\\config\\" + eUserName + ".hsl";
-            dConfig = dConfig.Replace("\\\\", "\\");
-            sConfig = sConfig.Replace("\\\\", "\\");
             LogtoFile("[HIROWEGO]DConfig at " + dConfig);
             LogtoFile("[HIROWEGO]SConfig at " + sConfig);
             FirstUse = !System.IO.File.Exists(dConfig) && !System.IO.File.Exists(sConfig);

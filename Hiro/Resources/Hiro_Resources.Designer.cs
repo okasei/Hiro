@@ -79,7 +79,7 @@ namespace Hiro.Resources {
         }
         
         /// <summary>
-        ///   查找类似 2040600 的本地化字符串。
+        ///   查找类似 2050200 的本地化字符串。
         /// </summary>
         internal static string ApplicationUpdateVersion {
             get {
@@ -88,7 +88,7 @@ namespace Hiro.Resources {
         }
         
         /// <summary>
-        ///   查找类似 2.4.6 的本地化字符串。
+        ///   查找类似 2.5.2 的本地化字符串。
         /// </summary>
         internal static string ApplicationVersion {
             get {
@@ -97,7 +97,7 @@ namespace Hiro.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0 Rex /2.4.6 Hiro/1.0.0 的本地化字符串。
+        ///   查找类似 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0 Rex /2.5.2 Hiro/1.0.0 的本地化字符串。
         /// </summary>
         internal static string AppUserAgent {
             get {

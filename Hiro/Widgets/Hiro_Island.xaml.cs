@@ -40,29 +40,7 @@ namespace Hiro
         {
             InitializeComponent();
             Helpers.HUI.SetCustomWindowIcon(this);
-            var icon = HSet.Read_PPDCIni("CustomizeIcon", "");
-            icon = HText.Path_PPX(icon);
-            try
-            {
-                if (System.IO.File.Exists(icon))
-                {
-                    BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                    (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
-                }
-                else
-                {
-                    icon = HSet.Read_PPDCIni("UserAvatar", "");
-                    if (System.IO.File.Exists(icon) && App.Logined == true)
-                    {
-                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
-                        (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HLogger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
-            }
+            Load_PrimaryIcon();
             ContentLabel.MaxWidth = SystemParameters.FullPrimaryScreenWidth * 4 / 5;
             Title = $"{HText.Get_Translate("notitle")} - {App.appTitle}";
             Load_One();
@@ -79,6 +57,42 @@ namespace Hiro
                 Load_Color();
                 Island_In();
             };
+        }
+
+
+        private void Load_PrimaryIcon()
+        {
+            var icon = HSet.Read_PPDCIni("CustomizeAbout", "");
+            try
+            {
+                if (System.IO.File.Exists(icon))
+                {
+                    BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                    (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                }
+                else
+                {
+                    icon = HSet.Read_PPDCIni("CustomizeIcon", "");
+                    if (System.IO.File.Exists(icon))
+                    {
+                        BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                        (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                    }
+                    else
+                    {
+                        icon = HSet.Read_PPDCIni("UserAvatar", "");
+                        if (System.IO.File.Exists(icon) && App.Logined == true)
+                        {
+                            BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                            (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HLogger.LogError(ex, "Hiro.Exception.Boxie.LoadIcon");
+            }
         }
 
         public void Load_Color()

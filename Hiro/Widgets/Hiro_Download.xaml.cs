@@ -9,6 +9,7 @@ using System.Windows.Media.Animation;
 using static Hiro.Helpers.HClass;
 using System.Threading;
 using System.Windows.Threading;
+using System.Windows.Shell;
 
 namespace Hiro
 {
@@ -35,6 +36,7 @@ namespace Hiro
         private string nextTitle = string.Empty;
         private double nextProgess = 0;
         private DispatcherTimer? _timer = null;
+        TaskbarItemInfo _taskbar = new TaskbarItemInfo();
         public Hiro_Download(int i, string st)
         {
             InitializeComponent();
@@ -165,7 +167,7 @@ namespace Hiro
                 strFileName = "index.html";
             if (SavePath.Text.Equals(string.Empty))
             {
-                SavePath.Text = "<idownload>\\HiDownload\\<filename>";
+                SavePath.Text = "<idocument>\\HiDownload\\<filename>";
             }
             if (current < 0)
                 rpath = SavePath.Text;
@@ -231,7 +233,8 @@ namespace Hiro
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                        _taskbar.ProgressState = TaskbarItemProgressState.Normal;
+
                     });
                     if (System.IO.File.Exists(mSaveFileName + ".hdp"))//文件已经存在就继续下载
                     {
@@ -257,7 +260,7 @@ namespace Hiro
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Indeterminate, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                        _taskbar.ProgressState = TaskbarItemProgressState.Indeterminate;
                     });
                     startpos = 0;
                 }
@@ -344,7 +347,7 @@ namespace Hiro
             if (nextProgess >= 0 && nextProgess <= 100)
             {
                 pb.Value = nextProgess;
-                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)nextProgess, 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                _taskbar.ProgressValue = nextProgess;
             }
             else
             {
@@ -407,7 +410,7 @@ namespace Hiro
                 }
             }
             progress = "";
-            Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            _taskbar.ProgressState = TaskbarItemProgressState.None;
             pb.IsIndeterminate = false;
             pb.Value = 0;
             albtn_1.Content = HText.Get_Translate("dlstart");

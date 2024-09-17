@@ -1,20 +1,13 @@
 ﻿using Hiro.Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Hiro.Widgets
 {
@@ -31,10 +24,9 @@ namespace Hiro.Widgets
         private HClass.Hiro_Notice? _notif = null;
         private List<Grid> _grids = new List<Grid>();
         private string _title = string.Empty;
-        private string _format = "<HH>:<mm>";
-        private string _formatx = "<battery>%|<memory>%";
-        private string _formatex = "<HH>:<mm>|<memory>%";
+        private string[] _formatArray = { "<HH>:<mm>", "<battery>%|<memory>%", "<HH>:<mm>|<memory>%", "[DateTime([DateTimeNow()],D)]", string.Empty, "[DateTime([DateTimeNow()],D)]" };
         private bool _isFading = false;
+        private int _transparency = 128;
 
         public Hiro_Taskbar()
         {
@@ -53,10 +45,14 @@ namespace Hiro.Widgets
                 Notification.Margin = new((_width + _eWidth + 20) * _x, 0, 0, 0);
                 double.TryParse(HSet.Read_Ini(App.dConfig, "Taskbar", "ExtraWidth", "70"), out _eWidth);
                 double.TryParse(HSet.Read_Ini(App.dConfig, "Taskbar", "BasicWidth", "70"), out _width);
+                int.TryParse(HSet.Read_Ini(App.dConfig, "Taskbar", "Transparency", "128"), out _transparency);
                 BasicGrid.Tag = _width.ToString();
-                _format = HSet.Read_Ini(App.dConfig, "Taskbar", "Format", _format);
-                _formatx = HSet.Read_Ini(App.dConfig, "Taskbar", "FormatX", _formatx);
-                _formatex = HSet.Read_Ini(App.dConfig, "Taskbar", "FormatEX", _formatex);
+                _formatArray[0] = HSet.Read_Ini(App.dConfig, "Taskbar", "Format", _formatArray[0]);
+                _formatArray[1] = HSet.Read_Ini(App.dConfig, "Taskbar", "FormatX", _formatArray[1]);
+                _formatArray[2] = HSet.Read_Ini(App.dConfig, "Taskbar", "FormatEX", _formatArray[2]);
+                _formatArray[3] = HSet.Read_Ini(App.dConfig, "Taskbar", "Tooltip", _formatArray[3]);
+                _formatArray[4] = HSet.Read_Ini(App.dConfig, "Taskbar", "TooltipX", _formatArray[4]);
+                _formatArray[5] = HSet.Read_Ini(App.dConfig, "Taskbar", "TooltipEX", _formatArray[5]);
                 UpdateColors();
                 BasicGrid.Width = _width;
                 _grids.Add(BasicGrid);
@@ -64,21 +60,34 @@ namespace Hiro.Widgets
                 HUI.Set_Control_Location(MsgLabel, "TaskbarMsg");
                 HUI.Set_Control_Location(InfoLabel, "TaskbarInfo");
                 HUI.Set_Control_Location(ExtraLabel, "TaskbarExtra");
-                var _sb = HAnimation.AddPowerAnimation(0, TotalGrid, null, -100);
-                _sb.Completed += (e, args) =>
+                if (!HSet.Read_DCIni("Ani", "2").Equals("0"))
+                {
+                    var _sb = HAnimation.AddPowerAnimation(0, TotalGrid, null, -100);
+                    _sb.Completed += (e, args) =>
+                    {
+                        UpdatePosition();
+                        UpdateLabels();
+                    };
+                    _sb.Begin();
+                }
+                else
                 {
                     UpdatePosition();
                     UpdateLabels();
-                };
-                _sb.Begin();
+                }
+                
                 HSystem.HideInAltTab(new WindowInteropHelper(this).Handle);
             };
         }
 
         internal void UpdateLabels()
         {
-            InfoLabel.Text = HText.ProcessHiroText(HText.Path_PPX(_format));
-            ExtraLabel.Text = HText.ProcessHiroText(HText.Path_PPX(BasicGrid.Visibility == Visibility.Visible ? _formatx : _formatex));
+            var t = HText.ProcessHiroText(HText.Path_PPX(_formatArray[3]));
+            InfoLabel.Text = HText.ProcessHiroText(HText.Path_PPX(_formatArray[0]));
+            InfoLabel.ToolTip = HText.IsOnlyBlank(t) ? null : t;
+            t = HText.ProcessHiroText(HText.Path_PPX(BasicGrid.Visibility == Visibility.Visible ? _formatArray[4] : _formatArray[5]));
+            ExtraLabel.Text = HText.ProcessHiroText(HText.Path_PPX(BasicGrid.Visibility == Visibility.Visible ? _formatArray[1] : _formatArray[2]));
+            ExtraLabel.ToolTip = HText.IsOnlyBlank(t) ? null : t;
         }
 
         internal void Embbed()
@@ -158,8 +167,9 @@ namespace Hiro.Widgets
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
             Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
+            Resources["AppForeDimExtra"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 10));
             Resources["AppAccent"] = new SolidColorBrush(App.AppAccentColor);
-            Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, 80));
+            Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, _transparency));
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
         }
 
@@ -537,5 +547,6 @@ namespace Hiro.Widgets
                 section += "EX";
             Hiro_Utils.RunExe(HSet.Read_Ini(App.dConfig, "Taskbar", section, "nop"), "HiroTaskbar[Beta]");
         }
+
     }
 }

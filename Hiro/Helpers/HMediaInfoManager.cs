@@ -93,6 +93,7 @@ namespace Hiro.Helpers
                 _session.MediaPropertiesChanged += _session_MediaPropertiesChanged;
                 _session.PlaybackInfoChanged += _session_PlaybackInfoChanged;
                 ShowNotification();
+                UpdatePlayInfo();
                 return true;
             }
             catch (Exception ex)
@@ -107,7 +108,7 @@ namespace Hiro.Helpers
             UpdatePlayInfo();
         }
 
-        private static void UpdatePlayInfo()
+        internal static void UpdatePlayInfo()
         {
             if (_session != null)
             {

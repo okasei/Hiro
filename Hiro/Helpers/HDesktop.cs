@@ -14,7 +14,9 @@ namespace Hiro.Helpers
     {
         static PerformanceCounter? _performanceCounter = null;
         static Hiro_Wallvideo? wallPaperPlayer = null;
+        static Hiro_Wallpaper? wallPaperWin = null;
         static IntPtr wallPaperPlayerIntPtr = IntPtr.Zero;
+        static IntPtr wallPaperWinIntPtr = IntPtr.Zero;
         static nint programHandle = 0;
 
         internal static void SendMsgToProgman()
@@ -81,10 +83,15 @@ namespace Hiro.Helpers
             _performanceCounter ??= new PerformanceCounter("Processor", "% Processor Time", "_Total");
         }
 
-        internal static void RemoveWallpaperSigns()
+        internal static void RemoveWallpaperPlayerSigns()
         {
             wallPaperPlayerIntPtr = IntPtr.Zero;
             wallPaperPlayer = null;
+        }
+        internal static void RemoveWallpaperSigns()
+        {
+            wallPaperWinIntPtr = IntPtr.Zero;
+            wallPaperWin = null;
         }
 
         internal static void SetWallpaperVideo(IntPtr wallPaperPlayer)
@@ -94,11 +101,18 @@ namespace Hiro.Helpers
             SetParent(wallPaperPlayer, programHandle);
         }
 
+        internal static void SetWallpaperWin(IntPtr wallPaperPlayer)
+        {
+            wallPaperWinIntPtr = wallPaperPlayer;
+            SendMsgToProgman();
+            SetParent(wallPaperPlayer, programHandle);
+        }
+
         internal static void ResetTaskbarWin()
         {
             Hiro_Utils.HiroInvoke(() =>
             {
-                if(App.tb != null)
+                if (App.tb != null)
                 {
                     App.tb.Close();
                     App.tb = null;
@@ -111,8 +125,23 @@ namespace Hiro.Helpers
         {
             Hiro_Utils.HiroInvoke(() =>
             {
-                App.tb ??= new Hiro_Taskbar();
-                App.tb.Show();
+                if (App.mn != null)
+                {
+                    App.tb ??= new Hiro_Taskbar();
+                    App.tb.Show();
+                    HMediaInfoManager.UpdatePlayInfo();
+                }
+            });
+        }
+
+        internal static void CloseTaskbarWin()
+        {
+            Hiro_Utils.HiroInvoke(() =>
+            {
+                var t = App.tb;
+                App.tb = null;
+                t?.Close();
+                t = null;
             });
         }
 
@@ -160,10 +189,14 @@ namespace Hiro.Helpers
                 {
                     case "close":
                     case "close()":
+                    case "off":
+                    case "off()":
                         {
                             Hiro_Utils.HiroInvoke(() =>
                             {
-                                wallPaperPlayer.Close();
+                                var _w = wallPaperPlayer;
+                                RemoveWallpaperPlayerSigns();
+                                _w.Close();
                             });
                             oflag = true;
                             break;
@@ -181,6 +214,8 @@ namespace Hiro.Helpers
                         }
                     case "play":
                     case "play()":
+                    case "on":
+                    case "on()":
                         {
                             Hiro_Utils.HiroInvoke(() =>
                             {
@@ -236,10 +271,37 @@ namespace Hiro.Helpers
                 if (oflag)
                     return 0;
             }
+            if (wallPaperWin != null)
+            {
+                var oflag = false;
+                switch (parameter[0].Trim())
+                {
+                    case "close":
+                    case "close()":
+                    case "off":
+                    case "off()":
+                        {
+                            Hiro_Utils.HiroInvoke(() =>
+                            {
+                                var _w = wallPaperWin;
+                                RemoveWallpaperSigns();
+                                _w.Close();
+                            });
+                            oflag = true;
+                            break;
+                        }
+                }
+                if (oflag)
+                    return 0;
+            }
             if (File.Exists(parameter[0]))
             {
                 if (HFile.isVideo(parameter[0]) == true)
                 {
+                    if (wallPaperWin != null)
+                    {
+                        wallPaperWin.Close();
+                    }
                     if (wallPaperPlayer != null)
                     {
                         wallPaperPlayer.Play(parameter[0]);
@@ -261,6 +323,43 @@ namespace Hiro.Helpers
                     if (wallPaperPlayer != null)
                     {
                         wallPaperPlayer.Close();
+                    }
+                    if (parameter.Count > 2)
+                    {
+                        bool _f = false;
+                        switch (parameter[2].ToLower())
+                        {
+                            case "temp":
+                            case "temporary":
+                            case "t":
+                            case "fake":
+                            case "f":
+                                {
+                                    if (wallPaperWin != null)
+                                    {
+                                        wallPaperWin.Wallpaper.Source = Hiro_Utils.GetBitmapImage(parameter[0]);
+                                        wallPaperWin.ResetUniform(Convert.ToInt32(parameter[1]));
+                                    }
+                                    else
+                                    {
+                                        Hiro_Utils.HiroInvoke(() =>
+                                        {
+                                            wallPaperWin ??= new();
+                                            wallPaperWin.Show();
+                                            wallPaperWin.Wallpaper.Source = Hiro_Utils.GetBitmapImage(parameter[0]);
+                                            wallPaperWin.ResetUniform(Convert.ToInt32(parameter[1]));
+                                        });
+                                    }
+                                    _f = true;
+                                    break;
+                                }
+                            default:
+                                {
+                                    break;
+                                }
+                        }
+                        if (_f)
+                            return 0;
                     }
                     using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
                     {

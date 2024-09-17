@@ -61,8 +61,7 @@ namespace Hiro
 
         private void Load_PrimaryIcon()
         {
-            var icon = HSet.Read_PPDCIni("CustomizeIcon", "");
-            icon = HText.Path_PPX(icon);
+            var icon = HSet.Read_PPDCIni("CustomizeAbout", "");
             try
             {
                 if (System.IO.File.Exists(icon))
@@ -72,11 +71,20 @@ namespace Hiro
                 }
                 else
                 {
-                    icon = HSet.Read_PPDCIni("UserAvatar", "");
-                    if (System.IO.File.Exists(icon) && App.Logined == true)
+                    icon = HSet.Read_PPDCIni("CustomizeIcon", "");
+                    if (System.IO.File.Exists(icon))
                     {
                         BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
                         (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                    }
+                    else
+                    {
+                        icon = HSet.Read_PPDCIni("UserAvatar", "");
+                        if (System.IO.File.Exists(icon) && App.Logined == true)
+                        {
+                            BitmapImage? bi = Hiro_Utils.GetBitmapImage(icon);
+                            (Resources["PrimaryIcon"] as ImageBrush).ImageSource = bi;
+                        }
                     }
                 }
             }

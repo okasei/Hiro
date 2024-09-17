@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using static Hiro.Helpers.HSet;
 using static Hiro.Helpers.HLogger;
 using static Hiro.Helpers.HText;
+using System.Windows.Shell;
 
 namespace Hiro
 {
@@ -36,6 +37,7 @@ namespace Hiro
         private ContextMenu? favMenu = null;
         private bool iconLoaded = false;
         internal WindowAccentCompositor? compositor = null;
+        TaskbarItemInfo _taskbar = new TaskbarItemInfo();
         private void VirtualTitle_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
@@ -687,12 +689,12 @@ namespace Hiro
             if (state)
             {
                 wvpb.Visibility = Visibility.Visible;
-                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Indeterminate, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                _taskbar.ProgressState = TaskbarItemProgressState.Indeterminate; 
             }
             else
             {
                 wvpb.Visibility = Visibility.Collapsed;
-                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                _taskbar.ProgressState = TaskbarItemProgressState.None;
             }
             UpdateTitleLabel(state);
         }

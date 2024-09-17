@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Shell;
 using System.Windows.Threading;
 
 namespace Hiro
@@ -27,6 +28,7 @@ namespace Hiro
         string next = "";
         internal int bflag = 2;
         string backgroundFIle = "";
+        TaskbarItemInfo _task = new TaskbarItemInfo();
         public Hiro_Splash()
         {
             InitializeComponent();
@@ -162,7 +164,7 @@ namespace Hiro
             minbtn.Content = tick.ToString();
             if (tick > 0)
             {
-                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                _task.ProgressState = TaskbarItemProgressState.Normal;
             }
             timer.Tick += delegate
             {
@@ -186,7 +188,7 @@ namespace Hiro
                     {
                         ProgressLabel.Margin = t;
                     }
-                    Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue(100 - (int)(tick * 100 / (int)ProgressLabel.Tag), 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                    _task.ProgressValue = 100 - (int)(tick * 100 / (int)ProgressLabel.Tag);
                     if (tick < 0)
                     {
                         Close();

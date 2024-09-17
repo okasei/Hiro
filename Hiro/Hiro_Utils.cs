@@ -660,11 +660,37 @@ namespace Hiro
                         goto RunOK;
                     }
                     if (path.ToLower() == "nop" || path.ToLower() == "nop()") goto RunOK;
-                    if (path.Equals("Taskbar()", StringComparison.CurrentCultureIgnoreCase))
+                    if (path.StartsWith("Taskbar(", StringComparison.CurrentCultureIgnoreCase))
                     {
+
                         HiroInvoke(() =>
                         {
-                            HDesktop.NewTaskbarWin();
+                            switch (path.ToLower())
+                            {
+                                case "taskbar()":
+                                case "taskbar(on)":
+                                case "taskbar(open)":
+                                    {
+                                        HDesktop.NewTaskbarWin();
+                                        break;
+                                    }
+                                case "taskbar(refreash)":
+                                case "taskbar(update)":
+                                    {
+                                        HDesktop.ResetTaskbarWin();
+                                        break;
+                                    }
+                                case "taskbar(off)":
+                                case "taskbar(close)":
+                                    {
+                                        HDesktop.CloseTaskbarWin();
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        break;
+                                    }
+                            }
                         });
                         goto RunOK;
                     }
@@ -2342,24 +2368,11 @@ namespace Hiro
             }
         }
 
-        [DllImport("uxtheme.dll", EntryPoint = "#95")]
-        static extern uint GetImmersiveColorFromColorSetEx(uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode);
-        [DllImport("uxtheme.dll", EntryPoint = "#96")]
-        static extern uint GetImmersiveColorTypeFromName(IntPtr pName);
-        [DllImport("uxtheme.dll", EntryPoint = "#98")]
-        static extern int GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
         // Get theme color
         public static Color GetThemeColor()
         {
-            var colorSetEx = GetImmersiveColorFromColorSetEx(
-                (uint)GetImmersiveUserColorSetPreference(false, false),
-                GetImmersiveColorTypeFromName(Marshal.StringToHGlobalUni("ImmersiveStartSelectionBackground")),
-                false, 0);
 
-            var colour = Color.FromArgb((byte)((0xFF000000 & colorSetEx) >> 24), (byte)(0x000000FF & colorSetEx),
-                (byte)((0x0000FF00 & colorSetEx) >> 8), (byte)((0x00FF0000 & colorSetEx) >> 16));
-
-            return colour;
+            return (Color)ColorConverter.ConvertFromString(SystemParameters.WindowGlassColor.ToString());
         }
         #endregion
 

@@ -14,8 +14,8 @@ using System.Windows.Threading;
 using System.Runtime;
 using Windows.Media;
 using Hiro.Helpers.SMTC;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 using Unosquare.FFME.Common;
+using System.Windows.Shell;
 
 namespace Hiro
 {
@@ -43,6 +43,7 @@ namespace Hiro
         Thickness _set = new(0);
         bool _ttg = false;
         bool _tts = true;
+        TaskbarItemInfo taskbarInfo = new TaskbarItemInfo();
 
         /// <summary>
         /// 0 - 未在播放, 1 - 暂停, 2 - 正在播放
@@ -250,7 +251,7 @@ namespace Hiro
         {
             if (!Media.IsAtEndOfStream)
                 return;
-            Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            taskbarInfo.ProgressState = TaskbarItemProgressState.None;
             _dst.Stop();
             _currentCondition = 0;
             Media.Stop();
@@ -394,7 +395,7 @@ namespace Hiro
                 Ctrl_Time.Content = zero ? "00:00" : ParseDuration(_ts) + "/" + ParseDuration(Media.MediaInfo.Duration.TotalSeconds);
                 Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
                 var wid = zero ? 0 : Ctrl_Progress_Bg.Width * _ts / Media.MediaInfo.Duration.TotalSeconds;
-                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)(100 * _ts / Media.MediaInfo.Duration.TotalSeconds), 100, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                taskbarInfo.ProgressValue = (int)(100 * _ts / Media.MediaInfo.Duration.TotalSeconds);
                 wid = wid >= 0 ? wid : 0;
                 if (Read_DCIni("Ani", "2").Equals("1"))
                 {
@@ -502,7 +503,7 @@ namespace Hiro
                         {
                             Ctrl_Text.Text = uri;
                             Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
-                            Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                            taskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
                             ShowContainer(Player_Container, -100, 250, 350);
                             _ttg = false;
                             _tts = true;
@@ -819,7 +820,7 @@ namespace Hiro
             {
                 if (_currentCondition == 2)
                 {
-                    Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Paused, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                    taskbarInfo.ProgressState = TaskbarItemProgressState.Paused;
                     Media.Pause();
                     _currentCondition = 1;
                     try
@@ -834,7 +835,7 @@ namespace Hiro
                 }
                 else
                 {
-                    Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                    taskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
                     Media.Play();
                     _currentCondition = 2;
                     try
@@ -1560,7 +1561,7 @@ namespace Hiro
                             {
                                 Ctrl_Text.Text = uri;
                                 Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
-                                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                                taskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
                                 ShowContainer(Player_Container, -100, 250, 350);
                                 _ttg = false;
                                 _tts = true;

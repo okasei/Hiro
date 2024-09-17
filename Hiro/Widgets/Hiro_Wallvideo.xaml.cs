@@ -16,10 +16,10 @@ namespace Hiro
             InitializeComponent();
             Loaded += delegate
             {
+                HSystem.HideInAltTab(new WindowInteropHelper(this).Handle);
                 HDesktop.SetWallpaperVideo(new WindowInteropHelper(this).Handle);
                 Media.IsMuted = HSet.Read_DCIni("WallVideoMute", "true").Equals("true");
                 WindowState = WindowState.Maximized;
-                HSystem.HideInAltTab(new WindowInteropHelper(this).Handle);
             };
         }
 
@@ -34,11 +34,8 @@ namespace Hiro
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = true;
             Media.Stop();
             Media.Close();
-            Hide();
-            HDesktop.RemoveWallpaperSigns();
         }
 
         private void Media_MediaOpened(object sender, Unosquare.FFME.Common.MediaOpenedEventArgs e)
