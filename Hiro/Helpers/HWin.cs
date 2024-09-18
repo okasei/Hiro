@@ -7,6 +7,8 @@ using System.Windows;
 using System.Threading;
 using System.Windows.Forms;
 using System.Text;
+using System.Windows.Shell;
+using System.Windows.Media;
 
 namespace Hiro.Helpers
 {
@@ -248,8 +250,8 @@ namespace Hiro.Helpers
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX lpBuffer); 
-        
+        private static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX lpBuffer);
+
         public static float GetMemoryUsagePercentage()
         {
             MEMORYSTATUSEX memStatus = new MEMORYSTATUSEX();
@@ -277,6 +279,22 @@ namespace Hiro.Helpers
             {
                 HLogger.LogError(ex, module);
             }
+        }
+
+        internal static TaskbarItemInfo SetTaskbarItemOverlay(TaskbarItemInfo taskbar, string path, ImageSource? defaultOverlay = null)
+        {
+            if (taskbar == null)
+                taskbar = new TaskbarItemInfo();
+            var _f = HText.Path_PPX(path);
+            if (System.IO.File.Exists(_f))
+            {
+                taskbar.Overlay = Hiro_Utils.GetBitmapImage(_f);
+            }
+            else
+            {
+                taskbar.Overlay = defaultOverlay;
+            }
+            return taskbar;
         }
 
     }

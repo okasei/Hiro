@@ -33,6 +33,7 @@ namespace Hiro
         {
             InitializeComponent();
             Helpers.HUI.SetCustomWindowIcon(this);
+            TaskbarItemInfo = _task;
             LoadTimer();
             HiHiro();
             Hiro_Utils.SetShadow(new System.Windows.Interop.WindowInteropHelper(this).Handle);
@@ -188,7 +189,7 @@ namespace Hiro
                     {
                         ProgressLabel.Margin = t;
                     }
-                    _task.ProgressValue = 100 - (int)(tick * 100 / (int)ProgressLabel.Tag);
+                    _task.ProgressValue = 1.0 - tick / (double)ProgressLabel.Tag;
                     if (tick < 0)
                     {
                         Close();

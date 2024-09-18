@@ -75,7 +75,7 @@ namespace Hiro.Widgets
                     UpdatePosition();
                     UpdateLabels();
                 }
-                
+
                 HSystem.HideInAltTab(new WindowInteropHelper(this).Handle);
             };
         }
@@ -100,6 +100,10 @@ namespace Hiro.Widgets
 
         internal void LoadGrid(Grid g)
         {
+            if (g != MusicControlGrid)
+            {
+                UpdateMediaProgress(0);
+            }
             g.Visibility = Visibility.Visible;
             if (_grids.Contains(g))
             {
@@ -132,6 +136,10 @@ namespace Hiro.Widgets
 
         internal void RemoveGrid(Grid g)
         {
+            if (g == MusicControlGrid)
+            {
+                UpdateMediaProgress(0);
+            }
             if (_grids.Contains(g))
             {
                 if (_grids[_grids.Count - 1] == g)
@@ -166,7 +174,7 @@ namespace Hiro.Widgets
         internal void UpdateColors()
         {
             Resources["AppFore"] = new SolidColorBrush(App.AppForeColor);
-            Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 80));
+            Resources["AppForeDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 60));
             Resources["AppForeDimExtra"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppForeColor, 10));
             Resources["AppAccent"] = new SolidColorBrush(App.AppAccentColor);
             Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, _transparency));
@@ -548,5 +556,55 @@ namespace Hiro.Widgets
             Hiro_Utils.RunExe(HSet.Read_Ini(App.dConfig, "Taskbar", section, "nop"), "HiroTaskbar[Beta]");
         }
 
+        internal void UpdateMediaProgress(double progress)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var ani = !HSet.Read_DCIni("Ani", "2").Equals("0");
+                if (MusicControlGrid.Visibility == Visibility.Visible)
+                {
+                    if (ani)
+                    {
+                        var _t = MusicControlGrid.ActualWidth * progress;
+                        var _s = HAnimation.AddDoubleAnimaton(_t, 250, MediaProgress, "Width", null);
+                        _s.Completed += (e, args) =>
+                        {
+                            MediaProgress.Width = _t;
+                        };
+                        _s.Begin();
+                    }
+                    else
+                    {
+                        MediaProgress.Width = MusicControlGrid.ActualWidth * progress;
+                    }
+                }
+                else
+                {
+                    if (ani)
+                    {
+                        var _s = HAnimation.AddDoubleAnimaton(0, 250, MediaProgress, "Width", null);
+                        _s.Completed += (e, args) =>
+                        {
+                            MediaProgress.Width = 0;
+                        };
+                        _s.Begin();
+                    }
+                    else
+                    {
+                        MediaProgress.Width = 0;
+                    }
+                }
+            });
+        }
+
+        private async void MusicControlGrid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle && MusicControlGrid.Visibility == Visibility.Visible)
+            {
+                _ = await HMediaInfoManager.TrySetPosition((double)Mouse.GetPosition(this).X / MusicControlGrid.ActualWidth);
+                e.Handled = true;
+            }
+
+        }
     }
 }

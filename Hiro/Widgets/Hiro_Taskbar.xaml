@@ -16,8 +16,9 @@
     </Window.Resources>
     <Grid>
         <Grid x:Name="TotalGrid">
+            <Label x:Name="MediaProgress" HorizontalAlignment="Left" Margin="0" Width="0" VerticalAlignment="Stretch" Background="{DynamicResource AppForeDim}"/>
             <Grid x:Name="MainGrid" HorizontalAlignment="Left">
-                <Grid x:Name="MusicControlGrid" Tag="90" Visibility="Collapsed">
+                <Grid x:Name="MusicControlGrid" Tag="90" Visibility="Collapsed" MouseDown="MusicControlGrid_MouseDown">
                     <Grid x:Name="MusicControl">
                         <Label x:Name="Prev" Content="&#xF8AC;" FontFamily="Segoe MDL2 Assets" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Transparent" Width="30" HorizontalAlignment="Left" Margin="0" Background="Transparent" Foreground="{DynamicResource AppFore}" MouseLeftButtonDown="Prev_MouseLeftButtonDown">
                             <Label.Triggers>

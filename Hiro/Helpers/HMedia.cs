@@ -231,5 +231,59 @@ namespace Hiro.Helpers
 
         #endregion
 
+
+        internal static void ToggleMediaKey(string path, List<string> parameter)
+        {
+            System.Windows.Input.Key situation = path.ToLower() switch
+            {
+                "media(0)" or "media(off)" or "media(down)" or "media(↓)" or "media(stop)" or "media(end)" => System.Windows.Input.Key.MediaStop,
+                "media(1)" or "media(on)" or "media(up)" or "media(↑)" or "media(start)" or "media(begin)" or "media(invoke)" or "media(play)" or "media(pause)" => System.Windows.Input.Key.MediaPlayPause,
+                "media(next)" or "media(2)" or "media(right)" or "media(→)" => System.Windows.Input.Key.MediaNextTrack,
+                "media(previous)" or "media(last)" or "media(3)" or "media(left)" or "media(←)" => System.Windows.Input.Key.MediaPreviousTrack,
+                _ => System.Windows.Input.Key.MediaStop,
+            };
+
+            var _res = false;
+            switch (situation)
+            {
+                case System.Windows.Input.Key.MediaStop:
+                    {
+                        _res = HMediaInfoManager.TryToggleStop().GetAwaiter().GetResult();
+                        break;
+                    }
+                case System.Windows.Input.Key.MediaPlayPause:
+                    {
+                        _res = HMediaInfoManager.TryTogglePlay().GetAwaiter().GetResult();
+                        break;
+                    }
+                case System.Windows.Input.Key.MediaNextTrack:
+                    {
+                        _res = HMediaInfoManager.TryToggleNext().GetAwaiter().GetResult();
+                        break;
+                    }
+                case System.Windows.Input.Key.MediaPreviousTrack:
+                    {
+                        _res = HMediaInfoManager.TryTogglePrevious().GetAwaiter().GetResult();
+                        break;
+                    }
+                default:
+                    break;
+            }
+            if (_res)
+                return;
+            var keyinfo = situation switch
+            {
+                System.Windows.Input.Key.MediaStop => "End",
+                System.Windows.Input.Key.MediaPlayPause => "Start",
+                System.Windows.Input.Key.MediaNextTrack => "Next",
+                System.Windows.Input.Key.MediaPreviousTrack => "Previous",
+                _ => "Next"
+            };
+            var keyi = (byte)System.Windows.Input.KeyInterop.VirtualKeyFromKey(situation);
+            if (App.dflag)
+                HLogger.LogtoFile("[MEDIA]Media Control : " + keyinfo);
+            Hiro_Utils.keybd_event(keyi, Hiro_Utils.MapVirtualKey(keyi, 0), 0x0001, 0);
+            Hiro_Utils.keybd_event(keyi, Hiro_Utils.MapVirtualKey(keyi, 0), 0x0001 | 0x0002, 0);
+        }
     }
 }

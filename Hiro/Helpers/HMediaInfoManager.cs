@@ -54,6 +54,22 @@ namespace Hiro.Helpers
             return _session?.TryTogglePlayPauseAsync();
         }
 
+        internal static IAsyncOperation<bool>? TryToggleStop()
+        {
+            return _session?.TryStopAsync();
+        }
+
+        internal static IAsyncOperation<bool>? TrySetPosition(double pos)
+        {
+            if (_session != null)
+            {
+                var _t = _session.GetTimelineProperties();
+                var _s = _t.StartTime.Add(TimeSpan.FromMilliseconds(_t.EndTime.Subtract(_t.StartTime).TotalMilliseconds * pos)).Ticks;
+                return _session?.TryChangePlaybackPositionAsync((long)_s);
+            }
+            return null;
+        }
+
 
         private static bool UpdateMediaInfo()
         {
@@ -74,11 +90,11 @@ namespace Hiro.Helpers
                     });
                     return false;
                 }
-                UpdatePlayInfo();
                 if (_session != null)
                 {
                     _session.MediaPropertiesChanged -= _session_MediaPropertiesChanged;
                     _session.PlaybackInfoChanged -= _session_PlaybackInfoChanged;
+                    _session.TimelinePropertiesChanged -= _session_TimelinePropertiesChanged;
                     _session = null;
                 }
                 _session = session;
@@ -92,7 +108,9 @@ namespace Hiro.Helpers
                     HLogger.LogtoFile("New session found.[" + (_session?.SourceAppUserModelId ?? "Unknown") + "]");
                 _session.MediaPropertiesChanged += _session_MediaPropertiesChanged;
                 _session.PlaybackInfoChanged += _session_PlaybackInfoChanged;
+                _session.TimelinePropertiesChanged += _session_TimelinePropertiesChanged;
                 ShowNotification();
+                UpdateProgress();
                 UpdatePlayInfo();
                 return true;
             }
@@ -100,6 +118,22 @@ namespace Hiro.Helpers
             {
                 HLogger.LogError(ex, "Hiro.Exception.SMTC.Session.Update");
                 return false;
+            }
+        }
+
+        private static void _session_TimelinePropertiesChanged(GlobalSystemMediaTransportControlsSession sender, TimelinePropertiesChangedEventArgs args)
+        {
+            UpdateProgress();
+        }
+
+        private static void UpdateProgress()
+        {
+            if (_session != null && App.tb != null)
+            {
+                var p = _session.GetTimelineProperties();
+                var tm = p.EndTime.Subtract(p.StartTime);
+                var tp = p.Position.Subtract(p.StartTime);
+                App.tb.UpdateMediaProgress(tp.TotalMilliseconds / tm.TotalMilliseconds);
             }
         }
 

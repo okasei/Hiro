@@ -47,6 +47,7 @@ namespace Hiro
             Load_Position();
             Load_Translate();
             HUI.SetCustomWindowIcon(this);
+            TaskbarItemInfo = _taskbar;
             Loaded += delegate
             {
                 HiHiro();
@@ -347,7 +348,7 @@ namespace Hiro
             if (nextProgess >= 0 && nextProgess <= 100)
             {
                 pb.Value = nextProgess;
-                _taskbar.ProgressValue = nextProgess;
+                _taskbar.ProgressValue = nextProgess / 100.0;
             }
             else
             {

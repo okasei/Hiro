@@ -339,26 +339,7 @@ namespace Hiro
                     }
                     if (HText.StartsWith(path, "media("))
                     {
-                        System.Windows.Input.Key situation = path.ToLower() switch
-                        {
-                            "media(0)" or "media(off)" or "media(down)" or "media(↓)" or "media(stop)" or "media(end)" => System.Windows.Input.Key.MediaStop,
-                            "media(1)" or "media(on)" or "media(up)" or "media(↑)" or "media(start)" or "media(begin)" or "media(invoke)" or "media(play)" or "media(pause)" => System.Windows.Input.Key.MediaPlayPause,
-                            "media(next)" or "media(2)" or "media(right)" or "media(→)" => System.Windows.Input.Key.MediaNextTrack,
-                            "media(previous)" or "media(last)" or "media(3)" or "media(left)" or "media(←)" => System.Windows.Input.Key.MediaPreviousTrack,
-                            _ => System.Windows.Input.Key.MediaStop,
-                        };
-                        var keyinfo = situation switch
-                        {
-                            System.Windows.Input.Key.MediaStop => "End",
-                            System.Windows.Input.Key.MediaPlayPause => "Start",
-                            System.Windows.Input.Key.MediaNextTrack => "Next",
-                            System.Windows.Input.Key.MediaPreviousTrack => "Previous"
-                        };
-                        var keyi = (byte)System.Windows.Input.KeyInterop.VirtualKeyFromKey(situation);
-                        if (App.dflag)
-                            LogtoFile("[MEDIA]Media Control : " + keyinfo);
-                        keybd_event(keyi, MapVirtualKey(keyi, 0), 0x0001, 0);
-                        keybd_event(keyi, MapVirtualKey(keyi, 0), 0x0001 | 0x0002, 0);
+                        HMedia.ToggleMediaKey(path, parameter);
                         goto RunOK;
                     }
                     if (HText.StartsWith(path, "key("))
@@ -1298,7 +1279,18 @@ namespace Hiro
                                 if (path.ToLower().Equals("play()"))
                                     new Hiro_Player().Show();
                                 else
-                                    new Hiro_Player(parameter[0]).Show();
+                                {
+                                    var _ac = false;
+                                    if (parameter.Count > 1)
+                                    {
+                                        _ac = (parameter[1].ToLower()) switch
+                                        {
+                                            "true" or "t" or "close" or "c" or "auto" or "a" => true,
+                                            _ => false
+                                        };
+                                    }
+                                    new Hiro_Player(parameter[0], _ac).Show();
+                                }
                             });
                         }
                         goto RunOK;
@@ -1791,10 +1783,10 @@ namespace Hiro
         }
 
         [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
+        internal static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
 
         [DllImport("user32.dll")]
-        static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
+        internal static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
 
         private async static void SetBthState(bool? bluetoothState, string? bluetoothMac)
         {

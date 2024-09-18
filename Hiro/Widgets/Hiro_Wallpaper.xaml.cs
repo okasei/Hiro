@@ -47,5 +47,21 @@ namespace Hiro.Widgets
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (WindowState != WindowState.Maximized)
+            {
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState != WindowState.Maximized)
+            {
+                WindowState = WindowState.Maximized;
+            }
+        }
     }
 }

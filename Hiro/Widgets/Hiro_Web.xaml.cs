@@ -45,7 +45,8 @@ namespace Hiro
         public Hiro_Web(string? uri = null, string? title = null, string startUri = "<hiuser>")
         {
             InitializeComponent();
-            Helpers.HUI.SetCustomWindowIcon(this);
+            HUI.SetCustomWindowIcon(this);
+            TaskbarItemInfo = _taskbar;
             if (!startUri.Equals("<hiuser>"))
             {
                 uribtn.Visibility = Visibility.Visible;

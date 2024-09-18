@@ -16,6 +16,8 @@ using Windows.Media;
 using Hiro.Helpers.SMTC;
 using Unosquare.FFME.Common;
 using System.Windows.Shell;
+using Hiro.Resources;
+using System.Windows.Media.Imaging;
 
 namespace Hiro
 {
@@ -43,6 +45,7 @@ namespace Hiro
         Thickness _set = new(0);
         bool _ttg = false;
         bool _tts = true;
+        bool _autoClose = false;
         TaskbarItemInfo taskbarInfo = new TaskbarItemInfo();
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace Hiro
         {
             Hiro_Utils.Move_Window((new System.Windows.Interop.WindowInteropHelper(this)).Handle);
         }
-        public Hiro_Player(string? play = null)
+        public Hiro_Player(string? play = null, bool autoClose = false)
         {
             InitializeComponent();
             HUI.SetCustomWindowIcon(this);
@@ -61,6 +64,8 @@ namespace Hiro
             Media.RendererOptions.UseLegacyAudioOut = HSet.Read_DCIni("LegencyAudio", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase);
             toplay = play;
             Title = App.appTitle;
+            TaskbarItemInfo = taskbarInfo;
+            _autoClose = autoClose;
             Loaded += delegate
             {
                 Load_Color();
@@ -99,6 +104,23 @@ namespace Hiro
                         _smtcCreator.PlayOrPause += _smtcCreator_PlayOrPause;
                         _smtcCreator.Previous += _smtcCreator_Previous;
                         _smtcCreator.Next += _smtcCreator_Next;
+                        _smtcCreator.PositionChanged += (e, args) =>
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (_currentCondition != 0)
+                                {
+                                    var t = args.RequestedPlaybackPosition.Ticks / 10000;
+                                    Media.Position = TimeSpan.FromSeconds(t);
+                                    if (_lrc != null)
+                                    {
+                                        _nextTime = t;
+                                        _ttg = false;
+                                        _tts = true;
+                                    }
+                                }
+                            });
+                        };
                     }
                     catch (Exception ex)
                     {
@@ -132,6 +154,11 @@ namespace Hiro
                 if (index < playlist.Count - 1)
                 {
                     PlayIndex(index + 1);
+                }
+                else
+                {
+                    if (_autoClose)
+                        Close();
                 }
             });
         }
@@ -251,7 +278,13 @@ namespace Hiro
         {
             if (!Media.IsAtEndOfStream)
                 return;
+            if (_smtcCreator != null)
+            {
+                _smtcCreator.SetTimelineProperties(0, 0, 1);
+                _smtcCreator.SetMediaStatus(SMTCMediaStatus.Stopped);
+            }
             taskbarInfo.ProgressState = TaskbarItemProgressState.None;
+            taskbarInfo.Overlay = null;
             _dst.Stop();
             _currentCondition = 0;
             Media.Stop();
@@ -286,6 +319,8 @@ namespace Hiro
                     PlayIndex(index + 1);
                 else
                 {
+                    if (_autoClose)
+                        Close();
                     index = -1;
                 }
             });
@@ -300,6 +335,11 @@ namespace Hiro
                 if (zero)
                     return;
                 var _ts = Media.Position.TotalSeconds;
+                var _ds = Media.MediaInfo.Duration.TotalSeconds;
+                if (_smtcCreator != null)
+                {
+                    _smtcCreator.SetTimelineProperties(0, _ts, _ds);
+                }
                 if (_nextTime >= 0 && _ts > _nextTime && _lrc != null && !_lrcFlag)
                 {
                     _lrcFlag = true;
@@ -392,10 +432,10 @@ namespace Hiro
                         _lrcFlag = false;
                     }
                 }
-                Ctrl_Time.Content = zero ? "00:00" : ParseDuration(_ts) + "/" + ParseDuration(Media.MediaInfo.Duration.TotalSeconds);
+                Ctrl_Time.Content = zero ? "00:00" : ParseDuration(_ts) + "/" + ParseDuration(_ds);
                 Ctrl_Progress_Bg.Width = ActualWidth - Ctrl_Time.Margin.Right - Ctrl_Time.ActualWidth - 15;
-                var wid = zero ? 0 : Ctrl_Progress_Bg.Width * _ts / Media.MediaInfo.Duration.TotalSeconds;
-                taskbarInfo.ProgressValue = (int)(100 * _ts / Media.MediaInfo.Duration.TotalSeconds);
+                var wid = zero ? 0 : Ctrl_Progress_Bg.Width * _ts / _ds;
+                taskbarInfo.ProgressValue = _ts / _ds;
                 wid = wid >= 0 ? wid : 0;
                 if (Read_DCIni("Ani", "2").Equals("1"))
                 {
@@ -504,6 +544,7 @@ namespace Hiro
                             Ctrl_Text.Text = uri;
                             Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
                             taskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
+                            HWin.SetTaskbarItemOverlay(taskbarInfo, "<current>\\system\\images\\overlay\\play.hof");
                             ShowContainer(Player_Container, -100, 250, 350);
                             _ttg = false;
                             _tts = true;
@@ -821,6 +862,7 @@ namespace Hiro
                 if (_currentCondition == 2)
                 {
                     taskbarInfo.ProgressState = TaskbarItemProgressState.Paused;
+                    HWin.SetTaskbarItemOverlay(taskbarInfo, "<current>\\system\\images\\overlay\\pause.hof");
                     Media.Pause();
                     _currentCondition = 1;
                     try
@@ -836,6 +878,7 @@ namespace Hiro
                 else
                 {
                     taskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
+                    HWin.SetTaskbarItemOverlay(taskbarInfo, "<current>\\system\\images\\overlay\\play.hof");
                     Media.Play();
                     _currentCondition = 2;
                     try
@@ -1562,6 +1605,7 @@ namespace Hiro
                                 Ctrl_Text.Text = uri;
                                 Title = HText.Get_Translate("playerTitle").Replace("%t", HFile.GetFileName(uri)).Replace("%a", App.appTitle);
                                 taskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
+                                HWin.SetTaskbarItemOverlay(taskbarInfo, "<current>\\system\\images\\overlay\\play.hof");
                                 ShowContainer(Player_Container, -100, 250, 350);
                                 _ttg = false;
                                 _tts = true;

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro.Widgets"
         mc:Ignorable="d"
-        Title="Hiro_Wallpaper" Height="450" Width="800" Icon="/Resources/hiro_circle.ico" ShowInTaskbar="False" WindowStyle="None" ResizeMode="NoResize" Closing="Window_Closing">
+        Title="Hiro_Wallpaper" Height="450" Width="800" Icon="/Resources/hiro_circle.ico" ShowInTaskbar="False" WindowStyle="None" ResizeMode="NoResize" Closing="Window_Closing" SizeChanged="Window_SizeChanged" StateChanged="Window_StateChanged">
     <Grid>
         <Image x:Name="Wallpaper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="Uniform"/>
     </Grid>

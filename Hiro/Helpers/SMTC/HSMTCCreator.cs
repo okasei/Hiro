@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Windows.Foundation;
 using Windows.Media;
 using Windows.Storage.Streams;
 
@@ -19,6 +20,7 @@ namespace Hiro.Helpers.SMTC
     public class HSMTCUpdater
     {
         private readonly SystemMediaTransportControlsDisplayUpdater _updater;
+        private SystemMediaTransportControlsTimelineProperties tl = new SystemMediaTransportControlsTimelineProperties();
         public HSMTCUpdater(SystemMediaTransportControlsDisplayUpdater Updater, string AppMediaId)
         {
             _updater = Updater;
@@ -108,6 +110,30 @@ namespace Hiro.Helpers.SMTC
             _smtc.IsPreviousEnabled = true;
             //响应系统播放器的命令
             _smtc.ButtonPressed += _smtc_ButtonPressed;
+            _smtc.PlaybackPositionChangeRequested += (e, args) =>
+            {
+                PositionChanged?.Invoke(e, args);
+            };
+        }
+
+        internal void SetTimelineProperties(double Start, double Position, double End)
+        {
+            var minSeek = HSet.Read_DCIni("Performance", "0") switch
+            {
+                "1" => 1.5,
+                "2" => 3,
+                _ => 0.08
+            };
+            var tl = new SystemMediaTransportControlsTimelineProperties();
+            var _lastSeek = tl.Position.TotalMilliseconds / (tl.EndTime - tl.StartTime).TotalMilliseconds;
+            var _newSeek = Position / (End - Start);
+            if (Math.Abs(_lastSeek - _newSeek) * 100 > minSeek || double.IsNaN(_lastSeek))
+            {
+                tl.StartTime = TimeSpan.FromMilliseconds(Start);
+                tl.EndTime = TimeSpan.FromMilliseconds(End);
+                tl.Position = TimeSpan.FromMilliseconds(Position);
+                _smtc.UpdateTimelineProperties(tl);
+            }
         }
         public void Dispose()
         {
@@ -116,6 +142,7 @@ namespace Hiro.Helpers.SMTC
         }
         public HSMTCUpdater Info { get => _updater; }
         public event EventHandler PlayOrPause, Previous, Next;
+        public event TypedEventHandler<SystemMediaTransportControls, PlaybackPositionChangeRequestedEventArgs> PositionChanged;
         public void SetMediaStatus(SMTCMediaStatus status)
         {
             _smtc.PlaybackStatus = status switch
