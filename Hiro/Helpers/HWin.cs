@@ -283,8 +283,9 @@ namespace Hiro.Helpers
 
         internal static TaskbarItemInfo SetTaskbarItemOverlay(TaskbarItemInfo taskbar, string path, ImageSource? defaultOverlay = null)
         {
-            if (taskbar == null)
+            if (taskbar == null){
                 taskbar = new TaskbarItemInfo();
+            }
             var _f = HText.Path_PPX(path);
             if (System.IO.File.Exists(_f))
             {

@@ -217,7 +217,7 @@ namespace Hiro
         private void PwdLabel_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var appname = mode == 0 ? HText.Get_Translate("enapp") : HText.Get_Translate("deapp");
-            HSet.Write_Ini(App.dConfig, "Config", "DefaultPwd", pwd);
+            HSet.Write_Ini(App.dConfig, "Encrypt", "DefaultPwd", pwd);
             Hiro_Utils.RunExe($"notify({HText.Get_Translate("enpwdsaved")},2)", appname, false);
         }
 
@@ -249,7 +249,8 @@ namespace Hiro
             if (Directory.Exists(path))
             {
                 DirectoryInfo directory = new DirectoryInfo(path);
-                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                var files = directory.GetFiles("*", HSet.Read_Ini(App.dConfig, "Encrypt", "TopDirectoryOnly", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase) ?
+                    SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
                 var fileList = files.Select(s => s.FullName).ToList();
                 foreach (var file in fileList)
                 {
@@ -269,7 +270,8 @@ namespace Hiro
             if (Directory.Exists(path))
             {
                 DirectoryInfo directory = new DirectoryInfo(path);
-                var files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
+                var files = directory.GetFiles("*", HSet.Read_Ini(App.dConfig, "Encrypt", "TopDirectoryOnly", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase) ?
+                    SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
                 var fileList = files.Select(s => s.FullName).ToList();
                 foreach (var file in fileList)
                 {
@@ -286,19 +288,26 @@ namespace Hiro
         internal bool? StartEncrypt(string path, string key)
         {
             var appname = mode == 0 ? HText.Get_Translate("enapp") : HText.Get_Translate("deapp");
+            var saveTo = path + ".hef";
+            if (HSet.Read_Ini(App.dConfig, "Encrypt", "RandomFilename", "fasle").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var dir = saveTo.Substring(0, saveTo.LastIndexOf('\\') + 1);
+                saveTo = dir + Guid.NewGuid().ToString("N") + ".hef";
+                HLogger.LogtoFile("SAVETO:" + saveTo);
+            }
             if (!File.Exists(path))
             {
                 Hiro_Utils.RunExe($"notify({HText.Get_Translate("filenotexist")},2)", appname, false);
                 return null;
             }
-            if (File.Exists(path + ".hef"))
+            if (File.Exists(saveTo))
             {
                 Hiro_Utils.RunExe($"notify({HText.Get_Translate("enfileexist")},2)", appname, false);
                 return null;
             }
             try
             {
-                File.WriteAllBytes(path + ".hef", Hiro_Utils.EncryptFile(File.ReadAllBytes(path).ToArray(), key, Path.GetFileName(path)));
+                File.WriteAllBytes(saveTo, Hiro_Utils.EncryptFile(File.ReadAllBytes(path).ToArray(), key, Path.GetFileName(path)));
                 Dispatcher.Invoke(() =>
                 {
                     if (Autodelete.IsChecked == true)
@@ -371,7 +380,7 @@ namespace Hiro
         {
             if (pwd.Equals(string.Empty))
             {
-                pwd = HSet.Read_DCIni("DefaultPwd", string.Empty);
+                pwd = HSet.Read_DCIni("Encrypt", string.Empty);
             }
             GoStart();
         }

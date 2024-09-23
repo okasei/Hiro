@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Animation;
-using Windows.Devices.WiFi;
 using Windows.Devices.Radios;
 using Windows.Security.Credentials;
 using Windows.Security.Credentials.UI;
@@ -34,6 +33,8 @@ using System.Windows.Media.Media3D;
 using System.Buffers.Text;
 using Hiro.Widgets;
 using Hiro.Tests;
+using Hiro.Helpers.Database;
+using Hiro.Helpers.Plugin;
 
 namespace Hiro
 {
@@ -136,6 +137,37 @@ namespace Hiro
             return pi;
         }
 
+        internal static string GetLinkExt(string input)
+        {
+            // 检查是否为URL
+            if (Uri.TryCreate(input, UriKind.Absolute, out Uri? uriResult) && uriResult.Scheme != null)
+            {
+                // 返回协议名称 + 冒号
+                return uriResult.Scheme + ":";
+            }
+
+            // 检查是否是自定义协议格式，如 encrypt(...)
+            var match = Regex.Match(input, @"^([a-zA-Z0-9][a-zA-Z0-9_.]*)\s*\(.*\)$");
+            if (match.Success)
+            {
+                return match.Groups[1].Value + ":"; // 返回协议名称 + 冒号
+            }
+
+            // 检查是否为文件或文件夹
+            if (Directory.Exists(input))
+            {
+                return "folder"; // 是文件夹
+            }
+            else if (File.Exists(input))
+            {
+                string extension = Path.GetExtension(input);
+                return string.IsNullOrEmpty(extension) ? string.Empty : extension; // 返回文件扩展名或 null
+            }
+
+            // 默认返回 null
+            return string.Empty;
+        }
+
         public static void RunExe(string RunPath, string? source = null, bool autoClose = true, bool urlCheck = true)
         {
             new System.Threading.Thread(() =>
@@ -149,6 +181,7 @@ namespace Hiro
                     {
                         path = path.Substring(5, path.Length - 6);
                         path = Encoding.Default.GetString(Convert.FromBase64String(path));
+                        RunPath = path;
                     }
                     var parameter = LoadPaths(path, out path);
                     #region 预处理参数
@@ -158,6 +191,15 @@ namespace Hiro
                     }
                     #endregion
                     int disturb = int.Parse(Read_Ini(App.dConfig, "Config", "Disturb", "2"));
+                    #region 插件处理部分
+                    var _pluginExt = GetLinkExt(path);
+                    var _plist = DB_HIRO_LINKS.GetPluginsByLink(_pluginExt);
+                    if (_plist.Count > 0 && System.IO.File.Exists(_plist[0].Path))
+                    {
+                        HPluginManager.CreateOrLoad(_plist[0].Path ?? string.Empty).ProcessRequest(RunPath);
+                        goto RunOK;
+                    }
+                    #endregion
                     #region 识别文件类型
                     if (File.Exists(path))
                     {
@@ -311,30 +353,6 @@ namespace Hiro
                             _ => null,
                         };
                         SetBthState(situation, parameter.Count > 1 ? parameter[1] : null);
-                        goto RunOK;
-                    }
-                    if (HText.StartsWith(path, "wifi("))
-                    {
-                        int situation = path.ToLower() switch
-                        {
-                            "wifi(0)" or "wifi(off)" => 0,
-                            "wifi(1)" or "wifi(on)" => 1,
-                            "wifi(2)" or "wifi(dis)" or "wifi(disconnect)" => 2,
-                            "wifi(3)" or "wifi(con)" or "wifi(connect)" => 3,
-                            _ => -1,
-                        };
-                        if (situation == -1)
-                        {
-                            if (parameter.Count > 1 && parameter[1].ToLower().IndexOf("o") != -1)
-                            {
-                                SetWiFiState(3, parameter[0], true);
-                            }
-                            else
-                                SetWiFiState(3, parameter[0]);
-
-                        }
-                        else
-                            SetWiFiState(situation);
                         goto RunOK;
                     }
                     if (HText.StartsWith(path, "media("))
@@ -1878,123 +1896,6 @@ namespace Hiro
             {
                 App.Notify(new Hiro_Notice(Get_Translate("error"), 2));
                 LogError(ex, "Hiro.Exception.Bluetooth");
-            }
-        }
-
-        private async static void SetWiFiState(int? WiFiState, string? Ssid = null, bool omit = false)
-        {
-            try
-            {
-                if (await WiFiAdapter.RequestAccessAsync() != WiFiAccessStatus.Allowed)
-                {
-                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcreject"), 2, Get_Translate("wifi")));
-                    return;
-                }
-                var adapters = await WiFiAdapter.FindAllAdaptersAsync();
-                if (adapters.Count <= 0)
-                {
-                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcnull"), 2, Get_Translate("wifi")));
-                    return;
-                }
-                var adapter = adapters[0];
-                if (null == adapter)
-                {
-                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcnull"), 2, Get_Translate("wifi")));
-                    return;
-                }
-                Radio? ra = null;
-                foreach (var radio in await Radio.GetRadiosAsync())
-                {
-                    if (radio.Kind == RadioKind.WiFi)
-                    {
-                        ra = radio;
-                        break;
-                    }
-                }
-                if (null == ra)
-                {
-                    App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcnull"), 2, Get_Translate("wifi")));
-                    return;
-                }
-                switch (WiFiState)
-                {
-                    case 0:
-                        await ra.SetStateAsync(RadioState.Off);
-                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcoff"), 2, Get_Translate("wifi")));
-                        break;
-                    case 1:
-                        await ra.SetStateAsync(RadioState.On);
-                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcon"), 2, Get_Translate("wifi")));
-                        await adapter.ScanAsync();
-                        break;
-                    case 2:
-                        adapter.Disconnect();
-                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcdiscon"), 2, Get_Translate("wifi")));
-                        break;
-                    case 3:
-                        await adapter.ScanAsync();
-                        if (adapter.NetworkReport.AvailableNetworks.Count > 0)
-                        {
-                            if (App.dflag)
-                                LogtoFile($"adapter.NetworkReport.AvailableNetworks.Count {adapter.NetworkReport.AvailableNetworks.Count}");
-                            var connect = true;
-                            WiFiAvailableNetwork? savedan = null;
-                            foreach (var an in adapter.NetworkReport.AvailableNetworks)
-                            {
-                                if (Ssid != null && an.Ssid.Equals(Ssid))
-                                {
-                                    if (savedan == null || !savedan.Ssid.Equals(Ssid))
-                                    {
-                                        if (App.dflag)
-                                            LogtoFile($"Matched Wifi Detected {an.Ssid}");
-                                        savedan = an;
-                                        if (omit)
-                                            break;
-                                    }
-                                    else
-                                    {
-                                        if (App.dflag)
-                                            LogtoFile($"Multi Wifi Detected {an.Ssid}");
-                                        connect = false;
-                                        break;
-                                    }
-                                }
-                                else if (an.SecuritySettings.NetworkAuthenticationType.ToString().ToLower().StartsWith("open") && savedan == null)
-                                {
-                                    if (App.dflag)
-                                        LogtoFile($"Open Wifi Detected {an.Ssid}");
-                                    savedan = an;
-                                    break;
-                                }
-                            }
-                            if (!connect)
-                                App.Notify(new Hiro_Notice(Get_Translate("wifimis").Replace("%s", Ssid), 2, Get_Translate("wifi")));
-                            else
-                            {
-                                if (savedan == null)
-                                    App.Notify(new Hiro_Notice(Get_Translate("wifina").Replace("%s", Ssid), 2, Get_Translate("wifi")));
-                                else
-                                {
-                                    await adapter.ConnectAsync(savedan, Windows.Devices.WiFi.WiFiReconnectionKind.Automatic);
-                                    if (Ssid != null && !savedan.Ssid.ToLower().Equals(Ssid.ToLower()))
-                                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dcrecon").Replace("%s1", Ssid).Replace("%s2", savedan.Ssid), 2, Get_Translate("wifi")));
-                                    else
-                                        App.Notify(new Hiro_Notice(Get_Translate("wifi") + Get_Translate("dccon").Replace("%s", savedan.Ssid), 2, Get_Translate("wifi")));
-                                }
-                            }
-                        }
-                        else
-                            App.Notify(new Hiro_Notice(Get_Translate("wifina"), 2, Get_Translate("wifi")));
-                        break;
-                    default:
-                        App.Notify(new Hiro_Notice(Get_Translate("syntax"), 2, Get_Translate("wifi")));
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                App.Notify(new Hiro_Notice(Get_Translate("error"), 2, Get_Translate("wifi")));
-                LogError(ex, $"Hiro.Exception.Wifi");
             }
         }
 

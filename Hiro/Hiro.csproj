@@ -1,163 +1,163 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <Platforms>AnyCPU;x64</Platforms>
-    <ApplicationIcon>Resources\hiro_circle.ico</ApplicationIcon>
-    <Copyright>Copyright ©2024 Hiro</Copyright>
-    <Authors>Hiro</Authors>
-    <Product>Hiro</Product>
-    <FileVersion>2.5.2</FileVersion>
-    <AssemblyVersion>2.5.2</AssemblyVersion>
-    <Version>2.5.2</Version>
-    <PackageId>Hiro</PackageId>
-    <AssemblyName>Hiro</AssemblyName>
-    <DebugType>portable</DebugType>
-    <StartupObject></StartupObject>
-    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-    <BaseOutputPath></BaseOutputPath>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <!-- <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles> -->
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<Platforms>AnyCPU;x64</Platforms>
+		<ApplicationIcon>Resources\hiro_circle.ico</ApplicationIcon>
+		<Copyright>Copyright © 2024 Hiro</Copyright>
+		<Authors>Hiro</Authors>
+		<Product>Hiro</Product>
+		<FileVersion>2.5.2</FileVersion>
+		<AssemblyVersion>2.5.2</AssemblyVersion>
+		<Version>2.5.2</Version>
+		<PackageId>Hiro</PackageId>
+		<AssemblyName>Hiro</AssemblyName>
+		<DebugType>portable</DebugType>
+		<StartupObject>Hiro.App</StartupObject>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<BaseOutputPath></BaseOutputPath>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+		<!-- <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles> -->
+	</PropertyGroup>
 
 
-  <PropertyGroup>
-    <BeautySharedRuntimeMode>False</BeautySharedRuntimeMode>
-    <!-- beauty into sub-directory, default is libs, quote with "" if contains space  -->
-    <BeautyLibsDir Condition="$(BeautySharedRuntimeMode) == 'True'">../runtimes/win-x64/lib</BeautyLibsDir>
-    <BeautyLibsDir Condition="$(BeautySharedRuntimeMode) != 'True'">./runtimes/win-x64/lib</BeautyLibsDir>
-    <!-- dlls that you don't want to be moved or can not be moved -->
-    <!-- <BeautyExcludes>dll1.dll;lib*;...</BeautyExcludes> -->
-    <!-- dlls that end users never needed, so hide them -->
-    <BeautyHiddens>hostfxr;hostpolicy;*.deps.json;*.runtimeconfig*.json</BeautyHiddens>
-    <!--  well, this can not be hidden...-->
-    <!-- set to True if you want to disable -->
-    <DisableBeauty>False</DisableBeauty>
-    <!-- set to False if you want to beauty on build -->
-    <BeautyOnPublishOnly>False</BeautyOnPublishOnly>
-    <!-- DO NOT TOUCH THIS OPTION -->
-    <BeautyNoRuntimeInfo>False</BeautyNoRuntimeInfo>
-    <!-- set to True if you want to allow 3rd debuggers(like dnSpy) debugs the app -->
-    <BeautyEnableDebugging>True</BeautyEnableDebugging>
-    <!-- the patch can reduce the file count -->
-    <!-- set to False if you want to disable -->
-    <!-- SCD Mode Feature Only -->
-    <BeautyUsePatch>True</BeautyUsePatch>
-    <!-- App Entry Dll = BeautyDir + BeautyAppHostDir + BeautyAppHostEntry -->
-    <!-- see https://github.com/nulastudio/NetBeauty2#customize-apphost for more details -->
-    <!-- relative path based on AppHostDir -->
-    <!-- .NET Core Non Single-File Only -->
-    <!-- <BeautyAppHostEntry>runtimes/win-x64/hiro/</BeautyAppHostEntry> -->
-    <!-- relative path based on BeautyDir -->
-    <!-- .NET Core Non Single-File Only -->
-    <BeautyAppHostDir></BeautyAppHostDir>
-    <!-- <BeautyAfterTasks></BeautyAfterTasks> -->
-    <!-- valid values: Error|Detail|Info -->
-    <BeautyLogLevel>Info</BeautyLogLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <!-- set to a repo mirror if you have troble in connecting github -->
-    <!-- <BeautyGitCDN>https://gitee.com/liesauer/HostFXRPatcher</BeautyGitCDN> -->
-    <!-- <BeautyGitTree>master</BeautyGitTree> -->
-  </PropertyGroup>
+	<PropertyGroup>
+		<BeautySharedRuntimeMode>False</BeautySharedRuntimeMode>
+		<!-- beauty into sub-directory, default is libs, quote with "" if contains space  -->
+		<BeautyLibsDir Condition="$(BeautySharedRuntimeMode) == 'True'">../runtimes/win-x64/lib</BeautyLibsDir>
+		<BeautyLibsDir Condition="$(BeautySharedRuntimeMode) != 'True'">./runtimes/win-x64/lib</BeautyLibsDir>
+		<!-- dlls that you don't want to be moved or can not be moved -->
+		<!-- <BeautyExcludes>dll1.dll;lib*;...</BeautyExcludes> -->
+		<!-- dlls that end users never needed, so hide them -->
+		<BeautyHiddens>hostfxr;hostpolicy;*.deps.json;*.runtimeconfig*.json</BeautyHiddens>
+		<!--  well, this can not be hidden...-->
+		<!-- set to True if you want to disable -->
+		<DisableBeauty>False</DisableBeauty>
+		<!-- set to False if you want to beauty on build -->
+		<BeautyOnPublishOnly>False</BeautyOnPublishOnly>
+		<!-- DO NOT TOUCH THIS OPTION -->
+		<BeautyNoRuntimeInfo>False</BeautyNoRuntimeInfo>
+		<!-- set to True if you want to allow 3rd debuggers(like dnSpy) debugs the app -->
+		<BeautyEnableDebugging>True</BeautyEnableDebugging>
+		<!-- the patch can reduce the file count -->
+		<!-- set to False if you want to disable -->
+		<!-- SCD Mode Feature Only -->
+		<BeautyUsePatch>True</BeautyUsePatch>
+		<!-- App Entry Dll = BeautyDir + BeautyAppHostDir + BeautyAppHostEntry -->
+		<!-- see https://github.com/nulastudio/NetBeauty2#customize-apphost for more details -->
+		<!-- relative path based on AppHostDir -->
+		<!-- .NET Core Non Single-File Only -->
+		<!-- <BeautyAppHostEntry>runtimes/win-x64/hiro/</BeautyAppHostEntry> -->
+		<!-- relative path based on BeautyDir -->
+		<!-- .NET Core Non Single-File Only -->
+		<BeautyAppHostDir></BeautyAppHostDir>
+		<!-- <BeautyAfterTasks></BeautyAfterTasks> -->
+		<!-- valid values: Error|Detail|Info -->
+		<BeautyLogLevel>Info</BeautyLogLevel>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<!-- set to a repo mirror if you have troble in connecting github -->
+		<!-- <BeautyGitCDN>https://gitee.com/liesauer/HostFXRPatcher</BeautyGitCDN> -->
+		<!-- <BeautyGitTree>master</BeautyGitTree> -->
+	</PropertyGroup>
 
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FFME.Windows" Version="7.0.361-beta.1" />
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0-preview.7.24405.3" />
-    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2783-prerelease" />
-    <PackageReference Include="nulastudio.NetBeauty" Version="2.1.4.5" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FFME.Windows" Version="7.0.361-beta.1" />
+		<PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0-preview.7.24405.3" />
+		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2783-prerelease" />
+		<PackageReference Include="nulastudio.NetBeauty" Version="2.1.4.5" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="HiroPluginShared">
-      <HintPath>Shared\HiroPluginShared.dll</HintPath>
-    </Reference>
-    <Reference Include="Interop.IWshRuntimeLibrary">
-      <HintPath>Interop.IWshRuntimeLibrary.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="HiroPluginShared">
+			<HintPath>Shared\HiroPluginShared.dll</HintPath>
+		</Reference>
+		<Reference Include="Interop.IWshRuntimeLibrary">
+			<HintPath>Interop.IWshRuntimeLibrary.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Widgets\Hiro_Encrypter.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Resources\Hiro_Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Hiro_Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Widgets\Hiro_Encrypter.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Resources\Hiro_Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Hiro_Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Update="Resources\rex_bg_2.0.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+		<None Update="Resources\rex_bg_2.0.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Resources\hiro.png" />
-    <Resource Include="Resources\hiro_circle.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\hiro.png" />
+		<Resource Include="Resources\hiro_circle.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Hiro_Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Hiro_Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\Hiro_Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Hiro_Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Widgets\Hiro_Encrypter.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
+	<ItemGroup>
+		<Page Update="Widgets\Hiro_Encrypter.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Framework\Controllers\" />
-    <Folder Include="Framework\Interfaces\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Framework\Controllers\" />
+		<Folder Include="Framework\Interfaces\" />
+	</ItemGroup>
 
 </Project>

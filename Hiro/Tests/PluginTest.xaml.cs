@@ -1,19 +1,7 @@
-﻿using Hiro.ModelViews;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Text;
+﻿using Hiro.Helpers.Plugin;
+using Hiro.ModelViews;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Hiro.Tests
 {
@@ -27,7 +15,7 @@ namespace Hiro.Tests
         public PluginTest()
         {
             InitializeComponent();
-            plugin = new HiroPlugin(@"C:\Rex\Documents\VSProjects\HiroPlugins\HFiler\HFiler\bin\x64\Release\net8.0-windows\HFiler.hdll");
+            //plugin = HPluginManager.CreateOrLoad(@"C:\Rex\Documents\VSProjects\HiroPlugins\HFiler\HFiler\bin\x64\Release\net8.0-windows\HFiler.hdll");
         }
 
         private void PressBtn_Click(object sender, RoutedEventArgs e)

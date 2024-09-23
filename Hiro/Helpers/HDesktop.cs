@@ -298,69 +298,77 @@ namespace Hiro.Helpers
             {
                 if (HFile.isVideo(parameter[0]) == true)
                 {
-                    if (wallPaperWin != null)
+                    Hiro_Utils.HiroInvoke(() =>
                     {
-                        wallPaperWin.Close();
-                    }
-                    if (wallPaperPlayer != null)
-                    {
-                        wallPaperPlayer.Play(parameter[0]);
-                    }
-                    else
-                    {
-                        Hiro_Utils.HiroInvoke(() =>
+                        if (wallPaperWin != null)
                         {
-                            wallPaperPlayer ??= new();
-                            wallPaperPlayer.Show();
+                            wallPaperWin.Close();
+                        }
+                        if (wallPaperPlayer != null)
+                        {
                             wallPaperPlayer.Play(parameter[0]);
-                        });
-                    }
+                        }
+                        else
+                        {
+                            Hiro_Utils.HiroInvoke(() =>
+                            {
+                                wallPaperPlayer ??= new();
+                                wallPaperPlayer.Show();
+                                wallPaperPlayer.Play(parameter[0]);
+                            });
+                        }
+                    });
                     return 0;
 
                 }
                 else
                 {
-                    if (wallPaperPlayer != null)
+                    bool _f = false;
+                    Hiro_Utils.HiroInvoke(() =>
                     {
-                        wallPaperPlayer.Close();
-                    }
-                    if (parameter.Count > 2)
-                    {
-                        bool _f = false;
-                        switch (parameter[2].ToLower())
+                        if (wallPaperPlayer != null)
                         {
-                            case "temp":
-                            case "temporary":
-                            case "t":
-                            case "fake":
-                            case "f":
-                                {
-                                    if (wallPaperWin != null)
+                            wallPaperPlayer.Close();
+                        }
+
+                        if (parameter.Count > 2)
+                        {
+                            switch (parameter[2].ToLower())
+                            {
+                                case "temp":
+                                case "temporary":
+                                case "t":
+                                case "fake":
+                                case "f":
                                     {
-                                        wallPaperWin.Wallpaper.Source = Hiro_Utils.GetBitmapImage(parameter[0]);
-                                        wallPaperWin.ResetUniform(Convert.ToInt32(parameter[1]));
-                                    }
-                                    else
-                                    {
-                                        Hiro_Utils.HiroInvoke(() =>
+                                        if (wallPaperWin != null)
                                         {
-                                            wallPaperWin ??= new();
-                                            wallPaperWin.Show();
                                             wallPaperWin.Wallpaper.Source = Hiro_Utils.GetBitmapImage(parameter[0]);
                                             wallPaperWin.ResetUniform(Convert.ToInt32(parameter[1]));
-                                        });
+                                        }
+                                        else
+                                        {
+                                            Hiro_Utils.HiroInvoke(() =>
+                                            {
+                                                wallPaperWin ??= new();
+                                                wallPaperWin.Show();
+                                                wallPaperWin.Wallpaper.Source = Hiro_Utils.GetBitmapImage(parameter[0]);
+                                                wallPaperWin.ResetUniform(Convert.ToInt32(parameter[1]));
+                                            });
+                                        }
+                                        _f = true;
+                                        break;
                                     }
-                                    _f = true;
-                                    break;
-                                }
-                            default:
-                                {
-                                    break;
-                                }
+                                default:
+                                    {
+                                        break;
+                                    }
+                            }
                         }
-                        if (_f)
-                            return 0;
-                    }
+                    });
+                    if (_f)
+                        return 0;
+
                     using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
                     {
                         int[] para = [10, 6, 22, 2, 0, 0];

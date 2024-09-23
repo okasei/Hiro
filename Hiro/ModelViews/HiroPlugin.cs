@@ -15,7 +15,10 @@ namespace Hiro.ModelViews
         private HiroService? _service = null;
         private Assembly? _assembly = null;
         public string Name => _plugin?.GetName(App.lang) ?? "Unknown Plugin";
-        public string Version => _plugin?.Version ?? string.Empty;
+        public string Description => _plugin?.GetDescription(App.lang) ?? "No Description";
+        public bool IsolateRun => _plugin?.IsolateRun == true;
+        public bool AutoLoad => _plugin?.RunWithHiro == true;
+        public string Version => _plugin?.Version?.Version ?? string.Empty;
 
         public string PackageName => _plugin?.Id ?? "com.hiro.unknown." + DateTime.UtcNow.ToString();
         public string Author => _plugin?.Author ?? string.Empty;
@@ -25,7 +28,7 @@ namespace Hiro.ModelViews
         {
             _context = new HiroLoaderContext();
             // 加载程序集
-            _assembly = _context.LoadFromAssemblyPath(path);
+            _assembly = _context.LoadFromAssemblyPath(HText.Path_PPX(path));
 
             // 在此处使用加载的程序集
             foreach (var type in _assembly.GetTypes())
@@ -36,11 +39,16 @@ namespace Hiro.ModelViews
                     _plugin = (IHiroPlugin?)Activator.CreateInstance(type);
 
                     // 初始化插件
-                    _service = new HiroService(); // 传入主程序的服务实例
+                    _service = new HiroService(path); // 传入主程序的服务实例
                     _plugin?.Initialize(_service);
 
                 }
             }
+        }
+
+        internal void FirstRun()
+        {
+            _plugin?.FirstRun();
         }
 
         internal string? ProcessRequest(string str, List<object>? para = null)

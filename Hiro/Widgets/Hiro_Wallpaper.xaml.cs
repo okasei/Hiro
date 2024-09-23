@@ -39,8 +39,40 @@ namespace Hiro.Widgets
                 1 => Stretch.Fill,
                 2 => Stretch.Uniform,
                 3 => Stretch.UniformToFill,
+                4 => Stretch.UniformToFill,
                 _ => Stretch.None
             };
+            if(i == 4)
+            {
+                var w = Wallpaper.Source.Width;
+                var h = Wallpaper.Source.Height;
+                var ww = ActualWidth;
+                var hh = ActualHeight;
+                var wi = ww / w;
+                var hi = hh / h;
+                var www = hh * w / h;
+                var hhh = ww * h / w;
+                if (wi < hi)
+                {
+                    Wallpaper.Width = www;
+                    Wallpaper.Height = hh;
+                }
+                else
+                {
+                    Wallpaper.Width = ww;
+                    Wallpaper.Height = hhh;
+                }
+                Wallpaper.HorizontalAlignment = HorizontalAlignment.Center;
+                Wallpaper.VerticalAlignment = VerticalAlignment.Center;
+            }
+            else
+            {
+                Wallpaper.Width = double.NaN;
+                Wallpaper.Height = double.NaN;
+                Wallpaper.Margin = new Thickness(0);
+                Wallpaper.HorizontalAlignment = HorizontalAlignment.Stretch;
+                Wallpaper.VerticalAlignment = VerticalAlignment.Stretch;
+            }
         }
 
 

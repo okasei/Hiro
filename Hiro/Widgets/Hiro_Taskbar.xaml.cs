@@ -597,11 +597,11 @@ namespace Hiro.Widgets
             });
         }
 
-        private async void MusicControlGrid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void MusicControlGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Middle && MusicControlGrid.Visibility == Visibility.Visible)
             {
-                _ = await HMediaInfoManager.TrySetPosition((double)Mouse.GetPosition(this).X / MusicControlGrid.ActualWidth);
+                HMediaInfoManager.TrySetPosition((double)Mouse.GetPosition(this).X / MusicControlGrid.ActualWidth);
                 e.Handled = true;
             }
 
