@@ -194,7 +194,7 @@ namespace Hiro
                     #region 插件处理部分
                     var _pluginExt = GetLinkExt(path);
                     var _plist = DB_HIRO_LINKS.GetPluginsByLink(_pluginExt);
-                    if (_plist.Count > 0 && System.IO.File.Exists(_plist[0].Path))
+                    if (_plist.Count > 0 && System.IO.File.Exists(HText.Path_PPX(_plist[0].Path ?? string.Empty)))
                     {
                         HPluginManager.CreateOrLoad(_plist[0].Path ?? string.Empty).ProcessRequest(RunPath);
                         goto RunOK;

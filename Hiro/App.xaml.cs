@@ -114,7 +114,7 @@ namespace Hiro
             });
             DB_HIRO_PLUGINS.InitializePlugins();
             Hiro_Utils.SetFrame(Convert.ToInt32(double.Parse(Read_DCIni("FPS", "60"))));
-            Unosquare.FFME.Library.FFmpegDirectory = @Path_PPX("<current>") + @"\runtimes\win-x64\ffmpeg";
+            Unosquare.FFME.Library.FFmpegDirectory = @Path_PPX("<current>") + @"\system\plugins\ffmpeg.libs\";
         }
 
         internal static void LoadDictionaryColors()

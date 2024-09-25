@@ -87,7 +87,7 @@ namespace Hiro.Framework.Services
             {
                 return null;
             }
-            return DB_HIRO_LINKS.AddOrUpdateRecord(id, protocol, pluginID, RunParam);
+            return DB_HIRO_LINKS.AddOrUpdateRecord(Guid.NewGuid().ToString("N"), protocol, id, RunParam);
         }
 
         void IHiroService.Notify(Hiro_Notice i)
@@ -97,7 +97,7 @@ namespace Hiro.Framework.Services
                 act = i.act,
                 icon = new()
                 {
-                    HeroImage = i.icon?.HeroImage?? string.Empty,
+                    HeroImage = i.icon?.HeroImage ?? string.Empty,
                     Image = i.icon?.Image,
                     Location = i.icon?.Location ?? string.Empty
                 },
