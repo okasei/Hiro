@@ -1,23 +1,19 @@
-﻿using System;
+﻿using Hiro.Helpers;
+using Hiro.Helpers.SMTC;
+using Hiro.ModelViews;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Input;
-using System.Text;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Threading;
-using System.IO;
-using Hiro.Helpers;
-using Hiro.ModelViews;
-using static Hiro.Helpers.HSet;
-using System.Windows.Threading;
-using System.Runtime;
-using Windows.Media;
-using Hiro.Helpers.SMTC;
-using Unosquare.FFME.Common;
 using System.Windows.Shell;
-using Hiro.Resources;
-using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using static Hiro.Helpers.HSet;
 
 namespace Hiro
 {
@@ -578,19 +574,41 @@ namespace Hiro
                 }
             }).Start();
         }
-
         private bool LoadMusicGrid()
         {
             try
             {
                 var mt = Media.MediaInfo.Metadata;
-                var _artist = mt.ContainsKey("ARTIST") ? mt["ARTIST"] : null;
-                var _title = mt.ContainsKey("TITLE") ? mt["TITLE"] : null;
-                var _album = mt.ContainsKey("ALBUM") ? mt["ALBUM"] : null;
+                string? _artist = null;
+                string? _title = null;
+                string? _album = null;
                 string? _lrcs = null;
+                if (HSet.Read_DCIni("EnableTagLib", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    try
+                    {
+
+                        var f = TagLib.File.Create(Media.MediaInfo.MediaSource);
+                        _artist = f.Tag.JoinedPerformers;
+                        _title = f.Tag.Title;
+                        _album = f.Tag.Album;
+                        _lrcs = f.Tag.Lyrics;
+                    }
+                    catch (Exception ex)
+                    {
+                        HLogger.LogError(ex, "Hiro.Player.Taglib");
+                    }
+                }
+                else
+                {
+                    _artist = mt.ContainsKey("ARTIST") ? mt["ARTIST"] : null;
+                    _title = mt.ContainsKey("TITLE") ? mt["TITLE"] : null;
+                    _album = mt.ContainsKey("ALBUM") ? mt["ALBUM"] : null;
+                }
                 if (HSet.Read_DCIni("EnableLyrics", "true").Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    _lrcs = mt.ContainsKey("LYRICS") ? mt["LYRICS"] : (mt.ContainsKey("lyrics-XXX") ? mt["lyrics-XXX"] : null);
+                    if (_lrcs == null)
+                        _lrcs = mt.ContainsKey("LYRICS") ? mt["LYRICS"] : (mt.ContainsKey("lyrics-XXX") ? mt["lyrics-XXX"] : null);
                     if (_lrcs == null)
                     {
                         var _filename = Media.MediaInfo.MediaSource;

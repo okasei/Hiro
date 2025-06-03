@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hiro.Widgets"
         mc:Ignorable="d"
-        Title="HiroTaskbar" Height="35" Width="100" ResizeMode="NoResize" WindowStyle="None" AllowDrop="True" ShowInTaskbar="False" Background="{DynamicResource AppAccentDim}" DragEnter="Window_DragEnter" DragLeave="Window_DragLeave" Drop="Window_Drop">
+        Title="HiroTaskbar" Height="35" Width="100" ResizeMode="NoResize" WindowStyle="None" AllowDrop="True" ShowInTaskbar="False" Background="Coral" DragEnter="Window_DragEnter" DragLeave="Window_DragLeave" Drop="Window_Drop">
     <Window.Resources>
         <SolidColorBrush x:Key="AppFore" Color="White"></SolidColorBrush>
         <SolidColorBrush x:Key="AppForeDim" Color="White"></SolidColorBrush>

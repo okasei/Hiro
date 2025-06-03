@@ -35,6 +35,8 @@ namespace Hiro.Widgets
             Loaded += (e, args) =>
             {
                 Embbed();
+                if (!int.TryParse(HSet.Read_Ini(App.dConfig, "Taskbar", "Transparency", "128"), out _transparency))
+                    _transparency = 128;
                 var _s = HWin.GetDpiScale();
                 _x = _s.Width;
                 _y = _s.Height;
@@ -88,6 +90,22 @@ namespace Hiro.Widgets
             t = HText.ProcessHiroText(HText.Path_PPX(BasicGrid.Visibility == Visibility.Visible ? _formatArray[4] : _formatArray[5]));
             ExtraLabel.Text = HText.ProcessHiroText(HText.Path_PPX(BasicGrid.Visibility == Visibility.Visible ? _formatArray[1] : _formatArray[2]));
             ExtraLabel.ToolTip = HText.IsOnlyBlank(t) ? null : t;
+            if (HSet.Read_Ini(App.dConfig, "Taskbar", "EnableColor", "False").Equals("True", StringComparison.CurrentCultureIgnoreCase))
+            {
+                try
+                {
+
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(HSet.Read_Ini(App.dConfig, "Taskbar", "CustomColor", "#FF00C4FF")));
+                }
+                catch (Exception ex)
+                {
+                    HLogger.LogError(ex, "Hiro.Taskbar.CustomColor");
+                }
+            }
+            else
+            {
+                Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, _transparency));
+            }
         }
 
         internal void Embbed()
@@ -179,6 +197,7 @@ namespace Hiro.Widgets
             Resources["AppAccent"] = new SolidColorBrush(App.AppAccentColor);
             Resources["AppAccentDim"] = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, _transparency));
             Resources["AppForeDimColor"] = Hiro_Utils.Color_Transparent(App.AppForeColor, 80);
+            Background = new SolidColorBrush(Hiro_Utils.Color_Transparent(App.AppAccentColor, _transparency));
         }
 
         internal void UpdatePosition()
